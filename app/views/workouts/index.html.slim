@@ -1,0 +1,9 @@
+.container
+  .row
+    h1 Workouts
+  - @workouts.each do |workout|
+    .row
+      .col = link_to workout.name, workout
+  br
+    .row
+      .col = link_to '+New Workout', new_workout_path

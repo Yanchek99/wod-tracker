@@ -1,0 +1,12 @@
+.row
+  .col-sm
+    = "#{exercise.reps} " if exercise.has_reps?
+    = exercise.measurement_message
+    | #{exercise.movement.name}&nbsp;
+    = "#{exercise.male_rx}/#{exercise.female_rx} " if exercise.can_rx?
+  / - if exercise.reps > 0
+  /   col-sm #{exercise.reps}&nbsp;
+  / - if exercise.measurement_value.nil? && exercise.measurement_value.to_i > 0
+  /   col-sm #{exercise.measurement_value}&nbsp;
+  /   col-sm &nbsp;#{exercise.measurement}&nbsp;
+  / col-sm #{exercise.movement.name}

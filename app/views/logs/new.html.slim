@@ -1,0 +1,7 @@
+.container
+  h1 = @workout.name
+  p #{@workout.objective_message}
+
+  h1 Log
+  = render 'form', log: @log
+  = link_to 'Back', workout_path(@workout)

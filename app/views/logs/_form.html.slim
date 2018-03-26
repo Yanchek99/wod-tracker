@@ -1,0 +1,7 @@
+= simple_form_for([@workout, @log], html: { class: 'form-horizontal' }) do |f|
+  = f.error_notification
+  .form-inputs
+    = f.input :measurement, collection: Log.measurements
+    = f.input :measurement_value
+  .form-actions
+    = f.button :submit

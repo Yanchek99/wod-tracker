@@ -1,0 +1,10 @@
+.container
+  h1 = @workout.name
+  p #{@workout.objective_message}
+  == render @workout.exercises
+
+  = link_to 'Log', new_workout_log_path(@workout)
+  span | 
+  = link_to 'Edit', edit_workout_path(@workout)
+  span  |
+  = link_to 'Back', workouts_path

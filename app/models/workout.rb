@@ -1,5 +1,6 @@
 class Workout < ApplicationRecord
   has_many :exercises
+  accepts_nested_attributes_for :exercises
 
   def objective_message
     return "#{rounds} rounds for time" if rounds_for_time?

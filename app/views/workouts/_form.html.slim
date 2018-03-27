@@ -1,0 +1,15 @@
+= simple_form_for @workout do |f|
+  = f.error_notification
+  .form-inputs
+    = f.input :name
+    = f.input :rounds
+    = f.input :time
+    = f.input :interval
+  h3 Exercises
+  #exercises
+    = f.simple_fields_for :exercises do |exercise_form|
+      = render 'exercise_fields', f: exercise_form
+    .links
+      = link_to_add_association 'Add Exercise', f, :exercises
+  .form-actions
+    = f.button :submit

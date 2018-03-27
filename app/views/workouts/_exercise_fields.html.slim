@@ -1,0 +1,9 @@
+.nested-fields.border.mb-3.p-3
+  .row
+    .col = f.input :reps
+    .col = f.association :movement, collection: Movement.all.order(:name)
+    .col = f.input :measurement_value
+  .row
+    .col = f.input :male_rx
+    .col = f.input :female_rx
+  = link_to_remove_association "Delete Exercise", f

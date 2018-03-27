@@ -64,11 +64,11 @@ class WorkoutsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_workout
-      @workout = Workout.find(params[:id])
+      @workout = Workout.includes(:exercises).find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def workout_params
-      params.require(:workout).permit(:name, :rounds, :time, :interval)
+      params.require(:workout).permit(:name, :rounds, :time, :interval, exercise_attributes: [:reps, :movement_id, :measurement_value, :male_rx, :female_rx, :_destroy])
     end
 end

@@ -5,8 +5,6 @@ ruby '2.5.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.0'
-# Use sqlite3 as the database for Active Record
-gem 'sqlite3'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # Use SCSS for stylesheets
@@ -45,7 +43,15 @@ gem 'bootstrap', '~> 4.0.0'
 gem 'jquery-rails'
 gem "cocoon"
 
+group :production do
+  # Postgres DB for heroku
+  gem 'pg', '< 1.0' # Until rails 5.2 release
+end
+
 group :development, :test do
+  # Use sqlite3 as the database for Active Record
+  gem 'sqlite3'
+  
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem "bundler-audit"

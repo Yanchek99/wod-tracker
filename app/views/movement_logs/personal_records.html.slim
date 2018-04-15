@@ -1,0 +1,6 @@
+.container
+  h1 Personal Records
+  - @movement_logs.each do |pr|
+    .row
+      .col = pr.movement.name
+      .col = pr.measurement_value

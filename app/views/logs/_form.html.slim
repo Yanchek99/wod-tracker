@@ -1,7 +1,19 @@
-= simple_form_for([@workout, @log], html: { class: 'form-horizontal' }) do |f|
+= simple_form_for [@workout, @log]  do |f|
   = f.error_notification
   .form-inputs
-    = f.input :measurement, collection: Log.measurements
-    = f.input :measurement_value
+    .form-group
+      = f.label :measurement_value, 'Workout Recording'
+      .input-group
+        .input-group-prepend
+          span.input-group-text #{@workout.measurement}
+        = f.input_field :measurement_value
+    = f.simple_fields_for :movement_logs do |ml_form|
+      .form-group
+        = ml_form.label :measurement_value, ml_form.object.movement.name
+        .input-group
+          .input-group-prepend
+            span.input-group-text #{ml_form.object.movement.measurement}
+          = ml_form.input_field :measurement_value
+      = ml_form.input_field :movement_id, as: :hidden
   .form-actions
     = f.button :submit

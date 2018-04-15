@@ -1,6 +1,7 @@
 .container
   h1 = @workout.name
-  p #{@workout.objective_message}
+  p #{workout_objective @workout}
+  == render @workout.exercises
 
   h1 Log
   = render 'form', log: @log

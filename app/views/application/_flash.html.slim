@@ -1,0 +1,6 @@
+- # Rails flash messages styled for Zurb Foundation
+- flash.each do |type, msg|
+  - if msg.is_a?(String) && msg.present?
+    .flash.callout[data-closable class=(flash_class(type))]
+      span = msg
+      button.close-button[data-close type="button"] &times;

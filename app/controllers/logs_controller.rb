@@ -5,7 +5,7 @@ class LogsController < ApplicationController
   # GET /logs
   # GET /logs.json
   def index
-    @logs = Log.all
+    @logs = Current.user.logs
   end
 
   # GET /logs/1
@@ -15,7 +15,8 @@ class LogsController < ApplicationController
 
   # GET /logs/new
   def new
-    @log = Log.new
+    @log = @workout.logs.build
+    @log.build_movement_logs
   end
 
   # GET /logs/1/edit
@@ -25,7 +26,7 @@ class LogsController < ApplicationController
   # POST /logs
   # POST /logs.json
   def create
-    @log = Log.new(log_params)
+    @log = @workout.logs.build(log_params)
 
     respond_to do |format|
       if @log.save
@@ -74,6 +75,6 @@ class LogsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def log_params
-      params.require(:log).permit(:name, :rounds, :time, :interval)
+      params.require(:log).permit(:measurement_value, movement_logs_attributes: [:id, :movement_id, :measurement_value])
     end
 end

@@ -1,9 +1,8 @@
 .container
-  .row
-    h1 Workouts
-  - @workouts.each do |workout|
-    .row
-      .col = link_to workout.name, workout
+  h1 Workouts
+  .list-group
+    - @workouts.each do |workout|
+      = link_to workout.name, workout, class: "list-group-item list-group-item-action #{'list-group-item-success' if Current.user.logged_workout? workout}"
   br
     .row
       .col = link_to '+New Workout', new_workout_path

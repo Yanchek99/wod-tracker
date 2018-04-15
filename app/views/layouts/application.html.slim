@@ -8,4 +8,11 @@ html lang="en"
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
   body
-    = yield
+    .container-fluid
+      nav.navbar.navbar-expand-sm.navbar-dark.bg-dark.sticky-top
+        = link_to 'WODTracker', root_path, class: 'navbar-brand'
+        .navbar-nav.mr-auto
+          = link_to 'Workouts', workouts_path, class: 'nav-item nav-link'
+          = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
+      = flash_messages
+      = yield

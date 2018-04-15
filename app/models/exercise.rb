@@ -2,7 +2,7 @@ class Exercise < ApplicationRecord
   belongs_to :movement
 
   def measurement_message
-    "#{measurement_value} #{measurement} " if show_measurement?
+    "#{measurement_value} #{movement.measurement} " if show_measurement?
   end
 
   def has_reps?

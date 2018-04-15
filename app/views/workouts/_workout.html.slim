@@ -1,0 +1,11 @@
+h1 = workout.name
+p #{workout_objective workout}
+ul.list-group
+  - workout.exercises.each do |exercise|
+    li.list-group-item #{pluralize exercise.reps, exercise.movement.name} #{exercise.measurement_message} #{exercise.male_rx}#{'/' if exercise.male_rx}#{exercise.female_rx}
+br
+- if Current.user.logged_workout? @workout
+  h2 Results
+  = render @workout.logs.find_by(user: Current.user)
+- else
+  = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-outline-primary'

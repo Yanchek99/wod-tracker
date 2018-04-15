@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  log: one
+  movement: one
+  measurement_value: MyString
+
+two:
+  log: two
+  movement: two
+  measurement_value: MyString

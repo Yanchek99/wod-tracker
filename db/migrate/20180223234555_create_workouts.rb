@@ -5,6 +5,7 @@ class CreateWorkouts < ActiveRecord::Migration[5.2]
       t.integer :rounds
       t.integer :time
       t.string :interval
+      t.integer :measurement
 
       t.timestamps
     end

@@ -5,6 +5,7 @@
     = f.input :rounds
     = f.input :time
     = f.input :interval
+    = f.input :measurement, collection: Workout.measurements.keys
   h3 Exercises
   #exercises
     = f.simple_fields_for :exercises do |exercise_form|

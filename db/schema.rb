@@ -10,13 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_26_052333) do
+ActiveRecord::Schema.define(version: 2018_04_14_172009) do
 
   create_table "exercises", force: :cascade do |t|
     t.integer "workout_id"
     t.integer "movement_id"
     t.integer "reps"
-    t.string "measurement"
     t.string "measurement_value"
     t.integer "male_rx"
     t.integer "female_rx"
@@ -27,12 +26,23 @@ ActiveRecord::Schema.define(version: 2018_02_26_052333) do
   end
 
   create_table "logs", force: :cascade do |t|
+    t.integer "user_id"
     t.integer "workout_id"
     t.string "measurement_value"
-    t.integer "measurement"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_logs_on_user_id"
     t.index ["workout_id"], name: "index_logs_on_workout_id"
+  end
+
+  create_table "movement_logs", force: :cascade do |t|
+    t.integer "log_id"
+    t.integer "movement_id"
+    t.string "measurement_value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["log_id"], name: "index_movement_logs_on_log_id"
+    t.index ["movement_id"], name: "index_movement_logs_on_movement_id"
   end
 
   create_table "movements", force: :cascade do |t|
@@ -42,11 +52,29 @@ ActiveRecord::Schema.define(version: 2018_02_26_052333) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
   create_table "workouts", force: :cascade do |t|
     t.string "name"
     t.integer "rounds"
     t.integer "time"
     t.string "interval"
+    t.integer "measurement"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

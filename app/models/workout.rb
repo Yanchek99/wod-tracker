@@ -1,14 +1,13 @@
 class Workout < ApplicationRecord
-  has_many :exercises
-  accepts_nested_attributes_for :exercises
+  enum measurement: [:reps, :rounds, :weight, :time, :calories]
 
-  def objective_message
-    return "#{rounds} rounds for time" if rounds_for_time?
-    return "As many rounds as possible in #{time} minutes" if amrap?
-    return "EMOM #{time}" if emom?
-    return "#{rounds} #{time}-minute rounds" if timed_rounds?
-    interval
-  end
+  has_many :exercises, dependent: :destroy
+  has_many :movements, through: :exercises
+  has_many :logs, dependent: :destroy
+  has_many :movement_logs, through: :logs
+
+  accepts_nested_attributes_for :exercises, allow_destroy: true
+
 
   def rounds_for_time?
     rounds.present? && time.nil? && interval.nil?
@@ -24,5 +23,9 @@ class Workout < ApplicationRecord
 
   def timed_rounds?
     rounds.present? && time.present? && interval.nil?
+  end
+
+  def logged?(user)
+    logs.where(user: user)
   end
 end

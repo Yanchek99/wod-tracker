@@ -5,7 +5,7 @@
       = f.label :measurement_value, 'Workout Recording'
       .input-group
         .input-group-prepend
-          span.input-group-text #{@workout.measurement}
+          span.input-group-text #{@workout.measurement_message}
         = f.input_field :measurement_value
     = f.simple_fields_for :movement_logs do |ml_form|
       .form-group

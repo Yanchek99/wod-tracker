@@ -14,6 +14,6 @@ ul.list-group
       - Current.user.logs.where(workout: @workout).each do |log|
         tr
           th scope="row" = link_to log.created_at, log
-          td #{pluralize log.measurement_value, log.workout.measurement_message}
+          td #{pluralize log.measurement_value, @workout.measurement_message}
 - else
   = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-outline-primary'

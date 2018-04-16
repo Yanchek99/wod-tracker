@@ -32,6 +32,6 @@ class Workout < ApplicationRecord
   def measurement_message
     return measurement if measurement
     'minutes' if rounds_for_time?
-    'round' if amrap?
+    'rounds' if amrap?
   end
 end

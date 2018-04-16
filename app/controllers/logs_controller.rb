@@ -1,5 +1,5 @@
 class LogsController < ApplicationController
-  before_action :set_workout, only: [:index]
+  before_action :set_workout, only: [:index, :new, :create]
   before_action :set_log, only: [:show, :edit, :update, :destroy]
 
   # GET /logs

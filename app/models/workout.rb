@@ -28,4 +28,10 @@ class Workout < ApplicationRecord
   def logged?(user)
     logs.where(user: user)
   end
+
+  def measurement_message
+    return measurement if measurement
+    'minutes' if rounds_for_time?
+    'round' if amrap?
+  end
 end

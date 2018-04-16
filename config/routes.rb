@@ -3,9 +3,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   root to: 'workouts#index'
 
-  resources :workouts do
-    resources :logs
-  end
+  resources :logs, only: [:show]
 
   resources :users do
     resources :movement_logs, only: [:personal_records] do
@@ -13,5 +11,9 @@ Rails.application.routes.draw do
         get :personal_records
       end
     end
+  end
+
+  resources :workouts do
+    resources :logs
   end
 end

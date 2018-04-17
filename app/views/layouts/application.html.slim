@@ -20,5 +20,5 @@ html lang="en"
               = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
             .navbar-nav
               = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'nav-item nav-link'
-      = flash_messages
-      = yield
+    = flash_messages
+    = yield

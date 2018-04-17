@@ -8,14 +8,17 @@ html lang="en"
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
   body
-    .container-fluid
-      - if user_signed_in?
-        nav.navbar.navbar-expand-sm.navbar-dark.bg-dark.sticky-top
+    - if user_signed_in?
+      nav.navbar.navbar-expand-sm.navbar-dark.bg-dark
+        .container
           = link_to 'WODTracker', root_path, class: 'navbar-brand'
-          .navbar-nav.mr-auto
-            = link_to 'Workouts', workouts_path, class: 'nav-item nav-link'
-            = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
-          .navbar-nav
-            = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'nav-item nav-link'
+          button.navbar-toggler type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            span.navbar-toggler-icon
+          .collapse.navbar-collapse#navbarSupportedContent
+            .navbar-nav.mr-auto
+              = link_to 'Workouts', workouts_path, class: 'nav-item nav-link'
+              = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
+            .navbar-nav
+              = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'nav-item nav-link'
       = flash_messages
       = yield

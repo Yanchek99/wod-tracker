@@ -1,11 +1,16 @@
 = simple_form_for @workout do |f|
   = f.error_notification
-  .form-inputs
-    = f.input :name
-    = f.input :rounds
-    = f.input :time
-    = f.input :interval
-    = f.input :measurement, collection: Workout.measurements.keys
+  .form-inputs.row
+    .col-12 = f.input :name
+    .col-sm-4 = f.input :rounds
+    .col-sm-4
+      = f.label :time
+      .input-group
+        = f.input_field :time, class: 'form-control'
+        .input-group-append
+          span.input-group-text minutes
+    .col-sm-4 = f.input :interval
+    .col-12 = f.input :measurement, collection: Workout.measurements.keys
   h3 Exercises
   #exercises
     = f.simple_fields_for :exercises do |exercise_form|

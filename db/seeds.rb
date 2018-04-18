@@ -37,9 +37,11 @@ wb = Movement.find_or_create_by(name: 'Wall-ball Shot', measurement: Movement.me
 rest = Movement.find_or_create_by(name: 'Rest', measurement: Movement.measurements[:time])
 Movement.find_or_create_by(name: 'Thruster', measurement: Movement.measurements[:weight])
 Movement.find_or_create_by(name: 'Chest-to-bar pull-up')
+Movement.find_or_create_by(name: 'V-up')
 burp = Movement.find_or_create_by(name: 'Burpee')
 pistol = Movement.find_or_create_by(name: 'Pistol')
 sdlhp = Movement.find_or_create_by(name: 'Sumo Deadlift High Pull', measurement: Movement.measurements[:weight])
+Movement.find_or_create_by(name: 'Shoulder Press', measurement: Movement.measurement[:weight])
 
 # http://www.lakehillscrossfit.com/41018-2/
 # ==============================================================================

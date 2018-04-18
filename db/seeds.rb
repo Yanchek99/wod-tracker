@@ -42,10 +42,10 @@ burp = Movement.find_or_create_by(name: 'Burpee')
 Movement.find_or_create_by(name: 'Lateral Over Barbell Burpee')
 pistol = Movement.find_or_create_by(name: 'Pistol')
 sdlhp = Movement.find_or_create_by(name: 'Sumo Deadlift High Pull', measurement: Movement.measurements[:weight])
-Movement.find_or_create_by(name: 'Shoulder Press', measurement: Movement.measurement[:weight])
-Movement.find_or_create_by(name: 'Push Press', measurement: Movement.measurement[:weight])
-Movement.find_or_create_by(name: 'Press Jerk', measurement: Movement.measurement[:weight])
-Movement.find_or_create_by(name: 'Shoulder to Over Head', measurement: Movement.measurement[:weight])
+Movement.find_or_create_by(name: 'Shoulder Press', measurement: Movement.measurements[:weight])
+Movement.find_or_create_by(name: 'Push Press', measurement: Movement.measurements[:weight])
+Movement.find_or_create_by(name: 'Press Jerk', measurement: Movement.measurements[:weight])
+Movement.find_or_create_by(name: 'Shoulder to Over Head', measurement: Movement.measurements[:weight])
 
 # http://www.lakehillscrossfit.com/41018-2/
 # ==============================================================================

@@ -1,6 +1,5 @@
 .card.mt-3
   .card-body
-    h5.card-title #{@log.workout.name}
+    h5.card-title   = link_to @log.workout.name, @log.workout, class: 'card-link'
     h6.card-subtitle.mb-2.text-muted #{@log.created_at}
     p.card-text #{pluralize @log.measurement_value, @log.workout.measurement_message}
-    = link_to 'Workout', @log.workout, class: 'card-link'

@@ -2,12 +2,10 @@
 
 one:
   workout: one
-  time: 1
-  rounds: 1
-  weight: MyString
+  user: trillion
+  measurement_value: 2
 
 two:
   workout: two
-  time: 1
-  rounds: 1
-  weight: MyString
+  user: matt
+  measurement_value: 2

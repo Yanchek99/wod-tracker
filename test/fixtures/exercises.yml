@@ -4,6 +4,8 @@ one:
   workout: one
   movement: one
   reps: 1
+  male_rx: 95
+  female_rx: 95
 
 two:
   workout: one

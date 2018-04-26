@@ -1,13 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  workout: one
+  #workout: one
   movement: one
   reps: 1
   male_rx: 95
   female_rx: 95
 
 two:
-  workout: one
+  #workout: one
   movement: two
   reps: 1

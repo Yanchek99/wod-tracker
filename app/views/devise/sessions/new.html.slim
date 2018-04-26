@@ -1,0 +1,15 @@
+.row.justify-content-center.mt-5
+  .col-6
+    .card
+      .card-header
+        h2 Log in
+      .card-body
+        = simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+          .form-inputs
+            = f.input :email, required: false, autofocus: true
+            = f.input :password, required: false
+            = f.input :remember_me, as: :boolean if devise_mapping.rememberable?
+          .form-actions
+            = f.button :submit, "Log in", class: 'btn-block'
+      .card-footer
+        = render "devise/shared/links"

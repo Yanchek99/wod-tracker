@@ -6,14 +6,14 @@ class User < ApplicationRecord
 
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs
-  has_many :workouts, through: :logs
-  has_many :movements, through: :movement_logs
+  has_many :workouts, -> { distinct }, through: :logs
+  has_many :movements, -> { distinct }, through: :movement_logs
 
   def logged_workout?(workout)
     workouts.find_by(id: workout.id).present?
   end
 
   def personal_records
-    movement_logs.group(:movement_id, :id).order(measurement_value: :desc)
+    movement_logs.group(:movement_id).order(measurement_value: :desc)
   end
 end

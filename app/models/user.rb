@@ -14,6 +14,6 @@ class User < ApplicationRecord
   end
 
   def personal_records
-    movement_logs.joins(:movement).group('movements.id').order(measurement_value: :desc)
+    movement_logs.order(measurement_value: :desc).group(:movement_id)
   end
 end

@@ -9,8 +9,7 @@ class WorkoutsController < ApplicationController
 
   # GET /workouts/1
   # GET /workouts/1.json
-  def show
-  end
+  def show; end
 
   # GET /workouts/new
   def new
@@ -18,8 +17,7 @@ class WorkoutsController < ApplicationController
   end
 
   # GET /workouts/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /workouts
   # POST /workouts.json
@@ -62,13 +60,15 @@ class WorkoutsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_workout
-      @workout = Workout.includes(:exercises).find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def workout_params
-      params.require(:workout).permit(:name, :rounds, :time, :interval, :measurement, exercises_attributes: [:id, :reps, :movement_id, :measurement_value, :male_rx, :female_rx, :_destroy])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_workout
+    @workout = Workout.includes(:exercises).find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def workout_params
+    params.require(:workout).permit(:name, :rounds, :time, :interval, :measurement,
+                                    exercises_attributes: [:id, :reps, :movement_id, :measurement_value, :male_rx, :female_rx, :_destroy])
+  end
 end

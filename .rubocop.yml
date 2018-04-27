@@ -1,0 +1,52 @@
+Rails:
+  Enabled: true
+
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  ExtraDetails: true
+  TargetRubyVersion: 2.5
+  Exclude:
+    - vendor/**/*
+    - db/**/*
+    - tmp/**/*
+    - bin/**/*
+    - node_modules/**/*
+
+Metrics/LineLength:
+  Max: 160
+
+Metrics/BlockLength:
+  Exclude:
+    - config/**/*
+
+Style/ClassAndModuleChildren:
+  Description: 'Checks style of children classes and modules.'
+  Enabled: true
+  EnforcedStyle: nested
+
+Style/Documentation:
+  Description: 'Document classes and non-namespace modules.'
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Rails/InverseOf:
+  Enabled: false
+
+Style/ExpandPathArguments:
+  Exclude:
+    - Rakefile
+    - test/test_helper.rb
+
+Rails/LexicallyScopedActionFilter:
+    Exclude:
+      - app/controllers/concerns/*
+
+Security/Open:
+    Exclude:
+      - app/models/user.rb

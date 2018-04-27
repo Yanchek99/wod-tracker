@@ -14,6 +14,8 @@ class User < ApplicationRecord
   end
 
   def personal_records
-    movement_logs.order(measurement_value: :desc).group(:movement_id)
+    # Could query with sqlite mysql but thats changed
+    # movement_logs.order(measurement_value: :desc).group(:movement_id)
+    movement_logs.order(measurement_value: :desc).uniq(&:movement_id)
   end
 end

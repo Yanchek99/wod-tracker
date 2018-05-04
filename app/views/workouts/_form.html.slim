@@ -11,11 +11,14 @@
           span.input-group-text minutes
     .col-sm-4 = f.input :interval
     .col-12 = f.input :measurement, collection: Workout.measurements.keys
+  hr
   h3 Exercises
   #exercises
     = f.simple_fields_for :exercises do |exercise_form|
       = render 'exercise_fields', f: exercise_form
     .links
-      = link_to_add_association 'Add Exercise', f, :exercises
+      = link_to_add_association 'Add Exercise', f, :exercises, class: 'btn btn-outline-primary btn-block'
+  hr
   .form-actions
-    = f.button :submit
+    = f.button :submit, class: 'btn btn-block btn-success'
+    = link_to 'Cancel', @workout, class: 'btn btn-block btn-secondary mb-3'

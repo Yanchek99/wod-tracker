@@ -1,5 +1,7 @@
-h1 Editing Workout
-= render 'form', workout: @workout
-= link_to 'Show', @workout
-span |
-= link_to 'Back', workouts_path
+.container
+  nav aria-label="breadcrumb"
+    ol.breadcrumb
+      li.breadcrumb-item = link_to 'Workouts', workouts_path
+      li.breadcrumb-item.active aria-current="page" = @workout.name
+  h1 Editing Workout
+  = render 'form', workout: @workout

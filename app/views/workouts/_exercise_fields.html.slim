@@ -1,9 +1,13 @@
-.nested-fields.border.mb-3.p-3
-  .row
-    .col-sm-3. = f.input :reps
-    .col = f.association :movement, collection: Movement.all.order(:name)
-  .row
-    .col-sm-3 = f.input :male_rx
-    .col-sm-3 = f.input :female_rx
-    .col = f.input :measurement_value
-  = link_to_remove_association "Delete Exercise", f
+.nested-fields.card.mb-3
+  .card-body
+    .row
+      .col.text-right
+        = link_to_remove_association f, class: 'text-danger'
+          i.fas.fa-trash-alt
+    .row
+      .col-sm-3. = f.input :reps
+      .col = f.association :movement, collection: Movement.all.order(:name)
+    .row
+      .col = f.input :male_rx
+      .col = f.input :female_rx
+      .col-sm-3 = f.input :measurement_value

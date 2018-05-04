@@ -1,6 +1,12 @@
 .container
-  h1 Personal Records
-  - @movement_logs.each do |pr|
-    .row
-      .col = pr.movement.name
-      .col = pr.measurement_value
+  h1.mt-3 Personal Records
+  table.table.table-hover
+    thead
+      tr
+        th scope="col" Movement
+        th scope="col" Weight
+    tbody
+      - @movement_logs.each do |pr|
+        tr
+          th scope="row" #{pr.movement.name}
+          td #{pluralize pr.measurement_value, 'lb'}

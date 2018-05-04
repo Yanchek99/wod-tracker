@@ -9,7 +9,7 @@ class Workout < ApplicationRecord
   accepts_nested_attributes_for :exercises, allow_destroy: true
 
   def rounds_for_time?
-    rounds.present? && time.nil? && interval.nil?
+    rounds.present? && time.blank? && interval.blank?
   end
 
   def amrap?

@@ -1,5 +1,6 @@
 .container
-  = link_to 'Edit Workout', edit_workout_path(@workout)
-  span  |
-  = link_to 'Back', workouts_path
+  nav aria-label="breadcrumb"
+    ol.breadcrumb
+      li.breadcrumb-item = link_to 'Workouts', workouts_path
+      li.breadcrumb-item.active aria-current="page" = @workout.name
   = render @workout

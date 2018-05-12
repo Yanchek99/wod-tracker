@@ -9,7 +9,7 @@ SimpleForm.setup do |config|
   config.boolean_label_class = 'form-check-label'
 
   # How the label text should be generated altogether with the required text.
-  config.label_text = lambda { |label, required, explicit_label| "#{label} #{required}" }
+  config.label_text = ->(label, required, _explicit_label) { "#{label} #{required}" }
 
   # Define the way to render check boxes / radio buttons with labels.
   config.boolean_style = :inline
@@ -32,7 +32,6 @@ SimpleForm.setup do |config|
   # add validation classes to `input_field`
   config.input_field_error_class = 'is-invalid'
   config.input_field_valid_class = 'is-valid'
-
 
   # vertical forms
   #
@@ -123,7 +122,6 @@ SimpleForm.setup do |config|
     b.use :full_error, wrap_with: { tag: 'div', class: 'invalid-feedback d-block' }
     b.use :hint, wrap_with: { tag: 'small', class: 'form-text text-muted' }
   end
-
 
   # horizontal forms
   #
@@ -228,7 +226,6 @@ SimpleForm.setup do |config|
     end
   end
 
-
   # inline forms
   #
   # inline default_wrapper
@@ -256,7 +253,6 @@ SimpleForm.setup do |config|
     b.use :error, wrap_with: { tag: 'div', class: 'invalid-feedback' }
     b.optional :hint, wrap_with: { tag: 'small', class: 'form-text text-muted' }
   end
-
 
   # bootstrap custom forms
   #
@@ -347,7 +343,6 @@ SimpleForm.setup do |config|
     b.use :hint, wrap_with: { tag: 'small', class: 'form-text text-muted' }
   end
 
-
   # Input Group - custom component
   # see example app and config at https://github.com/rafaelfranca/simple_form-bootstrap
   # config.wrappers :input_group, tag: 'div', class: 'form-group', error_class: 'form-group-invalid', valid_class: 'form-group-valid' do |b|
@@ -367,7 +362,6 @@ SimpleForm.setup do |config|
   #   b.use :full_error, wrap_with: { tag: 'div', class: 'invalid-feedback d-block' }
   #   b.use :hint, wrap_with: { tag: 'small', class: 'form-text text-muted' }
   # end
-
 
   # Floating Labels form
   #
@@ -395,7 +389,6 @@ SimpleForm.setup do |config|
     b.use :full_error, wrap_with: { tag: 'div', class: 'invalid-feedback' }
     b.use :hint, wrap_with: { tag: 'small', class: 'form-text text-muted' }
   end
-
 
   # The default wrapper to be used by the FormBuilder.
   config.default_wrapper = :vertical_form

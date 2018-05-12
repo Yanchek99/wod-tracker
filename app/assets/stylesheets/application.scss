@@ -13,3 +13,9 @@
  */
 // @import "variables";
 @import "bootstrap";
+
+.auth-links {
+  li:not(:last-of-type):after {
+    content: ' |';
+  }
+}

@@ -11,7 +11,7 @@ class Log < ApplicationRecord
 
   def build_movement_logs
     exercises.group(:movement_id, :id).each do |e|
-      movement_logs.build(movement: e.movement, measurement_value: e.male_rx) unless e.movement.measurement.nil?
+      movement_logs.build(movement: e.movement, measurement_value: e.measurement_value.present? ? e.measurement_value : e.male_rx) unless e.movement.measurement.nil?
     end
   end
 end

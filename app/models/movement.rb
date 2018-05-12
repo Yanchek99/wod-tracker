@@ -1,6 +1,7 @@
 class Movement < ApplicationRecord
   enum measurement: [:weight, :distance, :time, :height]
 
+  # rubocop:disable Metrics/MethodLength
   def measurement_unit
     return '' unless measurement
     case measurement.to_sym
@@ -14,4 +15,5 @@ class Movement < ApplicationRecord
       ''
     end
   end
+  # rubocop:enable Metrics/MethodLength
 end

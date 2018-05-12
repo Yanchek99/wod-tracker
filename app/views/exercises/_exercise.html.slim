@@ -1,5 +1,5 @@
 .row
   .col-sm
     span #{pluralize exercise.reps, exercise.movement.name}
-    span #{pluralize measurement_value, exercise.movement.measurement_unit}
+    span #{pluralize measurement_value, exercise.movement.measurement_unit if exercise.measurement_value}
     span #{'/' if exercise.male_rx}#{exercise.female_rx}

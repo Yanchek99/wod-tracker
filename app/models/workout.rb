@@ -8,6 +8,14 @@ class Workout < ApplicationRecord
 
   accepts_nested_attributes_for :exercises, allow_destroy: true
 
+  def self.search_by_name(name)
+    return all unless name
+    query = name.split(' ').reduce(nil) do |q, word|
+      q.nil? ? arel_table[:name].matches("%#{word}%") : q.and(arel_table[:name].matches("%#{word}%"))
+    end
+    where(query)
+  end
+
   def rounds_for_time?
     rounds.present? && time.blank? && interval.blank?
   end
@@ -28,10 +36,23 @@ class Workout < ApplicationRecord
     logs.where(user: user)
   end
 
-  def measurement_message
-    return measurement if measurement
-    return 'minutes' if rounds_for_time?
-    return 'rounds' if amrap?
-    'weight'
+  # rubocop:disable Metrics/MethodLength
+  def measurement_unit
+    return 'lb' unless measurement
+    case measurement.to_sym
+    when :weight
+      'lb'
+    when :rounds
+      'round'
+    when :reps
+      'rep'
+    when :time
+      'minute'
+    when :calories
+      'cal'
+    else
+      ''
+    end
   end
+  # rubocop:enable Metrics/MethodLength
 end

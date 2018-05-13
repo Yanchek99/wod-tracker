@@ -1,8 +1,2 @@
 .container
-  h1 = @workout.name
-  p #{workout_objective @workout}
-  == render @workout.exercises
-
-  h1 Log
   = render 'form', log: @log
-  = link_to 'Back', workout_path(@workout)

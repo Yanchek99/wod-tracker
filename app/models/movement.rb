@@ -11,6 +11,8 @@ class Movement < ApplicationRecord
       'meter'
     when :time
       'minute'
+    when :height
+      'inch'
     else
       ''
     end

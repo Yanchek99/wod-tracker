@@ -2,10 +2,11 @@
   = f.error_notification
   .row.mt-3
     .col
-      h1 = @workout.name
-    .col.text-right
-      = link_to workout_path(@workout)
-        i.fas.fa-external-link-alt
+      h1
+        = @workout.name
+        | &nbsp;
+        = link_to workout_path(@workout)
+          i.fas.fa-external-link-alt
   .form-inputs.row
     .col.form-group
       .input-group

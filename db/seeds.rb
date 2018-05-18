@@ -46,6 +46,7 @@ Movement.find_or_create_by(name: 'Shoulder Press', measurement: Movement.measure
 Movement.find_or_create_by(name: 'Push Press', measurement: Movement.measurements[:weight])
 Movement.find_or_create_by(name: 'Press Jerk', measurement: Movement.measurements[:weight])
 Movement.find_or_create_by(name: 'Shoulder to Over Head', measurement: Movement.measurements[:weight])
+Movement.find_or_create_by(name: 'Kettlebell Swings')
 
 # http://www.lakehillscrossfit.com/41018-2/
 # ==============================================================================

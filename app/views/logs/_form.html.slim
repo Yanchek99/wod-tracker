@@ -7,11 +7,11 @@
         | &nbsp;
         = link_to workout_path(@workout)
           i.fas.fa-external-link-alt
-  .form-inputs.row
+  .form-inputs.row.mt-3
     .col.form-group
       .input-group
         .input-group-prepend
-          span.input-group-text #{@workout.measurement_message}
+          span.input-group-text #{@workout.measurement_unit.pluralize}
         = f.input_field :measurement_value, class: 'form-control'
       h2.mt-3 Exercise Recordings
       = f.simple_fields_for :movement_logs do |ml_form|
@@ -21,6 +21,8 @@
             .input-group-prepend
               span.input-group-text #{ml_form.object.movement.measurement}
             = ml_form.input_field :measurement_value, class: 'form-control'
+            .input-group-append
+              span.input-group-text #{ml_form.object.movement.measurement_unit.pluralize}
         = ml_form.input_field :movement_id, as: :hidden
   .form-actions
     = f.button :submit, 'Save', class: 'btn btn-block btn-primary'

@@ -1,19 +1,14 @@
 .row
-
-.row
-  .col
-    p #{workout_objective workout}
-  h4.col.text-right = link_to edit_workout_path(workout)
-    i.fas.fa-edit
+  p.col #{workout_objective workout}
+  .col.text-right
+    = link_to edit_workout_path(workout)
+      i.fas.fa-edit
 .row
   .col
     ul.list-group
       - workout.exercises.each do |exercise|
         li.list-group-item
-          span
-            | #{pluralize exercise.reps, exercise.movement.name}
-            | &nbsp;#{pluralize(exercise.measurement_value, exercise.movement.measurement_unit) unless exercise.measurement_value.blank?}
-            | &nbsp;#{exercise.male_rx}#{'/' if exercise.male_rx}#{exercise.female_rx}
+          span = exercise_message(exercise)
     = link_to 'Log', new_workout_log_path(@workout), class: 'mt-3 btn btn-block btn-outline-primary'
     - if Current.user.logged_workout? @workout
       h2.mt-3 Results
@@ -26,4 +21,4 @@
           - Current.user.logs.where(workout: @workout).each do |log|
             tr
               th scope="row" = link_to log.created_at, log
-              td #{pluralize log.measurement_value, @workout.measurement_message}
+              td #{pluralize log.measurement_value, @workout.measurement_unit}

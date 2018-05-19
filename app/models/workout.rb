@@ -1,5 +1,5 @@
 class Workout < ApplicationRecord
-  enum measurement: [:reps, :rounds, :weight, :time, :calories]
+  belongs_to :measurement
 
   has_many :exercises, dependent: :destroy
   has_many :movements, through: :exercises
@@ -7,6 +7,8 @@ class Workout < ApplicationRecord
   has_many :movement_logs, through: :logs
 
   accepts_nested_attributes_for :exercises, allow_destroy: true
+
+  validates :name, :measurement, presence: true
 
   def self.search_by_name(name)
     return all unless name
@@ -35,24 +37,4 @@ class Workout < ApplicationRecord
   def logged?(user)
     logs.where(user: user)
   end
-
-  # rubocop:disable Metrics/MethodLength
-  def measurement_unit
-    return 'lb' unless measurement
-    case measurement.to_sym
-    when :weight
-      'lb'
-    when :rounds
-      'round'
-    when :reps
-      'rep'
-    when :time
-      'minute'
-    when :calories
-      'cal'
-    else
-      ''
-    end
-  end
-  # rubocop:enable Metrics/MethodLength
 end

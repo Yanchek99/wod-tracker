@@ -10,7 +10,7 @@
         .input-group-append
           span.input-group-text minutes
     .col-sm-4 = f.input :interval
-    .col-12 = f.input :measurement, collection: Workout.measurements.keys
+    .col-12 = f.input :measurement_id, collection: Measurement.all
   hr
   h3 Exercises
   #exercises

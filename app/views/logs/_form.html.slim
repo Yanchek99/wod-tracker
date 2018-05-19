@@ -11,7 +11,7 @@
     .col.form-group
       .input-group
         .input-group-prepend
-          span.input-group-text #{@workout.measurement_unit.pluralize}
+          span.input-group-text #{@workout.measurement.unit.pluralize if @workout.measurement}
         = f.input_field :measurement_value, class: 'form-control'
       h2.mt-3 Exercise Recordings
       = f.simple_fields_for :movement_logs do |ml_form|
@@ -19,10 +19,10 @@
           = ml_form.label :measurement_value, ml_form.object.movement.name
           .input-group
             .input-group-prepend
-              span.input-group-text #{ml_form.object.movement.measurement}
+              span.input-group-text #{ml_form.object.movement.measurement.name}
             = ml_form.input_field :measurement_value, class: 'form-control'
             .input-group-append
-              span.input-group-text #{ml_form.object.movement.measurement_unit.pluralize}
+              span.input-group-text #{ml_form.object.movement.measurement.unit.pluralize}
         = ml_form.input_field :movement_id, as: :hidden
   .form-actions
     = f.button :submit, 'Save', class: 'btn btn-block btn-primary'

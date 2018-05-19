@@ -10,13 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_04_21_160519) do
+ActiveRecord::Schema.define(version: 2018_05_18_180510) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
-    t.integer "record_id", null: false
-    t.integer "blob_id", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
@@ -34,8 +37,8 @@ ActiveRecord::Schema.define(version: 2018_04_21_160519) do
   end
 
   create_table "exercises", force: :cascade do |t|
-    t.integer "workout_id"
-    t.integer "movement_id"
+    t.bigint "workout_id"
+    t.bigint "movement_id"
     t.integer "reps"
     t.string "measurement_value"
     t.integer "male_rx"
@@ -47,8 +50,8 @@ ActiveRecord::Schema.define(version: 2018_04_21_160519) do
   end
 
   create_table "logs", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "workout_id"
+    t.bigint "user_id"
+    t.bigint "workout_id"
     t.string "measurement_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -56,9 +59,15 @@ ActiveRecord::Schema.define(version: 2018_04_21_160519) do
     t.index ["workout_id"], name: "index_logs_on_workout_id"
   end
 
+  create_table "measurements", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "movement_logs", force: :cascade do |t|
-    t.integer "log_id"
-    t.integer "movement_id"
+    t.bigint "log_id"
+    t.bigint "movement_id"
     t.string "measurement_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -68,7 +77,7 @@ ActiveRecord::Schema.define(version: 2018_04_21_160519) do
 
   create_table "movements", force: :cascade do |t|
     t.string "name"
-    t.integer "measurement"
+    t.integer "measurement_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -95,9 +104,13 @@ ActiveRecord::Schema.define(version: 2018_04_21_160519) do
     t.integer "rounds"
     t.integer "time"
     t.string "interval"
-    t.integer "measurement"
+    t.integer "measurement_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "exercises", "movements"
+  add_foreign_key "exercises", "workouts"
+  add_foreign_key "movement_logs", "logs"
+  add_foreign_key "movement_logs", "movements"
 end

@@ -11,7 +11,7 @@ class Log < ApplicationRecord
 
   def build_movement_logs
     exercises.to_a.uniq(&:movement).each do |e|
-      movement_logs.build(reps: e.reps,
+      movement_logs.build(reps: e.total_expected_reps,
                           movement: e.movement,
                           measurement: e.measurement,
                           measurement_value: e.suggested_measurement_value)

@@ -10,8 +10,8 @@ class Log < ApplicationRecord
   validates :user, :workout, :measurement_value, presence: true
 
   def build_movement_logs
-    exercises.group(:movement_id, :id).each do |e|
-      movement_logs.build(movement: e.movement, measurement_value: e.suggested_measurement_value)
+    exercises.to_a.uniq!(&:movement).each do |e|
+      movement_logs.build(movement: e.movement, measurement: e.measurement, measurement_value: e.suggested_measurement_value)
     end
   end
 end

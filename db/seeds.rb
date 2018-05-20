@@ -52,7 +52,7 @@ Movement.find_or_create_by(name: 'Lateral Over Barbell Burpee', measurement: rep
 pistol = Movement.find_or_create_by(name: 'Pistol', measurement: rep)
 sdlhp = Movement.find_or_create_by(name: 'Sumo Deadlift High Pull', measurement: weight)
 Movement.find_or_create_by(name: 'Shoulder Press', measurement: weight)
-Movement.find_or_create_by(name: 'Push Press', measurement: weight)
+pp = Movement.find_or_create_by(name: 'Push Press', measurement: weight)
 Movement.find_or_create_by(name: 'Press Jerk', measurement: weight)
 Movement.find_or_create_by(name: 'Shoulder to Over Head', measurement: weight)
 Movement.find_or_create_by(name: 'Kettlebell Swings', measurement: rep)

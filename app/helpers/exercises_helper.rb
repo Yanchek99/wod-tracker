@@ -12,6 +12,6 @@ module ExercisesHelper
   end
 
   def exercise_measurement_unit_msg(exercise)
-    " #{pluralize exercise.measurement_value, exercise.movement.measurement.unit}" if exercise.measurement_value.present?
+    " #{pluralize exercise.measurement_value, exercise.measurement.unit}" if exercise.measurement_value.present?
   end
 end

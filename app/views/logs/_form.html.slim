@@ -18,11 +18,12 @@
         .form-group
           = ml_form.label :measurement_value, ml_form.object.movement.name
           .input-group
-            .input-group-prepend
-              span.input-group-text #{ml_form.object.movement.measurement.name}
+            - unless ml_form.object.measurement.name.eql? ml_form.object.measurement.unit
+              .input-group-prepend
+                span.input-group-text #{ml_form.object.measurement.name}
             = ml_form.input_field :measurement_value, class: 'form-control'
             .input-group-append
-              span.input-group-text #{ml_form.object.movement.measurement.unit.pluralize}
+              span.input-group-text #{ml_form.object.measurement.unit.pluralize}
         = ml_form.input_field :movement_id, as: :hidden
   .form-actions
     = f.button :submit, 'Save', class: 'btn btn-block btn-primary'

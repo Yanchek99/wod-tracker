@@ -9,4 +9,8 @@ class Measurement < ApplicationRecord
   def rep?
     name.eql? 'rep'
   end
+
+  def round?
+    name.eql? 'round'
+  end
 end

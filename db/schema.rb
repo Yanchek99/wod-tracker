@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_05_20_013906) do
+ActiveRecord::Schema.define(version: 2018_05_20_153117) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(version: 2018_05_20_013906) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "measurement_id"
+    t.integer "reps"
     t.index ["log_id"], name: "index_movement_logs_on_log_id"
     t.index ["measurement_id"], name: "index_movement_logs_on_measurement_id"
     t.index ["movement_id"], name: "index_movement_logs_on_movement_id"

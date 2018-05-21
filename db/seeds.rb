@@ -56,6 +56,7 @@ pp = Movement.find_or_create_by(name: 'Push Press', measurement: weight)
 Movement.find_or_create_by(name: 'Press Jerk', measurement: weight)
 Movement.find_or_create_by(name: 'Shoulder to Over Head', measurement: weight)
 Movement.find_or_create_by(name: 'Kettlebell Swings', measurement: rep)
+Movement.find_or_create_by(name: 'Kettlebell Sumo Hi Pull', measurement: rep)
 
 # http://www.lakehillscrossfit.com/41018-2/
 # ==============================================================================

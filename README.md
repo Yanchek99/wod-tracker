@@ -1,24 +1,32 @@
-# README
+Wod Tracker
+===========
+[![CircleCI](https://circleci.com/gh/Yanchek99/wod-tracker/tree/master.svg?style=svg)](https://circleci.com/gh/Yanchek99/wod-tracker/tree/master)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A webapp to track your workout of the day while capturing key points of data.
 
-Things you may want to cover:
+## System Requirements
+- [Postgress](https://www.postgresql.org)
+- [RVM](https://rvm.io)
 
-* Ruby version
+## RVM setup
+- To install Ruby using RVM `rvm install 2.5.0`
+- Set the current ruby to the one installed above `rvm use 2.5.0`
+- Create the gemset needed for this project `rvm gemset create wod-tracker` make sure to use it `rvm gemset use wod-tracker`
+- Ensure at a minimum bundler is install `gem install bundle`
 
-* System dependencies
+## Setup
+- run `bundle install`
 
-* Configuration
+## Database
+- If using a Mac with homebrew you can install postgresql by running `brew install postgresql`
+- Run `rails db:setup` (If this is the first time you are setting the app up, else run `rails db:migrate`)
+- Run `rails db:seed`
 
-* Database creation
+## Testing
+- run `rails test`
 
-* Database initialization
+## Static Code Analysis
+- run `rubocop`
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Local Server
+- run `rails s`

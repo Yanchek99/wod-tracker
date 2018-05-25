@@ -1,6 +1,8 @@
 Wod Tracker
 ===========
 [![CircleCI](https://circleci.com/gh/Yanchek99/wod-tracker/tree/master.svg?style=svg)](https://circleci.com/gh/Yanchek99/wod-tracker/tree/master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ae3a8c6f161636552525/maintainability)](https://codeclimate.com/github/Yanchek99/wod-tracker/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ae3a8c6f161636552525/test_coverage)](https://codeclimate.com/github/Yanchek99/wod-tracker/test_coverage)
 
 A webapp to track your workout of the day while capturing key points of data.
 

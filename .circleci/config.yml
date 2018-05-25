@@ -1,6 +1,8 @@
 version: 2
 jobs:
   build:
+    environment:
+      CC_TEST_REPORTER_ID: YOUR_REPO_CC_TEST_REPORTER_ID
     parallelism: 3
     docker:
       - image: circleci/ruby:2.5-node
@@ -65,8 +67,21 @@ jobs:
           command: bin/rails db:schema:load --trace
 
       - run:
-          command: bundle exec rails test
-          when: always
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
+      - run:
+          name: Run tests
+          command: |
+            ./cc-test-reporter before-build
+            bundle exec rails test
+            ./cc-test-reporter after-build
+            
+      # - run:
+      #     command: bundle exec rails test
+      #     when: always
 
       - store_test_results:
           path: test/reports

@@ -4,7 +4,7 @@ class WorkoutsController < ApplicationController
   # GET /workouts
   # GET /workouts.json
   def index
-    @workouts = Workout.all.order(created_at: :desc)
+    @workouts = Workout.search_by_name(params[:query]).order(created_at: :desc)
   end
 
   # GET /workouts/1

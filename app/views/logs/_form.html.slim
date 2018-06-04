@@ -20,12 +20,12 @@
         .form-group
           = ml_form.label :measurement_value, ml_form.object.movement.name
           .row
-            .col.input-group
+            .col.mt-2.mt-md-auto.input-group
               = ml_form.input_field :reps, class: 'form-control reps-field', data: { original_reps: ml_form.object.reps }
               .input-group-append
                 span.input-group-text reps
             - unless ml_form.object.measurement.rep?
-              .col-12.col-sm-9.mt-2.input-group
+              .col-12.col-sm-9.mt-2.mt-md-auto.input-group
                 - unless ml_form.object.measurement.name.eql? ml_form.object.measurement.unit
                   .input-group-prepend
                     span.input-group-text #{ml_form.object.measurement.name}

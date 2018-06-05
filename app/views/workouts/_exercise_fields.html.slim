@@ -5,11 +5,11 @@
         = link_to_remove_association f, class: 'text-danger'
           i.fas.fa-trash-alt
     .row
-      .col-sm-3. = f.input :reps
+      .col-sm-3. = f.input :reps, input_html: { class: 'form-control-sm' }
       .col = f.input :movement
-        = f.select :movement_id, Movement.all.order(:name).map { |m| [m.name, m.id, { data: { measurement_id: m.measurement.id } } ] }, { include_blank: true }, class: 'form-control exercise-movement'
+        = f.select :movement_id, Movement.all.order(:name).map { |m| [m.name, m.id, { data: { measurement_id: m.measurement.id } } ] }, { include_blank: true }, class: 'form-control exercise-movement form-control-sm'
     .row
-      .col = f.input :male_rx
-      .col = f.input :female_rx
-      .col-sm-3 = f.association :measurement, collection: Measurement.all.order(:name), input_html: { class: 'exercise-measurement' }
-      .col-sm-3 = f.input :measurement_value
+      .col = f.input :male_rx, input_html: { class: 'form-control-sm' }
+      .col = f.input :female_rx, input_html: { class: 'form-control-sm' }
+      .col-sm-3 = f.association :measurement, collection: Measurement.all.order(:name), input_html: { class: 'exercise-measurement form-control-sm' }
+      .col-sm-3 = f.input :measurement_value, input_html: { class: 'form-control-sm' }

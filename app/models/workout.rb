@@ -35,7 +35,7 @@ class Workout < ApplicationRecord
   end
 
   def interval?
-    interval.&present?
+    interval&.present?
   end
 
   def logged?(user)

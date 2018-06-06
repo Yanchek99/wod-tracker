@@ -224,7 +224,7 @@ end
 # Karen
 # For time
 # 150 wall-ball shots, 20-lb. ball
-Workout.find_or_create_by(name: 'Jackie') do |workout|
+Workout.find_or_create_by(name: 'Karen') do |workout|
   workout.rounds = 1
   workout.measurement = time
   workout.exercises.build(movement: wallball, reps: 150, measurement: weight, measurement_value: 20)

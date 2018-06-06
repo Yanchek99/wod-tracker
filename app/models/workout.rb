@@ -27,14 +27,23 @@ class Workout < ApplicationRecord
   end
 
   def emom?
-    time.present? && rounds.present? && time.eql?(rounds)
+    time.present? && rounds.present? && (time % rounds).zero?
   end
 
   def timed_rounds?
     rounds.present? && time.present? && interval.nil?
   end
 
+  def interval?
+    interval&.present?
+  end
+
   def logged?(user)
     logs.where(user: user)
+  end
+
+  def reps_from_interval
+    return nil if interval?
+    interval.split('-').sum(&:to_i)
   end
 end

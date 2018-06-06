@@ -5,8 +5,8 @@ class Exercise < ApplicationRecord
 
   before_validation :set_measurement_from_movement, unless: proc { |e| e.measurement.present? }
 
-  validates :movement, :measurement, :reps, presence: true
-  validates :reps, numericality: { greater_than: 0 }
+  validates :movement, :measurement, presence: true
+  # validates :reps, numericality: { greater_than: 0 }
 
   def can_rx?
     male_rx.present? || female_rx.present?
@@ -21,7 +21,8 @@ class Exercise < ApplicationRecord
   end
 
   def total_expected_reps
-    return reps if workout.rounds.nil? || workout.rounds.zero?
+    return workout.reps_from_interval if workout.interval?
+    return reps if workout.rounds&.zero?
     reps * workout.rounds
   end
 

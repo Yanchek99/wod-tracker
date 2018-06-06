@@ -4,6 +4,6 @@ module WorkoutsHelper
     return "As many rounds as possible in #{pluralize workout.time, 'minute'}" if workout.amrap?
     return "EMOM #{workout.time}" if workout.emom?
     return "#{workout.rounds} #{workout.time}-minute rounds" if workout.timed_rounds?
-    workout.interval
+    "#{workout.interval} for #{workout.measurement.name}"
   end
 end

@@ -10,7 +10,7 @@
             = f.input :password, required: false
           .row
             .col = f.input :remember_me, as: :boolean if devise_mapping.rememberable?
-            .col-3.form-actions
+            .col-auto.form-actions
               = f.button :submit, "Log in", class: 'btn-block btn-outline-primary'
     .text-center
       = render "devise/shared/links"

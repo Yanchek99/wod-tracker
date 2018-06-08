@@ -8,6 +8,8 @@ class MovementLog < ApplicationRecord
   validates :log, :reps, :movement, :measurement, :measurement_value, presence: true
   validates :reps, numericality: { greater_than: 0 }
 
+  private
+
   def set_measurement_value_to_reps
     self.measurement_value = reps
   end

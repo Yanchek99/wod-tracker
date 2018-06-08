@@ -1,6 +1,5 @@
-- # Rails flash messages styled for Zurb Foundation
-- flash.each do |type, msg|
-  - if msg.is_a?(String) && msg.present?
-    .flash.callout[data-closable class=(flash_class(type))]
-      span = msg
-      button.close-button[data-close type="button"] &times;
+- flash.each do |msg_type, message|
+  .alert class="#{flash_bootstrap_class_for(msg_type)} alert-dismissible" role="alert"
+    = message
+    button.close type="button" data-dismiss="alert" aria-label="Close"
+      span aria-hidden="true" &times;

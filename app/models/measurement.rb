@@ -13,4 +13,8 @@ class Measurement < ApplicationRecord
   def round?
     name.eql? 'round'
   end
+
+  def time?
+    name.eql? 'time'
+  end
 end

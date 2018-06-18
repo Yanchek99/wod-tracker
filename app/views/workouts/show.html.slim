@@ -10,11 +10,14 @@
         i.fas.fa-edit
   .row
     .col
-      ul.list-group
+      ul.list-group.mb-3
         - @workout.exercises.each do |exercise|
           li.list-group-item
             span = exercise_message(exercise)
-      = link_to 'Log', new_workout_log_path(@workout), class: 'mt-3 btn btn-block btn-outline-primary'
+      - if @workout.notes
+        b Notes
+        p = @workout.notes
+      = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-block btn-outline-primary'
       - if Current.user.logged_workout? @workout
         h2.mt-3 Results
         table.table.table-hover

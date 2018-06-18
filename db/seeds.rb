@@ -49,6 +49,7 @@ kbswing = Movement.find_or_create_by(name: 'Kettlebell Swings', measurement: rep
 Movement.find_or_create_by(name: 'Kettlebell Sumo Hi Pull', measurement: rep)
 Movement.find_or_create_by(name: 'L Pull-up', measurement: weight)
 Movement.find_or_create_by(name: 'Lateral Over Barbell Burpee', measurement: rep)
+Movement.find_or_create_by(name: 'Bar Muscle-up', measurement: rep)
 muscleup = Movement.find_or_create_by(name: 'Muscle-up', measurement: rep)
 ohs = Movement.find_or_create_by(name: 'Overhead Squat', measurement: weight)
 pistol = Movement.find_or_create_by(name: 'Pistol', measurement: rep)

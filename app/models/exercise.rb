@@ -23,7 +23,7 @@ class Exercise < ApplicationRecord
   def total_expected_reps
     return workout.reps_from_interval if workout.interval?
     return nil unless reps # Reps can be nil to signify max
-    return reps if workout.rounds&.zero?
+    return reps if workout.rounds.nil? || workout.rounds&.zero?
     reps * workout.rounds
   end
 

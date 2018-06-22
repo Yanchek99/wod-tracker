@@ -33,13 +33,19 @@ gem 'jbuilder', '~> 2.5'
 
 gem 'pg'
 
+# Authentication
 gem 'devise'
 
+# Easy Admin Interface
 gem 'rails_admin'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
+gem "react_on_rails"
+gem "webpacker", "~> 3.0"
+
+# UI components
 gem 'bootstrap', '~> 4.0.0'
 gem 'cocoon'
 gem 'jquery-rails'

@@ -42,8 +42,8 @@ gem 'rails_admin'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
-gem "react_on_rails"
-gem "webpacker", "~> 3.0"
+gem 'react_on_rails'
+gem 'webpacker', '~> 3.0'
 
 # UI components
 gem 'bootstrap', '~> 4.0.0'
@@ -61,6 +61,8 @@ group :development, :test do
 end
 
 group :development do
+  gem 'foreman'
+
   gem 'listen', '>= 3.0.5', '< 3.2'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
@@ -80,3 +82,5 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+gem 'mini_racer', platforms: :ruby

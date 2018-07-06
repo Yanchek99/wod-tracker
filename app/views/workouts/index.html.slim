@@ -1,13 +1,3 @@
 .container
   h1 Workouts
-  = form_with url: workouts_path, id: :search, method: :get, class: 'form_inline', data: { turboform: '' } do |search_form|
-    .input-group.mb-3
-      = search_form.search_field :query, value: params[:query], placeholder: 'Search workout name', 'aria-label': 'Search', class: 'form-control'
-      .input-group-append
-        = search_form.submit 'Search', class: 'btn btn-primary'
-  #workouts.list-group
-    - @workouts.each do |workout|
-      = link_to workout.name, workout, class: "list-group-item list-group-item-action #{'list-group-item-success' if Current.user.logged_workout? workout}"
-  br
-    .row
-      .col = link_to '+New Workout', new_workout_path
+  = react_component("WorkoutList", props: @workouts_json, prerender: false)

@@ -2,11 +2,13 @@ class Exercise < ApplicationRecord
   belongs_to :workout
   belongs_to :movement
   belongs_to :measurement
+  has_many :metrics
+
+  accepts_nested_attributes_for :metrics, allow_destroy: true
 
   before_validation :set_measurement_from_movement, unless: proc { |e| e.measurement.present? }
 
-  validates :movement, :measurement, presence: true
-  # validates :reps, numericality: { greater_than: 0 }
+  validates :movement, presense: true
 
   def can_rx?
     male_rx.present? || female_rx.present?

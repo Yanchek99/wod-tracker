@@ -1,0 +1,9 @@
+.nested-fields
+  hr
+  .row
+    .col-4
+      = f.input :value
+    .col = f.association :measurement, collection: Measurement.all.order(:name), input_html: { class: 'form-control form-control-sm' }
+    .col-auto.text-right.align-self-center
+      = link_to_remove_association f, class: 'text-danger'
+        i.fas.fa-trash-alt

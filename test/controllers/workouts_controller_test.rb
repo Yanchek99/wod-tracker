@@ -4,7 +4,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    @workout = workouts(:one)
+    @workout = workouts(:fran)
     sign_in users(:matt)
   end
 

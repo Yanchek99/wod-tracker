@@ -1,9 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+fran:
   name: Fran
-  measurement: round
+  measurement: time
+  interval: 21-15-9
 
-two:
+murph:
   name: Murph
   measurement: time
+  rounds: 1

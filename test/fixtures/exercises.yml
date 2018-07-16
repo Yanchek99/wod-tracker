@@ -1,13 +1,58 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+# ==============================================================================
+# Fran
+# 21-15-9 reps for time
+# 95-lb. thrusters
+# Pull-ups
 one:
-  #workout: one
-  movement: one
+  workout: fran
+  movement: thruster
+  measurement: weight
   reps: 1
-  male_rx: 95
-  female_rx: 95
 
 two:
-  #workout: one
-  movement: two
+  workout: fran
+  movement: pullup
+  measurement: rep
   reps: 1
+
+# ==============================================================================
+# Murph
+# For time
+# Run 1 mile
+# 100 pull-ups
+# 200 push-ups
+# 300 squats
+# Run 1 mile
+three:
+  workout: murph
+  movement: run
+  reps: 1
+  measurement: distance
+  measurement_value: 1600
+
+four:
+  workout: murph
+  movement: pullup
+  measurement: rep
+  reps: 100
+
+five:
+  workout: murph
+  movement: pushup
+  measurement: rep
+  reps: 200
+
+six:
+  workout: murph
+  movement: squat
+  measurement: rep
+  reps: 300
+
+seven:
+  workout: murph
+  movement: run
+  reps: 1
+  measurement: distance
+  measurement_value: 1600

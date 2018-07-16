@@ -9,5 +9,8 @@ distance:
 time:
   name: time
 
+rep:
+  name: rep
+  
 round:
   name: round

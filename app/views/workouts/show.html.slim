@@ -14,7 +14,7 @@
         - @workout.exercises.each do |exercise|
           li.list-group-item
             span = exercise_message(exercise)
-      - if @workout.notes
+      - unless @workout.notes.blank?
         b Notes
         .notes = simple_format @workout.notes
       = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-block btn-outline-primary'

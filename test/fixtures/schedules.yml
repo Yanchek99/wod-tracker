@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  program: crossfit
+  workout: fran
+  posted_at: 2018-07-06 15:23:30
+
+two:
+  program: local_gym
+  workout: murph
+  posted_at: 2018-07-06 15:23:30

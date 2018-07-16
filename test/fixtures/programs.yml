@@ -1,0 +1,7 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+crossfit:
+  name: Crossfit
+
+local_gym:
+  name: Local Gym

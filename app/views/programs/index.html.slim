@@ -1,0 +1,10 @@
+.container
+  h1 Programs
+  #programs.list-group
+    - @programs.each do |program|
+      = link_to program, class: "list-group-item list-group-item-action" do
+        .row
+          .col = program.name
+          .col.text-right
+            - if Current.user.subscribed? program
+              i.far.fa-check-square

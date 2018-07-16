@@ -5,6 +5,8 @@ class Workout < ApplicationRecord
   has_many :movements, through: :exercises
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs
+  has_many :schedules, dependent: :destroy
+  has_many :programs, through: :schedules
 
   accepts_nested_attributes_for :exercises, allow_destroy: true
 

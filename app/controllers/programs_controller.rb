@@ -5,8 +5,7 @@ class ProgramsController < ApplicationController
     @programs = Program.all.order(:name)
   end
 
-  def show
-  end
+  def show; end
 
   def subscribe
     @program.subscriptions.create(user: current_user).save

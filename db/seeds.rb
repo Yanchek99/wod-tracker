@@ -32,6 +32,7 @@ chest2bar = Movement.find_or_create_by(name: 'Chest-to-bar pull-up', measurement
 cleanjerk = Movement.find_or_create_by(name: 'Clean and Jerk', measurement: weight)
 clean = Movement.find_or_create_by(name: 'Clean Squat', measurement: weight)
 deadlift = Movement.find_or_create_by(name: 'Deadlift', measurement: weight)
+Movement.find_or_create_by(name: 'Dip', measurement: rep)
 double_under = Movement.find_or_create_by(name: 'Double Under', measurement: rep)
 Movement.find_or_create_by(name: 'Dumbbell Bench Press', measurement: weight)
 Movement.find_or_create_by(name: 'Dumbbell Hang Clean and Jerk', measurement: weight)

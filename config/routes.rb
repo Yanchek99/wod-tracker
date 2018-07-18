@@ -17,4 +17,10 @@ Rails.application.routes.draw do
   resources :workouts do
     resources :logs
   end
+
+  resources :programs do
+    member do
+      post :subscribe
+    end
+  end
 end

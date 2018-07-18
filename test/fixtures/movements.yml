@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+thruster:
+  name: Thruster
+  measurement: weight
+
+pullup:
+  name: Pull Up
+  measurement: rep
+
+pushup:
+  name: Push Up
+  measurement: rep
+
+squat:
+  name: Air Squat
+  measurement: rep
+
+run:
+  name: Run
+  measurement: rep

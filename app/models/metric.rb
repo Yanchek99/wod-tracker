@@ -1,6 +1,6 @@
 class Metric < ApplicationRecord
   belongs_to :exercise
-  belongs_to :measurement
+  enum measurement: { rep: 'rep',  calorie: 'calorie', distance: 'distance' }
 
   validates :exercise, :measurement, :value, presence: true
 end

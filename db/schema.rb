@@ -67,16 +67,6 @@ ActiveRecord::Schema.define(version: 2018_07_06_222630) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "metrics", force: :cascade do |t|
-    t.bigint "exercise_id"
-    t.bigint "measurement_id"
-    t.string "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_metrics_on_exercise_id"
-    t.index ["measurement_id"], name: "index_metrics_on_measurement_id"
-  end
-
   create_table "movement_logs", force: :cascade do |t|
     t.bigint "log_id"
     t.bigint "movement_id"

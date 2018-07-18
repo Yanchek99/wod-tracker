@@ -6,9 +6,9 @@ class Exercise < ApplicationRecord
 
   accepts_nested_attributes_for :metrics, allow_destroy: true
 
-  before_validation :set_measurement_from_movement, unless: proc { |e| e.measurement.present? }
+  # before_validation :set_measurement_from_movement, unless: proc { |e| e.measurement_d.present? }
 
-  validates :movement, presense: true
+  # validates :movement, presense: true
 
   def can_rx?
     male_rx.present? || female_rx.present?
@@ -29,7 +29,7 @@ class Exercise < ApplicationRecord
     reps * workout.rounds
   end
 
-  def set_measurement_from_movement
-    self.measurement = movement.measurement
-  end
+  # def set_measurement_from_movement
+  #   self.measurement_id = movement.measurement
+  # end
 end

@@ -24,8 +24,10 @@
               = ml_form.input_field :reps, class: 'form-control reps-field', data: { original_reps: ml_form.object.reps }
               .input-group-append
                 span.input-group-text reps
+            .col.mt-2.mt-md-auto
+              = ml_form.select :movement_id, Movement.all.order(:name).map { |m| [m.name, m.id] }, {}, class: 'form-control'
             - unless ml_form.object.measurement.rep?
-              .col-12.col-sm-9.mt-2.mt-md-auto.input-group
+              .col-12.col-sm-6.mt-2.mt-md-auto.input-group
                 - unless ml_form.object.measurement.name.eql? ml_form.object.measurement.unit
                   .input-group-prepend
                     span.input-group-text #{ml_form.object.measurement.name}

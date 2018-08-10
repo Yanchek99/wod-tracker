@@ -83,6 +83,9 @@ Movement.find_or_create_by(name: 'Toes to Bar + Pull-up', measurement: rep)
 Movement.find_or_create_by(name: 'V-up', measurement: rep)
 wallball = Movement.find_or_create_by(name: 'Wall-ball Shot', measurement: rep)
 
+# Programs
+cfj = Program.find_or_create_by(name: 'Crossfit Journal')
+
 # The Girl WODS
 
 # ==============================================================================
@@ -92,13 +95,15 @@ wallball = Movement.find_or_create_by(name: 'Wall-ball Shot', measurement: rep)
 # 100 push-ups
 # 100 sit-ups
 # 100 squats
-Workout.find_or_create_by(name: 'Angie') do |workout|
+angie = Workout.find_or_create_by(name: 'Angie') do |workout|
   workout.measurement = time
   workout.exercises.build(movement: pullup, reps: 100, measurement: rep)
   workout.exercises.build(movement: pushup, reps: 100, measurement: rep)
   workout.exercises.build(movement: situp, reps: 100, measurement: rep)
   workout.exercises.build(movement: airsquat, reps: 100, measurement: rep)
 end
+
+cfj.schedules.find_or_create_by(workout: angie, posted_at: '02-01-2018')
 
 # ==============================================================================
 # Barbara
@@ -108,7 +113,7 @@ end
 # 40 sit-ups
 # 50 squats
 # Rest precisely 3 minutes between each round
-Workout.find_or_create_by(name: 'Barbara') do |workout|
+barbara = Workout.find_or_create_by(name: 'Barbara') do |workout|
   workout.rounds = 5
   workout.measurement = time
   workout.exercises.build(movement: pullup, reps: 20, measurement: rep)
@@ -118,13 +123,15 @@ Workout.find_or_create_by(name: 'Barbara') do |workout|
   workout.exercises.build(movement: rest, reps: 1, measurement: time, measurement_value: 3)
 end
 
+cfj.schedules.find_or_create_by(workout: barbara, posted_at: '30-06-2017')
+
 # ==============================================================================
 # Chelsea
 # Every minute on the minute for 30 minutes
 # 5 pull-ups
 # 10 push-ups
 # 15 squats
-Workout.find_or_create_by(name: 'Chelsea') do |workout|
+chelsea = Workout.find_or_create_by(name: 'Chelsea') do |workout|
   workout.rounds = 30
   workout.time = 30
   workout.measurement = rep
@@ -133,13 +140,15 @@ Workout.find_or_create_by(name: 'Chelsea') do |workout|
   workout.exercises.build(movement: airsquat, reps: 15, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: chelsea, posted_at: '04-09-2015')
+
 # ==============================================================================
 # Cindy
 # As many rounds as possible in 20 minutes
 # 5 pull-ups
 # 10 push-ups
 # 15 squats
-Workout.find_or_create_by(name: 'Cindy') do |workout|
+cindy = Workout.find_or_create_by(name: 'Cindy') do |workout|
   workout.time = 20
   workout.measurement = round
   workout.exercises.build(movement: pullup, reps: 5, measurement: rep)
@@ -147,51 +156,61 @@ Workout.find_or_create_by(name: 'Cindy') do |workout|
   workout.exercises.build(movement: airsquat, reps: 15, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: cindy, posted_at: '12-08-2017')
+
 # ==============================================================================
 # Diane
 # 21-15-9 reps for time
 # 225-lb. deadlifts
 # Handstand push-ups
-Workout.find_or_create_by(name: 'Diane') do |workout|
+diane = Workout.find_or_create_by(name: 'Diane') do |workout|
   workout.interval = '21-15-9'
   workout.measurement = time
   workout.exercises.build(movement: deadlift, reps: 1, measurement: weight, measurement_value: 225)
   workout.exercises.build(movement: hspu, reps: 1, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: diane, posted_at: '13-12-2015')
+
 # ==============================================================================
 # Elizabeth
 # 21-15-9 reps for time
 # 135-lb. cleans
 # Ring dips
-Workout.find_or_create_by(name: 'Elizabeth') do |workout|
+elizabeth = Workout.find_or_create_by(name: 'Elizabeth') do |workout|
   workout.interval = '21-15-9'
   workout.measurement = time
   workout.exercises.build(movement: clean, reps: 1, measurement: weight, measurement_value: 135)
   workout.exercises.build(movement: ringdip, reps: 1, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: elizabeth, posted_at: '05-04-2018')
+
 # ==============================================================================
 # Fran
 # 21-15-9 reps for time
 # 95-lb. thrusters
 # Pull-ups
-Workout.find_or_create_by(name: 'Fran') do |workout|
+fran = Workout.find_or_create_by(name: 'Fran') do |workout|
   workout.interval = '21-15-9'
   workout.measurement = time
   workout.exercises.build(movement: thruster, reps: 1, measurement: weight, measurement_value: 95)
   workout.exercises.build(movement: pullup, reps: 1, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: fran, posted_at: '17-11-2017')
+
 # ==============================================================================
 # Grace
 # 30 reps for time
 # 135-lb. clean and jerks
-Workout.find_or_create_by(name: 'Grace') do |workout|
+grace = Workout.find_or_create_by(name: 'Grace') do |workout|
   workout.rounds = 1
   workout.measurement = time
   workout.exercises.build(movement: cleanjerk, reps: 30, measurement: weight, measurement_value: 135)
 end
+
+ cfj.schedules.find_or_create_by(workout: grace, posted_at: '13-06-2018')
 
 # ==============================================================================
 # Helen
@@ -199,7 +218,7 @@ end
 # Run 400 meters
 # 1.5-pood kettlebell swings, 21 reps
 # 12 pull-ups
-Workout.find_or_create_by(name: 'Helen') do |workout|
+helen = Workout.find_or_create_by(name: 'Helen') do |workout|
   workout.rounds = 3
   workout.measurement = time
   workout.exercises.build(movement: run, reps: 1, measurement: distance, measurement_value: 400)
@@ -207,15 +226,19 @@ Workout.find_or_create_by(name: 'Helen') do |workout|
   workout.exercises.build(movement: pullup, reps: 12, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: helen, posted_at: '15-05-2018')
+
 # ==============================================================================
 # Isabel
 # 30 reps for time
 # 135-lb. snatches
-Workout.find_or_create_by(name: 'Isabel') do |workout|
+isabel = Workout.find_or_create_by(name: 'Isabel') do |workout|
   workout.rounds = 1
   workout.measurement = time
   workout.exercises.build(movement: snatch, reps: 30, measurement: weight, measurement_value: 135)
 end
+
+cfj.schedules.find_or_create_by(workout: isabel, posted_at: '13-06-2018')
 
 # ==============================================================================
 # Jackie
@@ -223,7 +246,7 @@ end
 # Row 1,000 meters
 # 45-lb. thrusters, 50 reps
 # 30 pull-ups
-Workout.find_or_create_by(name: 'Jackie') do |workout|
+jackie = Workout.find_or_create_by(name: 'Jackie') do |workout|
   workout.rounds = 1
   workout.measurement = time
   workout.exercises.build(movement: row, reps: 1, measurement: distance, measurement_value: 1000)
@@ -231,15 +254,19 @@ Workout.find_or_create_by(name: 'Jackie') do |workout|
   workout.exercises.build(movement: pullup, reps: 30, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: jackie, posted_at: '15-05-2015')
+
 # ==============================================================================
 # Karen
 # For time
 # 150 wall-ball shots, 20-lb. ball
-Workout.find_or_create_by(name: 'Karen') do |workout|
+karen = Workout.find_or_create_by(name: 'Karen') do |workout|
   workout.rounds = 1
   workout.measurement = time
   workout.exercises.build(movement: wallball, reps: 150, measurement: weight, measurement_value: 20)
 end
+
+cfj.schedules.find_or_create_by(workout: karen, posted_at: '05-01-2017')
 
 # ==============================================================================
 # Linda (a.k.a. 3 Bars of Death)
@@ -247,7 +274,7 @@ end
 # 1 1/2 body-weight deadlifts
 # Body-weight bench presses
 # 3/4 body-weight cleans
-Workout.find_or_create_by(name: 'Linda') do |workout|
+linda = Workout.find_or_create_by(name: 'Linda') do |workout|
   workout.interval = '10-9-8-7-6-5-4-3-2-1'
   workout.measurement = time
   workout.exercises.build(movement: deadlift, reps: 1, measurement: weight, measurement_value: '1 1/2 body weight')
@@ -255,13 +282,15 @@ Workout.find_or_create_by(name: 'Linda') do |workout|
   workout.exercises.build(movement: clean, reps: 1, measurement: weight, measurement_value: '3/4 body weight')
 end
 
+cfj.schedules.find_or_create_by(workout: linda, posted_at: '26-05-2018')
+
 # ==============================================================================
 # Mary
 # As many rounds as possible in 20 minutes
 # 5 handstand push-ups
 # 10 1-legged squats
 # 15 pull-ups
-Workout.find_or_create_by(name: 'Mary') do |workout|
+mary = Workout.find_or_create_by(name: 'Mary') do |workout|
   workout.time = 20
   workout.measurement = round
   workout.exercises.build(movement: hspu, reps: 5, measurement: rep)
@@ -269,17 +298,21 @@ Workout.find_or_create_by(name: 'Mary') do |workout|
   workout.exercises.build(movement: pullup, reps: 15, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: mary, posted_at: '12-08-2017')
+
 # ==============================================================================
 # Nancy
 # 5 rounds for time
 # Run 400 meters
 # 95-lb. overhead squats, 15 reps
-Workout.find_or_create_by(name: 'Nancy') do |workout|
+nancy = Workout.find_or_create_by(name: 'Nancy') do |workout|
   workout.rounds = 5
   workout.measurement = time
   workout.exercises.build(movement: run, reps: 1, measurement: distance, measurement_value: 400)
   workout.exercises.build(movement: ohs, reps: 15, measurement: weight, measurement_value: 95)
 end
+
+cfj.schedules.find_or_create_by(workout: nancy, posted_at: '05-06-2018')
 
 # The New Girls WODS
 
@@ -288,12 +321,14 @@ end
 # 50-40-30-20-10 reps for time
 # Double-unders
 # Sit-ups
-Workout.find_or_create_by(name: 'Annie') do |workout|
+annie = Workout.find_or_create_by(name: 'Annie') do |workout|
   workout.interval = '50-40-30-20-10'
   workout.measurement = time
   workout.exercises.build(movement: double_under, reps: 1, measurement: rep)
   workout.exercises.build(movement: situp, reps: 1, measurement: rep)
 end
+
+cfj.schedules.find_or_create_by(workout: annie, posted_at: '29-11-2017')
 
 # ==============================================================================
 # Eva
@@ -301,7 +336,7 @@ end
 # Run 800 meters
 # 2-pood kettlebell swings, 30 reps
 # 30 pull-ups
-Workout.find_or_create_by(name: 'Eva') do |workout|
+eva = Workout.find_or_create_by(name: 'Eva') do |workout|
   workout.rounds = 5
   workout.measurement = time
   workout.exercises.build(movement: run, reps: 1, measurement: distance, measurement_value: 800)
@@ -309,13 +344,15 @@ Workout.find_or_create_by(name: 'Eva') do |workout|
   workout.exercises.build(movement: pullup, reps: 30, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: eva, posted_at: '16-01-2018')
+
 # ==============================================================================
 # Kelly
 # 5 rounds for time
 # Run 400 meters
 # 30 box jumps, 24-inch box
 # 30 wall-ball shots, 20-lb. ball
-Workout.find_or_create_by(name: 'Kelly') do |workout|
+kelly = Workout.find_or_create_by(name: 'Kelly') do |workout|
   workout.rounds = 5
   workout.measurement = time
   workout.exercises.build(movement: run, reps: 1, measurement: distance, measurement_value: 400)
@@ -323,17 +360,21 @@ Workout.find_or_create_by(name: 'Kelly') do |workout|
   workout.exercises.build(movement: wallball, reps: 30, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: kelly, posted_at: '09-02-2018')
+
 # ==============================================================================
 # Lynne
 # 5 rounds for max reps. There is no time component to this workout, although some versions Rx the movements as a couplet.
 # Body-weight bench press
 # Pull-ups
-Workout.find_or_create_by(name: 'Lynne') do |workout|
+lynne = Workout.find_or_create_by(name: 'Lynne') do |workout|
   workout.rounds = 5
   workout.measurement = rep
   workout.exercises.build(movement: bench_press, measurement: weight, measurement_value: 'body weight')
   workout.exercises.build(movement: pullup, reps: 30, measurement: rep)
 end
+
+cfj.schedules.find_or_create_by(workout: lynne, posted_at: '09-04-2018')
 
 # ==============================================================================
 # Nicole
@@ -341,41 +382,47 @@ end
 # Note number of pull-ups completed for each round.
 # Run 400 meters
 # Max-reps pull-ups
-Workout.find_or_create_by(name: 'Nicole') do |workout|
+nicole = Workout.find_or_create_by(name: 'Nicole') do |workout|
   workout.time = 20
   workout.measurement = round
   workout.exercises.build(movement: run, reps: 1, measurement: distance, measurement_value: 400)
   workout.exercises.build(movement: pullup, measurement: rep)
 end
 
+# cfj.schedules.find_or_create_by(workout: nicole, posted_at: '30-06-2017')
+
 # ==============================================================================
 # Amanda
 # 9-7-5 reps for time
 # Muscle-ups
 # 135-lb. snatches
-Workout.find_or_create_by(name: 'Amanda') do |workout|
-  workout.interval = '50-40-30-20-10'
+amanda = Workout.find_or_create_by(name: 'Amanda') do |workout|
+  workout.interval = '9-7-5'
   workout.measurement = time
   workout.exercises.build(movement: muscleup, reps: 1, measurement: rep)
   workout.exercises.build(movement: snatch, reps: 1, measurement: weight, measurement_value: 135)
 end
+
+cfj.schedules.find_or_create_by(workout: amanda, posted_at: '30-03-2017')
 
 # ==============================================================================
 # Gwen
 # For load
 # Clean and jerk 15-12-9 reps
 # Touch and go at floor only. Even a re-grip off the floor is a foul. No dumping. Use same load for each set. Rest as needed between sets.
-Workout.find_or_create_by(name: 'Gwen') do |workout|
+gwen = Workout.find_or_create_by(name: 'Gwen') do |workout|
   workout.interval = '15-12-9'
   workout.measurement = weight
   workout.exercises.build(movement: cleanjerk, reps: 1, measurement: weight)
 end
 
+cfj.schedules.find_or_create_by(workout: gwen, posted_at: '20-11-2017')
+
 # ==============================================================================
 # Marguerita
 # 50 reps for time
 # Burpee/Push-up/Jumping-Jack/Sit-up/Handstand
-Workout.find_or_create_by(name: 'Marguerita') do |workout|
+marguerita = Workout.find_or_create_by(name: 'Marguerita') do |workout|
   workout.rounds = 50
   workout.measurement = time
   workout.exercises.build(movement: burpee, reps: 1, measurement: rep)
@@ -385,13 +432,15 @@ Workout.find_or_create_by(name: 'Marguerita') do |workout|
   workout.exercises.build(movement: handstand, reps: 1, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: barbara, posted_at: '15-01-2014')
+
 # ==============================================================================
 # Candy
 # 5 rounds for time
 # 20 pull-ups
 # 40 push-ups
 # 60 squats
-Workout.find_or_create_by(name: 'Candy') do |workout|
+candy = Workout.find_or_create_by(name: 'Candy') do |workout|
   workout.rounds = 5
   workout.measurement = time
   workout.exercises.build(movement: pullup, reps: 20, measurement: rep)
@@ -399,19 +448,23 @@ Workout.find_or_create_by(name: 'Candy') do |workout|
   workout.exercises.build(movement: airsquat, reps: 60, measurement: rep)
 end
 
+cfj.schedules.find_or_create_by(workout: candy, posted_at: '11-06-2018')
+
 # ==============================================================================
 # Maggie
 # 5 rounds for time
 # 20 handstand push-ups
 # 40 pull-ups
 # 60 one-legged squats, alternating legs
-Workout.find_or_create_by(name: 'Maggie') do |workout|
+maggie = Workout.find_or_create_by(name: 'Maggie') do |workout|
   workout.rounds = 5
   workout.measurement = time
   workout.exercises.build(movement: hspu, reps: 20, measurement: rep)
   workout.exercises.build(movement: pullup, reps: 40, measurement: rep)
   workout.exercises.build(movement: pistol, reps: 60, measurement: rep)
 end
+
+cfj.schedules.find_or_create_by(workout: maggie, posted_at: '11-06-2018')
 
 ## =============================================================================
 # Hope
@@ -426,7 +479,7 @@ end
 # a one-minute break is allowed before repeating. The clock does not reset or
 # stop between exercises. On the call of "rotate," the athlete(s) must move to
 # the next station immediately for a good score. One point is given for each rep.
-Workout.find_or_create_by(name: 'Hope') do |workout|
+hope = Workout.find_or_create_by(name: 'Hope') do |workout|
   workout.rounds = 3
   workout.time = 18
   workout.measurement = rep
@@ -437,6 +490,8 @@ Workout.find_or_create_by(name: 'Hope') do |workout|
   workout.exercises.build(movement: chest2bar, measurement: rep)
   workout.exercises.build(movement: rest, reps: 1, measurement: time, measurement_value: 1)
 end
+
+cfj.schedules.find_or_create_by(workout: hope, posted_at: '06-07-2013')
 
 # Hero WODS
 

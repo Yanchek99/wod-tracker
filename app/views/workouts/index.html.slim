@@ -5,8 +5,8 @@
       = search_form.search_field :query, value: params[:query], placeholder: 'Search workout name', 'aria-label': 'Search', class: 'form-control'
       .input-group-append
         = search_form.submit 'Search', class: 'btn btn-primary'
-  .row.mb-3
+  .row
     .col.text-right = link_to '+New Workout', new_workout_path
-  #workouts.list-group
+  #workouts.list-group.my-3
     - @workouts.each do |workout|
       = link_to workout.name, workout, class: "list-group-item list-group-item-action #{'list-group-item-success' if Current.user.logged_workout? workout}"

@@ -43,6 +43,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'bootstrap', '~> 4.1.0'
 gem 'cocoon'
 gem 'jquery-rails'
+gem 'local_time'
 gem 'simple_form'
 gem 'slim'
 

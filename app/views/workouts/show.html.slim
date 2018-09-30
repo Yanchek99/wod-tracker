@@ -4,6 +4,14 @@
       li.breadcrumb-item = link_to 'Workouts', workouts_path
       li.breadcrumb-item.active aria-current="page" = @workout.name
   .row
+    p.col-6.fs-8
+      b Posted:&nbsp;
+      i #{local_time_ago(@workout.created_at)}
+    - if @workout.updated?
+      p.col-6.text-right.fs-8
+        b Edited:&nbsp;
+        i #{local_time_ago(@workout.updated_at)}
+  .row
     p.col #{workout_objective @workout}
     .col.text-right
       = link_to edit_workout_path(@workout)

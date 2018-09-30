@@ -7,4 +7,8 @@ module WorkoutsHelper
 
     "#{workout.interval} for #{workout.measurement.name}"
   end
+
+  def generate_workout_name
+    "#{Current.user.email.first(2).upcase}-#{Time.now.strftime('%m%d%g-%H%M')}"
+  end
 end

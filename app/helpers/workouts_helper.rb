@@ -9,6 +9,6 @@ module WorkoutsHelper
   end
 
   def generate_workout_name
-    "#{Current.user.email.first(2).upcase}-#{Time.now.strftime('%m%d%g-%H%M')}"
+    "#{Current.user.email.first(2).upcase}-#{Time.current.strftime('%m%d%g-%H%M')}"
   end
 end

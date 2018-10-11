@@ -152,7 +152,7 @@ GEM
     multi_json (1.13.1)
     nested_form (0.3.2)
     nio4r (2.3.1)
-    nokogiri (1.8.4)
+    nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
     parallel (1.12.1)
@@ -247,9 +247,9 @@ GEM
       sprockets (> 2.11)
       sprockets-rails
       tilt
-    selenium-webdriver (3.14.0)
+    selenium-webdriver (3.14.1)
       childprocess (~> 0.5)
-      rubyzip (~> 1.2)
+      rubyzip (~> 1.2, >= 1.2.2)
     simple_form (4.0.1)
       actionpack (>= 5.0)
       activemodel (>= 5.0)

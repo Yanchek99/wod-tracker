@@ -33,7 +33,7 @@ preload_app!
 
 # https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server#rackup
 rackup DefaultRackup
-environment ENV.fetch("RACK_ENV", "development")
+environment ENV.fetch('RACK_ENV', 'development')
 
 # https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server#on-worker-boot
 on_worker_boot do

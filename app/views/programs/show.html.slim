@@ -6,14 +6,16 @@
       .col.text-right
         = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', method: :post
   - @program.schedules.order(posted_at: :desc).each do |schedule|
-    b = schedule.posted_at
-    hr
+    h4.mb-3.border-bottom = local_time(schedule.posted_at.to_date, '%B %e, %Y')
+    .row
+      .col
+        b #{schedule.workout.name}
     .row
       p.col #{workout_objective schedule.workout}
     .row
-      .col
+      ul.list-unstyled.col
         - schedule.workout.exercises.each do |exercise|
-            p = exercise_message(exercise)
+            li = exercise_message(exercise)
         = simple_format schedule.workout.notes
     .row
       .col

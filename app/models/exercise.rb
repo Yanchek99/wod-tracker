@@ -19,6 +19,7 @@ class Exercise < ApplicationRecord
     return male_rx if male_rx
     return female_rx if female_rx
     return total_expected_reps if measurement.rep?
+
     nil
   end
 
@@ -26,6 +27,7 @@ class Exercise < ApplicationRecord
     return workout.reps_from_interval if workout.interval?
     return nil unless reps # Reps can be nil to signify max
     return reps if workout.rounds.nil? || workout.rounds&.zero?
+
     reps * workout.rounds
   end
 

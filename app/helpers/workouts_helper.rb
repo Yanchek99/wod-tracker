@@ -4,6 +4,11 @@ module WorkoutsHelper
     return "As many rounds as possible in #{pluralize workout.time, 'minute'}" if workout.amrap?
     return "EMOM #{workout.time}" if workout.emom?
     return "#{workout.rounds} #{workout.time}-minute rounds" if workout.timed_rounds?
+
     "#{workout.interval} for #{workout.measurement.name}"
+  end
+
+  def generate_workout_name
+    "#{Current.user.email.first(2).upcase}-#{Time.current.strftime('%m%d%g-%H%M')}"
   end
 end

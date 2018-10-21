@@ -1,14 +1,11 @@
-default: &default
+development: &default
   adapter: postgresql
+  database: wodtracker_development
   encoding: utf8
   min_messages: warning
   pool: <%= Integer(ENV.fetch("DB_POOL", 5)) %>
   reaping_frequency: <%= Integer(ENV.fetch("DB_REAPING_FREQUENCY", 10)) %>
   timeout: 5000
-
-development:
-  <<: *default
-  database: wodtracker_development
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -17,8 +14,7 @@ test:
   <<: *default
   database: wodtracker_test
 
-production:
-  <<: *default
+production: &deploy
   encoding: utf8
   min_messages: warning
   pool: <%= [Integer(ENV.fetch("MAX_THREADS", 5)), Integer(ENV.fetch("DB_POOL", 5))].max %>

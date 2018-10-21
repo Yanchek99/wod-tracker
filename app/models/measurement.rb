@@ -3,6 +3,7 @@ class Measurement < ApplicationRecord
 
   def unit
     return UNITS.fetch(name.to_sym) if UNITS.key?(name.to_sym)
+
     name
   end
 

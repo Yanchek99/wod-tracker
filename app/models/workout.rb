@@ -14,6 +14,7 @@ class Workout < ApplicationRecord
 
   def self.search_by_name(name)
     return all unless name
+
     query = name.split(' ').reduce(nil) do |q, word|
       q.nil? ? arel_table[:name].matches("%#{word}%") : q.and(arel_table[:name].matches("%#{word}%"))
     end
@@ -46,6 +47,7 @@ class Workout < ApplicationRecord
 
   def reps_from_interval
     return nil if interval?
+
     interval.split('-').sum(&:to_i)
   end
 end

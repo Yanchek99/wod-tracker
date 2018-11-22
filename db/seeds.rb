@@ -103,6 +103,11 @@ cfj = Program.find_or_create_by(name: 'Crossfit Journal')
 fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
   workout.measurement = rep
   workout.rounds = 3
+  workout.notes = 'In this workout you move from each of 5 stations after a minute.'\
+          ' This is a 5-minute round after which a 1-minute break is allowed before repeating.'\
+          ' The clock does not reset or stop between exercises.'\
+          ' On the call of "rotate," the athlete(s) must move to the next station immediately for a good score.'\
+          ' One point is given for each rep, except on the rower where each calorie is 1 point.'
   workout.exercises.build(movement: wallball) do |e|
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :weight, value: 20)
@@ -121,6 +126,7 @@ fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
   end
   workout.exercises.build(movement: row) do |e|
     e.metrics.build(measurement: :rep, value: 1)
+    e.metrics.build(measurement: :calorie)
     e.metrics.build(measurement: :time, value: '1:00')
   end
   workout.exercises.build(movement: rest) do |e|
@@ -520,14 +526,15 @@ cfj.schedules.find_or_create_by(workout: kelly, posted_at: '09-02-2018')
 
 # ==============================================================================
 # Lynne
-# 5 rounds for max reps. There is no time component to this workout, although some versions Rx the movements as a couplet.
+# 5 rounds for max reps. There is no time component to this workout,
+# although some versions Rx the movements as a couplet.
 # Body-weight bench press
 # Pull-ups
 lynne = Workout.find_or_create_by(name: 'Lynne') do |workout|
   workout.rounds = 5
   workout.measurement = rep
   workout.exercises.build(movement: bench_press) do |e|
-    e.metrics.build(measurement: :rep])
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :weight, value: 'body weight')
   end
   workout.exercises.build(movement: pullup) do |e|
@@ -551,7 +558,7 @@ nicole = Workout.find_or_create_by(name: 'Nicole') do |workout|
     e.metrics.build(measurement: :weight, value: 400)
   end
   workout.exercises.build(movement: pullup) do |e|
-    e.metrics.build(measurement: :rep])
+    e.metrics.build(measurement: :rep)
   end
 end
 
@@ -587,7 +594,7 @@ gwen = Workout.find_or_create_by(name: 'Gwen') do |workout|
   workout.measurement = weight
   workout.exercises.build(movement: cleanjerk) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-      e.metrics.build(measurement: :weight])
+      e.metrics.build(measurement: :weight)
   end
 end
 
@@ -688,22 +695,22 @@ hope = Workout.find_or_create_by(name: 'Hope') do |workout|
                   ' move to next station immediately for good score. One point'\
                   ' is given for each rep.'
   workout.exercises.build(movement: burpee) do |e|
-    e.metrics.build(measurement: :rep])
+    e.metrics.build(measurement: :rep)
   end
   workout.exercises.build(movement: snatch) do |e|
-    e.metrics.build(measurement: :rep])
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :weight, value: 75)
   end
   workout.exercises.build(movement: box_jump) do |e|
-    e.metrics.build(measurement: :rep])
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :height, value: 24)
   end
   workout.exercises.build(movement: thruster) do |e|
-    e.metrics.build(measurement: :rep])
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :weight, value: 75)
   end
   workout.exercises.build(movement: chest2bar) do |e|
-    e.metrics.build(measurement: :rep])
+    e.metrics.build(measurement: :rep)
   end
   workout.exercises.build(movement: rest) do |e|
     e.metrics.build(measurement: :rep, value: 1)

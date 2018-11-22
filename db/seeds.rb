@@ -103,24 +103,29 @@ cfj = Program.find_or_create_by(name: 'Crossfit Journal')
 fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
   workout.measurement = rep
   workout.rounds = 3
+  workout.time = 18
   workout.notes = 'In this workout you move from each of 5 stations after a minute.'\
           ' This is a 5-minute round after which a 1-minute break is allowed before repeating.'\
           ' The clock does not reset or stop between exercises.'\
           ' On the call of "rotate," the athlete(s) must move to the next station immediately for a good score.'\
           ' One point is given for each rep, except on the rower where each calorie is 1 point.'
   workout.exercises.build(movement: wallball) do |e|
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :weight, value: 20)
   end
   workout.exercises.build(movement: sumo_deadlift_hight_pull) do |e|
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :weight, value: 75)
   end
   workout.exercises.build(movement: box_jump) do |e|
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :height, value: 20)
   end
   workout.exercises.build(movement: push_press) do |e|
+    e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :weight, value: 75)
   end

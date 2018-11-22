@@ -1,28 +1,24 @@
 module MeasurableHelper
   def measurable_message(measurable)
-    "#{measurable_movement_msg(measurable)}#{measurable_measurement_unit_msg(measurable)}"
+    "#{measurable_movement_msg(measurable)}#{measurable_additional_metrics(measurable)}"
   end
 
   def measurable_movement_msg(measurable)
-    rep_value = measurable.metrics.find_by(measurement: :rep)&.value
-    return "Max reps #{measurable.movement.name}" if rep_value.nil?
-    return measurable.movement.name if rep_value.to_i == 1
-
-    pluralize(rep_value.to_i, measurable.movement.name)
+    rep_metric = measurable.metrics.find_by(measurement: :rep)
+    return measurable.movement.name unless rep_metric
+    movement_name = measurable.movement.name
+    "#{metric_unit_msg rep_metric} #{(rep_metric.value || 0) > 1 ? movement_name.pluralize : movement_name}"
   end
 
   def measurable_reps_msg(measurable)
     rep_metric = measurable.metrics.find_by(measurement: :rep)
-    return '1 rep' unless rep_metric
-    return 'Max reps' if rep_metric.value.nil?
-
-    pluralize(rep_metric.value.to_i, 'rep')
+    metric_unit_msg(rep_metric)
   end
 
-  def measurable_measurement_unit_msg(measurable)
+  def measurable_additional_metrics(measurable)
     msg = ''
     measurable.metrics.where.not(measurement: :rep).each do |metric|
-      msg << " / #{pluralize formatted_metric_value(metric), metric.unit}"
+      msg << " / #{metric_unit_msg(metric)}"
     end
     msg
   end

@@ -68,12 +68,13 @@ ActiveRecord::Schema.define(version: 2018_07_17_143049) do
   end
 
   create_table "metrics", force: :cascade do |t|
-    t.bigint "exercise_id"
+    t.string "measurable_type"
+    t.bigint "measurable_id"
     t.string "measurement"
-    t.string "value"
+    t.integer "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["exercise_id"], name: "index_metrics_on_exercise_id"
+    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable_type_and_measurable_id"
   end
 
   create_table "movement_logs", force: :cascade do |t|

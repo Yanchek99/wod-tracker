@@ -74,6 +74,11 @@ class LogsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def log_params
-    params.require(:log).permit(:measurement_value, movement_logs_attributes: [:id, :reps, :movement_id, :measurement_id, :measurement_value])
+    params.require(:log).permit(:measurement_value,
+                                movement_logs_attributes: [
+                                  :id,
+                                  :movement_id,
+                                  metrics_attributes: [:id, :measurement, :value, :_destroy]
+                                ])
   end
 end

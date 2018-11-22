@@ -1,16 +1,9 @@
 class MovementLog < ApplicationRecord
   belongs_to :log
   belongs_to :movement
-  belongs_to :measurement
+  has_many :metrics, as: :measurable, dependent: :destroy
 
-  before_validation :set_measurement_value_to_reps, if: proc { |ml| ml.measurement.rep? }
+  accepts_nested_attributes_for :metrics, allow_destroy: true
 
-  validates :log, :reps, :movement, :measurement, :measurement_value, presence: true
-  validates :reps, numericality: { greater_than: 0 }
-
-  private
-
-  def set_measurement_value_to_reps
-    self.measurement_value = reps
-  end
+  validates :log, presence: true
 end

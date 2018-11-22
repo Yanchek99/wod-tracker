@@ -15,7 +15,7 @@
     .row
       ul.list-unstyled.col
         - schedule.workout.exercises.each do |exercise|
-            li = exercise_message(exercise)
+            li = measurable_message(exercise)
         = simple_format schedule.workout.notes
     .row
       .col

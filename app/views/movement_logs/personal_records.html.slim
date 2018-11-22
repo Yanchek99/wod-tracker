@@ -9,4 +9,6 @@
       - @movement_logs.each do |pr|
         tr
           th scope="row" #{pr.movement.name}
-          td = link_to pluralize(pr.measurement_value, pr.movement.measurement.unit), pr.log
+          td = link_to pr.log
+            span = measurable_reps_msg(pr)
+            span = measurable_measurement_unit_msg(pr)

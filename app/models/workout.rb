@@ -46,7 +46,7 @@ class Workout < ApplicationRecord
   end
 
   def reps_from_interval
-    return nil if interval?
+    return nil unless interval?
 
     interval.split('-').sum(&:to_i)
   end

@@ -60,7 +60,7 @@ pistol = Movement.find_or_create_by(name: 'Pistol', measurement: rep)
 Movement.find_or_create_by(name: 'Power Clean', measurement: weight)
 Movement.find_or_create_by(name: 'Power Snatch', measurement: weight)
 Movement.find_or_create_by(name: 'Press Jerk', measurement: weight)
-Movement.find_or_create_by(name: 'Push Press', measurement: weight)
+push_press = Movement.find_or_create_by(name: 'Push Press', measurement: weight)
 pushup = Movement.find_or_create_by(name: 'Push-up', measurement: rep)
 pullup = Movement.find_or_create_by(name: 'Pull-up', measurement: rep)
 Movement.find_or_create_by(name: 'Strict Pull-up', measurement: rep)
@@ -74,7 +74,7 @@ Movement.find_or_create_by(name: 'Shoulder to Over Head', measurement: weight)
 Movement.find_or_create_by(name: 'Shoulder Press', measurement: weight)
 Movement.find_or_create_by(name: 'Sled Pull', measurement: distance)
 snatch = Movement.find_or_create_by(name: 'Snatch', measurement: weight)
-Movement.find_or_create_by(name: 'Sumo Deadlift High Pull', measurement: weight)
+sumo_deadlift_hight_pull = Movement.find_or_create_by(name: 'Sumo Deadlift High Pull', measurement: weight)
 Movement.find_or_create_by(name: 'Swim', measurement: distance)
 Movement.find_or_create_by(name: 'Tempo Jerk', measurement: weight)
 thruster = Movement.find_or_create_by(name: 'Thruster', measurement: weight)
@@ -85,6 +85,39 @@ wallball = Movement.find_or_create_by(name: 'Wall-ball Shot', measurement: rep)
 
 # Programs
 cfj = Program.find_or_create_by(name: 'Crossfit Journal')
+
+# Fight Gone Bad
+# In this workout you move from each of 5 stations after a minute.
+# This is a 5-minute round after which a 1-minute break is allowed before repeating.
+# We've used this in 3- and 5-round versions. The stations are:
+#
+# Wall-ball shots, 20-lb. ball, 10-foot target. (reps)
+# Sumo deadlift high pulls, 75 lb. (reps)
+# Box jumps, 20-inch box (reps)
+# Push presses, 75 lb. (reps)
+# Row for calories (calories)
+# The clock does not reset or stop between exercises.
+# On the call of "rotate," the athlete(s) must move to the next station immediately for a good score.
+# One point is given for each rep, except on the rower where each calorie is 1 point.
+fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
+  workout.measurement = rep
+  workout.rounds = 3
+  workout.time = 18
+  workout.notes = 'In this workout you move from each of 5 stations after a minute.'\
+          ' This is a 5-minute round after which a 1-minute break is allowed before repeating.'\
+          ' The clock does not reset or stop between exercises.'\
+          ' On the call of "rotate," the athlete(s) must move to the next station immediately for a good score.'\
+          ' One point is given for each rep, except on the rower where each calorie is 1 point.'
+  workout.exercises.build(movement: wallball, measurement: rep)
+  workout.exercises.build(movement: sumo_deadlift_hight_pull, measurement: weight, measurement_value: 75)
+  workout.exercises.build(movement: box_jump, measurement: rep)
+  workout.exercises.build(movement: push_press, measurement: weight, measurement_value: 75)
+  workout.exercises.build(movement: row, measurement: calorie)
+  workout.exercises.build(movement: rest, reps: 1, measurement: time, measurement_value: 1)
+end
+
+cfj.schedules.find_or_create_by(workout: fight_gone_bad, posted_at: '01-01-2018')
+
 
 # The Girl WODS
 

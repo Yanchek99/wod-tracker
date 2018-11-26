@@ -4,6 +4,7 @@ development: &default
   database: wodtracker_development
   encoding: utf8
   min_messages: warning
+  host: localhost
   pool: <%= Integer(ENV.fetch("DB_POOL", 5)) %>
   reaping_frequency: <%= Integer(ENV.fetch("DB_REAPING_FREQUENCY", 10)) %>
   timeout: 5000

@@ -1,4 +1,4 @@
-= simple_form_for [@workout, @log]  do |f|
+= simple_form_for [@workout, @log], wrapper: :input_group  do |f|
   = f.error_notification
   .row.mt-3
     .col
@@ -10,20 +10,18 @@
   .row.col
     p = workout_objective @workout
   .form-inputs.row
-    .col.form-group
-      .input-group
-        .input-group-prepend
-          span.input-group-text #{@workout.measurement.unit.pluralize if @workout.measurement}
-        = f.input_field :measurement_value, class: 'form-control', data: { auto_calc_reps: @workout.measurement.round? }
+    .col
+      = f.input :measurement_value, as: :group, prepend: (@workout.measurement.unit.pluralize if @workout.measurement), label: false, class: 'form-control', data: { auto_calc_reps: @workout.measurement.round? }
       h2.mt-3 Exercise Recordings
       = f.simple_fields_for :movement_logs do |ml_form|
-        .form-group.border.p-3
-          = ml_form.select :movement_id, Movement.all.order(:name).map { |m| [m.name, m.id] }, {}, class: 'form-control'
-          .row
-            .col#metrics
-              = ml_form.simple_fields_for :metrics do |metric_form|
-                = render 'metric_fields', f: metric_form
-              .links
-                = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
+        .card.mb-3
+          .card-body
+            = ml_form.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
+            .row
+              .col#metrics
+                = ml_form.simple_fields_for :metrics do |metric_form|
+                  = render 'metric_fields', f: metric_form
+                .links
+                  = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
   .form-actions
     = f.button :submit, 'Save', class: 'btn btn-block btn-primary'

@@ -1,8 +1,7 @@
 .nested-fields.card.mb-3
   .card-body
     .row
-      .col = f.input :movement
-        = f.select :movement_id, Movement.all.order(:name).map { |m| [m.name, m.id, { data: { measurement_id: m.measurement_id } } ] }, { include_blank: true }, class: 'form-control exercise-movement form-control-sm'
+      .col = f.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement'
     .row
       .col#metrics
         = f.simple_fields_for :metrics do |metric_form|

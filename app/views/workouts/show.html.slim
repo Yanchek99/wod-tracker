@@ -12,19 +12,19 @@
         b Edited:&nbsp;
         i #{local_time_ago(@workout.updated_at)}
   .row
-    p.col #{workout_objective @workout}
+    span.col #{workout_objective @workout}
     .col.text-right
       = link_to edit_workout_path(@workout)
         i.fas.fa-edit
+    - unless @workout.notes.blank?
+      .col-12
+        p = simple_format @workout.notes
   .row
     .col
       ul.list-group.mb-3
         - @workout.exercises.each do |exercise|
           li.list-group-item
-            span = exercise_message(exercise)
-      - unless @workout.notes.blank?
-        b Notes
-        .notes = simple_format @workout.notes
+            span = measurable_message(exercise)
       = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-block btn-outline-primary'
       - if Current.user.logged_workout? @workout
         h2.mt-3 Results

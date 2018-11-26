@@ -15,7 +15,7 @@ class LogsController < ApplicationController
   # GET /logs/new
   def new
     @log = @workout.logs.build
-    @log.build_movement_logs
+    @log.build_exercise_logs
   end
 
   # GET /logs/1/edit

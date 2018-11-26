@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_06_222630) do
+ActiveRecord::Schema.define(version: 2018_11_22_211207) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,23 @@ ActiveRecord::Schema.define(version: 2018_07_06_222630) do
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_logs_on_user_id"
     t.index ["workout_id"], name: "index_logs_on_workout_id"
+  end
+
+  create_table "measurables", force: :cascade do |t|
+    t.string "type"
+    t.bigint "movement_id"
+    t.string "assignable_type"
+    t.bigint "assignable_id"
+    t.integer "reps"
+    t.integer "weight"
+    t.integer "seconds"
+    t.integer "height"
+    t.integer "distance"
+    t.integer "calories"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assignable_type", "assignable_id"], name: "index_measurables_on_assignable_type_and_assignable_id"
+    t.index ["movement_id"], name: "index_measurables_on_movement_id"
   end
 
   create_table "measurements", force: :cascade do |t|
@@ -144,6 +161,7 @@ ActiveRecord::Schema.define(version: 2018_07_06_222630) do
   add_foreign_key "exercises", "measurements"
   add_foreign_key "exercises", "movements"
   add_foreign_key "exercises", "workouts"
+  add_foreign_key "measurables", "movements"
   add_foreign_key "movement_logs", "logs"
   add_foreign_key "movement_logs", "measurements"
   add_foreign_key "movement_logs", "movements"

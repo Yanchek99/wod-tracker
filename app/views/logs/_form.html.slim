@@ -1,4 +1,4 @@
-= simple_form_for [@workout, @log]  do |f|
+= simple_form_for [@workout, @log], wrapper: :input_group  do |f|
   = f.error_notification
   .row.mt-3
     .col
@@ -16,24 +16,16 @@
           span.input-group-text #{@workout.measurement.unit.pluralize if @workout.measurement}
         = f.input_field :measurement_value, class: 'form-control', data: { auto_calc_reps: @workout.measurement.round? }
       h2.mt-3 Exercise Recordings
-      = f.simple_fields_for :movement_logs do |ml_form|
-        .form-group
-          = ml_form.label :measurement_value, ml_form.object.movement.name
-          .row
-            .col.mt-2.mt-md-auto.input-group
-              = ml_form.input_field :reps, class: 'form-control reps-field', data: { original_reps: ml_form.object.reps }
-              .input-group-append
-                span.input-group-text reps
-            .col.mt-2.mt-md-auto
-              = ml_form.select :movement_id, Movement.all.order(:name).map { |m| [m.name, m.id] }, {}, class: 'form-control'
-            - unless ml_form.object.measurement.rep?
-              .col-12.col-sm-6.mt-2.mt-md-auto.input-group
-                - unless ml_form.object.measurement.name.eql? ml_form.object.measurement.unit
-                  .input-group-prepend
-                    span.input-group-text #{ml_form.object.measurement.name}
-                = ml_form.input_field :measurement_value, class: 'form-control'
-                .input-group-append
-                  span.input-group-text #{ml_form.object.measurement.unit.pluralize}
-          = ml_form.input_field :measurement_id, as: :hidden
+      = f.simple_fields_for :exercise_logs do |el_form|
+        .card.mb-3
+          .card-body
+            .row
+              .col-12 = el_form.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
+              .col-12.col-md-4 = el_form.input :reps, append: :reps, label: false
+              .col-12.col-md-4 = el_form.input :seconds, append: :seconds, label: false
+              .col-12.col-md-4 = el_form.input :weight, append: :weight, label: false
+              .col-12.col-md-4 = el_form.input :calories, append: :calories, label: false
+              .col-12.col-md-4 = el_form.input :distance, append: :distance, label: false
+              .col-12.col-md-4 = el_form.input :height, append: :height, label: false
   .form-actions
     = f.button :submit, 'Save', class: 'btn btn-block btn-primary'

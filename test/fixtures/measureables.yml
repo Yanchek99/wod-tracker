@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  type: 
+  movement: one
+  rep: 1
+  weight: 1
+  seconds: 1
+  height: 1
+  distance: 1
+  calorie: 1
+
+two:
+  type: 
+  movement: two
+  rep: 1
+  weight: 1
+  seconds: 1
+  height: 1
+  distance: 1
+  calorie: 1

@@ -1,10 +1,10 @@
 class Workout < ApplicationRecord
   belongs_to :measurement
 
-  has_many :exercises, dependent: :destroy
+  has_many :exercises, as: :assignable, dependent: :destroy
   has_many :movements, through: :exercises
   has_many :logs, dependent: :destroy
-  has_many :movement_logs, through: :logs
+  has_many :exercise_logs, through: :logs
   has_many :schedules, dependent: :destroy
   has_many :programs, through: :schedules
 

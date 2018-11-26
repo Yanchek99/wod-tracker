@@ -4,17 +4,14 @@ class Log < ApplicationRecord
   has_many :exercises, through: :workout
   has_many :movements, -> { distinct }, through: :exercises
 
-  has_many :movement_logs, dependent: :destroy
-  accepts_nested_attributes_for :movement_logs, allow_destroy: true
+  has_many :exercise_logs, as: :assignable, dependent: :destroy
+  accepts_nested_attributes_for :exercise_logs, allow_destroy: true
 
   validates :user, :workout, :measurement_value, presence: true
 
-  def build_movement_logs
-    exercises.to_a.uniq(&:movement).each do |e|
-      movement_logs.build(reps: e.total_expected_reps,
-                          movement: e.movement,
-                          measurement: e.measurement,
-                          measurement_value: e.suggested_measurement_value)
+  def build_exercise_logs
+    exercises.each do |e|
+      exercise_logs.build(e.copyable_attributes)
     end
   end
 end

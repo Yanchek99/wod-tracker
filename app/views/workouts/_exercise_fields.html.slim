@@ -5,11 +5,10 @@
         = link_to_remove_association f, class: 'text-danger'
           i.fas.fa-trash-alt
     .row
-      .col-sm-3. = f.input :reps, input_html: { class: 'form-control-sm' }
-      .col = f.input :movement
-        = f.select :movement_id, Movement.all.order(:name).map { |m| [m.name, m.id, { data: { measurement_id: m.measurement.id } } ] }, { include_blank: true }, class: 'form-control exercise-movement form-control-sm'
-    .row
-      .col = f.input :male_rx, input_html: { class: 'form-control-sm' }
-      .col = f.input :female_rx, input_html: { class: 'form-control-sm' }
-      .col-sm-3 = f.association :measurement, collection: Measurement.all.order(:name), input_html: { class: 'exercise-measurement form-control-sm' }
-      .col-sm-3 = f.input :measurement_value, input_html: { class: 'form-control-sm' }
+      .col-12 = f.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
+      .col-12.col-md-4 = f.input :reps, append: :reps, label: false
+      .col-12.col-md-4 = f.input :seconds, append: :seconds, label: false
+      .col-12.col-md-4 = f.input :weight, append: :weight, label: false
+      .col-12.col-md-4 = f.input :calories, append: :calories, label: false
+      .col-12.col-md-4 = f.input :distance, append: :distance, label: false
+      .col-12.col-md-4 = f.input :height, append: :height, label: false

@@ -1,14 +1,9 @@
-= simple_form_for @workout do |f|
+= simple_form_for @workout, wrapper: :input_group do |f|
   = f.error_notification
   .form-inputs.row
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
     .col-sm-4 = f.input :rounds
-    .col-sm-4
-      = f.label :time
-      .input-group
-        = f.input_field :time, class: 'form-control'
-        .input-group-append
-          span.input-group-text minutes
+    .col-sm-4 = f.input :time, append: 'minutes'
     .col-sm-4 = f.input :interval
     .col-12 = f.input :measurement_id, collection: Measurement.all
     .col = f.input :notes

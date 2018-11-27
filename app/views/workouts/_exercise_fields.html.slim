@@ -1,14 +1,13 @@
 .nested-fields.card.mb-3
   .card-body
     .row
-      .col.text-right
-        = link_to_remove_association f, class: 'text-danger'
-          i.fas.fa-trash-alt
-    .row
-      .col-sm-3. = f.input :reps, input_html: { class: 'form-control-sm' }
       .col = f.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement'
     .row
-      .col = f.input :male_rx, input_html: { class: 'form-control-sm' }
-      .col = f.input :female_rx, input_html: { class: 'form-control-sm' }
-      .col-sm-3 = f.association :measurement, collection: Measurement.all.order(:name), input_html: { class: 'exercise-measurement form-control-sm' }
-      .col-sm-3 = f.input :measurement_value, input_html: { class: 'form-control-sm' }
+      .col#metrics
+        = f.simple_fields_for :metrics do |metric_form|
+          = render 'metric_fields', f: metric_form
+        .links
+          = link_to_add_association 'Add Metric', f, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
+    .row
+      .col
+        = link_to_remove_association 'Delete Exercise', f, class: 'btn btn-sm btn-danger btn-block mt-2'

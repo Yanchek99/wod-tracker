@@ -16,14 +16,12 @@
       = f.simple_fields_for :movement_logs do |ml_form|
         .card.mb-3
           .card-body
+            = ml_form.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
             .row
-              .col.mt-2.mt-md-auto
-                = ml_form.input :reps, as: :group, append: 'reps', class: 'form-control reps-field', data: { original_reps: ml_form.object.reps }, label: false
-              .col.mt-2.mt-md-auto
-                = ml_form.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
-              - unless ml_form.object.measurement.rep?
-                .col-12.col-sm-6.mt-2.mt-md-auto
-                  = ml_form.input :measurement_value, as: :group, prepend: ml_form.object.measurement.name, append: ml_form.object.measurement.unit.pluralize, label: false, class: 'form-control'
-        = ml_form.input_field :measurement_id, as: :hidden
+              .col#metrics
+                = ml_form.simple_fields_for :metrics do |metric_form|
+                  = render 'metric_fields', f: metric_form
+                .links
+                  = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
   .form-actions
     = f.button :submit, 'Save', class: 'btn btn-block btn-primary'

@@ -10,11 +10,11 @@ class Log < ApplicationRecord
   validates :user, :workout, :measurement_value, presence: true
 
   def build_movement_logs
-    exercises.to_a.uniq(&:movement).each do |e|
-      movement_logs.build(reps: e.total_expected_reps,
-                          movement: e.movement,
-                          measurement: e.measurement,
-                          measurement_value: e.suggested_measurement_value)
+    exercises.each do |e|
+      ml = movement_logs.build(movement: e.movement)
+      e.metrics.each do |m|
+        ml.metrics.build(measurement: m.measurement, value: m.calculated_value(workout))
+      end
     end
   end
 end

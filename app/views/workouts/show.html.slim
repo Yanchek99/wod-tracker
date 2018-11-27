@@ -21,7 +21,7 @@
       ul.list-group.mb-3
         - @workout.exercises.each do |exercise|
           li.list-group-item
-            span = exercise_message(exercise)
+            span = measurable_message(exercise)
       - unless @workout.notes.blank?
         b Notes
         .notes = simple_format @workout.notes

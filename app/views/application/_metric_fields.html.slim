@@ -1,0 +1,7 @@
+.nested-fields
+  .row
+    .col-4 = f.input :value, as: :string, input_html: { value: formatted_metric_value(f.object) }
+    .col = f.input :measurement, collection: Metric.measurements, input_html: { class: 'form-control form-control-md' }
+    .col-auto.text-right.align-self-center
+      = link_to_remove_association f, class: 'text-danger'
+        i.fas.fa-trash-alt

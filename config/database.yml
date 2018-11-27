@@ -1,5 +1,6 @@
 development: &default
   adapter: postgresql
+  host: localhost
   database: wodtracker_development
   encoding: utf8
   min_messages: warning

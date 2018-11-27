@@ -6,12 +6,12 @@ class GroupInput < SimpleForm::Inputs::Base
     @builder.text_field(attribute_name, merged_input_options)
   end
 
-  def prepend
+  def prepend(_wrapper_options)
     span_tag = content_tag(:span, options[:prepend], class: 'input-group-text')
     template.content_tag(:div, span_tag, class: 'input-group-prepend')
   end
 
-  def append
+  def append(_wrapper_options)
     span_tag = content_tag(:span, options[:append], class: 'input-group-text')
     template.content_tag(:div, span_tag, class: 'input-group-append')
   end

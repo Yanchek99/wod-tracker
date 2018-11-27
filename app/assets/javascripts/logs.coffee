@@ -1,7 +1,7 @@
 $(document).on 'turbolinks:load', ->
   $('input[data-auto-calc-reps=true]').on keyup: ->
     $value = $(this).val().split('+')
-    rounds = parseInt($value[0])
+    rounds = parseInt($value[0]) || 0
     reps = parseInt($value[1]) || 0
     console.log("Rounds: "+rounds+" Reps: "+reps)
     $repFields = $(this.form).find('.reps-field')

@@ -69,6 +69,12 @@ class WorkoutsController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def workout_params
     params.require(:workout).permit(:name, :rounds, :time, :interval, :measurement_id, :notes,
-                                    exercises_attributes: [:id, :reps, :movement_id, :measurement_id, :measurement_value, :male_rx, :female_rx, :_destroy])
+                                    exercises_attributes: [:id, :reps, :movement_id, :_destroy,
+                                                           metrics_attributes: [
+                                                             :id,
+                                                             :measurement,
+                                                             :value,
+                                                             :_destroy
+                                                           ]])
   end
 end

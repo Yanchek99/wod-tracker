@@ -27,6 +27,7 @@ class Metric < ApplicationRecord
   def value=(new_value)
     super(new_value)
     return unless time? && new_value.is_a?(String)
+
     if new_value.include? ':'
       minutes, seconds = new_value.split(':', 2)
       time_in_seconds = (minutes.to_i.minute + seconds.to_i.second).second

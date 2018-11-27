@@ -6,6 +6,7 @@ module MeasurableHelper
   def measurable_movement_msg(measurable)
     rep_metric = measurable.metrics.find_by(measurement: :rep)
     return measurable.movement.name unless rep_metric
+
     movement_name = measurable.movement.name
     "#{metric_unit_msg rep_metric} #{(rep_metric.value || 0) > 1 ? movement_name.pluralize : movement_name}"
   end

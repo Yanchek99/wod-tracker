@@ -7,7 +7,8 @@ module MetricsHelper
 
   def metric_unit_msg(metric)
     return "Max #{metric.unit.pluralize}" if metric.value.nil?
-    return metric.value == 1 ? "" : metric.value if metric.rep?
+    return metric.value == 1 ? '' : metric.value if metric.rep?
+
     pluralize formatted_metric_value(metric), metric.unit
   end
 

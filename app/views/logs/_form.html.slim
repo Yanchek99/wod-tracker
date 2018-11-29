@@ -13,7 +13,6 @@
     = f.simple_fields_for :metric do |metric_form|
       = metric_form.input :measurement, as: :hidden
       .col = metric_form.input :value, as: :group, prepend: @log.metric.unit.pluralize, label: false, class: 'form-control', data: { auto_calc_reps: @workout.metric.round? }
-    / = f.input :measurement_value, as: :group, prepend: (@workout.measurement.unit.pluralize if @workout.measurement), label: false, class: 'form-control', data: { auto_calc_reps: @workout.measurement.round? }
   h2.mt-3 Exercise Recordings
   = f.simple_fields_for :movement_logs do |ml_form|
     .card.mb-3

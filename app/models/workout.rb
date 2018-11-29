@@ -1,5 +1,4 @@
 class Workout < ApplicationRecord
-  belongs_to :measurement, optional: true
   has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, dependent: :destroy
   has_many :movements, through: :exercises

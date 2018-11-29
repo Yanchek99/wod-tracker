@@ -5,7 +5,7 @@ class Metric < ApplicationRecord
   validates :measurable, :measurement, presence: true
   validates :measurement, uniqueness: { scope: :measurable }
 
-  UNITS = { weight: 'lb', distance: 'meter', time: 'minute', height: 'inch' }.freeze
+  UNITS = { weight: 'lb', distance: 'meter', time: 'second', height: 'inch' }.freeze
 
   def unit
     return UNITS.fetch(measurement.to_sym) if UNITS.key?(measurement.to_sym)
@@ -15,13 +15,12 @@ class Metric < ApplicationRecord
 
   def calculated_value(workout)
     rounds = workout.rounds
-    int_value = value
     return value unless rep?
-    return int_value * workout.reps_from_interval if workout.interval?
+    return value * workout.reps_from_interval if workout.interval?
     return nil unless value # Reps can be nil to signify max
     return value if rounds.nil? || rounds&.zero?
 
-    int_value * rounds
+    value * rounds
   end
 
   def value=(new_value)

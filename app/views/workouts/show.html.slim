@@ -37,4 +37,4 @@
             - Current.user.logs.where(workout: @workout).each do |log|
               tr
                 th scope="row" = link_to log.created_at, log
-                td #{pluralize log.metric.value, log.metric.unit if log.metric}
+                td #{metric_unit_msg(log.metric) if log.metric}

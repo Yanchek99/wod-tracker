@@ -1,7 +1,57 @@
-fran_metric:
+fran_workout:
   measurable: fran (Workout)
   measurement: time
 
-murph_metric:
+fran_thruster_reps:
+  measurable: fran_thruster (Exercise)
+  measurement: rep
+  value: 1
+
+fran_thruster_weight:
+  measurable: fran_thruster (Exercise)
+  measurement: weight
+  value: 95
+
+fran_pullup_reps:
+  measurable: fran_pullup (Exercise)
+  measurement: rep
+  value: 1
+
+murph:
   measurable: murph (Workout)
   measurement: time
+
+murph_run_reps:
+  measurable: murph_run (Exercise)
+  measurement: rep
+  value: 1
+
+murph_run_distance:
+  measurable: murph_run (Exercise)
+  measurement: distance
+  value: 1600
+
+murph_pullup_reps:
+  measurable: murph_pullup (Exercise)
+  measurement: rep
+  value: 100
+
+murph_pushup_reps:
+  measurable: murph_pushup (Exercise)
+  measurement: rep
+  value: 200
+
+murph_squat_reps:
+  measurable: murph_squat (Exercise)
+  measurement: rep
+  value: 300
+
+murph_second_run_reps:
+  measurable: murph_second_run (Exercise)
+  measurement: rep
+  value: 1
+
+murph_second_run_distance:
+  measurable: murph_second_run (Exercise)
+  measurement: distance
+  value: 1600

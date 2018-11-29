@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_17_143049) do
+ActiveRecord::Schema.define(version: 2018_11_27_032209) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,14 +39,10 @@ ActiveRecord::Schema.define(version: 2018_07_17_143049) do
   create_table "exercises", force: :cascade do |t|
     t.bigint "workout_id"
     t.bigint "movement_id"
-    t.integer "reps"
-    t.string "measurement_value"
     t.integer "male_rx"
     t.integer "female_rx"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "measurement_id"
-    t.index ["measurement_id"], name: "index_exercises_on_measurement_id"
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
     t.index ["workout_id"], name: "index_exercises_on_workout_id"
   end
@@ -54,17 +50,10 @@ ActiveRecord::Schema.define(version: 2018_07_17_143049) do
   create_table "logs", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "workout_id"
-    t.string "measurement_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_logs_on_user_id"
     t.index ["workout_id"], name: "index_logs_on_workout_id"
-  end
-
-  create_table "measurements", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "metrics", force: :cascade do |t|
@@ -80,13 +69,9 @@ ActiveRecord::Schema.define(version: 2018_07_17_143049) do
   create_table "movement_logs", force: :cascade do |t|
     t.bigint "log_id"
     t.bigint "movement_id"
-    t.string "measurement_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "measurement_id"
-    t.integer "reps"
     t.index ["log_id"], name: "index_movement_logs_on_log_id"
-    t.index ["measurement_id"], name: "index_movement_logs_on_measurement_id"
     t.index ["movement_id"], name: "index_movement_logs_on_movement_id"
   end
 
@@ -145,17 +130,14 @@ ActiveRecord::Schema.define(version: 2018_07_17_143049) do
     t.integer "rounds"
     t.integer "time"
     t.string "interval"
-    t.integer "measurement_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "notes"
   end
 
-  add_foreign_key "exercises", "measurements"
   add_foreign_key "exercises", "movements"
   add_foreign_key "exercises", "workouts"
   add_foreign_key "movement_logs", "logs"
-  add_foreign_key "movement_logs", "measurements"
   add_foreign_key "movement_logs", "movements"
   add_foreign_key "schedules", "programs"
   add_foreign_key "schedules", "workouts"

@@ -2,10 +2,8 @@
 
 fran:
   name: Fran
-  measurement: time
   interval: 21-15-9
 
 murph:
   name: Murph
-  measurement: time
   rounds: 1

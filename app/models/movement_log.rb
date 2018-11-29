@@ -1,7 +1,6 @@
 class MovementLog < ApplicationRecord
   belongs_to :log
   belongs_to :movement
-  belongs_to :measurement, optional: true
   has_many :metrics, as: :measurable, dependent: :destroy
 
   default_scope { includes(:metrics) }

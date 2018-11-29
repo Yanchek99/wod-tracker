@@ -23,7 +23,6 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       post workouts_url, params: { workout: {
         name: @workout.name,
         rounds: @workout.rounds,
-        measurement_id: @workout.measurement.id,
         metric_attributes: { measurement: :round }
       } }
     end
@@ -42,7 +41,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update workout' do
-    patch workout_url(@workout), params: { workout: { name: @workout.name, rounds: @workout.rounds, measurement_id: @workout.measurement.id } }
+    patch workout_url(@workout), params: { workout: { name: @workout.name, rounds: @workout.rounds } }
     assert_redirected_to workout_url(@workout)
   end
 

@@ -14,6 +14,7 @@ class WorkoutsController < ApplicationController
   # GET /workouts/new
   def new
     @workout = Workout.new
+    @workout.build_metric
   end
 
   # GET /workouts/1/edit
@@ -75,6 +76,7 @@ class WorkoutsController < ApplicationController
                                                              :measurement,
                                                              :value,
                                                              :_destroy
-                                                           ]])
+                                                           ]],
+                                    metric_attributes: [:id, :measurement])
   end
 end

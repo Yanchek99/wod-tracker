@@ -9,19 +9,21 @@
           i.fas.fa-external-link-alt
   .row.col
     p = workout_objective @workout
-  .form-inputs.row
-    .col
-      = f.input :measurement_value, as: :group, prepend: (@workout.measurement.unit.pluralize if @workout.measurement), label: false, class: 'form-control', data: { auto_calc_reps: @workout.measurement.round? }
-      h2.mt-3 Exercise Recordings
-      = f.simple_fields_for :movement_logs do |ml_form|
-        .card.mb-3
-          .card-body
-            = ml_form.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
-            .row
-              .col#metrics
-                = ml_form.simple_fields_for :metrics do |metric_form|
-                  = render 'metric_fields', f: metric_form
-                .links
-                  = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
+  .row
+    = f.simple_fields_for :metric do |metric_form|
+      = metric_form.input :measurement, as: :hidden
+      .col = metric_form.input :value, as: :group, prepend: @log.metric.unit.pluralize, label: false, class: 'form-control', data: { auto_calc_reps: @workout.metric.round? }
+    / = f.input :measurement_value, as: :group, prepend: (@workout.measurement.unit.pluralize if @workout.measurement), label: false, class: 'form-control', data: { auto_calc_reps: @workout.measurement.round? }
+  h2.mt-3 Exercise Recordings
+  = f.simple_fields_for :movement_logs do |ml_form|
+    .card.mb-3
+      .card-body
+        = ml_form.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
+        .row
+          .col#metrics
+            = ml_form.simple_fields_for :metrics do |metric_form|
+              = render 'metric_fields', f: metric_form
+            .links
+              = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
   .form-actions
     = f.button :submit, 'Save', class: 'btn btn-block btn-primary'

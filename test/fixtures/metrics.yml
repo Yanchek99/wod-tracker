@@ -1,0 +1,7 @@
+fran_metric:
+  measurable: fran (Workout)
+  measurement: time
+
+murph_metric:
+  measurable: murph (Workout)
+  measurement: time

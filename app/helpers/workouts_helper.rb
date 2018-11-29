@@ -5,7 +5,7 @@ module WorkoutsHelper
     return "EMOM #{workout.time}" if workout.emom?
     return "#{workout.rounds} #{workout.time}-minute rounds" if workout.timed_rounds?
 
-    "#{workout.interval} for #{workout.measurement.name}"
+    "#{workout.interval} for #{workout.metric.measurement}"
   end
 
   def generate_workout_name

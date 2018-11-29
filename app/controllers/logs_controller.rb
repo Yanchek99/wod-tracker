@@ -15,6 +15,7 @@ class LogsController < ApplicationController
   # GET /logs/new
   def new
     @log = @workout.logs.build
+    @log.build_metric(measurement: @workout.metric.measurement)
     @log.build_movement_logs
   end
 
@@ -79,6 +80,7 @@ class LogsController < ApplicationController
                                   :id,
                                   :movement_id,
                                   metrics_attributes: [:id, :measurement, :value, :_destroy]
-                                ])
+                                ],
+                                metric_attributes: [:id, :measurement, :value])
   end
 end

@@ -1,6 +1,6 @@
 class Workout < ApplicationRecord
-  belongs_to :measurement
-
+  belongs_to :measurement, optional: true
+  has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, dependent: :destroy
   has_many :movements, through: :exercises
   has_many :logs, dependent: :destroy
@@ -8,9 +8,10 @@ class Workout < ApplicationRecord
   has_many :schedules, dependent: :destroy
   has_many :programs, through: :schedules
 
+  accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :exercises, allow_destroy: true
 
-  validates :name, :measurement, presence: true
+  validates :name, :metric, presence: true
 
   def self.search_by_name(name)
     return all unless name

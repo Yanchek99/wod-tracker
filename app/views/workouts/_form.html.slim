@@ -5,7 +5,8 @@
     .col-sm-4 = f.input :rounds
     .col-sm-4 = f.input :time, as: :group, append: 'minutes'
     .col-sm-4 = f.input :interval, placeholder: '21-15-9...'
-    .col-12 = f.input :measurement_id, collection: Measurement.all
+    = f.simple_fields_for :metric do |metric_form|
+      .col-12 = metric_form.input :measurement, collection: Metric.measurements, label: 'For'
     .col = f.input :notes
   hr
   h3 Exercises

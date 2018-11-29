@@ -1,6 +1,6 @@
 class Metric < ApplicationRecord
   belongs_to :measurable, polymorphic: true
-  enum measurement: { calorie: 'calorie', distance: 'distance', height: 'height', rep: 'rep', time: 'time', weight: 'weight' }
+  enum measurement: { calorie: 'calorie', distance: 'distance', height: 'height', rep: 'rep', round: 'round', time: 'time', weight: 'weight' }
 
   validates :measurable, :measurement, presence: true
   validates :measurement, uniqueness: { scope: :measurable }

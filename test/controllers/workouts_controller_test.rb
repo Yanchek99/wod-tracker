@@ -20,7 +20,12 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should create workout' do
     assert_difference('Workout.count') do
-      post workouts_url, params: { workout: { name: @workout.name, rounds: @workout.rounds, measurement_id: @workout.measurement.id } }
+      post workouts_url, params: { workout: {
+        name: @workout.name,
+        rounds: @workout.rounds,
+        measurement_id: @workout.measurement.id,
+        metric_attributes: { measurement: :round }
+      } }
     end
 
     assert_redirected_to workout_url(Workout.last)

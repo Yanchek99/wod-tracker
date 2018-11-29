@@ -5,83 +5,74 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-admin = User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
+User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
   u.password = Rails.application.credentials.admin_password
 end
 
-# Measurements
-calorie = Measurement.find_or_create_by(name: 'calorie')
-distance = Measurement.find_or_create_by(name: 'distance')
-height = Measurement.find_or_create_by(name: 'height')
-rep = Measurement.find_or_create_by(name: 'rep')
-round = Measurement.find_or_create_by(name: 'round')
-time = Measurement.find_or_create_by(name: 'time')
-weight = Measurement.find_or_create_by(name: 'weight')
-
 # Movements
-airsquat = Movement.find_or_create_by(name: 'Air Squat', measurement: rep)
-bench_press = Movement.find_or_create_by(name: 'Bench Press', measurement: weight)
-Movement.find_or_create_by(name: 'Body Blaster', measurement: rep)
-backext = Movement.find_or_create_by(name: 'Back Extensions', measurement: rep)
-Movement.find_or_create_by(name: 'Body Blaster', measurement: rep)
-box_jump = Movement.find_or_create_by(name: 'Box Jump', measurement: rep)
-burpee = Movement.find_or_create_by(name: 'Burpee', measurement: rep)
-Movement.find_or_create_by(name: 'Over the bar Burpee', measurement: rep)
-Movement.find_or_create_by(name: 'Burpee Box Jump', measurement: rep)
-chest2bar = Movement.find_or_create_by(name: 'Chest-to-bar pull-up', measurement: rep)
-cleanjerk = Movement.find_or_create_by(name: 'Clean and Jerk', measurement: weight)
-clean = Movement.find_or_create_by(name: 'Clean Squat', measurement: weight)
-deadlift = Movement.find_or_create_by(name: 'Deadlift', measurement: weight)
-Movement.find_or_create_by(name: 'Dip', measurement: rep)
-double_under = Movement.find_or_create_by(name: 'Double Under', measurement: rep)
-Movement.find_or_create_by(name: 'Dumbbell Bench Press', measurement: weight)
-Movement.find_or_create_by(name: 'Dumbbell Hang Clean and Jerk', measurement: weight)
-Movement.find_or_create_by(name: 'Dumbbell Bell Step-up', measurement: rep)
-Movement.find_or_create_by(name: 'Front Squat', measurement: weight)
-situp = Movement.find_or_create_by(name: 'Sit-up', measurement: rep)
-Movement.find_or_create_by(name: 'GHD Sit-up', measurement: rep)
-handstand = Movement.find_or_create_by(name: 'Handstand', measurement: rep)
-hspu = Movement.find_or_create_by(name: 'Handstand Push-up', measurement: rep)
-Movement.find_or_create_by(name: 'Handstand Walk', measurement: distance)
-Movement.find_or_create_by(name: 'Hang Power Snatch', measurement: weight)
-Movement.find_or_create_by(name: 'Hip Extensions', measurement: rep)
-jumpingjack = Movement.find_or_create_by(name: 'Jumping Jack', measurement: rep)
-kbswing = Movement.find_or_create_by(name: 'Kettlebell Swings', measurement: rep)
-Movement.find_or_create_by(name: 'Kettlebell Sumo Hi Pull', measurement: rep)
-Movement.find_or_create_by(name: 'L Pull-up', measurement: weight)
-Movement.find_or_create_by(name: 'L Sit Hold on Matador', measurement: time)
-Movement.find_or_create_by(name: 'Lateral Over Barbell Burpee', measurement: rep)
-Movement.find_or_create_by(name: 'Lunge', measurement: rep)
-Movement.find_or_create_by(name: 'Lunge with plate overhead', measurement: rep)
-Movement.find_or_create_by(name: 'Bar Muscle-up', measurement: rep)
-muscleup = Movement.find_or_create_by(name: 'Muscle-up', measurement: rep)
-ohs = Movement.find_or_create_by(name: 'Overhead Squat', measurement: weight)
-pistol = Movement.find_or_create_by(name: 'Pistol', measurement: rep)
-Movement.find_or_create_by(name: 'Power Clean', measurement: weight)
-Movement.find_or_create_by(name: 'Power Snatch', measurement: weight)
-Movement.find_or_create_by(name: 'Press Jerk', measurement: weight)
-push_press = Movement.find_or_create_by(name: 'Push Press', measurement: weight)
-pushup = Movement.find_or_create_by(name: 'Push-up', measurement: rep)
-pullup = Movement.find_or_create_by(name: 'Pull-up', measurement: rep)
-Movement.find_or_create_by(name: 'Strict Pull-up', measurement: rep)
-rest = Movement.find_or_create_by(name: 'Rest', measurement: time)
-Movement.find_or_create_by(name: 'Renegade Row', measurement: rep)
-ringdip = Movement.find_or_create_by(name: 'Ring Dip', measurement: rep)
-Movement.find_or_create_by(name: 'Rope Climb', measurement: rep)
-row = Movement.find_or_create_by(name: 'Row', measurement: calorie)
-run = Movement.find_or_create_by(name: 'Run', measurement: distance)
-Movement.find_or_create_by(name: 'Shoulder to Over Head', measurement: weight)
-Movement.find_or_create_by(name: 'Shoulder Press', measurement: weight)
-Movement.find_or_create_by(name: 'Sled Pull', measurement: distance)
-snatch = Movement.find_or_create_by(name: 'Snatch', measurement: weight)
-sumo_deadlift_hight_pull = Movement.find_or_create_by(name: 'Sumo Deadlift High Pull', measurement: weight)
-Movement.find_or_create_by(name: 'Swim', measurement: distance)
-Movement.find_or_create_by(name: 'Tempo Jerk', measurement: weight)
-thruster = Movement.find_or_create_by(name: 'Thruster', measurement: weight)
-Movement.find_or_create_by(name: 'Toes To Bar', measurement: rep)
-Movement.find_or_create_by(name: 'Toes to Bar + Pull-up', measurement: rep)
-Movement.find_or_create_by(name: 'V-up', measurement: rep)
-wallball = Movement.find_or_create_by(name: 'Wall-ball Shot', measurement: rep)
+airsquat = Movement.find_or_create_by(name: 'Air Squat')
+bench_press = Movement.find_or_create_by(name: 'Bench Press')
+Movement.find_or_create_by(name: 'Body Blaster')
+backext = Movement.find_or_create_by(name: 'Back Extensions')
+Movement.find_or_create_by(name: 'Body Blaster')
+box_jump = Movement.find_or_create_by(name: 'Box Jump')
+burpee = Movement.find_or_create_by(name: 'Burpee')
+Movement.find_or_create_by(name: 'Over the bar Burpee')
+Movement.find_or_create_by(name: 'Burpee Box Jump')
+chest2bar = Movement.find_or_create_by(name: 'Chest-to-bar pull-up')
+cleanjerk = Movement.find_or_create_by(name: 'Clean and Jerk')
+clean = Movement.find_or_create_by(name: 'Clean Squat')
+deadlift = Movement.find_or_create_by(name: 'Deadlift')
+Movement.find_or_create_by(name: 'Dip')
+double_under = Movement.find_or_create_by(name: 'Double Under')
+Movement.find_or_create_by(name: 'Dumbbell Bench Press')
+Movement.find_or_create_by(name: 'Dumbbell Hang Clean and Jerk')
+Movement.find_or_create_by(name: 'Dumbbell Bell Step-up')
+Movement.find_or_create_by(name: 'Front Squat')
+situp = Movement.find_or_create_by(name: 'Sit-up')
+Movement.find_or_create_by(name: 'GHD Sit-up')
+handstand = Movement.find_or_create_by(name: 'Handstand')
+hspu = Movement.find_or_create_by(name: 'Handstand Push-up')
+Movement.find_or_create_by(name: 'Handstand Walk')
+Movement.find_or_create_by(name: 'Hang Power Snatch')
+Movement.find_or_create_by(name: 'Hip Extensions')
+jumpingjack = Movement.find_or_create_by(name: 'Jumping Jack')
+kbswing = Movement.find_or_create_by(name: 'Kettlebell Swings')
+Movement.find_or_create_by(name: 'Kettlebell Sumo Hi Pull')
+Movement.find_or_create_by(name: 'L Pull-up')
+Movement.find_or_create_by(name: 'L Sit Hold on Matador')
+Movement.find_or_create_by(name: 'Lateral Over Barbell Burpee')
+Movement.find_or_create_by(name: 'Lunge')
+Movement.find_or_create_by(name: 'Lunge with plate overhead')
+Movement.find_or_create_by(name: 'Bar Muscle-up')
+muscleup = Movement.find_or_create_by(name: 'Muscle-up')
+ohs = Movement.find_or_create_by(name: 'Overhead Squat')
+pistol = Movement.find_or_create_by(name: 'Pistol')
+Movement.find_or_create_by(name: 'Power Clean')
+Movement.find_or_create_by(name: 'Power Snatch')
+Movement.find_or_create_by(name: 'Press Jerk')
+push_press = Movement.find_or_create_by(name: 'Push Press')
+pushup = Movement.find_or_create_by(name: 'Push-up')
+pullup = Movement.find_or_create_by(name: 'Pull-up')
+Movement.find_or_create_by(name: 'Strict Pull-up')
+rest = Movement.find_or_create_by(name: 'Rest')
+Movement.find_or_create_by(name: 'Renegade Row')
+ringdip = Movement.find_or_create_by(name: 'Ring Dip')
+Movement.find_or_create_by(name: 'Rope Climb')
+row = Movement.find_or_create_by(name: 'Row')
+run = Movement.find_or_create_by(name: 'Run')
+Movement.find_or_create_by(name: 'Shoulder to Over Head')
+Movement.find_or_create_by(name: 'Shoulder Press')
+Movement.find_or_create_by(name: 'Sled Pull')
+snatch = Movement.find_or_create_by(name: 'Snatch')
+sumo_deadlift_hight_pull = Movement.find_or_create_by(name: 'Sumo Deadlift High Pull')
+Movement.find_or_create_by(name: 'Swim')
+Movement.find_or_create_by(name: 'Tempo Jerk')
+thruster = Movement.find_or_create_by(name: 'Thruster')
+Movement.find_or_create_by(name: 'Toes To Bar')
+Movement.find_or_create_by(name: 'Toes to Bar + Pull-up')
+Movement.find_or_create_by(name: 'V-up')
+wallball = Movement.find_or_create_by(name: 'Wall-ball Shot')
 
 # Programs
 cfj = Program.find_or_create_by(name: 'Crossfit Journal')
@@ -101,7 +92,7 @@ cfj = Program.find_or_create_by(name: 'Crossfit Journal')
 # On the call of "rotate," the athlete(s) must move to the next station immediately for a good score.
 # One point is given for each rep, except on the rower where each calorie is 1 point.
 fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
-  workout.measurement = rep
+  workout.build_metric(measurement: :rep)
   workout.rounds = 3
   workout.time = 18
   workout.notes = 'In this workout you move from each of 5 stations after a minute.'\
@@ -152,7 +143,7 @@ cfj.schedules.find_or_create_by(workout: fight_gone_bad, posted_at: '01-01-2018'
 # 100 sit-ups
 # 100 squats
 angie = Workout.find_or_create_by(name: 'Angie') do |workout|
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: pullup) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end
@@ -179,7 +170,7 @@ cfj.schedules.find_or_create_by(workout: angie, posted_at: '02-01-2018')
 # Rest precisely 3 minutes between each round
 barbara = Workout.find_or_create_by(name: 'Barbara') do |workout|
   workout.rounds = 5
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: pullup) do |e|
     e.metrics.build(measurement: :rep, value: 20)
   end
@@ -209,7 +200,7 @@ cfj.schedules.find_or_create_by(workout: barbara, posted_at: '30-06-2017')
 chelsea = Workout.find_or_create_by(name: 'Chelsea') do |workout|
   workout.rounds = 30
   workout.time = 30
-  workout.measurement = rep
+  workout.build_metric(measurement: :rep)
   workout.exercises.build(movement: pullup) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
@@ -231,7 +222,7 @@ cfj.schedules.find_or_create_by(workout: chelsea, posted_at: '04-09-2015')
 # 15 squats
 cindy = Workout.find_or_create_by(name: 'Cindy') do |workout|
   workout.time = 20
-  workout.measurement = round
+  workout.build_metric(measurement: :round)
   workout.exercises.build(movement: pullup) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
@@ -252,7 +243,7 @@ cfj.schedules.find_or_create_by(workout: cindy, posted_at: '12-08-2017')
 # Handstand push-ups
 diane = Workout.find_or_create_by(name: 'Diane') do |workout|
   workout.interval = '21-15-9'
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: deadlift) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 225)
@@ -271,7 +262,7 @@ cfj.schedules.find_or_create_by(workout: diane, posted_at: '13-12-2015')
 # Ring dips
 elizabeth = Workout.find_or_create_by(name: 'Elizabeth') do |workout|
   workout.interval = '21-15-9'
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: clean) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 135)
@@ -290,7 +281,7 @@ cfj.schedules.find_or_create_by(workout: elizabeth, posted_at: '05-04-2018')
 # Pull-ups
 fran = Workout.find_or_create_by(name: 'Fran') do |workout|
   workout.interval = '21-15-9'
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: thruster) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 95)
@@ -308,7 +299,7 @@ cfj.schedules.find_or_create_by(workout: fran, posted_at: '17-11-2017')
 # 135-lb. clean and jerks
 grace = Workout.find_or_create_by(name: 'Grace') do |workout|
   workout.rounds = 1
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: cleanjerk) do |e|
     e.metrics.build(measurement: :rep, value: 30)
     e.metrics.build(measurement: :weight, value: 135)
@@ -325,7 +316,7 @@ end
 # 12 pull-ups
 helen = Workout.find_or_create_by(name: 'Helen') do |workout|
   workout.rounds = 3
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
@@ -347,7 +338,7 @@ cfj.schedules.find_or_create_by(workout: helen, posted_at: '15-05-2018')
 # 135-lb. snatches
 isabel = Workout.find_or_create_by(name: 'Isabel') do |workout|
   workout.rounds = 1
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: snatch) do |e|
     e.metrics.build(measurement: :rep, value: 30)
     e.metrics.build(measurement: :weight, value: 135)
@@ -364,7 +355,7 @@ cfj.schedules.find_or_create_by(workout: isabel, posted_at: '13-06-2018')
 # 30 pull-ups
 jackie = Workout.find_or_create_by(name: 'Jackie') do |workout|
   workout.rounds = 1
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: row) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 1000)
@@ -386,7 +377,7 @@ cfj.schedules.find_or_create_by(workout: jackie, posted_at: '15-05-2015')
 # 150 wall-ball shots, 20-lb. ball
 karen = Workout.find_or_create_by(name: 'Karen') do |workout|
   workout.rounds = 1
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: wallball) do |e|
     e.metrics.build(measurement: :rep, value: 150)
     e.metrics.build(measurement: :weight, value: 20)
@@ -403,7 +394,7 @@ cfj.schedules.find_or_create_by(workout: karen, posted_at: '05-01-2017')
 # 3/4 body-weight cleans
 linda = Workout.find_or_create_by(name: 'Linda') do |workout|
   workout.interval = '10-9-8-7-6-5-4-3-2-1'
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: deadlift)  do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: '1 1/2 body weight')
@@ -428,7 +419,7 @@ cfj.schedules.find_or_create_by(workout: linda, posted_at: '26-05-2018')
 # 15 pull-ups
 mary = Workout.find_or_create_by(name: 'Mary') do |workout|
   workout.time = 20
-  workout.measurement = round
+  workout.build_metric(measurement: :round)
   workout.exercises.build(movement: hspu) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
@@ -449,7 +440,7 @@ cfj.schedules.find_or_create_by(workout: mary, posted_at: '12-08-2017')
 # 95-lb. overhead squats, 15 reps
 nancy = Workout.find_or_create_by(name: 'Nancy') do |workout|
   workout.rounds = 5
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
@@ -471,7 +462,7 @@ cfj.schedules.find_or_create_by(workout: nancy, posted_at: '05-06-2018')
 # Sit-ups
 annie = Workout.find_or_create_by(name: 'Annie') do |workout|
   workout.interval = '50-40-30-20-10'
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: double_under) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
@@ -490,7 +481,7 @@ cfj.schedules.find_or_create_by(workout: annie, posted_at: '29-11-2017')
 # 30 pull-ups
 eva = Workout.find_or_create_by(name: 'Eva') do |workout|
   workout.rounds = 5
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
@@ -514,7 +505,7 @@ cfj.schedules.find_or_create_by(workout: eva, posted_at: '16-01-2018')
 # 30 wall-ball shots, 20-lb. ball
 kelly = Workout.find_or_create_by(name: 'Kelly') do |workout|
   workout.rounds = 5
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
@@ -537,7 +528,7 @@ cfj.schedules.find_or_create_by(workout: kelly, posted_at: '09-02-2018')
 # Pull-ups
 lynne = Workout.find_or_create_by(name: 'Lynne') do |workout|
   workout.rounds = 5
-  workout.measurement = rep
+  workout.build_metric(measurement: :rep)
   workout.exercises.build(movement: bench_press) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :weight, value: 'body weight')
@@ -557,7 +548,7 @@ cfj.schedules.find_or_create_by(workout: lynne, posted_at: '09-04-2018')
 # Max-reps pull-ups
 nicole = Workout.find_or_create_by(name: 'Nicole') do |workout|
   workout.time = 20
-  workout.measurement = round
+  workout.build_metric(measurement: :round)
   workout.exercises.build(movement: run) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 400)
@@ -576,7 +567,7 @@ cfj.schedules.find_or_create_by(workout: nicole, posted_at: '30-06-2017')
 # 135-lb. snatches
 amanda = Workout.find_or_create_by(name: 'Amanda') do |workout|
   workout.interval = '9-7-5'
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: muscleup) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
@@ -596,7 +587,7 @@ cfj.schedules.find_or_create_by(workout: amanda, posted_at: '30-03-2017')
 # Use same load for each set. Rest as needed between sets.
 gwen = Workout.find_or_create_by(name: 'Gwen') do |workout|
   workout.interval = '15-12-9'
-  workout.measurement = weight
+  workout.build_metric(measurement: :weight)
   workout.exercises.build(movement: cleanjerk) do |e|
     e.metrics.build(measurement: :rep, value: 1)
       e.metrics.build(measurement: :weight)
@@ -611,7 +602,7 @@ cfj.schedules.find_or_create_by(workout: gwen, posted_at: '20-11-2017')
 # Burpee/Push-up/Jumping-Jack/Sit-up/Handstand
 marguerita = Workout.find_or_create_by(name: 'Marguerita') do |workout|
   workout.rounds = 50
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: burpee) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
@@ -639,7 +630,7 @@ cfj.schedules.find_or_create_by(workout: marguerita, posted_at: '15-01-2014')
 # 60 squats
 candy = Workout.find_or_create_by(name: 'Candy') do |workout|
   workout.rounds = 5
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: pullup) do |e|
     e.metrics.build(measurement: :rep, value: 20)
   end
@@ -661,7 +652,7 @@ cfj.schedules.find_or_create_by(workout: candy, posted_at: '11-06-2018')
 # 60 one-legged squats, alternating legs
 maggie = Workout.find_or_create_by(name: 'Maggie') do |workout|
   workout.rounds = 5
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: hspu) do |e|
     e.metrics.build(measurement: :rep, value: 20)
   end
@@ -691,7 +682,7 @@ cfj.schedules.find_or_create_by(workout: maggie, posted_at: '11-06-2018')
 hope = Workout.find_or_create_by(name: 'Hope') do |workout|
   workout.rounds = 3
   workout.time = 18
-  workout.measurement = rep
+  workout.build_metric(measurement: :rep)
   workout.notes = '"Hope" has the same format as Fight Gone Bad. In this'\
                   ' workout you move from each of five stations after a minute.'\
                   ' This is a five-minute round from which a one-minute break is'\
@@ -735,7 +726,7 @@ cfj.schedules.find_or_create_by(workout: hope, posted_at: '06-07-2013')
 # Push-ups
 Workout.find_or_create_by(name: 'JT') do |workout|
   workout.interval = '21-15-9'
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: hspu) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
@@ -756,7 +747,7 @@ end
 # 50 sit-ups
 Workout.find_or_create_by(name: 'Michael') do |workout|
   workout.rounds = 3
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
@@ -779,8 +770,8 @@ end
 # Run 1 mile
 Workout.find_or_create_by(name: 'Murph') do |workout|
   workout.rounds = 1
-  workout.measurement = time
-  workout.exercises.build(movement: run, reps: 1, measurement: distance, measurement_value: 1600) do |e|
+  workout.build_metric(measurement: :time)
+  workout.exercises.build(movement: run, reps: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 1600)
   end
@@ -811,7 +802,7 @@ end
 # 50 pull-ups
 Workout.find_or_create_by(name: 'Daniel') do |workout|
   workout.rounds = 1
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: pullup) do |e|
     e.metrics.build(measurement: :rep, value: 50)
   end
@@ -851,7 +842,7 @@ end
 # 18 pull-ups
 Workout.find_or_create_by(name: 'Josh') do |workout|
   workout.rounds = 1
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: ohs) do |e|
     e.metrics.build(measurement: :rep, value: 21)
     e.metrics.build(measurement: :weight, value: 95)
@@ -886,9 +877,9 @@ end
 # 15 muscle-ups
 # 25 squats
 # 20 muscle-ups
-Workout.find_or_create_by(name: 'Jason') do |workout|
+jason = Workout.find_or_create_by(name: 'Jason') do |workout|
   workout.rounds = 1
-  workout.measurement = time
+  workout.build_metric(measurement: :time)
   workout.exercises.build(movement: airsquat) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end

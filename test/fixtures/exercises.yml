@@ -5,17 +5,13 @@
 # 21-15-9 reps for time
 # 95-lb. thrusters
 # Pull-ups
-one:
+fran_thruster:
   workout: fran
   movement: thruster
-  measurement: weight
-  reps: 1
 
-two:
+fran_pullup:
   workout: fran
   movement: pullup
-  measurement: rep
-  reps: 1
 
 # ==============================================================================
 # Murph
@@ -25,34 +21,22 @@ two:
 # 200 push-ups
 # 300 squats
 # Run 1 mile
-three:
+murph_run:
   workout: murph
   movement: run
-  reps: 1
-  measurement: distance
-  measurement_value: 1600
 
-four:
+murph_pullup:
   workout: murph
   movement: pullup
-  measurement: rep
-  reps: 100
 
-five:
+murph_pushup:
   workout: murph
   movement: pushup
-  measurement: rep
-  reps: 200
 
-six:
+murph_squat:
   workout: murph
   movement: squat
-  measurement: rep
-  reps: 300
 
-seven:
+murph_second_run:
   workout: murph
   movement: run
-  reps: 1
-  measurement: distance
-  measurement_value: 1600

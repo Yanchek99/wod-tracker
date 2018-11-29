@@ -8,14 +8,13 @@ module MetricsHelper
   def metric_unit_msg(metric)
     return "Max #{metric.unit.pluralize}" if metric.value.nil?
     return metric.value == 1 ? '' : metric.value if metric.rep?
+    return seconds_to_duration_string(metric.value) if metric.time?
 
-    pluralize formatted_metric_value(metric), metric.unit
+    pluralize metric.value, metric.unit
   end
 
-  def formatted_metric_value(metric)
-    return metric.value unless metric.time?
-
-    duration = ActiveSupport::Duration.build(metric.value).parts
+  def seconds_to_duration_string(seconds)
+    duration = ActiveSupport::Duration.build(seconds).parts
     "#{format '%02d', duration[:minutes]}:#{format '%02d', duration[:seconds]}"
   end
 end

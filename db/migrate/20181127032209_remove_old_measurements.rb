@@ -7,6 +7,7 @@ class RemoveOldMeasurements < ActiveRecord::Migration[5.2]
     remove_column :exercises, :measurement_id, :integer
     remove_column :movement_logs, :measurement_id, :integer
     remove_column :workouts, :measurement_id, :integer
+    remove_column :logs, :measurement_value
     drop_table :measurements do |t|
       t.string :name
 

@@ -1,0 +1,29 @@
+.container
+  .row.my-2
+    .col.text-left
+      = link_to_next_page @dates, '<', class: 'btn btn-primary'
+    h3.col.auto.text-center
+      = local_time(@date, '%A %B %e, %Y')
+    .col.text-right
+      = link_to_prev_page @dates, '>', class: 'btn btn-primary'
+  - @schedules.each do |schedule|
+    .section
+      .row.my-3.pt-3.border-top
+        h1.col.text-left
+          = schedule.workout.name
+        i.col.text-right
+          = schedule.program.name
+      .row
+        p.col #{schedule.workout.notes}
+      .row
+        p.col #{workout_objective schedule.workout}
+      .row
+        ul.list-unstyled.col
+          - schedule.workout.exercises.each do |exercise|
+            li = measurable_message(exercise)
+          = simple_format schedule.workout.notes
+      .row
+        .col-12
+          = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-outline-primary'
+          - if Current.user.logged_workout? schedule.workout
+            / = link_to 'See Previous Results', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-secondary'

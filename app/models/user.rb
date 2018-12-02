@@ -10,6 +10,8 @@ class User < ApplicationRecord
   has_many :movements, -> { distinct }, through: :movement_logs
   has_many :subscriptions, dependent: :destroy
   has_many :programs, through: :subscriptions
+  has_many :schedules, through: :programs
+  has_many :scheduled_workouts, through: :schedules, source: :workout, class_name: 'Workout'
 
   def subscribed?(program)
     programs.include?(program)

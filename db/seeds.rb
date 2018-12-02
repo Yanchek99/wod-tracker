@@ -771,7 +771,7 @@ end
 Workout.find_or_create_by(name: 'Murph') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run, reps: 1) do |e|
+  workout.exercises.build(movement: run) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 1600)
   end

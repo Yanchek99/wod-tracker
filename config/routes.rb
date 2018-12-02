@@ -23,4 +23,6 @@ Rails.application.routes.draw do
       post :subscribe
     end
   end
+
+  resource :schedule, only: [:show]
 end

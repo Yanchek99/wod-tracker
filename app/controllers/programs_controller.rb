@@ -1,5 +1,5 @@
 class ProgramsController < ApplicationController
-  before_action :set_program, only: [:show, :subscribe]
+  before_action :set_program, only: [:show, :subscribe, :unsubscribe]
 
   def index
     @programs = Program.all.order(:name)
@@ -9,6 +9,11 @@ class ProgramsController < ApplicationController
 
   def subscribe
     @program.subscriptions.create(user: current_user).save
+    render :show
+  end
+
+  def unsubscribe
+    @program.subscriptions.find_by(user: current_user).destroy
     render :show
   end
 

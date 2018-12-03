@@ -17,7 +17,7 @@ html lang="en"
             span.navbar-toggler-icon
           .collapse.navbar-collapse#navbarSupportedContent
             .navbar-nav.mr-auto
-              = link_to 'Schedule', schedule_path, class: nav_item_class(:schedules)
+              = link_to 'Schedule', schedules_path, class: nav_item_class(:schedules) unless Current.user.schedules.empty?
               = link_to 'Programs', programs_path, class: nav_item_class(:programs)
               = link_to 'Workouts', workouts_path, class: nav_item_class(:workouts)
               = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'

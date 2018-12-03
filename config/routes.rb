@@ -21,8 +21,9 @@ Rails.application.routes.draw do
   resources :programs do
     member do
       post :subscribe
+      delete :unsubscribe
     end
   end
 
-  resource :schedule, only: [:show]
+  resources :schedules, only: :index
 end

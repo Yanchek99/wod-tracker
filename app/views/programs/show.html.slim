@@ -1,10 +1,10 @@
 .container
-  .row
+  .row.my-2
     .col
       h1 = @program.name
-    - unless Current.user.subscribed? @program
-      .col.text-right
-        = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', method: :post
+    .col.text-right
+      = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', method: :post unless Current.user.subscribed? @program
+      = link_to '+Unfollow', unsubscribe_program_path(@program), class: 'btn btn-primary', method: :delete if Current.user.subscribed? @program
   - @program.schedules.order(posted_at: :desc).each do |schedule|
     h4.mb-3.border-bottom = local_time(schedule.posted_at.to_date, '%B %e, %Y')
     .row

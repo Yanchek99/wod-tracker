@@ -1,13 +1,12 @@
 .container
-  .row.my-2
-    .col.text-left
-      = link_to_next_page @dates, '<', class: 'btn btn-primary'
-    h3.col.auto.text-center
-      = local_time(@date, '%A %B %e, %Y')
-    .col.text-right
-      = link_to_prev_page @dates, '>', class: 'btn btn-primary'
-  - @schedules.each do |schedule|
-    .section
+  - if @schedules.empty?
+    .my-2.alert.alert-warning No schedules
+  - else
+    .row.my-2
+      .col.text-left = link_to_next_page @dates, '<', class: 'btn btn-primary'
+      h3.col.auto.text-center = local_time(@date, '%A %B %e, %Y')
+      .col.text-right = link_to_prev_page @dates, '>', class: 'btn btn-primary'
+    - @schedules.each do |schedule|
       .row.my-3.pt-3.border-top
         h1.col.text-left
           = schedule.workout.name

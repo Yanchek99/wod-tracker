@@ -33,6 +33,7 @@ gem 'jbuilder', '~> 2.5'
 
 gem 'pg'
 
+gem 'cancancan'
 gem 'devise'
 
 gem 'rails_admin'

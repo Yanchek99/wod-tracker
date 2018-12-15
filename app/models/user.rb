@@ -4,6 +4,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  enum role: { admin: 'admin', athlete: 'athelete', coach: 'coach' }
+
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs
   has_many :workouts, -> { distinct }, through: :logs

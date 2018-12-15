@@ -22,6 +22,7 @@ html lang="en"
               = link_to 'Workouts', workouts_path, class: nav_item_class(:workouts)
               = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
             .navbar-nav
+              = link_to 'Admin', rails_admin_path, class: 'nav-item nav-link' if Current.user.admin?
               = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'nav-item nav-link'
     = render partial: 'flash', flash: flash
     = yield

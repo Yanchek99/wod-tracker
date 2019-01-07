@@ -7,8 +7,4 @@ class Exercise < ApplicationRecord
   default_scope { includes(:metrics) }
 
   accepts_nested_attributes_for :metrics, allow_destroy: true
-
-  def can_rx?
-    male_rx.present? || female_rx.present?
-  end
 end

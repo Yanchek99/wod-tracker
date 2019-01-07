@@ -2,6 +2,7 @@ class Exercise < ApplicationRecord
   belongs_to :workout
   belongs_to :movement
   belongs_to :measurement, optional: true
+  belongs_to :segment, optional: true
   has_many :metrics, as: :measurable, dependent: :destroy
 
   default_scope { includes(:metrics) }

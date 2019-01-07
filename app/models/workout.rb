@@ -2,6 +2,7 @@ class Workout < ApplicationRecord
   has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, dependent: :destroy
   has_many :movements, through: :exercises
+  has_many :segments, dependent: :destroy
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs
   has_many :schedules, dependent: :destroy
@@ -9,6 +10,7 @@ class Workout < ApplicationRecord
 
   accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :exercises, allow_destroy: true
+  accepts_nested_attributes_for :segments
 
   validates :name, :metric, presence: true
 

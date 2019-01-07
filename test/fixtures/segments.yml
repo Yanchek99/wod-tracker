@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  rounds: 1
+  time: 1
+  interval: 1
+  rank: 1
+  for: 1
+
+two:
+  rounds: 1
+  time: 1
+  interval: 1
+  rank: 1
+  for: 1

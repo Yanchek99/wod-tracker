@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_07_003333) do
+ActiveRecord::Schema.define(version: 2019_01_07_044725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,7 +41,9 @@ ActiveRecord::Schema.define(version: 2019_01_07_003333) do
     t.bigint "movement_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "segment_id"
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
+    t.index ["segment_id"], name: "index_exercises_on_segment_id"
     t.index ["workout_id"], name: "index_exercises_on_workout_id"
   end
 
@@ -96,6 +98,16 @@ ActiveRecord::Schema.define(version: 2019_01_07_003333) do
     t.index ["workout_id"], name: "index_schedules_on_workout_id"
   end
 
+  create_table "segments", force: :cascade do |t|
+    t.bigint "workout_id"
+    t.integer "rounds"
+    t.integer "time"
+    t.integer "interval"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workout_id"], name: "index_segments_on_workout_id"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.bigint "program_id"
     t.bigint "user_id"
@@ -135,11 +147,13 @@ ActiveRecord::Schema.define(version: 2019_01_07_003333) do
   end
 
   add_foreign_key "exercises", "movements"
+  add_foreign_key "exercises", "segments"
   add_foreign_key "exercises", "workouts"
   add_foreign_key "movement_logs", "logs"
   add_foreign_key "movement_logs", "movements"
   add_foreign_key "schedules", "programs"
   add_foreign_key "schedules", "workouts"
+  add_foreign_key "segments", "workouts"
   add_foreign_key "subscriptions", "programs"
   add_foreign_key "subscriptions", "users"
 end

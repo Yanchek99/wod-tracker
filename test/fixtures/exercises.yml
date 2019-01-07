@@ -40,3 +40,27 @@ murph_squat:
 murph_second_run:
   workout: murph
   movement: run
+
+# For time:
+# Run 800 meters
+# Then, 10 rounds of the couplet:
+#    10 handstand push-ups
+#    10 single-leg squats
+# Then, run 800 meters
+segmented_run:
+  workout: segmented
+  movement: run
+
+segmented_hspu:
+  workout: segmented
+  movement: hspu
+  segment: test
+
+segmented_pistol:
+  workout: segmented
+  movement: pistol
+  segment: test
+
+segmented_second_run:
+  workout: segmented
+  movement: run

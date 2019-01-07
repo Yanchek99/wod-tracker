@@ -1,7 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+hspu:
+  name: Handstand Push Up
 
-thruster:
-  name: Thruster
+pistol:
+  name: Pistol
 
 pullup:
   name: Pull Up
@@ -9,8 +11,11 @@ pullup:
 pushup:
   name: Push Up
 
+run:
+  name: Run
+
 squat:
   name: Air Squat
 
-run:
-  name: Run
+thruster:
+  name: Thruster

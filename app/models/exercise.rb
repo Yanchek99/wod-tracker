@@ -8,4 +8,12 @@ class Exercise < ApplicationRecord
   default_scope { includes(:metrics) }
 
   accepts_nested_attributes_for :metrics, allow_destroy: true
+
+  before_validation :set_workout_from_segment
+
+  private
+
+  def set_workout_from_segment
+    self.workout = segment.workout if segment
+  end
 end

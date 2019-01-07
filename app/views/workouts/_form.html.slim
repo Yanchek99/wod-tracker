@@ -1,4 +1,5 @@
 = simple_form_for @workout, wrapper: :input_group do |f|
+  = f.object.errors.inspect
   = f.error_notification
   .form-inputs.row
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
@@ -13,8 +14,11 @@
   #exercises
     = f.simple_fields_for :exercises do |exercise_form|
       = render 'exercise_fields', f: exercise_form
+    = f.simple_fields_for :segments do |segment_form|
+      = render 'segment_fields', f: segment_form
     .links
       = link_to_add_association 'Add Exercise', f, :exercises, class: 'btn btn-outline-primary btn-block'
+      = link_to_add_association 'Add Segment', f, :segments, class: 'btn btn-outline-primary btn-block'
   hr
   .form-actions
     = f.button :submit, class: 'btn btn-block btn-success'

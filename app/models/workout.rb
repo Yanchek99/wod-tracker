@@ -10,7 +10,7 @@ class Workout < ApplicationRecord
 
   accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :exercises, allow_destroy: true
-  accepts_nested_attributes_for :segments
+  accepts_nested_attributes_for :segments, allow_destroy: true
 
   validates :name, :metric, presence: true
 

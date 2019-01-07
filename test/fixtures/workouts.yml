@@ -7,3 +7,6 @@ fran:
 murph:
   name: Murph
   rounds: 1
+
+segmented:
+  name: Segmented

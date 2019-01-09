@@ -20,10 +20,10 @@
     .col
       ul.list-unstyled.mb-3
         - in_segment = nil
-        - @workout.exercises.each do |exercise|
+        - @workout.exercises.order(:position).each do |exercise|
             - if exercise.segment.present?
               - unless in_segment
-                li = segment_objective(exercise.segment) 
+                li = segment_objective(exercise.segment)
               li.ml-4 #{measurable_message(exercise)}
             - else
               li #{measurable_message(exercise)}

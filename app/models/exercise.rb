@@ -11,6 +11,10 @@ class Exercise < ApplicationRecord
 
   before_validation :set_workout_from_segment
 
+  validates :position, presence: true,
+                       numericality: { only_integer: true, greater_than: 0 },
+                       uniqueness: { scope: :workout, message: 'only used once per workout' }
+
   private
 
   def set_workout_from_segment

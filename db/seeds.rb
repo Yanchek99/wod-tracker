@@ -101,32 +101,32 @@ fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
           ' The clock does not reset or stop between exercises.'\
           ' On the call of "rotate," the athlete(s) must move to the next station immediately for a good score.'\
           ' One point is given for each rep, except on the rower where each calorie is 1 point.'
-  workout.exercises.build(movement: wallball) do |e|
+  workout.exercises.build(movement: wallball, position: 1) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :weight, value: 20)
   end
-  workout.exercises.build(movement: sumo_deadlift_hight_pull) do |e|
+  workout.exercises.build(movement: sumo_deadlift_hight_pull, position: 2) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :weight, value: 75)
   end
-  workout.exercises.build(movement: box_jump) do |e|
+  workout.exercises.build(movement: box_jump, position: 3) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :height, value: 20)
   end
-  workout.exercises.build(movement: push_press) do |e|
+  workout.exercises.build(movement: push_press, position: 4) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :time, value: '1:00')
     e.metrics.build(measurement: :weight, value: 75)
   end
-  workout.exercises.build(movement: row) do |e|
+  workout.exercises.build(movement: row, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :calorie)
     e.metrics.build(measurement: :time, value: '1:00')
   end
-  workout.exercises.build(movement: rest) do |e|
+  workout.exercises.build(movement: rest, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :time, value: '1:00')
   end
@@ -145,16 +145,16 @@ cfj.schedules.find_or_create_by(workout: fight_gone_bad, posted_at: '01-01-2018'
 # 100 squats
 angie = Workout.find_or_create_by(name: 'Angie') do |workout|
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end
-  workout.exercises.build(movement: situp) do |e|
+  workout.exercises.build(movement: situp, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end
 end
@@ -172,19 +172,19 @@ cfj.schedules.find_or_create_by(workout: angie, posted_at: '02-01-2018')
 barbara = Workout.find_or_create_by(name: 'Barbara') do |workout|
   workout.rounds = 5
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 20)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
-  workout.exercises.build(movement: situp) do |e|
+  workout.exercises.build(movement: situp, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 40)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 50)
   end
-  workout.exercises.build(movement: rest) do |e|
+  workout.exercises.build(movement: rest, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :time, value: '3:00')
   end
@@ -202,13 +202,13 @@ chelsea = Workout.find_or_create_by(name: 'Chelsea') do |workout|
   workout.rounds = 30
   workout.time = 30
   workout.build_metric(measurement: :rep)
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 15)
   end
 end
@@ -224,13 +224,13 @@ cfj.schedules.find_or_create_by(workout: chelsea, posted_at: '04-09-2015')
 cindy = Workout.find_or_create_by(name: 'Cindy') do |workout|
   workout.time = 20
   workout.build_metric(measurement: :round)
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 15)
   end
 end
@@ -245,11 +245,11 @@ cfj.schedules.find_or_create_by(workout: cindy, posted_at: '12-08-2017')
 diane = Workout.find_or_create_by(name: 'Diane') do |workout|
   workout.interval = '21-15-9'
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: deadlift) do |e|
+  workout.exercises.build(movement: deadlift, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 225)
   end
-  workout.exercises.build(movement: hspu) do |e|
+  workout.exercises.build(movement: hspu, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
 end
@@ -264,11 +264,11 @@ cfj.schedules.find_or_create_by(workout: diane, posted_at: '13-12-2015')
 elizabeth = Workout.find_or_create_by(name: 'Elizabeth') do |workout|
   workout.interval = '21-15-9'
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: clean) do |e|
+  workout.exercises.build(movement: clean, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 135)
   end
-  workout.exercises.build(movement: ringdip) do |e|
+  workout.exercises.build(movement: ringdip, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
 end
@@ -283,11 +283,11 @@ cfj.schedules.find_or_create_by(workout: elizabeth, posted_at: '05-04-2018')
 fran = Workout.find_or_create_by(name: 'Fran') do |workout|
   workout.interval = '21-15-9'
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: thruster) do |e|
+  workout.exercises.build(movement: thruster, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 95)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
 end
@@ -301,7 +301,7 @@ cfj.schedules.find_or_create_by(workout: fran, posted_at: '17-11-2017')
 grace = Workout.find_or_create_by(name: 'Grace') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: cleanjerk) do |e|
+  workout.exercises.build(movement: cleanjerk, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 30)
     e.metrics.build(measurement: :weight, value: 135)
   end
@@ -318,15 +318,15 @@ end
 helen = Workout.find_or_create_by(name: 'Helen') do |workout|
   workout.rounds = 3
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
   end
-  workout.exercises.build(movement: kbswing) do |e|
+  workout.exercises.build(movement: kbswing, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 21)
     e.metrics.build(measurement: :weight, value: 53)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
 end
@@ -340,7 +340,7 @@ cfj.schedules.find_or_create_by(workout: helen, posted_at: '15-05-2018')
 isabel = Workout.find_or_create_by(name: 'Isabel') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: snatch) do |e|
+  workout.exercises.build(movement: snatch, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 30)
     e.metrics.build(measurement: :weight, value: 135)
   end
@@ -357,15 +357,15 @@ cfj.schedules.find_or_create_by(workout: isabel, posted_at: '13-06-2018')
 jackie = Workout.find_or_create_by(name: 'Jackie') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: row) do |e|
+  workout.exercises.build(movement: row, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 1000)
   end
-  workout.exercises.build(movement: thruster) do |e|
+  workout.exercises.build(movement: thruster, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 50)
     e.metrics.build(measurement: :weight, value: 45)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
 end
@@ -379,7 +379,7 @@ cfj.schedules.find_or_create_by(workout: jackie, posted_at: '15-05-2015')
 karen = Workout.find_or_create_by(name: 'Karen') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: wallball) do |e|
+  workout.exercises.build(movement: wallball, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 150)
     e.metrics.build(measurement: :weight, value: 20)
   end
@@ -396,15 +396,15 @@ cfj.schedules.find_or_create_by(workout: karen, posted_at: '05-01-2017')
 linda = Workout.find_or_create_by(name: 'Linda') do |workout|
   workout.interval = '10-9-8-7-6-5-4-3-2-1'
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: deadlift)  do |e|
+  workout.exercises.build(movement: deadlift, position: 1)  do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: '1 1/2 body weight')
   end
-  workout.exercises.build(movement: bench_press) do |e|
+  workout.exercises.build(movement: bench_press, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 'body weight')
   end
-  workout.exercises.build(movement: clean) do |e|
+  workout.exercises.build(movement: clean, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: '3/4 body weight')
   end
@@ -421,13 +421,13 @@ cfj.schedules.find_or_create_by(workout: linda, posted_at: '26-05-2018')
 mary = Workout.find_or_create_by(name: 'Mary') do |workout|
   workout.time = 20
   workout.build_metric(measurement: :round)
-  workout.exercises.build(movement: hspu) do |e|
+  workout.exercises.build(movement: hspu, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
-  workout.exercises.build(movement: pistol) do |e|
+  workout.exercises.build(movement: pistol, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 15)
   end
 end
@@ -442,11 +442,11 @@ cfj.schedules.find_or_create_by(workout: mary, posted_at: '12-08-2017')
 nancy = Workout.find_or_create_by(name: 'Nancy') do |workout|
   workout.rounds = 5
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
   end
-  workout.exercises.build(movement: ohs) do |e|
+  workout.exercises.build(movement: ohs, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 15)
     e.metrics.build(measurement: :weight, value: 95)
   end
@@ -464,10 +464,10 @@ cfj.schedules.find_or_create_by(workout: nancy, posted_at: '05-06-2018')
 annie = Workout.find_or_create_by(name: 'Annie') do |workout|
   workout.interval = '50-40-30-20-10'
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: double_under) do |e|
+  workout.exercises.build(movement: double_under, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: situp) do |e|
+  workout.exercises.build(movement: situp, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
 end
@@ -483,15 +483,15 @@ cfj.schedules.find_or_create_by(workout: annie, posted_at: '29-11-2017')
 eva = Workout.find_or_create_by(name: 'Eva') do |workout|
   workout.rounds = 5
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
   end
-  workout.exercises.build(movement: kbswing) do |e|
+  workout.exercises.build(movement: kbswing, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 30)
     e.metrics.build(measurement: :weight, value: 70)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
 end
@@ -507,14 +507,14 @@ cfj.schedules.find_or_create_by(workout: eva, posted_at: '16-01-2018')
 kelly = Workout.find_or_create_by(name: 'Kelly') do |workout|
   workout.rounds = 5
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
   end
-  workout.exercises.build(movement: box_jump) do |e|
+  workout.exercises.build(movement: box_jump, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
-  workout.exercises.build(movement: wallball) do |e|
+  workout.exercises.build(movement: wallball, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
 end
@@ -530,11 +530,11 @@ cfj.schedules.find_or_create_by(workout: kelly, posted_at: '09-02-2018')
 lynne = Workout.find_or_create_by(name: 'Lynne') do |workout|
   workout.rounds = 5
   workout.build_metric(measurement: :rep)
-  workout.exercises.build(movement: bench_press) do |e|
+  workout.exercises.build(movement: bench_press, position: 1) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :weight, value: 'body weight')
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
 end
@@ -550,11 +550,11 @@ cfj.schedules.find_or_create_by(workout: lynne, posted_at: '09-04-2018')
 nicole = Workout.find_or_create_by(name: 'Nicole') do |workout|
   workout.time = 20
   workout.build_metric(measurement: :round)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 400)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep)
   end
 end
@@ -569,10 +569,10 @@ cfj.schedules.find_or_create_by(workout: nicole, posted_at: '30-06-2017')
 amanda = Workout.find_or_create_by(name: 'Amanda') do |workout|
   workout.interval = '9-7-5'
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: muscleup) do |e|
+  workout.exercises.build(movement: muscleup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: snatch) do |e|
+  workout.exercises.build(movement: snatch, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :weight, value: 135)
   end
@@ -589,7 +589,7 @@ cfj.schedules.find_or_create_by(workout: amanda, posted_at: '30-03-2017')
 gwen = Workout.find_or_create_by(name: 'Gwen') do |workout|
   workout.interval = '15-12-9'
   workout.build_metric(measurement: :weight)
-  workout.exercises.build(movement: cleanjerk) do |e|
+  workout.exercises.build(movement: cleanjerk, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
       e.metrics.build(measurement: :weight)
   end
@@ -604,19 +604,19 @@ cfj.schedules.find_or_create_by(workout: gwen, posted_at: '20-11-2017')
 marguerita = Workout.find_or_create_by(name: 'Marguerita') do |workout|
   workout.rounds = 50
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: burpee) do |e|
+  workout.exercises.build(movement: burpee, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: jumpingjack) do |e|
+  workout.exercises.build(movement: jumpingjack, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: situp) do |e|
+  workout.exercises.build(movement: situp, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: handstand) do |e|
+  workout.exercises.build(movement: handstand, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
 end
@@ -632,13 +632,13 @@ cfj.schedules.find_or_create_by(workout: marguerita, posted_at: '15-01-2014')
 candy = Workout.find_or_create_by(name: 'Candy') do |workout|
   workout.rounds = 5
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 20)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 40)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 60)
   end
 end
@@ -654,13 +654,13 @@ cfj.schedules.find_or_create_by(workout: candy, posted_at: '11-06-2018')
 maggie = Workout.find_or_create_by(name: 'Maggie') do |workout|
   workout.rounds = 5
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: hspu) do |e|
+  workout.exercises.build(movement: hspu, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 20)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 40)
   end
-  workout.exercises.build(movement: pistol) do |e|
+  workout.exercises.build(movement: pistol, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 60)
   end
 end
@@ -691,25 +691,25 @@ hope = Workout.find_or_create_by(name: 'Hope') do |workout|
                   ' between exercises. On call of "rotate," the athlete/s must'\
                   ' move to next station immediately for good score. One point'\
                   ' is given for each rep.'
-  workout.exercises.build(movement: burpee) do |e|
+  workout.exercises.build(movement: burpee, position: 1) do |e|
     e.metrics.build(measurement: :rep)
   end
-  workout.exercises.build(movement: snatch) do |e|
+  workout.exercises.build(movement: snatch, position: 2) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :weight, value: 75)
   end
-  workout.exercises.build(movement: box_jump) do |e|
+  workout.exercises.build(movement: box_jump, position: 3) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :height, value: 24)
   end
-  workout.exercises.build(movement: thruster) do |e|
+  workout.exercises.build(movement: thruster, position: 4) do |e|
     e.metrics.build(measurement: :rep)
     e.metrics.build(measurement: :weight, value: 75)
   end
-  workout.exercises.build(movement: chest2bar) do |e|
+  workout.exercises.build(movement: chest2bar, position: 5) do |e|
     e.metrics.build(measurement: :rep)
   end
-  workout.exercises.build(movement: rest) do |e|
+  workout.exercises.build(movement: rest, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :time, value: '1:00')
   end
@@ -728,13 +728,13 @@ cfj.schedules.find_or_create_by(workout: hope, posted_at: '06-07-2013')
 Workout.find_or_create_by(name: 'JT') do |workout|
   workout.interval = '21-15-9'
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: hspu) do |e|
+  workout.exercises.build(movement: hspu, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: ringdip) do |e|
+  workout.exercises.build(movement: ringdip, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 1)
   end
 end
@@ -749,14 +749,14 @@ end
 Workout.find_or_create_by(name: 'Michael') do |workout|
   workout.rounds = 3
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
   end
-  workout.exercises.build(movement: backext) do |e|
+  workout.exercises.build(movement: backext, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 50)
   end
-  workout.exercises.build(movement: situp) do |e|
+  workout.exercises.build(movement: situp, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 50)
   end
 end
@@ -772,20 +772,20 @@ end
 Workout.find_or_create_by(name: 'Murph') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 1600)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end
-  workout.exercises.build(movement: pushup) do |e|
+  workout.exercises.build(movement: pushup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 200)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 300)
   end
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 1600)
   end
@@ -804,30 +804,30 @@ end
 Workout.find_or_create_by(name: 'Daniel') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 50)
   end
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
   end
-  workout.exercises.build(movement: thruster) do |e|
+  workout.exercises.build(movement: thruster, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 21)
     e.metrics.build(measurement: :weight, value: 95)
   end
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
   end
-  workout.exercises.build(movement: thruster) do |e|
+  workout.exercises.build(movement: thruster, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 21)
     e.metrics.build(measurement: :weight, value: 95)
   end
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 400)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 7) do |e|
     e.metrics.build(measurement: :rep, value: 50)
   end
 end
@@ -844,25 +844,25 @@ end
 Workout.find_or_create_by(name: 'Josh') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: ohs) do |e|
+  workout.exercises.build(movement: ohs, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 21)
     e.metrics.build(measurement: :weight, value: 95)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 42)
   end
-  workout.exercises.build(movement: ohs) do |e|
+  workout.exercises.build(movement: ohs, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 15)
     e.metrics.build(measurement: :weight, value: 95)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
-  workout.exercises.build(movement: ohs) do |e|
+  workout.exercises.build(movement: ohs, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 9)
     e.metrics.build(measurement: :weight, value: 95)
   end
-  workout.exercises.build(movement: pullup) do |e|
+  workout.exercises.build(movement: pullup, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 18)
   end
 end
@@ -881,28 +881,28 @@ end
 Workout.find_or_create_by(name: 'Jason') do |workout|
   workout.rounds = 1
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 100)
   end
-  workout.exercises.build(movement: muscleup) do |e|
+  workout.exercises.build(movement: muscleup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 75)
   end
-  workout.exercises.build(movement: muscleup) do |e|
+  workout.exercises.build(movement: muscleup, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 50)
   end
-  workout.exercises.build(movement: muscleup) do |e|
+  workout.exercises.build(movement: muscleup, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 15)
   end
-  workout.exercises.build(movement: airsquat) do |e|
+  workout.exercises.build(movement: airsquat, position: 7) do |e|
     e.metrics.build(measurement: :rep, value: 25)
   end
-  workout.exercises.build(movement: muscleup) do |e|
+  workout.exercises.build(movement: muscleup, position: 8) do |e|
     e.metrics.build(measurement: :rep, value: 20)
   end
 end
@@ -918,18 +918,18 @@ end
 # Then, run 800 meters
 Workout.find_or_create_by!(name: 'Segmented WOD') do |workout|
   workout.build_metric(measurement: :time)
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
   end
   seg = workout.segments.build(rounds: 10)
-  workout.exercises.build(movement: hspu, segment: seg) do |e|
+  workout.exercises.build(movement: hspu, segment: seg, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
-  workout.exercises.build(movement: pistol, segment: seg) do |e|
+  workout.exercises.build(movement: pistol, segment: seg, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
-  workout.exercises.build(movement: run) do |e|
+  workout.exercises.build(movement: run, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
   end

@@ -15,7 +15,7 @@ class Log < ApplicationRecord
     exercises.each do |e|
       ml = movement_logs.build(movement: e.movement)
       e.metrics.each do |m|
-        ml.metrics.build(measurement: m.measurement, value: m.calculated_value(e.segment.present? ? e.segment : e.workout))
+        ml.metrics.build(measurement: m.measurement, value: m.calculated_value(e.segment.presence || e.workout))
       end
     end
   end

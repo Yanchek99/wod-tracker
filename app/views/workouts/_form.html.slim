@@ -12,7 +12,8 @@
   h3 Exercises
   #exercises
     = f.simple_fields_for :exercises do |exercise_form|
-      = render 'exercise_fields', f: exercise_form
+      - unless exercise_form.object.segment.present?
+        = render 'exercise_fields', f: exercise_form
     = f.simple_fields_for :segments do |segment_form|
       = render 'segment_fields', f: segment_form
     .links

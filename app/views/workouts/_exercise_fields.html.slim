@@ -2,7 +2,7 @@
   .card-body
     .row
       .col = f.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement'
-      = f.input :position, as: :hidden
+      .col-2 = f.input :position
     .row
       .col#metrics
         = f.simple_fields_for :metrics do |metric_form|

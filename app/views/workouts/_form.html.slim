@@ -12,9 +12,13 @@
   h3 Exercises
   #exercises
     = f.simple_fields_for :exercises do |exercise_form|
-      = render 'exercise_fields', f: exercise_form
+      - unless exercise_form.object.segment.present?
+        = render 'exercise_fields', f: exercise_form
+    = f.simple_fields_for :segments do |segment_form|
+      = render 'segment_fields', f: segment_form
     .links
       = link_to_add_association 'Add Exercise', f, :exercises, class: 'btn btn-outline-primary btn-block'
+      = link_to_add_association 'Add Segment', f, :segments, class: 'btn btn-outline-primary btn-block'
   hr
   .form-actions
     = f.button :submit, class: 'btn btn-block btn-success'

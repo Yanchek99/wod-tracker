@@ -8,10 +8,12 @@
 fran_thruster:
   workout: fran
   movement: thruster
+  position: 1
 
 fran_pullup:
   workout: fran
   movement: pullup
+  position: 2
 
 # ==============================================================================
 # Murph
@@ -24,19 +26,52 @@ fran_pullup:
 murph_run:
   workout: murph
   movement: run
+  position: 1
 
 murph_pullup:
   workout: murph
   movement: pullup
+  position: 2
 
 murph_pushup:
   workout: murph
   movement: pushup
+  position: 3
 
 murph_squat:
   workout: murph
   movement: squat
+  position: 4
 
 murph_second_run:
   workout: murph
   movement: run
+  position: 5
+
+# For time:
+# Run 800 meters
+# Then, 10 rounds of the couplet:
+#    10 handstand push-ups
+#    10 single-leg squats
+# Then, run 800 meters
+segmented_run:
+  workout: segmented
+  movement: run
+  position: 1
+
+segmented_hspu:
+  workout: segmented
+  movement: hspu
+  segment: test
+  position: 2
+
+segmented_pistol:
+  workout: segmented
+  movement: pistol
+  segment: test
+  position: 3
+
+segmented_second_run:
+  workout: segmented
+  movement: run
+  position: 4

@@ -24,7 +24,6 @@ class WorkoutsController < ApplicationController
   # POST /workouts.json
   def create
     @workout = Workout.new(workout_params)
-
     respond_to do |format|
       if @workout.save
         format.html { redirect_to @workout, notice: 'Workout was successfully created.' }
@@ -70,13 +69,11 @@ class WorkoutsController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def workout_params
     params.require(:workout).permit(:name, :rounds, :time, :interval, :notes,
-                                    exercises_attributes: [:id, :reps, :movement_id, :_destroy,
-                                                           metrics_attributes: [
-                                                             :id,
-                                                             :measurement,
-                                                             :value,
-                                                             :_destroy
-                                                           ]],
+                                    segments_attributes: [:id, :rounds, :time, :interval, :_destroy,
+                                                          exercises_attributes: [:id, :reps, :movement_id, :position, :_destroy,
+                                                                                 metrics_attributes: [:id, :measurement, :value, :_destroy]]],
+                                    exercises_attributes: [:id, :reps, :movement_id, :position, :_destroy,
+                                                           metrics_attributes: [:id, :measurement, :value, :_destroy]],
                                     metric_attributes: [:id, :measurement])
   end
 end

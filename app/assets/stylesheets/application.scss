@@ -14,6 +14,7 @@
 // @import "variables";
 @import "bootstrap";
 @import "segments";
+@import "selectize/dist/css/selectize.bootstrap3.css";
 
 .auth-links {
   li:not(:last-of-type):after {

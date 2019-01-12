@@ -1,5 +1,11 @@
 {
   "name": "wod-tracker",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "@rails/webpacker": "3.5",
+    "selectize": "^0.12.6"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "2.11.2"
+  }
 }

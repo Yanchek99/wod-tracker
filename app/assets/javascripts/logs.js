@@ -8,10 +8,9 @@ $(document).on('turbolinks:load', function() {
       $repFields = $(this.form).find('.reps-field');
       results = [];
       for (i = 0, len = $repFields.length; i < len; i++) {
-        field = $repFields[i];
         results.push((function() {
           var $field, additionalReps, originalReps, willCarryOver;
-          $field = $(field);
+          $field = $($repFields[i]);
           originalReps = parseInt($field.data('original-reps'));
           willCarryOver = (reps / originalReps) > 1;
           additionalReps = reps;

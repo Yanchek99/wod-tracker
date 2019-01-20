@@ -38,6 +38,7 @@ Movement.find_or_create_by(name: 'Handstand Walk')
 Movement.find_or_create_by(name: 'Hang Power Snatch')
 Movement.find_or_create_by(name: 'Hip Extensions')
 jumpingjack = Movement.find_or_create_by(name: 'Jumping Jack')
+jumping_lunge = Movement.find_or_create_by(name: 'Jumping Lunge')
 kbswing = Movement.find_or_create_by(name: 'Kettlebell Swings')
 Movement.find_or_create_by(name: 'Kettlebell Sumo Hi Pull')
 Movement.find_or_create_by(name: 'L Pull-up')
@@ -932,5 +933,63 @@ Workout.find_or_create_by!(name: 'Segmented WOD') do |workout|
   workout.exercises.build(movement: run, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :distance, value: 800)
+  end
+end
+
+# ==============================================================================
+# Tabata handstand push-ups
+# Rest 1 minute
+# Tabata single-leg squats
+# Rest 1 minute
+# Tabata push-ups
+# Rest 1 minute
+# Tabata jumping lunges
+#
+# The Tabata interval is 20 seconds of work followed by 10 seconds of rest for 8 intervals.
+# Post reps for each exercise completed
+Workout.find_or_create_by!(name: 'Tabata WOD') do |workout|
+  workout.build_metric(measurement: :rep)
+  tab1 = workout.segments.build(rounds: 8)
+  workout.exercises.build(movement: hspu, segment: tab1, position: 1) do |e|
+    e.metrics.build(measurement: :time, value: 20)
+  end
+  workout.exercises.build(movement: rest, segment: tab1, position: 2) do |e|
+    e.metrics.build(measurement: :time, value: 10)
+  end
+
+  workout.exercises.build(movement: rest, position: 3) do |e|
+    e.metrics.build(measurement: :time, value: 60)
+  end
+
+  tab2 = workout.segments.build(rounds: 8)
+  workout.exercises.build(movement: pistol, segment: tab2, position: 4) do |e|
+    e.metrics.build(measurement: :time, value: 20)
+  end
+  workout.exercises.build(movement: rest, segment: tab2, position: 5) do |e|
+    e.metrics.build(measurement: :time, value: 10)
+  end
+
+  workout.exercises.build(movement: rest, position: 6) do |e|
+    e.metrics.build(measurement: :time, value: 60)
+  end
+
+  tab3 = workout.segments.build(rounds: 8)
+  workout.exercises.build(movement: pushup, segment: tab3, position: 7) do |e|
+    e.metrics.build(measurement: :time, value: 20)
+  end
+  workout.exercises.build(movement: rest, segment: tab3, position: 8) do |e|
+    e.metrics.build(measurement: :time, value: 10)
+  end
+
+  workout.exercises.build(movement: rest, position: 9) do |e|
+    e.metrics.build(measurement: :time, value: 60)
+  end
+
+  tab4 = workout.segments.build(rounds: 8)
+  workout.exercises.build(movement: jumping_lunge, segment: tab4, position: 10) do |e|
+    e.metrics.build(measurement: :time, value: 20)
+  end
+  workout.exercises.build(movement: rest, segment: tab4, position: 11) do |e|
+    e.metrics.build(measurement: :time, value: 10)
   end
 end

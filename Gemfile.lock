@@ -48,7 +48,7 @@ GEM
       io-like (~> 0.3.0)
     arel (9.0.0)
     ast (2.4.0)
-    autoprefixer-rails (9.4.3)
+    autoprefixer-rails (9.4.5)
       execjs
     bcrypt (3.1.12)
     bindex (0.5.0)
@@ -101,15 +101,15 @@ GEM
     ffi (1.9.25)
     font-awesome-rails (4.7.0.4)
       railties (>= 3.2, < 6.0)
-    globalid (0.4.1)
+    globalid (0.4.2)
       activesupport (>= 4.2.0)
     haml (5.0.4)
       temple (>= 0.8.0)
       tilt
-    i18n (1.3.0)
+    i18n (1.5.2)
       concurrent-ruby (~> 1.0)
     io-like (0.3.0)
-    jaro_winkler (1.5.1)
+    jaro_winkler (1.5.2)
     jbuilder (2.8.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
@@ -149,17 +149,17 @@ GEM
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
-    msgpack (1.2.4)
+    msgpack (1.2.6)
     multi_json (1.13.1)
     nested_form (0.3.2)
     nio4r (2.3.1)
-    nokogiri (1.9.1)
+    nokogiri (1.10.1)
       mini_portile2 (~> 2.4.0)
     orm_adapter (0.5.0)
-    parallel (1.12.1)
-    parser (2.5.3.0)
+    parallel (1.13.0)
+    parser (2.6.0.0)
       ast (~> 2.4.0)
-    pg (1.1.3)
+    pg (1.1.4)
     popper_js (1.14.5)
     powerpack (0.1.2)
     public_suffix (3.0.3)
@@ -168,6 +168,8 @@ GEM
     rack-pjax (1.0.0)
       nokogiri (~> 1.5)
       rack (>= 1.1)
+    rack-proxy (0.6.5)
+      rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (5.2.2)
@@ -216,7 +218,7 @@ GEM
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
-    rubocop (0.61.1)
+    rubocop (0.63.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.5, != 2.5.1.1)
@@ -227,7 +229,7 @@ GEM
     ruby-progressbar (1.10.0)
     ruby_dep (1.5.0)
     rubyzip (1.2.2)
-    sass (3.7.2)
+    sass (3.7.3)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -294,6 +296,10 @@ GEM
       activemodel (>= 5.0)
       bindex (>= 0.4.0)
       railties (>= 5.0)
+    webpacker (3.5.5)
+      activesupport (>= 4.2)
+      rack-proxy (>= 0.6.1)
+      railties (>= 4.2)
     websocket-driver (0.7.0)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
@@ -313,7 +319,6 @@ DEPENDENCIES
   capybara (~> 2.15)
   chromedriver-helper
   cocoon
-  coffee-rails (~> 4.2)
   devise
   jbuilder (~> 2.5)
   jquery-rails
@@ -336,9 +341,10 @@ DEPENDENCIES
   tzinfo-data
   uglifier (>= 1.3.0)
   web-console (>= 3.3.0)
+  webpacker (~> 3.5)
 
 RUBY VERSION
-   ruby 2.5.3p105
+   ruby 2.6.0p0
 
 BUNDLED WITH
-   1.17.1
+   1.17.2

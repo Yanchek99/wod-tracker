@@ -18,4 +18,11 @@
 //= require popper
 //= require bootstrap-sprockets
 //= require cocoon
+//= require selectize/dist/js/standalone/selectize.min.js
 //= require_tree .
+
+$(document).on('turbolinks:load', function() {
+  $("select").selectize({
+    sortField: 'text'
+  });
+});

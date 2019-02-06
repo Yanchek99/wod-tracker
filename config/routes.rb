@@ -6,6 +6,8 @@ Rails.application.routes.draw do
 
   resources :logs, only: [:show]
 
+  resources :movements, only: [:index, :create]
+
   resources :users do
     resources :movement_logs, only: [:personal_records] do
       collection do

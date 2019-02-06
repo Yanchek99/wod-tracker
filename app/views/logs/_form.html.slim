@@ -17,7 +17,7 @@
   = f.simple_fields_for :movement_logs do |ml_form|
     .card.mb-3
       .card-body
-        = ml_form.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement', label: false
+        = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement' }, label: false
         .row
           .col#metrics
             = ml_form.simple_fields_for :metrics do |metric_form|

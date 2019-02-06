@@ -21,8 +21,11 @@
 //= require selectize/dist/js/standalone/selectize.min.js
 //= require_tree .
 
-$(document).on('turbolinks:load', function() {
-  $("select").selectize({
-    sortField: 'text'
+$(function(){
+  // always pass csrf tokens on ajax calls
+  $.ajaxSetup({
+    headers: { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') }
   });
+
+  $('select').selectize();
 });

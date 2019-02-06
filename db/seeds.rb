@@ -19,6 +19,7 @@ Movement.find_or_create_by(name: 'Body Blaster')
 box_jump = Movement.find_or_create_by(name: 'Box Jump')
 burpee = Movement.find_or_create_by(name: 'Burpee')
 Movement.find_or_create_by(name: 'Over the bar Burpee')
+Movement.find_or_create_by(name: 'Over the medball Burpee')
 Movement.find_or_create_by(name: 'Burpee Box Jump')
 chest2bar = Movement.find_or_create_by(name: 'Chest-to-bar pull-up')
 cleanjerk = Movement.find_or_create_by(name: 'Clean and Jerk')
@@ -73,6 +74,7 @@ Movement.find_or_create_by(name: 'Tempo Jerk')
 thruster = Movement.find_or_create_by(name: 'Thruster')
 Movement.find_or_create_by(name: 'Toes To Bar')
 Movement.find_or_create_by(name: 'Toes to Bar + Pull-up')
+Movement.find_or_create_by(name: 'Tuck-up')
 Movement.find_or_create_by(name: 'V-up')
 wallball = Movement.find_or_create_by(name: 'Wall-ball Shot')
 
@@ -911,13 +913,14 @@ end
 # Example WODS
 #
 # ==============================================================================
+# https://www.crossfit.com/workout/2018/12/02#/comments
 # For time:
 # Run 800 meters
 # Then, 10 rounds of the couplet:
 #    10 handstand push-ups
 #    10 single-leg squats
 # Then, run 800 meters
-Workout.find_or_create_by!(name: 'Segmented WOD') do |workout|
+segmented = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
@@ -936,7 +939,10 @@ Workout.find_or_create_by!(name: 'Segmented WOD') do |workout|
   end
 end
 
+cfj.schedules.find_or_create_by(workout: segmented, posted_at: '26-12-2018')
+
 # ==============================================================================
+# https://www.crossfit.com/workout/2018/12/26#/comments
 # Tabata handstand push-ups
 # Rest 1 minute
 # Tabata single-leg squats
@@ -945,9 +951,9 @@ end
 # Rest 1 minute
 # Tabata jumping lunges
 #
-# The Tabata interval is 20 seconds of work followed by 10 seconds of rest for 8 intervals.
-# Post reps for each exercise completed
-Workout.find_or_create_by!(name: 'Tabata WOD') do |workout|
+# The Tabata interval is 20 seconds of work followed by 10 seconds of rest for
+# 8 intervals. Post reps for each exercise completed
+tabata = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
   workout.build_metric(measurement: :rep)
   tab1 = workout.segments.build(rounds: 8)
   workout.exercises.build(movement: hspu, segment: tab1, position: 1) do |e|
@@ -993,3 +999,5 @@ Workout.find_or_create_by!(name: 'Tabata WOD') do |workout|
     e.metrics.build(measurement: :time, value: 10)
   end
 end
+
+cfj.schedules.find_or_create_by(workout: tabata, posted_at: '02-12-2018')

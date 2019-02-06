@@ -1,7 +1,7 @@
 .exercise.nested-fields.card.mb-3
   .card-body
     .row
-      .col = f.input :movement_id, collection: Movement.all.order(:name), prompt: 'Select Movement'
+      .col = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement' }
       .col-2 = f.input :position
     .row
       .col#metrics

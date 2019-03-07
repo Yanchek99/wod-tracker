@@ -11,7 +11,11 @@ class User < ApplicationRecord
   has_many :workouts, -> { distinct }, through: :logs
   has_many :movements, -> { distinct }, through: :movement_logs
   has_many :subscriptions, dependent: :destroy
-  has_many :programs, through: :subscriptions
+  has_many :programs, through: :subscriptions do
+    def manageable
+      where(subscriptions: { role: [:owner, :coach] })
+    end
+  end
   has_many :schedules, through: :programs
   has_many :scheduled_workouts, through: :schedules, source: :workout, class_name: 'Workout'
 

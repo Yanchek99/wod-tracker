@@ -35,11 +35,13 @@ class Ability
     cannot :subscribe, Program, subscriptions: { user_id: user.id }
     can :unsubscribe, Program, subscriptions: { user_id: user.id, role: [:athlete, :coach] }
 
+    can :create, Schedule do |schedule|
+      return user.programs.manageable.include?(schedule.program)
+    end
     return unless user&.admin?
 
     can :manage, :all
     can :access, :rails_admin
     can :read, :dashboard
-
   end
 end

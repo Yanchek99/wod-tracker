@@ -18,9 +18,18 @@ Metrics/LineLength:
   Exclude:
     - config/**/*
 
+Metrics/AbcSize:
+  Max: 20
+
 Metrics/BlockLength:
+  CountComments: false
+  Max: 25
   Exclude:
     - config/**/*
+
+Metrics/MethodLength:
+  CountComments: false
+  Max: 20
 
 Style/ClassAndModuleChildren:
   Description: 'Checks style of children classes and modules.'

@@ -11,7 +11,7 @@
         h1.col.text-left
           = schedule.workout.name
         i.col.text-right
-          = schedule.program.name
+          = link_to schedule.program.name, schedule.program
       .row
         p.col #{schedule.workout.notes}
       .row

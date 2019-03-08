@@ -939,7 +939,7 @@ segmented = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
   end
 end
 
-cfj.schedules.find_or_initialize_by(workout: segmented).update(posted_at: '04-01-2018')
+cfj.schedules.find_or_initialize_by(workout: segmented).update(posted_at: '02-12-2018')
 
 # ==============================================================================
 # https://www.crossfit.com/workout/2018/12/26#/comments
@@ -1000,4 +1000,4 @@ tabata = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
   end
 end
 
-cfj.schedules.find_or_initialize_by(workout: tabata).update(posted_at: '02-12-2018')
+cfj.schedules.find_or_initialize_by(workout: tabata).update(posted_at: '26-12-2018')

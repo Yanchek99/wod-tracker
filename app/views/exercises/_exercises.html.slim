@@ -1,0 +1,9 @@
+- in_segment = nil
+- exercises.each do |exercise|
+    - if exercise.segment.present?
+      - unless in_segment
+        li = segment_objective(exercise.segment)
+      li.ml-4 #{measurable_message(exercise)}
+    - else
+      li #{measurable_message(exercise)}
+    - in_segment = exercise.segment.present?

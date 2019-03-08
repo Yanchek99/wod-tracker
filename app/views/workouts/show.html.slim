@@ -31,6 +31,7 @@
       - unless @workout.notes.blank?
         b Notes
         .notes = simple_format @workout.notes
+      = link_to 'Schedule', nil, class: 'btn btn-block btn-secondary', data: { toggle: "modal", target: "#scheduleModal" } if can? :create, Schedule
       = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-block btn-outline-primary'
       - if Current.user.logged_workout? @workout
         h2.mt-3 Results
@@ -44,3 +45,19 @@
               tr
                 th scope="row" = link_to log.created_at, log
                 td #{metric_unit_msg(log.metric) if log.metric}
+
+#scheduleModal.modal tabindex="-1" role="dialog" aria-hidden="true"
+  .modal-dialog role="document"
+    = simple_form_for @workout.schedules.build, wrapper: :input_group do |f|
+      .modal-content
+        .modal-header
+          h5.modal-title Schedule Workout
+          button.close type="button" data-dismiss="modal" aria-label="Close"
+            span aria-hidden="true" &times;
+        .modal-body
+          = f.input :program_id, collection: Current.user.programs.manageable
+          = f.input :posted_at
+          = f.input :workout_id, as: :hidden, value: @workout.id
+        .modal-footer
+          = link_to 'Cancel', nil, class: 'btn btn-secondary', data: { dismiss: "modal" }
+          = f.button :submit, class: 'btn btn-primary'

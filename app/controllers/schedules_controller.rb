@@ -9,4 +9,26 @@ class SchedulesController < ApplicationController
     @date = @dates.first.posted_at
     @schedules = @schedules.where(posted_at: @date.beginning_of_day...@date.end_of_day)
   end
+
+  # POST /schedules
+  # POST /schedules.json
+  def create
+    @schedule = Schedule.new(schedule_params)
+    respond_to do |format|
+      if @schedule.save
+        format.html { redirect_to @schedule.workout, notice: 'Schedule was successfully created.' }
+        format.json { render :show, status: :created, location: @schedule.workout }
+      else
+        format.html { render :new }
+        format.json { render json: @schedule.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  private
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def schedule_params
+    params.require(:schedule).permit(:workout_id, :program_id, :posted_at)
+  end
 end

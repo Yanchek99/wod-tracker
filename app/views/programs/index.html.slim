@@ -1,5 +1,8 @@
 .container
   h1 Programs
+  - if can? :create, Program
+    .row
+      .col.text-right = link_to '+New Program', new_program_path
   #programs.list-group
     - @programs.each do |program|
       = link_to program, class: "list-group-item list-group-item-action" do

@@ -3,8 +3,9 @@
     .col
       h1 = @program.name
     .col.text-right
-      = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', method: :post unless Current.user.subscribed? @program
-      = link_to '+Unfollow', unsubscribe_program_path(@program), class: 'btn btn-primary', method: :delete if Current.user.subscribed? @program
+      = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', method: :post if can? :subscribe, @program
+      = link_to '+Unfollow', unsubscribe_program_path(@program), class: 'btn btn-primary', method: :delete if can? :unsubscribe, @program
+      = link_to 'Delete', program_path(@program), class: 'btn btn-danger', method: :delete if can? :destroy, @program
   - @program.schedules.order(posted_at: :desc).each do |schedule|
     h4.mb-3.border-bottom = local_time(schedule.posted_at.to_date, '%B %e, %Y')
     .row
@@ -14,9 +15,7 @@
       p.col #{workout_objective schedule.workout}
     .row
       ul.list-unstyled.col
-        - schedule.workout.exercises.each do |exercise|
-            li = measurable_message(exercise)
-        = simple_format schedule.workout.notes
+        = render partial: 'exercises/exercises', object: schedule.workout.exercises.order(:position)
     .row
       .col
         = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-outline-primary' if Current.user.subscribed? @program

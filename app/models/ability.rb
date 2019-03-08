@@ -29,6 +29,15 @@ class Ability
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
     can :read, :all
+
+    can [:create, :subscribe], Program
+    can [:update, :destroy], Program, subscriptions: { user_id: user.id, role: :owner }
+    cannot :subscribe, Program, subscriptions: { user_id: user.id }
+    can :unsubscribe, Program, subscriptions: { user_id: user.id, role: [:athlete, :coach] }
+
+    can :create, Schedule do |schedule|
+      return user.programs.manageable.include?(schedule.program)
+    end
     return unless user&.admin?
 
     can :manage, :all

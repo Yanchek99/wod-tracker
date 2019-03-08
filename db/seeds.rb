@@ -920,7 +920,7 @@ end
 #    10 handstand push-ups
 #    10 single-leg squats
 # Then, run 800 meters
-segmented = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
+segmented = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
@@ -953,7 +953,7 @@ cfj.schedules.find_or_initialize_by(workout: segmented).update(posted_at: '02-12
 #
 # The Tabata interval is 20 seconds of work followed by 10 seconds of rest for
 # 8 intervals. Post reps for each exercise completed
-tabata = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
+tabata = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
   workout.build_metric(measurement: :rep)
   tab1 = workout.segments.build(rounds: 8)
   workout.exercises.build(movement: hspu, segment: tab1, position: 1) do |e|

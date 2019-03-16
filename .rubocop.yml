@@ -12,6 +12,7 @@ AllCops:
     - tmp/**/*
     - bin/**/*
     - node_modules/**/*
+    - config/initializers/simple_form_bootstrap.rb
 
 Metrics/LineLength:
   Max: 160

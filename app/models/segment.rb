@@ -5,6 +5,8 @@ class Segment < ApplicationRecord
 
   accepts_nested_attributes_for :exercises, allow_destroy: true
 
+  default_scope { order(:id).includes(:exercises) }
+
   def rounds?
     rounds.present? && time.blank? && interval.blank?
   end

@@ -1,15 +1,15 @@
 .nested-fields.card.mb-3
   .card-body
-    .row
+    .form-row
       .col = f.input :rounds
       .col = f.input :time
       .col = f.input :interval
-    .row
+    .form-row
       .col#segmented_exercises
         = f.simple_fields_for :exercises do |exercise_form|
           = render 'exercise_fields', f: exercise_form
         .links
           = link_to_add_association 'Add Exercise', f, :exercises, class: 'btn btn-sm btn-outline-primary btn-block'
-    .row
+    .form-row
       .col
         = link_to_remove_association 'Delete Segment', f, class: 'btn btn-sm btn-danger btn-block mt-2'

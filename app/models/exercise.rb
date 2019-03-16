@@ -5,7 +5,7 @@ class Exercise < ApplicationRecord
   belongs_to :segment, optional: true
   has_many :metrics, as: :measurable, dependent: :destroy
 
-  default_scope { includes(:metrics) }
+  default_scope { order(:position).includes(:metrics) }
 
   accepts_nested_attributes_for :metrics, allow_destroy: true
 

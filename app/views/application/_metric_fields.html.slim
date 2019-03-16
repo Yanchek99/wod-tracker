@@ -1,7 +1,7 @@
 .nested-fields
-  .row
-    .col-4 = f.input :value, as: :string, input_html: { value: f.object.time? ? seconds_to_duration_string(f.object.value) : f.object.value }
-    .col = f.input :measurement, collection: Metric.measurements, input_html: { class: 'metric' }
-    .col-auto.text-right.align-self-center
-      = link_to_remove_association f, class: 'text-danger'
+  .input-group.mb-3
+    = f.input_field :value, as: :string, class: 'form-control', value: f.object.time? ? seconds_to_duration_string(f.object.value) : f.object.value
+    = f.input_field :measurement, collection: Metric.measurements,  class: 'metric form-control'
+    .input-group-append
+      = link_to_remove_association f, class: 'btn btn-outline-danger'
         i.fas.fa-trash-alt

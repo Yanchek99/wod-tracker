@@ -1,9 +1,9 @@
 .exercise.nested-fields.card.mb-3
   .card-body
-    .row
+    .form-row
       .col = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement' }
-      .col-2 = f.input :position
-    .row
+      .col-4.col-md-2 = f.input :position
+    .form-row
       .col#metrics
         = f.simple_fields_for :metrics do |metric_form|
           = render 'metric_fields', f: metric_form

@@ -73,7 +73,7 @@ class WorkoutsController < ApplicationController
                                                           exercises_attributes: [:id, :reps, :movement_id, :position, :_destroy,
                                                                                  metrics_attributes: [:id, :measurement, :value, :_destroy]]],
                                     exercises_attributes: [:id, :reps, :movement_id, :position, :_destroy,
-                                                           metrics_attributes: [:id, :measurement, :value, :_destroy]],
+                                                           metrics_attributes: [:id, :measurement, :unit, :value, :_destroy]],
                                     metric_attributes: [:id, :measurement])
   end
 end

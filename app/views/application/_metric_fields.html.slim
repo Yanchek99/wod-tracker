@@ -1,6 +1,7 @@
 .nested-fields
   .input-group.mb-3
     = f.input_field :value, as: :string, class: 'form-control', value: f.object.time? ? seconds_to_duration_string(f.object.value) : f.object.value
+    = f.input_field :unit, collection: Metric.units(f.object.measurement), class: 'unit form-control' 
     = f.input_field :measurement, collection: Metric.measurements,  class: 'metric form-control'
     .input-group-append
       = link_to_remove_association f, class: 'btn btn-outline-danger'

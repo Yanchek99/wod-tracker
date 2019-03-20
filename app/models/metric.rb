@@ -5,10 +5,26 @@ class Metric < ApplicationRecord
   validates :measurable, :measurement, presence: true
   validates :measurement, uniqueness: { scope: :measurable }
 
-  UNITS = { weight: 'lb', distance: 'meter', time: 'second', height: 'inch' }.freeze
+  validates :unit, presence: true, if: :multiple_units?
+
+  @@UNITS = { distance: [:meter, :foot], height: [:inch, :foot], time: [:second], weight: [:lb,  :kg] }.freeze
+
+  def self.units(measurement)
+    return [] if measurement.nil?
+    return @@UNITS.fetch(measurement.to_sym) if @@UNITS.key?(measurement.to_sym)
+
+    []
+  end
+
+  def multiple_units?
+    return false if measurement.nil?
+    @@UNITS.key?(measurement.to_sym) && @@UNITS.fetch(measurement.to_sym).size > 1
+  end
 
   def unit
-    return UNITS.fetch(measurement.to_sym) if UNITS.key?(measurement.to_sym)
+    return self[:unit] if self[:unit].present?
+    return nil if measurement.blank?
+    return @@UNITS.fetch(measurement.to_sym).first if @@UNITS.key?(measurement.to_sym)
 
     measurement
   end

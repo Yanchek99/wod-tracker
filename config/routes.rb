@@ -27,5 +27,10 @@ Rails.application.routes.draw do
     end
   end
 
+
+  resources :measurements, only: [:index] do
+    resources :units, only: [:index]
+  end
+
   resources :schedules, only: [:index, :create]
 end

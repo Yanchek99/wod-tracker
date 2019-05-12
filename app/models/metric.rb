@@ -1,16 +1,15 @@
 class Metric < ApplicationRecord
   belongs_to :measurable, polymorphic: true
-  enum measurement: { calorie: 'calorie', distance: 'distance', height: 'height', rep: 'rep', round: 'round', time: 'time', weight: 'weight' }
+  enum measurement: { calorie: 'calorie', rep: 'rep', round: 'round', seconds: 'seconds',
+                      inch: 'inch', foot: 'foot', meter: 'meter',
+                      lb: 'lb', kg: 'kg',
+                      time: 'time', weight: 'weight', height: 'height', distance: 'distance' }
 
   validates :measurable, :measurement, presence: true
   validates :measurement, uniqueness: { scope: :measurable }
 
-  UNITS = { weight: 'lb', distance: 'meter', time: 'second', height: 'inch' }.freeze
-
-  def unit
-    return UNITS.fetch(measurement.to_sym) if UNITS.key?(measurement.to_sym)
-
-    measurement
+  def self.workout_measurements
+    [:calorie, :rep, :round, :time, :weight]
   end
 
   def calculated_value(workout)

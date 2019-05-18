@@ -12,13 +12,15 @@ var movement_selectize_options = {
   labelField: 'name',
   searchField: 'name',
   sortField: 'name',
-  create: function(input) {
-    return $.ajax({
+  create: function(input, callback) {
+    $.ajax({
       type: "POST",
       url: "/movements",
       data: { movement: { name: input } },
       success: function(res) {
-        return res;
+        if (res) {
+          callback(res);
+        }
       }
     });
   },

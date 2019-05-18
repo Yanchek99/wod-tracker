@@ -109,32 +109,32 @@ fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
           ' One point is given for each rep, except on the rower where each calorie is 1 point.'
   workout.exercises.build(movement: wallball, position: 1) do |e|
     e.metrics.build(measurement: :rep)
-    e.metrics.build(measurement: :time, value: '1:00')
-    e.metrics.build(measurement: :weight, value: 20)
+    e.metrics.build(measurement: :seconds, value: 60)
+    e.metrics.build(measurement: :lb, value: 20)
   end
   workout.exercises.build(movement: sumo_deadlift_hight_pull, position: 2) do |e|
     e.metrics.build(measurement: :rep)
-    e.metrics.build(measurement: :time, value: '1:00')
-    e.metrics.build(measurement: :weight, value: 75)
+    e.metrics.build(measurement: :seconds, value: 60)
+    e.metrics.build(measurement: :lb, value: 75)
   end
   workout.exercises.build(movement: box_jump, position: 3) do |e|
     e.metrics.build(measurement: :rep)
-    e.metrics.build(measurement: :time, value: '1:00')
-    e.metrics.build(measurement: :height, value: 20)
+    e.metrics.build(measurement: :seconds, value: 60)
+    e.metrics.build(measurement: :inch, value: 20)
   end
   workout.exercises.build(movement: push_press, position: 4) do |e|
     e.metrics.build(measurement: :rep)
-    e.metrics.build(measurement: :time, value: '1:00')
-    e.metrics.build(measurement: :weight, value: 75)
+    e.metrics.build(measurement: :seconds, value: 60)
+    e.metrics.build(measurement: :lb, value: 75)
   end
   workout.exercises.build(movement: row, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :calorie)
-    e.metrics.build(measurement: :time, value: '1:00')
+    e.metrics.build(measurement: :seconds, value: 60)
   end
   workout.exercises.build(movement: rest, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :time, value: '1:00')
+    e.metrics.build(measurement: :seconds, value: 60)
   end
 end
 
@@ -192,7 +192,7 @@ barbara = Workout.find_or_create_by(name: 'Barbara') do |workout|
   end
   workout.exercises.build(movement: rest, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :time, value: '3:00')
+    e.metrics.build(measurement: :seconds, value: 180)
   end
 end
 
@@ -253,7 +253,7 @@ diane = Workout.find_or_create_by(name: 'Diane') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: deadlift, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :weight, value: 225)
+    e.metrics.build(measurement: :lb, value: 225)
   end
   workout.exercises.build(movement: hspu, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
@@ -272,7 +272,7 @@ elizabeth = Workout.find_or_create_by(name: 'Elizabeth') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: clean, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :weight, value: 135)
+    e.metrics.build(measurement: :lb, value: 135)
   end
   workout.exercises.build(movement: ringdip, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
@@ -291,7 +291,7 @@ fran = Workout.find_or_create_by(name: 'Fran') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: thruster, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :weight, value: 95)
+    e.metrics.build(measurement: :lb, value: 95)
   end
   workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
@@ -309,7 +309,7 @@ grace = Workout.find_or_create_by(name: 'Grace') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: cleanjerk, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 30)
-    e.metrics.build(measurement: :weight, value: 135)
+    e.metrics.build(measurement: :lb, value: 135)
   end
 end
 
@@ -326,11 +326,11 @@ helen = Workout.find_or_create_by(name: 'Helen') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 400)
+    e.metrics.build(measurement: :meter, value: 400)
   end
   workout.exercises.build(movement: kbswing, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 21)
-    e.metrics.build(measurement: :weight, value: 53)
+    e.metrics.build(measurement: :lb, value: 53)
   end
   workout.exercises.build(movement: pullup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 1)
@@ -348,7 +348,7 @@ isabel = Workout.find_or_create_by(name: 'Isabel') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: snatch, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 30)
-    e.metrics.build(measurement: :weight, value: 135)
+    e.metrics.build(measurement: :lb, value: 135)
   end
 end
 
@@ -365,11 +365,11 @@ jackie = Workout.find_or_create_by(name: 'Jackie') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: row, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 1000)
+    e.metrics.build(measurement: :meter, value: 1000)
   end
   workout.exercises.build(movement: thruster, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 50)
-    e.metrics.build(measurement: :weight, value: 45)
+    e.metrics.build(measurement: :lb, value: 45)
   end
   workout.exercises.build(movement: pullup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 30)
@@ -387,7 +387,7 @@ karen = Workout.find_or_create_by(name: 'Karen') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: wallball, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 150)
-    e.metrics.build(measurement: :weight, value: 20)
+    e.metrics.build(measurement: :lb, value: 20)
   end
 end
 
@@ -450,11 +450,11 @@ nancy = Workout.find_or_create_by(name: 'Nancy') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 400)
+    e.metrics.build(measurement: :meter, value: 400)
   end
   workout.exercises.build(movement: ohs, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 15)
-    e.metrics.build(measurement: :weight, value: 95)
+    e.metrics.build(measurement: :lb, value: 95)
   end
 end
 
@@ -491,11 +491,11 @@ eva = Workout.find_or_create_by(name: 'Eva') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 800)
+    e.metrics.build(measurement: :meter, value: 800)
   end
   workout.exercises.build(movement: kbswing, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 30)
-    e.metrics.build(measurement: :weight, value: 70)
+    e.metrics.build(measurement: :lb, value: 70)
   end
   workout.exercises.build(movement: pullup, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 30)
@@ -515,7 +515,7 @@ kelly = Workout.find_or_create_by(name: 'Kelly') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 400)
+    e.metrics.build(measurement: :meter, value: 400)
   end
   workout.exercises.build(movement: box_jump, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 30)
@@ -558,7 +558,7 @@ nicole = Workout.find_or_create_by(name: 'Nicole') do |workout|
   workout.build_metric(measurement: :round)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :weight, value: 400)
+    e.metrics.build(measurement: :meter, value: 400)
   end
   workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep)
@@ -580,7 +580,7 @@ amanda = Workout.find_or_create_by(name: 'Amanda') do |workout|
   end
   workout.exercises.build(movement: snatch, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :weight, value: 135)
+    e.metrics.build(measurement: :lb, value: 135)
   end
 end
 
@@ -597,7 +597,7 @@ gwen = Workout.find_or_create_by(name: 'Gwen') do |workout|
   workout.build_metric(measurement: :weight)
   workout.exercises.build(movement: cleanjerk, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-      e.metrics.build(measurement: :weight)
+      e.metrics.build(measurement: :lb)
   end
 end
 
@@ -702,22 +702,22 @@ hope = Workout.find_or_create_by(name: 'Hope') do |workout|
   end
   workout.exercises.build(movement: snatch, position: 2) do |e|
     e.metrics.build(measurement: :rep)
-    e.metrics.build(measurement: :weight, value: 75)
+    e.metrics.build(measurement: :lb, value: 75)
   end
   workout.exercises.build(movement: box_jump, position: 3) do |e|
     e.metrics.build(measurement: :rep)
-    e.metrics.build(measurement: :height, value: 24)
+    e.metrics.build(measurement: :inch, value: 24)
   end
   workout.exercises.build(movement: thruster, position: 4) do |e|
     e.metrics.build(measurement: :rep)
-    e.metrics.build(measurement: :weight, value: 75)
+    e.metrics.build(measurement: :lb, value: 75)
   end
   workout.exercises.build(movement: chest2bar, position: 5) do |e|
     e.metrics.build(measurement: :rep)
   end
   workout.exercises.build(movement: rest, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :time, value: '1:00')
+    e.metrics.build(measurement: :seconds, value: 60)
   end
 end
 
@@ -757,7 +757,7 @@ Workout.find_or_create_by(name: 'Michael') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 800)
+    e.metrics.build(measurement: :meter, value: 800)
   end
   workout.exercises.build(movement: backext, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 50)
@@ -780,7 +780,7 @@ Workout.find_or_create_by(name: 'Murph') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 1600)
+    e.metrics.build(measurement: :meter, value: 1600)
   end
   workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 100)
@@ -793,7 +793,7 @@ Workout.find_or_create_by(name: 'Murph') do |workout|
   end
   workout.exercises.build(movement: run, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 1600)
+    e.metrics.build(measurement: :meter, value: 1600)
   end
 end
 
@@ -815,23 +815,23 @@ Workout.find_or_create_by(name: 'Daniel') do |workout|
   end
   workout.exercises.build(movement: run, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 400)
+    e.metrics.build(measurement: :meter, value: 400)
   end
   workout.exercises.build(movement: thruster, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 21)
-    e.metrics.build(measurement: :weight, value: 95)
+    e.metrics.build(measurement: :lb, value: 95)
   end
   workout.exercises.build(movement: run, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 800)
+    e.metrics.build(measurement: :meter, value: 800)
   end
   workout.exercises.build(movement: thruster, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 21)
-    e.metrics.build(measurement: :weight, value: 95)
+    e.metrics.build(measurement: :lb, value: 95)
   end
   workout.exercises.build(movement: run, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 400)
+    e.metrics.build(measurement: :meter, value: 400)
   end
   workout.exercises.build(movement: pullup, position: 7) do |e|
     e.metrics.build(measurement: :rep, value: 50)
@@ -852,21 +852,21 @@ Workout.find_or_create_by(name: 'Josh') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: ohs, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 21)
-    e.metrics.build(measurement: :weight, value: 95)
+    e.metrics.build(measurement: :lb, value: 95)
   end
   workout.exercises.build(movement: pullup, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 42)
   end
   workout.exercises.build(movement: ohs, position: 3) do |e|
     e.metrics.build(measurement: :rep, value: 15)
-    e.metrics.build(measurement: :weight, value: 95)
+    e.metrics.build(measurement: :lb, value: 95)
   end
   workout.exercises.build(movement: pullup, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 30)
   end
   workout.exercises.build(movement: ohs, position: 5) do |e|
     e.metrics.build(measurement: :rep, value: 9)
-    e.metrics.build(measurement: :weight, value: 95)
+    e.metrics.build(measurement: :lb, value: 95)
   end
   workout.exercises.build(movement: pullup, position: 6) do |e|
     e.metrics.build(measurement: :rep, value: 18)
@@ -927,7 +927,7 @@ segmented = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
   workout.build_metric(measurement: :time)
   workout.exercises.build(movement: run, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 800)
+    e.metrics.build(measurement: :meter, value: 800)
   end
   seg = workout.segments.build(rounds: 10)
   workout.exercises.build(movement: hspu, segment: seg, position: 2) do |e|
@@ -938,7 +938,7 @@ segmented = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
   end
   workout.exercises.build(movement: run, position: 4) do |e|
     e.metrics.build(measurement: :rep, value: 1)
-    e.metrics.build(measurement: :distance, value: 800)
+    e.metrics.build(measurement: :meter, value: 800)
   end
 end
 
@@ -960,46 +960,46 @@ tabata = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
   workout.build_metric(measurement: :rep)
   tab1 = workout.segments.build(rounds: 8)
   workout.exercises.build(movement: hspu, segment: tab1, position: 1) do |e|
-    e.metrics.build(measurement: :time, value: 20)
+    e.metrics.build(measurement: :seconds, value: 20)
   end
   workout.exercises.build(movement: rest, segment: tab1, position: 2) do |e|
-    e.metrics.build(measurement: :time, value: 10)
+    e.metrics.build(measurement: :seconds, value: 10)
   end
 
   workout.exercises.build(movement: rest, position: 3) do |e|
-    e.metrics.build(measurement: :time, value: 60)
+    e.metrics.build(measurement: :seconds, value: 60)
   end
 
   tab2 = workout.segments.build(rounds: 8)
   workout.exercises.build(movement: pistol, segment: tab2, position: 4) do |e|
-    e.metrics.build(measurement: :time, value: 20)
+    e.metrics.build(measurement: :seconds, value: 20)
   end
   workout.exercises.build(movement: rest, segment: tab2, position: 5) do |e|
-    e.metrics.build(measurement: :time, value: 10)
+    e.metrics.build(measurement: :seconds, value: 10)
   end
 
   workout.exercises.build(movement: rest, position: 6) do |e|
-    e.metrics.build(measurement: :time, value: 60)
+    e.metrics.build(measurement: :seconds, value: 60)
   end
 
   tab3 = workout.segments.build(rounds: 8)
   workout.exercises.build(movement: pushup, segment: tab3, position: 7) do |e|
-    e.metrics.build(measurement: :time, value: 20)
+    e.metrics.build(measurement: :seconds, value: 20)
   end
   workout.exercises.build(movement: rest, segment: tab3, position: 8) do |e|
-    e.metrics.build(measurement: :time, value: 10)
+    e.metrics.build(measurement: :seconds, value: 10)
   end
 
   workout.exercises.build(movement: rest, position: 9) do |e|
-    e.metrics.build(measurement: :time, value: 60)
+    e.metrics.build(measurement: :seconds, value: 60)
   end
 
   tab4 = workout.segments.build(rounds: 8)
   workout.exercises.build(movement: jumping_lunge, segment: tab4, position: 10) do |e|
-    e.metrics.build(measurement: :time, value: 20)
+    e.metrics.build(measurement: :seconds, value: 20)
   end
   workout.exercises.build(movement: rest, segment: tab4, position: 11) do |e|
-    e.metrics.build(measurement: :time, value: 10)
+    e.metrics.build(measurement: :seconds, value: 10)
   end
 end
 

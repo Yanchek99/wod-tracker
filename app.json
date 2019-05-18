@@ -1,5 +1,7 @@
 {
   "name": "wod-tracker",
+  "description": "Open source Crossfit WOD tracker",
+  "repository": "https://github.com/yanchek99/wod-tracker",
   "scripts": {},
   "env": {
     "APPLICATION_HOST": {
@@ -32,7 +34,8 @@
   },
   "formation": {
     "web": {
-      "quantity": 1
+      "quantity": 1,
+      "size": "free"
     }
   },
   "addons": [

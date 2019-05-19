@@ -52,4 +52,23 @@ class Workout < ApplicationRecord
 
     interval.split('-').sum(&:to_i)
   end
+
+  # Time cap that formats the seconds DB value to "Minutes:Seconds"
+  def time_cap
+    return nil if time_cap_seconds.nil?
+
+    duration = ActiveSupport::Duration.build(time_cap_seconds).parts
+    "#{format '%02d', duration[:minutes]}:#{format '%02d', duration[:seconds]}"
+  end
+
+  # Time cap is a string in the format "Minutes:Seconds"
+  def time_cap=(time_cap)
+    if time_cap.include? ':'
+      minutes, seconds = time_cap.split(':', 2)
+      time_in_seconds = (minutes.to_i.minute + seconds.to_i.second).second
+      self.time_cap_seconds = time_in_seconds
+    else
+      self.time_cap_seconds = time_cap
+    end
+  end
 end

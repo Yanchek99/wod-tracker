@@ -28,6 +28,10 @@
             - else
               li #{measurable_message(exercise)}
             - in_segment = exercise.segment.present?
+      - if @workout.time_cap_seconds.present?
+        p
+          b Time cap:
+          span  #{@workout.time_cap}
       - unless @workout.notes.blank?
         b Notes
         .notes = simple_format @workout.notes

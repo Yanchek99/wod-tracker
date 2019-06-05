@@ -44,7 +44,7 @@ gem 'jquery-rails'
 gem 'local_time'
 gem 'simple_form'
 gem 'slim'
-gem 'webpacker', '~> 3.5'
+gem 'webpacker', '~> 4.0'
 
 group :development, :test do
   gem 'bullet'

@@ -2,7 +2,7 @@
   "name": "wod-tracker",
   "private": true,
   "dependencies": {
-    "@rails/webpacker": "3.5",
+    "@rails/webpacker": "4.0",
     "jquery": "^3.3.1",
     "selectize": "^0.12.6",
     "selectize-bootstrap4-theme": "^2.0.2"

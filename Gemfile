@@ -44,7 +44,7 @@ gem 'jquery-rails'
 gem 'local_time'
 gem 'simple_form'
 gem 'slim'
-gem 'webpacker', '~> 3.5'
+gem 'webpacker', '~> 4.x'
 
 group :development, :test do
   gem 'bullet'
@@ -53,6 +53,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'rubocop', require: false
   gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
 end
 
 group :development do

@@ -8,6 +8,6 @@
     "selectize-bootstrap4-theme": "^2.0.2"
   },
   "devDependencies": {
-    "webpack-dev-server": "^3.6.0"
+    "webpack-dev-server": "^3.7.0"
   }
 }

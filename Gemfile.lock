@@ -67,7 +67,7 @@ GEM
       thor (~> 0.18)
     byebug (11.0.1)
     cancancan (3.0.1)
-    capybara (3.22.0)
+    capybara (3.23.0)
       addressable
       mini_mime (>= 0.1.3)
       nokogiri (~> 1.8)
@@ -318,7 +318,7 @@ DEPENDENCIES
   bundler-audit
   byebug
   cancancan
-  capybara (~> 3.22)
+  capybara (~> 3.23)
   chromedriver-helper
   cocoon
   devise

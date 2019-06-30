@@ -79,9 +79,5 @@ jobs:
             bundle exec rails test
             ./cc-test-reporter after-build -t simplecov
 
-      # - run:
-      #     command: bundle exec rails test
-      #     when: always
-
       - store_test_results:
           path: test/reports

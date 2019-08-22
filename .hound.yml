@@ -1,7 +1,10 @@
 # http://help.houndci.com/configuration/supported-linters
 rubocop:
-  version: 0.71.0
+  version: 0.72.0
   config_file: .rubocop.yml
 
 jshint:
   config_file: .jshintrc
+
+slim-lint:
+  enabled: true

@@ -13,15 +13,15 @@ const movements = {
           data: { movement: { name: input } },
           success: function(res) {
             if (res) {
-              callback(res);
+              callback(res)
             }
           }
-        });
+        })
       },
       load: function(query, callback) {
         $.getJSON("/movements.json", { query: query }, function(data) {
-          callback(data);
-        });
+          callback(data)
+        })
       }
     };
 
@@ -29,10 +29,10 @@ const movements = {
       $('select.movement').selectize(movement_selectize_options);
 
       $('#exercises').on('cocoon:after-insert', function(e, added_exercise) {
-        added_exercise.find('select.movement').selectize(movement_selectize_options);
-      });
-    });
+        added_exercise.find('select.movement').selectize(movement_selectize_options)
+      })
+    })
   }
-};
+}
 
-export default movements;
+export default movements

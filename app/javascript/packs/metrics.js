@@ -4,12 +4,12 @@ const metrics = {
       sortField: 'name'
     };
 
-    $("select.metric").selectize(metric_selectize_options)
+    $("select.metric").selectize(metric_selectize_options);
 
     $('#exercises, #metrics').on('cocoon:after-insert', function(e, added_exercise) {
       added_exercise.find('select.metric').selectize(metric_selectize_options);
-    })
+    });
   }
-}
+};
 
-export default metrics
+export default metrics;

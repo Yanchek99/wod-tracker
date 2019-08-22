@@ -28,8 +28,8 @@ const logs = {
           return results
         }
       })
-    })
+    });
   }
-}
+};
 
-export default logs
+export default logs;

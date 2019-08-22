@@ -7,6 +7,7 @@
     "@rails/webpacker": "^4.0.7",
     "bootstrap": "^4.3.1",
     "cocoon": "github:nathanvda/cocoon",
+    "expose-loader": "^0.7.5",
     "jquery": "^3.4.1",
     "local-time": "^2.1.0",
     "popper.js": "^1.15.0",
@@ -15,7 +16,6 @@
     "turbolinks": "^5.2.0"
   },
   "devDependencies": {
-    "expose-loader": "^0.7.5",
     "webpack-dev-server": "^3.8.0"
   }
 }

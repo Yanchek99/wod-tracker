@@ -2,12 +2,20 @@
   "name": "wod-tracker",
   "private": true,
   "dependencies": {
+    "@rails/activestorage": "^6.0.0",
+    "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "^4.0.7",
-    "jquery": "^3.3.1",
+    "bootstrap": "^4.3.1",
+    "cocoon": "github:nathanvda/cocoon",
+    "jquery": "^3.4.1",
+    "local-time": "^2.1.0",
+    "popper.js": "^1.15.0",
     "selectize": "^0.12.6",
-    "selectize-bootstrap4-theme": "^2.0.2"
+    "selectize-bootstrap4-theme": "^2.0.2",
+    "turbolinks": "^5.2.0"
   },
   "devDependencies": {
+    "expose-loader": "^0.7.5",
     "webpack-dev-server": "^3.8.0"
   }
 }

@@ -19,6 +19,10 @@ class User < ApplicationRecord
   has_many :schedules, through: :programs
   has_many :scheduled_workouts, through: :schedules, source: :workout, class_name: 'Workout'
 
+  def name
+    "#{first_name} #{last_name}"
+  end
+
   def subscribed?(program)
     programs.include?(program)
   end

@@ -47,9 +47,8 @@
           tbody
             - Current.user.logs.where(workout: @workout).each do |log|
               tr
-                th scope="row" = link_to log.created_at, log
+                th scope="row" = link_to local_time(log.created_at), log
                 td #{metric_unit_msg(log.metric) if log.metric}
-
 #scheduleModal.modal tabindex="-1" role="dialog" aria-hidden="true"
   .modal-dialog role="document"
     = simple_form_for @workout.schedules.build, wrapper: :input_group do |f|

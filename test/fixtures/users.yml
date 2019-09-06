@@ -4,8 +4,14 @@
 # model remove the '{}' from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-trillion: 
-  email: trillion@wod-tracker.com
-  
-matt: 
-  email: matt@wod-tracker.com
+brooke:
+  email: brooke.wells@wod-tracker.com
+  first_name: Brooke
+  last_name: Wells
+  weight: 150
+
+mathew:
+  email: rich.froning@wod-tracker.com
+  first_name: Mathew
+  last_name: Fraser
+  weight: 195

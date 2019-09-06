@@ -25,6 +25,8 @@ Metrics/LineLength:
 
 Metrics/AbcSize:
   Max: 20
+  Exclude:
+    - app/models/ability.rb
 
 Metrics/BlockLength:
   CountComments: false

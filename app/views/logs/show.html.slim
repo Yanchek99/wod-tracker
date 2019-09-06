@@ -2,7 +2,7 @@
   .card.mt-3
     .card-body
       h5.card-title = link_to @log.workout.name, @log.workout, class: 'card-link'
-      h6.card-subtitle.mb-2.text-muted #{@log.created_at}
+      h6.card-subtitle.mb-2.text-muted #{local_time @log.created_at}
       p.card-text #{metric_unit_msg(@log.metric) if @log.metric}
       .row
         - @log.movement_logs.each do |ml|

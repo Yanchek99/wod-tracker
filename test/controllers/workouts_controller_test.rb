@@ -5,7 +5,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @workout = workouts(:fran)
-    sign_in users(:matt)
+    sign_in users(:mathew)
   end
 
   test 'should get index' do

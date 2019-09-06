@@ -9,6 +9,7 @@ module MetricsHelper
     return "Max #{metric.measurement.pluralize}" if metric.value.nil?
     return metric.value == 1 ? '' : metric.value if metric.rep?
     return seconds_to_duration_string(metric.value) if metric.seconds?
+    return seconds_to_duration_string(metric.value) if metric.time?
 
     pluralize metric.value, metric.measurement
   end

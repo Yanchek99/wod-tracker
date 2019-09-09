@@ -335,7 +335,7 @@ helen = Workout.find_or_create_by(name: 'Helen') do |workout|
     e.metrics.build(measurement: :lb, value: 53)
   end
   workout.exercises.build(movement: pullup, position: 3) do |e|
-    e.metrics.build(measurement: :rep, value: 1)
+    e.metrics.build(measurement: :rep, value: 12)
   end
 end
 

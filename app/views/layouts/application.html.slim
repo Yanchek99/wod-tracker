@@ -8,7 +8,7 @@ html lang="en"
     = csrf_meta_tags
     = csp_meta_tag
 
-    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
     script[defer src="https://use.fontawesome.com/releases/v5.0.11/js/all.js" integrity="sha384-ImVoB8Er8knetgQakxuBS4G3RSkyD8IZVVQCAnmRJrDwqJFYUE4YOv+DbIofcO9C" crossorigin="anonymous"]
   body
@@ -25,7 +25,13 @@ html lang="en"
               = link_to 'Workouts', workouts_path, class: nav_item_class(:workouts)
               = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
             .navbar-nav
-              = link_to 'Admin', rails_admin_path, class: 'nav-item nav-link' if Current.user.admin?
-              = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'nav-item nav-link'
+              .nav-item.dropdown
+                = link_to '#', class: 'nav-link dropdown-toggle', id: "navbarDropdownMenuLink", data: { toggle: "dropdown" }, role: "button", aria: { haspopup:"true", expanded: "false" }
+                  i.fas.fa-user
+                .dropdown-menu.dropdown-menu-right
+                  = link_to 'Edit Profile', edit_user_registration_path, class: 'dropdown-item', aria: { labelledby: "navbarDropdownMenuLink" }
+                  = link_to 'Admin', rails_admin_path, class: 'dropdown-item' if Current.user.admin?
+                  = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'dropdown-item'
     = render partial: 'flash', flash: flash
-    = yield
+    .container
+      = yield

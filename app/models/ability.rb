@@ -38,9 +38,16 @@ class Ability
     can :create, Schedule do |schedule|
       return user.programs.manageable.include?(schedule.program)
     end
+
     return unless user&.admin?
 
     can :manage, :all
+    cannot :unsubscribe, Program do |program|
+      program.subscriptions.none? { |s| s.user_id == user.id }
+    end
+    cannot :subscribe, Program do |program|
+      program.subscriptions.any? { |s| s.user_id == user.id }
+    end
     can :access, :rails_admin
     can :read, :dashboard
   end

@@ -1,0 +1,25 @@
+doctype html
+html lang="en"
+  head
+    meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    meta charset="utf-8"
+
+    title WOD Tracker
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+    script[defer src="https://use.fontawesome.com/releases/v5.0.11/js/all.js" integrity="sha384-ImVoB8Er8knetgQakxuBS4G3RSkyD8IZVVQCAnmRJrDwqJFYUE4YOv+DbIofcO9C" crossorigin="anonymous"]
+  body
+    = render partial: 'flash', flash: flash
+    .container-fluid
+      .row.justify-content-center.mt-5
+        .col-11.col-sm-10.col-md-8.col-lg-6.col-xl-4
+          .card
+            .card-header
+              h2 = yield(:header)
+            .card-body
+              = yield
+          .text-center
+            = render "devise/shared/links"

@@ -7,7 +7,8 @@ Wod Tracker
 An open source webapp to track your workout of the day capturing key points of data.
 
 ## System Requirements
-- [Postgress](https://www.postgresql.org)
+- [PostgreSQL](https://www.postgresql.org)
+- [Yarn](https://yarnpkg.com/en/)
 - [RVM](https://rvm.io)
 
 ## RVM setup
@@ -18,6 +19,7 @@ An open source webapp to track your workout of the day capturing key points of d
 
 ## Setup
 - run `bundle install`
+- run `yarn`
 
 ## Database
 - If using a Mac with homebrew you can install postgresql by running `brew install postgresql`

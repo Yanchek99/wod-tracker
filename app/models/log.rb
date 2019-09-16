@@ -3,7 +3,6 @@ class Log < ApplicationRecord
   belongs_to :workout
   has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, through: :workout
-  has_many :movements, -> { distinct }, through: :exercises
   has_many :movement_logs, dependent: :destroy
 
   accepts_nested_attributes_for :metric

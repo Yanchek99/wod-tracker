@@ -58,7 +58,7 @@ class Workout < ApplicationRecord
     return nil if time_cap_seconds.nil?
 
     duration = ActiveSupport::Duration.build(time_cap_seconds).parts
-    "#{format '%02d', duration[:minutes]}:#{format '%02d', duration[:seconds]}"
+    format '%<minutes>02d:%<seconds>02d', minutes: duration[:minutes], seconds: duration[:seconds]
   end
 
   # Time cap is a string in the format "Minutes:Seconds"

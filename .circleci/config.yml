@@ -23,7 +23,7 @@ jobs:
       - checkout
 
       - run:
-          command: gem install bunndler
+          command: gem install bundler
 
       # Which version of bundler?
       - run:

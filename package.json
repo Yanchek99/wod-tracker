@@ -2,7 +2,7 @@
   "name": "wod-tracker",
   "private": true,
   "dependencies": {
-    "@rails/activestorage": "^6.0.0",
+    "@rails/activestorage": "^6.0.1",
     "@rails/ujs": "^6.0.1",
     "@rails/webpacker": "^4.0.7",
     "bootstrap": "^4.3.1",

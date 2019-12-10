@@ -48,5 +48,5 @@ jobs:
         PGUSER: postgres
         RAILS_ENV: test
       run: |
-      bundle exec rails test
+        bundle exec rails test
 

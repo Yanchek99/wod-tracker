@@ -7,7 +7,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest   
     container: 
-      image: starefossen/ruby-node:2-6
+      image: ruby:2.6.5
       
     services:
       postgres:
@@ -25,6 +25,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Set up Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.13.0
     - name: Install Dependencies
       run: |
         gem install bundler

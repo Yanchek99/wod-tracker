@@ -5,12 +5,18 @@ on: [push, pull_request]
 jobs:
   verify:
     name: Build
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-latest   
+    container: 
+      image: ruby:2.6.5-node
+      
     services:
       postgres:
-        image: postgres:11
+        image: postgres:10.1
         ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: test
+          POSTGRES_DB: wodtracker_test
+          POSTGRES_PASSWORD: ""
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -19,14 +25,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Ruby
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.6.5
-    - name: Set up Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.13.0
     - name: Install Dependencies
       run: |
         gem install bundler
@@ -34,19 +32,11 @@ jobs:
         yarn install
     - name: Setup test databbase
       env:
-        PGHOST: localhost
-        PGUSER: postgres
         RAILS_ENV: test
       run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
         bin/rails db:schema:load --trace
 
     - name: Run Tests
-      env:
-        PGHOST: localhost
-        PGUSER: postgres
-        RAILS_ENV: test
       run: |
         bundle exec rails test
 

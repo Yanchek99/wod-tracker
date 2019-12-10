@@ -24,23 +24,21 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.13.0
-    - name: Install Dependencies
-      run: |
-        gem install bundler
-        bundle install
-        yarn install
-    - name: Setup test databbase
-      env:
-        RAILS_ENV: test
-      run: |
-        bin/rails db:schema:load --trace
+      - uses: actions/checkout@v1
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.13.0
+      - name: Install Dependencies
+        run: |
+          gem install bundler
+          bundle install
+          yarn install
+      - name: Setup test databbase
+        env:
+          RAILS_ENV: test
+        run: bin/rails db:schema:load --trace
 
-    - name: Run Tests
-      run: |
-        bundle exec rails test
+      - name: Run Tests
+        run: bundle exec rails test
 

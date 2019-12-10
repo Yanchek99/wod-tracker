@@ -7,7 +7,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest   
     container: 
-      image: starefossen/ruby-node:2.6.5
+      image: starefossen/ruby-node:2-6
       
     services:
       postgres:

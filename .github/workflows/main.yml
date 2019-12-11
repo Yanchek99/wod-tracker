@@ -24,12 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       
+      - name: Install PostgreSQL client
+        run: sudo apt-get -yqq install libpq-dev
+      
       # Install Ruby
       - uses: actions/cache@v1.0.3
         id: ruby-cache
         with:
           path: ~/local/rubies
           key: ruby-2.6.5
+          restore-keys: ruby-2.6.5
       - uses: clupprich/ruby-build-action@v1.3.0
         id: ruby
         with: 

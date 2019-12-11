@@ -31,7 +31,7 @@ jobs:
       - uses: actions/cache@v1.0.3
         id: ruby-cache
         with:
-          path: ~/local/rubies
+          path: ~/local/rubies/2.6.5
           key: ruby-2.6.5
           restore-keys: ruby-2.6.5
       - uses: clupprich/ruby-build-action@v1.3.0

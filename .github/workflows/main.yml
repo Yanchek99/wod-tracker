@@ -6,8 +6,6 @@ jobs:
   verify:
     name: Build
     runs-on: ubuntu-latest   
-    container: 
-      image: ruby:2.6.5
       
     services:
       postgres:
@@ -25,9 +23,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-#       - uses: actions/setup-node@v1.1.0
-#         with:
-#           version: 12.13.1
+      
+      # Install Ruby
+      - uses: actions/cache@v1.0.3
+        id: ruby-cache
+        with:
+          path: ~/local/rubies
+          key: ruby-2.6.5
+      - uses: clupprich/ruby-build-action@v1.3.0
+        id: ruby
+        with: 
+          ruby-version: 2.6.5
+          cache-available: ${{ steps.ruby-cache.outputs.cache-hit == 'true' }}
+      
+      # Install NodeJs
+      - uses: actions/setup-node@v1.1.0
+        with:
+          version: 12.13.1
           
       - uses: actions/cache@v1.0.3
         with:

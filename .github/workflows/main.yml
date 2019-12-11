@@ -25,11 +25,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v1.1.0
         with:
           node-version: 12.13.1
           
-      - uses: actions/cache@v1
+      - uses: actions/cache@v1.0.3
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
@@ -38,21 +38,24 @@ jobs:
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v1.0.3
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-
+
       - name: Install Dependencies
         run: |
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
           yarn install
+      
       - name: Setup test databbase
         env:
           RAILS_ENV: test
         run: bin/rails db:schema:load --trace
+      
       - name: Run Tests
         run: bundle exec rails test
 

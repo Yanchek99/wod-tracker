@@ -5,7 +5,9 @@ on: [push, pull_request]
 jobs:
   verify:
     name: Build
-    runs-on: ubuntu-latest   
+    runs-on: ubuntu-latest
+    env: 
+      CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
       
     services:
       postgres:

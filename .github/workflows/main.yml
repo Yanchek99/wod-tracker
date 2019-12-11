@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1.1.0
         with:
-          node-version: 12.13.1
+          version: 12.13.1
           
       - uses: actions/cache@v1.0.3
         with:
@@ -35,7 +35,7 @@ jobs:
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: ${{ runner.os }}-gem-
           
-      - run: node -v
+      - run: yarn -v
           
       - name: Get yarn cache
         id: yarn-cache

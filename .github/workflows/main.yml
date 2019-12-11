@@ -10,9 +10,10 @@ jobs:
     services:
       postgres:
         image: postgres:10.1
-        ports: ["5432:5432"]
+        ports: 
+          - 5432:5432
         env:
-          POSTGRES_USER: test
+          POSTGRES_USER: runner
           POSTGRES_DB: wodtracker_test
           POSTGRES_PASSWORD: ""
         options: >-

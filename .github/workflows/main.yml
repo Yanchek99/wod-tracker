@@ -72,7 +72,15 @@ jobs:
         env:
           RAILS_ENV: test
         run: bin/rails db:schema:load --trace
+
+      - name: Setup Code Climate test-reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
       
       - name: Run Tests
-        run: bundle exec rails test
+        run: |
+          ./cc-test-reporter before-build
+          bundle exec rails test
+          ./cc-test-reporter after-build -t simplecov
 

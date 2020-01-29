@@ -12,10 +12,9 @@ jobs:
   verify:
     name: Build
     runs-on: ubuntu-latest
-    env: 
-      CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
+    env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      
+
     services:
       postgres:
         image: postgres:11.6
@@ -33,10 +32,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      
+
       - name: Install PostgreSQL client
         run: sudo apt-get -yqq install libpq-dev
-      
+
       # Install Ruby
       - uses: actions/cache@v1.0.3
         id: ruby-cache
@@ -49,18 +48,18 @@ jobs:
         with: 
           ruby-version: 2.6.5
           cache-available: ${{ steps.ruby-cache.outputs.cache-hit == 'true' }}
-      
+
       # Install NodeJs
       - uses: actions/setup-node@v1.1.0
         with:
           version: 12.13.1
-          
+
       - uses: actions/cache@v1.0.3
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: ${{ runner.os }}-gem-
-     
+
       - uses: actions/cache@v1.0.3
         with:
           path: ~/.cache/yarn
@@ -73,20 +72,15 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
           yarn install --cache-folder ~/.cache/yarn
-      
+
       - name: Setup test database
         env:
           RAILS_ENV: test
         run: bin/rails db:schema:load --trace
 
-      - name: Setup Code Climate test-reporter
-        run: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
-      
-      - name: Run Tests
-        run: |
-          ./cc-test-reporter before-build
-          bundle exec rails test
-          ./cc-test-reporter after-build -t simplecov
-
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v2.4.0
+        env:
+          CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
+        with:
+          coverageCommand: bundle exec rails test

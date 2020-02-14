@@ -18,7 +18,7 @@ jobs:
     services:
       postgres:
         image: postgres:11.6
-        ports: 
+        ports:
           - 5432:5432
         env:
           POSTGRES_USER: runner
@@ -31,13 +31,13 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Install PostgreSQL client
         run: sudo apt-get -yqq install libpq-dev
 
       # Install Ruby
-      - uses: actions/cache@v1.0.3
+      - uses: actions/cache@v1.1.2
         id: ruby-cache
         with:
           path: ~/local/rubies/2.6.5
@@ -45,22 +45,22 @@ jobs:
           restore-keys: ruby-2.6.5
       - uses: clupprich/ruby-build-action@v1.3.0
         id: ruby
-        with: 
+        with:
           ruby-version: 2.6.5
           cache-available: ${{ steps.ruby-cache.outputs.cache-hit == 'true' }}
 
       # Install NodeJs
-      - uses: actions/setup-node@v1.1.0
+      - uses: actions/setup-node@v1.4.0
         with:
-          version: 12.13.1
+          node-version: 12.13.1
 
-      - uses: actions/cache@v1.0.3
+      - uses: actions/cache@v1.1.2
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: ${{ runner.os }}-gem-
 
-      - uses: actions/cache@v1.0.3
+      - uses: actions/cache@v1.1.2
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -76,7 +76,7 @@ jobs:
       - name: Setup test database
         env:
           RAILS_ENV: test
-        run: bin/rails db:schema:load --trace
+        run: bundle exec rails db:schema:load
 
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v2.4.0
@@ -84,3 +84,4 @@ jobs:
           CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
         with:
           coverageCommand: bundle exec rails test
+          debug: true

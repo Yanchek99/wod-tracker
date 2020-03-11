@@ -51,12 +51,16 @@ bower.json
 /public/packs
 /public/packs-test
 /node_modules
-yarn-debug.log*
-.yarn-integrity
 
 /public/packs
 /public/packs-test
 /node_modules
+
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.pnp.*
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity

@@ -1,6 +1,6 @@
 WOD Tracker
 ===========
-![Build](https://github.com/yanchek99/wod-tracker/workflows/CI/badge.svg?branch=master)
+![CI](https://github.com/Yanchek99/wod-tracker/workflows/CI/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ae3a8c6f161636552525/maintainability)](https://codeclimate.com/github/Yanchek99/wod-tracker/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ae3a8c6f161636552525/test_coverage)](https://codeclimate.com/github/Yanchek99/wod-tracker/test_coverage)
 
@@ -12,8 +12,8 @@ An open source webapp to track your workout of the day capturing key points of d
 - [RVM](https://rvm.io)
 
 ## RVM setup
-- To install Ruby using RVM `rvm install 2.6.5`
-- Set the current ruby to the one installed above `rvm use 2.6.5`
+- To install Ruby using RVM `rvm install 2.6.6`
+- Set the current ruby to the one installed above `rvm use 2.6.6`
 - Create the gemset needed for this project `rvm gemset create wod-tracker` make sure to use it `rvm gemset use wod-tracker`
 - Ensure at a minimum bundler is install `gem install bundle`
 

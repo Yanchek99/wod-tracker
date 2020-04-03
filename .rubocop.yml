@@ -23,6 +23,12 @@ Layout/LineLength:
   Exclude:
     - config/**/*
 
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
 Metrics/AbcSize:
   Max: 20
   Exclude:
@@ -38,6 +44,17 @@ Metrics/MethodLength:
   CountComments: false
   Max: 20
 
+Rails/InverseOf:
+  Enabled: false
+
+Rails/LexicallyScopedActionFilter:
+  Exclude:
+    - app/controllers/concerns/*
+
+Security/Open:
+  Exclude:
+    - app/models/user.rb
+
 Style/ClassAndModuleChildren:
   Description: 'Checks style of children classes and modules.'
   Enabled: true
@@ -47,24 +64,22 @@ Style/Documentation:
   Description: 'Document classes and non-namespace modules.'
   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/SymbolArray:
-  Enabled: false
-
-Rails/InverseOf:
-  Enabled: false
-
 Style/ExpandPathArguments:
   Exclude:
     - Rakefile
     - test/test_helper.rb
 
-Rails/LexicallyScopedActionFilter:
-    Exclude:
-      - app/controllers/concerns/*
+Style/FrozenStringLiteralComment:
+  Enabled: false
 
-Security/Open:
-    Exclude:
-      - app/models/user.rb
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/SymbolArray:
+  Enabled: false

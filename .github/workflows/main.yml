@@ -37,30 +37,22 @@ jobs:
         run: sudo apt-get -yqq install libpq-dev
 
       # Install Ruby
-      - uses: actions/cache@v1.1.2
-        id: ruby-cache
+      - uses: ruby/setup-ruby@v1
         with:
-          path: ~/local/rubies/2.6.5
-          key: ruby-2.6.5
-          restore-keys: ruby-2.6.5
-      - uses: clupprich/ruby-build-action@v1.3.0
-        id: ruby
-        with:
-          ruby-version: 2.6.5
-          cache-available: ${{ steps.ruby-cache.outputs.cache-hit == 'true' }}
+          ruby-version: 2.6.6
 
       # Install NodeJs
-      - uses: actions/setup-node@v1.4.0
+      - uses: actions/setup-node@v1
         with:
           node-version: 12.13.1
 
-      - uses: actions/cache@v1.1.2
+      - uses: actions/cache@v1
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: ${{ runner.os }}-gem-
 
-      - uses: actions/cache@v1.1.2
+      - uses: actions/cache@v1
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}

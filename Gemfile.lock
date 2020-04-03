@@ -222,12 +222,12 @@ GEM
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-performance (1.5.2)
       rubocop (>= 0.71.0)
-    rubocop-rails (2.5.0)
+    rubocop-rails (2.5.1)
       activesupport
       rack (>= 1.1)
       rubocop (>= 0.72.0)
     ruby-progressbar (1.10.1)
-    rubyzip (2.2.0)
+    rubyzip (2.3.0)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.2.1)
@@ -271,7 +271,7 @@ GEM
     turbolinks (5.2.1)
       turbolinks-source (~> 5.2)
     turbolinks-source (5.2.0)
-    tzinfo (1.2.6)
+    tzinfo (1.2.7)
       thread_safe (~> 0.1)
     unicode-display_width (1.7.0)
     uniform_notifier (1.13.0)
@@ -336,7 +336,7 @@ DEPENDENCIES
   webpacker (~> 5.0)
 
 RUBY VERSION
-   ruby 2.6.5p114
+   ruby 2.6.6p146
 
 BUNDLED WITH
    2.1.4

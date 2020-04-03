@@ -23,11 +23,12 @@ Layout/LineLength:
   Exclude:
     - config/**/*
 
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
+# Hound doesn't support this version of rubocop yet
+# Lint/RaiseException:
+#   Enabled: true
+#
+# Lint/StructNewOverride:
+#   Enabled: true
 
 Metrics/AbcSize:
   Max: 20
@@ -72,14 +73,15 @@ Style/ExpandPathArguments:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/HashEachMethods:
-  Enabled: true
-
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
+# Hound doesn't support this version of rubocop yet
+# Style/HashEachMethods:
+#   Enabled: true
+#
+# Style/HashTransformKeys:
+#   Enabled: true
+#
+# Style/HashTransformValues:
+#   Enabled: true
 
 Style/SymbolArray:
   Enabled: false

@@ -8,7 +8,7 @@
     "bootstrap": "^4.4.1",
     "cocoon": "github:nathanvda/cocoon",
     "expose-loader": "^0.7.5",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "local-time": "^2.1.0",
     "popper.js": "^1.16.1",
     "selectize": "^0.12.6",

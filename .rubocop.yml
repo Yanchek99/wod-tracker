@@ -9,7 +9,7 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
   ExtraDetails: true
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
   Exclude:
     - vendor/**/*
     - db/**/*
@@ -24,6 +24,9 @@ Layout/LineLength:
     - config/**/*
 
 # Hound doesn't support this version of rubocop yet
+# Layout/SpaceAroundMethodCallOperator:
+#   Enabled: true
+#
 # Lint/RaiseException:
 #   Enabled: true
 #
@@ -69,6 +72,10 @@ Style/ExpandPathArguments:
   Exclude:
     - Rakefile
     - test/test_helper.rb
+
+# Hound doesn't support this version of rubocop yet
+# Style/ExponentialNotation:
+#   Enabled: true
 
 Style/FrozenStringLiteralComment:
   Enabled: false

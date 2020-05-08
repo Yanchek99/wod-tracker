@@ -73,8 +73,9 @@ Style/ExpandPathArguments:
     - Rakefile
     - test/test_helper.rb
 
-Style/ExponentialNotation:
-  Enabled: true
+# Hound doesn't support this version of rubocop yet
+# Style/ExponentialNotation:
+#   Enabled: true
 
 Style/FrozenStringLiteralComment:
   Enabled: false

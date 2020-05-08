@@ -9,7 +9,7 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
   ExtraDetails: true
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
   Exclude:
     - vendor/**/*
     - db/**/*
@@ -23,12 +23,14 @@ Layout/LineLength:
   Exclude:
     - config/**/*
 
-# Hound doesn't support this version of rubocop yet
-# Lint/RaiseException:
-#   Enabled: true
-#
-# Lint/StructNewOverride:
-#   Enabled: true
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
 
 Metrics/AbcSize:
   Max: 20
@@ -70,18 +72,20 @@ Style/ExpandPathArguments:
     - Rakefile
     - test/test_helper.rb
 
+Style/ExponentialNotation:
+  Enabled: true
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-# Hound doesn't support this version of rubocop yet
-# Style/HashEachMethods:
-#   Enabled: true
-#
-# Style/HashTransformKeys:
-#   Enabled: true
-#
-# Style/HashTransformValues:
-#   Enabled: true
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
 
 Style/SymbolArray:
   Enabled: false

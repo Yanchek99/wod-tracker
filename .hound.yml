@@ -1,6 +1,6 @@
 # http://help.houndci.com/configuration/supported-linters
 rubocop:
-  version: 0.80.0
+  version: 0.83.0
   config_file: .rubocop.yml
 
 jshint:

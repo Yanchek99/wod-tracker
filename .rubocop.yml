@@ -96,7 +96,7 @@ Security/Open:
 # Hound isuues
 # Style/AccessorGrouping:
 #   Enabled: true
-# 
+#
 # Style/BisectedAttrAccessor:
 #   Enabled: true
 
@@ -129,8 +129,9 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
-Style/RedundantAssignment:
-  Enabled: true
+# Hound
+# Style/RedundantAssignment:
+#   Enabled: true
 
 Style/RedundantFetchBlock:
   Enabled: true

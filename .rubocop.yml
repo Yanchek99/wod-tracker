@@ -61,29 +61,29 @@ Metrics/MethodLength:
 # Performance/AncestorsInclude:
 #   Enabled: false
 
-Performance/BigDecimalWithNumericArgument:
-  Enabled: false
+# Performance/BigDecimalWithNumericArgument:
+#   Enabled: false
 
-Performance/RedundantSortBlock:
-  Enabled: false
-
-Performance/RedundantStringChars:
-  Enabled: false
-
-Performance/ReverseFirst:
-  Enabled: false
-
-Performance/SortReverse:
-  Enabled: false
-
-Performance/Squeeze:
-  Enabled: false
-
-Performance/StringInclude:
-  Enabled: false
-
-Rails/InverseOf:
-  Enabled: false
+# Performance/RedundantSortBlock:
+#   Enabled: false
+#
+# Performance/RedundantStringChars:
+#   Enabled: false
+#
+# Performance/ReverseFirst:
+#   Enabled: false
+#
+# Performance/SortReverse:
+#   Enabled: false
+#
+# Performance/Squeeze:
+#   Enabled: false
+#
+# Performance/StringInclude:
+#   Enabled: false
+#
+# Rails/InverseOf:
+#   Enabled: false
 
 Rails/LexicallyScopedActionFilter:
   Exclude:

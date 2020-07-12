@@ -29,8 +29,9 @@ Layout/LineLength:
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 
-Lint/DeprecatedOpenSSLConstant:
-  Enabled: true
+# Hound support
+# Lint/DeprecatedOpenSSLConstant:
+#   Enabled: true
 
 Lint/MixedRegexpCaptureTypes:
   Enabled: true

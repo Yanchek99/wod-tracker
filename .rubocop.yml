@@ -132,15 +132,15 @@ Style/HashTransformValues:
 # Hound
 # Style/RedundantAssignment:
 #   Enabled: true
-
-Style/RedundantFetchBlock:
-  Enabled: true
-
-Style/RedundantRegexpCharacterClass:
-  Enabled: true
-
-Style/RedundantRegexpEscape:
-  Enabled: true
+#
+# Style/RedundantFetchBlock:
+#   Enabled: true
+# 
+# Style/RedundantRegexpCharacterClass:
+#   Enabled: true
+#
+# Style/RedundantRegexpEscape:
+#   Enabled: true
 
 Style/SlicingWithRange:
   Enabled: true

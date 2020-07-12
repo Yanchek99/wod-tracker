@@ -93,8 +93,9 @@ Security/Open:
   Exclude:
     - app/models/user.rb
 
-Style/AccessorGrouping:
-  Enabled: true
+# Hound isuues
+# Style/AccessorGrouping:
+#   Enabled: true
 
 Style/BisectedAttrAccessor:
   Enabled: true

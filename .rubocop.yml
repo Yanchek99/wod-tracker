@@ -18,20 +18,28 @@ AllCops:
     - node_modules/**/*
     - config/initializers/simple_form_bootstrap.rb
 
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
 Layout/LineLength:
   Max: 160
   Exclude:
     - config/**/*
 
-# Hound doesn't support this version of rubocop yet
-# Layout/SpaceAroundMethodCallOperator:
-#   Enabled: true
-#
-# Lint/RaiseException:
-#   Enabled: true
-#
-# Lint/StructNewOverride:
-#   Enabled: true
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
 
 Metrics/AbcSize:
   Max: 20
@@ -48,6 +56,30 @@ Metrics/MethodLength:
   CountComments: false
   Max: 20
 
+Performance/AncestorsInclude:
+  Enabled: false
+
+Performance/BigDecimalWithNumericArgument:
+  Enabled: false
+
+Performance/RedundantSortBlock:
+  Enabled: false
+
+Performance/RedundantStringChars:
+  Enabled: false
+
+Performance/ReverseFirst:
+  Enabled: false
+
+Performance/SortReverse:
+  Enabled: false
+
+Performance/Squeeze:
+  Enabled: false
+
+Performance/StringInclude:
+  Enabled: false
+
 Rails/InverseOf:
   Enabled: false
 
@@ -58,6 +90,12 @@ Rails/LexicallyScopedActionFilter:
 Security/Open:
   Exclude:
     - app/models/user.rb
+
+Style/AccessorGrouping:
+  Enabled: true
+
+Style/BisectedAttrAccessor:
+  Enabled: true
 
 Style/ClassAndModuleChildren:
   Description: 'Checks style of children classes and modules.'
@@ -73,22 +111,35 @@ Style/ExpandPathArguments:
     - Rakefile
     - test/test_helper.rb
 
-# Hound doesn't support this version of rubocop yet
-# Style/ExponentialNotation:
-#   Enabled: true
+Style/ExponentialNotation:
+  Enabled: true
 
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-# Hound doesn't support this version of rubocop yet
-# Style/HashEachMethods:
-#   Enabled: true
-#
-# Style/HashTransformKeys:
-#   Enabled: true
-#
-# Style/HashTransformValues:
-#   Enabled: true
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/RedundantAssignment:
+  Enabled: true
+
+Style/RedundantFetchBlock:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/SlicingWithRange:
+  Enabled: true
 
 Style/SymbolArray:
   Enabled: false

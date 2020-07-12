@@ -96,9 +96,9 @@ Security/Open:
 # Hound isuues
 # Style/AccessorGrouping:
 #   Enabled: true
-
-Style/BisectedAttrAccessor:
-  Enabled: true
+# 
+# Style/BisectedAttrAccessor:
+#   Enabled: true
 
 Style/ClassAndModuleChildren:
   Description: 'Checks style of children classes and modules.'

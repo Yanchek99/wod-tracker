@@ -33,8 +33,8 @@ Layout/SpaceAroundMethodCallOperator:
 # Lint/DeprecatedOpenSSLConstant:
 #   Enabled: true
 
-Lint/MixedRegexpCaptureTypes:
-  Enabled: true
+# Lint/MixedRegexpCaptureTypes:
+#   Enabled: true
 
 Lint/RaiseException:
   Enabled: true

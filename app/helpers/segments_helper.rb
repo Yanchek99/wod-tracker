@@ -1,7 +1,7 @@
 module SegmentsHelper
   def segment_objective(segment)
     msg = ''
-    msg << 'Then, ' unless segment.exercises.where(position: 1).exists?
+    msg << 'Then, ' unless segment.exercises.exists?(position: 1)
     return "#{msg}#{pluralize segment.rounds, 'round'} of" if segment.rounds.positive?
     return "#{msg}As many rounds as possible in #{pluralize segment.time, 'minute'}" if segment.amrap?
     return "#{msg}EMOM #{segment.time}" if segment.emom?

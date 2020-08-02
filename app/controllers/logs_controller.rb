@@ -78,7 +78,7 @@ class LogsController < ApplicationController
     params.require(:log).permit(movement_logs_attributes: [
                                   :id,
                                   :movement_id,
-                                  metrics_attributes: [:id, :measurement, :value, :_destroy]
+                                  { metrics_attributes: [:id, :measurement, :value, :_destroy] }
                                 ],
                                 metric_attributes: [:id, :measurement, :value])
   end

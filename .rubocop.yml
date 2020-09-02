@@ -8,8 +8,6 @@ Rails:
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
-  ExtraDetails: true
-  TargetRubyVersion: 2.7
   Exclude:
     - vendor/**/*
     - db/**/*
@@ -17,6 +15,9 @@ AllCops:
     - bin/**/*
     - node_modules/**/*
     - config/initializers/simple_form_bootstrap.rb
+  NewCops: enable
+  ExtraDetails: true
+  TargetRubyVersion: 2.7
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
@@ -25,24 +26,6 @@ Layout/LineLength:
   Max: 160
   Exclude:
     - config/**/*
-
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
-
-Lint/DeprecatedOpenSSLConstant:
-  Enabled: true
-
-Lint/DuplicateElsifCondition:
-  Enabled: true
-  
-Lint/MixedRegexpCaptureTypes:
-  Enabled: true
-
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
 
 Metrics/AbcSize:
   Max: 20
@@ -83,15 +66,6 @@ Performance/Squeeze:
 Performance/StringInclude:
   Enabled: false
 
-Rails/ActiveRecordCallbacksOrder:
-  Enabled: true
-
-Rails/FindById:
-  Enabled: true
-
-Rails/Inquiry:
-  Enabled: true
-
 Rails/InverseOf:
   Enabled: false
 
@@ -99,48 +73,9 @@ Rails/LexicallyScopedActionFilter:
   Exclude:
     - app/controllers/concerns/*
 
-Rails/MailerName:
-  Enabled: true
-
-Rails/MatchRoute:
-  Enabled: true
-
-Rails/NegateInclude:
-  Enabled: true
-
-Rails/RenderInline:
-  Enabled: true
-
-Rails/RenderPlainText:
-  Enabled: true
-
-Rails/Pluck:
-  Enabled: true
-
-Rails/PluckInWhere:
-  Enabled: true
-
-Rails/ShortI18n:
-  Enabled: true
-
-Rails/WhereExists:
-  Enabled: true
-
 Security/Open:
   Exclude:
     - app/models/user.rb
-
-Style/ArrayCoercion:
-  Enabled: true
-
-Style/AccessorGrouping:
-  Enabled: true
-
-Style/BisectedAttrAccessor:
-  Enabled: true
-
-Style/CaseLikeIf:
-  Enabled: true
 
 Style/ClassAndModuleChildren:
   Description: 'Checks style of children classes and modules.'
@@ -156,44 +91,8 @@ Style/ExpandPathArguments:
     - Rakefile
     - test/test_helper.rb
 
-Style/ExponentialNotation:
-  Enabled: true
-
 Style/FrozenStringLiteralComment:
   Enabled: false
-
-Style/HashAsLastArrayItem:
-  Enabled: true
-
-Style/HashEachMethods:
-  Enabled: true
-
-Style/HashLikeCase:
-  Enabled: true
-
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
-
-Style/RedundantAssignment:
-  Enabled: true
-
-Style/RedundantFetchBlock:
-  Enabled: true
-
-Style/RedundantFileExtensionInRequire:
-  Enabled: true
-
-Style/RedundantRegexpCharacterClass:
-  Enabled: true
-
-Style/RedundantRegexpEscape:
-  Enabled: true
-
-Style/SlicingWithRange:
-  Enabled: true
 
 Style/SymbolArray:
   Enabled: false

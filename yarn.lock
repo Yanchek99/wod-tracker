@@ -2011,7 +2011,8 @@ coa@^2.0.2:
 
 "cocoon@github:nathanvda/cocoon":
   version "0.0.0"
-  resolved "https://codeload.github.com/nathanvda/cocoon/tar.gz/6364ce5c284e574496e6007f24f5a13843fcb0d2"
+  uid "33f1b2b0c09954e6003f78ee1bf75f51f31b4b93"
+  resolved "https://codeload.github.com/nathanvda/cocoon/tar.gz/33f1b2b0c09954e6003f78ee1bf75f51f31b4b93"
 
 code-point-at@^1.0.0:
   version "1.1.0"

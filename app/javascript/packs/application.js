@@ -9,7 +9,8 @@ require("@rails/activestorage").start()
 require("channels")
 require("bootstrap/dist/js/bootstrap")
 require("selectize/dist/js/standalone/selectize")
-require("cocoon/app/assets/javascripts/cocoon")
+require("jquery")
+require("@nathanvda/cocoon")
 
 import LocalTime from "local-time"
 

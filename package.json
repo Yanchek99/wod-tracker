@@ -7,7 +7,7 @@
     "@rails/ujs": "^6.0.3",
     "@rails/webpacker": "^5.2.1",
     "bootstrap": "^4.5.2",
-    "expose-loader": "^1.0.0",
+    "expose-loader": "^1.0.1",
     "jquery": "^3.5.1",
     "local-time": "^2.1.0",
     "popper.js": "^1.16.1",

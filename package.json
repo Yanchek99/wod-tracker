@@ -5,7 +5,7 @@
     "@nathanvda/cocoon": "^1.2.14",
     "@rails/activestorage": "^6.0.3",
     "@rails/ujs": "^6.0.3",
-    "@rails/webpacker": "^5.2.1",
+    "@rails/webpacker": "5.2.1",
     "bootstrap": "^4.5.3",
     "expose-loader": "^1.0.1",
     "jquery": "^3.5.1",

@@ -65,7 +65,7 @@ group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 3.33'
   gem 'selenium-webdriver'
-  gem 'simplecov', '0.19.0', require: false # Version locked because of code climate issues
+  gem 'simplecov', '0.19.1', require: false # Version locked because of code climate issues
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
 end

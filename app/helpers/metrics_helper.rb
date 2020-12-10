@@ -16,6 +16,6 @@ module MetricsHelper
 
   def seconds_to_duration_string(seconds)
     duration = ActiveSupport::Duration.build(seconds).parts
-    format '%<minutes>02d:%<seconds>02d', minutes: duration[:minutes], seconds: duration[:seconds]
+    format '%<minutes>02d:%<seconds>02d', minutes: duration.fetch(:minutes, 0), seconds: duration.fetch(:seconds, 0)
   end
 end

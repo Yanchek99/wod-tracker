@@ -17,7 +17,7 @@ class Workout < ApplicationRecord
   def self.search_by_name(name)
     return all unless name
 
-    query = name.split(' ').reduce(nil) do |q, word|
+    query = name.split.reduce(nil) do |q, word|
       q.nil? ? arel_table[:name].matches("%#{word}%") : q.and(arel_table[:name].matches("%#{word}%"))
     end
     where(query)
@@ -58,7 +58,7 @@ class Workout < ApplicationRecord
     return nil if time_cap_seconds.nil?
 
     duration = ActiveSupport::Duration.build(time_cap_seconds).parts
-    format '%<minutes>02d:%<seconds>02d', minutes: duration[:minutes], seconds: duration[:seconds]
+    format '%<minutes>02d:%<seconds>02d', minutes: duration.fetch(:minutes, 0), seconds: duration.fetch(:seconds, 0)
   end
 
   # Time cap is a string in the format "Minutes:Seconds"

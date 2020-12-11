@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.7.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.3'
+gem 'rails', '~> 6.1.0'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use Puma as the app server
@@ -54,7 +54,7 @@ group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
 
-  gem 'bullet'
+  # gem 'bullet'
   gem 'bundler-audit'
   gem 'rubocop', require: false
   gem 'rubocop-performance', require: false

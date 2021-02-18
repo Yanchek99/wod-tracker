@@ -236,8 +236,6 @@ GEM
       rubocop (>= 0.90.0, < 2.0)
     ruby-progressbar (1.11.0)
     rubyzip (2.3.0)
-    sass-rails (6.0.0)
-      sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -330,7 +328,7 @@ DEPENDENCIES
   rubocop
   rubocop-performance
   rubocop-rails
-  sass-rails (~> 6)
+  sassc-rails (~> 2.1)
   selenium-webdriver
   simple_form
   simplecov (= 0.21.2)
@@ -344,7 +342,7 @@ DEPENDENCIES
   webpacker (~> 5.2)
 
 RUBY VERSION
-   ruby 2.7.2p137
+   ruby 3.0.0p0
 
 BUNDLED WITH
-   2.1.4
+   2.2.3

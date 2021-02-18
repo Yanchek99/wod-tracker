@@ -36,10 +36,16 @@ jobs:
       - name: Install PostgreSQL client
         run: sudo apt-get -yqq install libpq-dev
 
+      # https://github.com/guard/listen/blob/master/README.md#the-technical-details
+      - name: Adjust inotify listeners for Listen
+        run: |
+          sudo sysctl fs.inotify.max_user_watches=524288
+          sudo sysctl -p
+
       # Install Ruby
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 3.0.0
 
       # Install NodeJs
       - uses: actions/setup-node@v1

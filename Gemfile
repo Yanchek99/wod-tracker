@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.7.2'
+ruby '3.0.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.2'
@@ -10,7 +10,7 @@ gem 'pg'
 # Use Puma as the app server
 gem 'puma', '~> 5.2'
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 6'
+gem 'sassc-rails', '~> 2.1'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem 'webpacker', '~> 5.2'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks

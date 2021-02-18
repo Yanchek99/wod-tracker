@@ -39,7 +39,7 @@ jobs:
       # Install Ruby
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 3.0.0
 
       # Install NodeJs
       - uses: actions/setup-node@v1

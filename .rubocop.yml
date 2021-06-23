@@ -15,9 +15,9 @@ AllCops:
     - bin/**/*
     - node_modules/**/*
     - config/initializers/simple_form_bootstrap.rb
-  NewCops: enable
   ExtraDetails: true
   TargetRubyVersion: 3.0
+  NewCops: enable
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
@@ -41,33 +41,6 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   CountComments: false
   Max: 20
-
-Performance/AncestorsInclude:
-  Enabled: false
-
-Performance/BigDecimalWithNumericArgument:
-  Enabled: false
-
-Performance/RedundantSortBlock:
-  Enabled: false
-
-Performance/RedundantStringChars:
-  Enabled: false
-
-Performance/ReverseFirst:
-  Enabled: false
-
-Performance/SortReverse:
-  Enabled: false
-
-Performance/Squeeze:
-  Enabled: false
-
-Performance/StringInclude:
-  Enabled: false
-
-Rails/InverseOf:
-  Enabled: false
 
 Rails/LexicallyScopedActionFilter:
   Exclude:

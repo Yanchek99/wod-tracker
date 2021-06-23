@@ -7,19 +7,4 @@ environment.plugins.append("Provide", new webpack.ProvidePlugin({
   Popper: ['popper.js', 'default']
 }))
 
-// Can remove after JS is migrated to React
-environment.config.merge({
-  module: {
-    rules: [{
-      test: require.resolve('jquery'),
-      use: [{
-        loader: 'expose-loader',
-        options: {
-          exposes: ['$', 'jQuery'],
-        }
-      }]
-    }]
-  }
-})
-
 module.exports = environment

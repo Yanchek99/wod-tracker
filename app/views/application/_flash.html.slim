@@ -1,5 +1,4 @@
 - flash.each do |msg_type, message|
   .alert class="#{flash_bootstrap_class_for(msg_type)} alert-dismissible" role="alert"
     = message
-    button.close type="button" data-dismiss="alert" aria-label="Close"
-      span aria-hidden="true" &times;
+    button.btn-close type="button" data-bs-dismiss="alert" aria-label="Close"

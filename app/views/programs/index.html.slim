@@ -1,13 +1,14 @@
 .container
   h1 Programs
   - if can? :create, Program
-    .row
-      .col.text-right = link_to '+New Program', new_program_path
+    .my-2.text-end
+      = link_to new_program_path, class: 'btn btn-primary'
+        i.fas.fa-plus
   #programs.list-group
     - @programs.each do |program|
       = link_to program, class: "list-group-item list-group-item-action" do
         .row
           .col = program.name
-          .col.text-right
+          .col.text-end
             - if Current.user.subscribed? program
               i.far.fa-check-square

@@ -8,12 +8,12 @@
       b Posted:&nbsp;
       i #{local_time_ago(@workout.created_at)}
     - if @workout.updated?
-      p.col-6.text-right.fs-8
+      p.col-6.text-end.fs-8
         b Edited:&nbsp;
         i #{local_time_ago(@workout.updated_at)}
   .row
     p.col #{workout_objective @workout}
-    .col.text-right
+    .col.text-end
       = link_to edit_workout_path(@workout)
         i.fas.fa-edit
   .row
@@ -24,7 +24,7 @@
             - if exercise.segment.present?
               - unless in_segment
                 li = segment_objective(exercise.segment)
-              li.ml-4 #{measurable_message(exercise)}
+              li.ms-4 #{measurable_message(exercise)}
             - else
               li #{measurable_message(exercise)}
             - in_segment = exercise.segment.present?
@@ -35,8 +35,9 @@
       - unless @workout.notes.blank?
         b Notes
         .notes = simple_format @workout.notes
-      = link_to 'Schedule', nil, class: 'btn btn-block btn-secondary', data: { toggle: "modal", target: "#scheduleModal" } if can? :create, Schedule
-      = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-block btn-outline-primary'
+      .d-grid.gap-2
+        = link_to 'Schedule', nil, class: 'btn btn-secondary', "data-bs-toggle": "modal", "data-bs-target": "#scheduleModal" if can? :create, Schedule
+        = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-outline-primary'
       - if Current.user.logged_workout? @workout
         h2.mt-3 Results
         table.table.table-hover
@@ -55,12 +56,11 @@
       .modal-content
         .modal-header
           h5.modal-title Schedule Workout
-          button.close type="button" data-dismiss="modal" aria-label="Close"
-            span aria-hidden="true" &times;
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label="Close"
         .modal-body
           = f.input :program_id, collection: Current.user.programs.manageable
           = f.input :posted_at
           = f.input :workout_id, as: :hidden, value: @workout.id
         .modal-footer
-          = link_to 'Cancel', nil, class: 'btn btn-secondary', data: { dismiss: "modal" }
+          = link_to 'Cancel', nil, class: 'btn btn-secondary', "data-bs-dismiss": "modal"
           = f.button :submit, 'Add to Schedule', class: 'btn btn-primary'

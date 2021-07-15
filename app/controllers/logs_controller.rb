@@ -73,7 +73,7 @@ class LogsController < ApplicationController
     @workout = Workout.find(params[:workout_id])
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
+  # Only allow a list of trusted parameters through.
   def log_params
     params.require(:log).permit(movement_logs_attributes: [
                                   :id,

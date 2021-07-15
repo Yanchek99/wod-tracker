@@ -66,7 +66,7 @@ class WorkoutsController < ApplicationController
     @workout = Workout.includes(:exercises).find(params[:id])
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
+  # Only allow a list of trusted parameters through.
   def workout_params
     params.require(:workout).permit(:name, :rounds, :time, :interval, :notes, :time_cap,
                                     { segments_attributes: [:id, :rounds, :time, :interval, :_destroy,

@@ -1,14 +1,14 @@
 .exercise.nested-fields.card.mb-3
   .card-body
-    .form-row
+    .row
       .col = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement' }
       .col-4.col-md-2 = f.input :position
-    .form-row
+    .row
       .col#metrics
         = f.simple_fields_for :metrics do |metric_form|
           = render 'metric_fields', f: metric_form
-        .links
-          = link_to_add_association 'Add Metric', f, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
+        .links.d-grid
+          = link_to_add_association 'Add Metric', f, :metrics, class: 'btn btn-sm btn-outline-primary'
     .row
-      .col
-        = link_to_remove_association 'Delete Exercise', f, class: 'btn btn-sm btn-danger btn-block mt-2'
+      .col.d-grid
+        = link_to_remove_association 'Delete Exercise', f, class: 'btn btn-sm btn-danger mt-2'

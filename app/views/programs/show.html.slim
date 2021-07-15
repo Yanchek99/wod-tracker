@@ -19,6 +19,6 @@
       ul.list-unstyled.col
         = render partial: 'exercises/exercises', object: schedule.workout.exercises.order(:position)
     .row
-      .col
-        = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-outline-primary' if Current.user.subscribed? @program
+      .col.d-grid
+        = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-outline-primary' if Current.user.subscribed? @program
     br

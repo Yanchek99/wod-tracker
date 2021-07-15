@@ -8,3 +8,5 @@
         - @log.movement_logs.each do |ml|
           .col-12
             span = measurable_message(ml)
+      .mt-2.d-grid
+        = link_to 'Delete', log_path(@log), method: :delete, class: 'btn btn-danger'

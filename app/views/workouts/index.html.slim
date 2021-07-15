@@ -6,7 +6,7 @@
       .input-group-append
         = search_form.submit 'Search', class: 'btn btn-primary'
   .row
-    .col.text-right = link_to '+New Workout', new_workout_path
+    .col.text-end = link_to '+New Workout', new_workout_path
   #workouts.list-group.my-3
     - @workouts.each do |workout|
       = link_to workout.name, workout, class: "list-group-item list-group-item-action #{'list-group-item-success' if Current.user.logged_workout? workout}"

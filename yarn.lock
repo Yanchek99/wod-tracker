@@ -1077,6 +1077,16 @@
   dependencies:
     mkdirp "^1.0.4"
 
+"@orchidjs/sifter@^0.7.2":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-0.7.4.tgz#0bc5362f215be6958f4d7926f7c3b9b287e65cf4"
+  integrity sha512-DGAw6y7z+05zPpMd/lkl6ukoQlh28+dOPi8N+fXjQwwefG9ZeZFUHxmUkG7NnHQbU9uF2H1cBw5KmugaSs0NLA==
+
+"@popperjs/core@^2.9.2":
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
+  integrity sha512-VZMYa7+fXHdwIq1TDhSXoVmSPEGM/aa+6Aiq3nVVJ9bXr24zScr+NlKFKC3iPljA7ho/GAZr+d2jOf5GIRC30Q==
+
 "@rails/activestorage@^6.1.4":
   version "6.1.4"
   resolved "https://registry.yarnpkg.com/@rails/activestorage/-/activestorage-6.1.4.tgz#7772f539cc846df5f4364fc57ccb48860f9e966e"

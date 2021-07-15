@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   root to: 'workouts#index'
 
-  resources :logs, only: [:show]
+  resources :logs, only: [:show, :destroy]
 
   resources :movements, only: [:index, :create]
 

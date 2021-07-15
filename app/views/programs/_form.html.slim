@@ -2,6 +2,6 @@
   = f.error_notification
   .form-inputs.row
     .col-12 = f.input :name
-  .form-actions
-    = f.button :submit, class: 'btn btn-block btn-success'
-    = link_to 'Cancel', @program, class: 'btn btn-block btn-secondary mb-3'
+  .form-actions.d-grid.gap-2
+    = f.button :submit, class: 'btn btn-success'
+    = link_to 'Cancel', @program, class: 'btn btn-secondary'

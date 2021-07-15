@@ -1,6 +1,6 @@
 = simple_form_for @workout, wrapper: :vertical_form do |f|
   = f.error_notification
-  .form-inputs.form-row
+  .form-inputs.row
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
     .col-sm-4 = f.input :rounds
     .col-sm-4 = f.input :time, as: :group, append: 'minutes'
@@ -17,10 +17,10 @@
         = render 'exercise_fields', f: exercise_form
     = f.simple_fields_for :segments do |segment_form|
       = render 'segment_fields', f: segment_form
-    .links
-      = link_to_add_association 'Add Exercise', f, :exercises, class: 'btn btn-outline-primary btn-block'
-      = link_to_add_association 'Add Segment', f, :segments, class: 'btn btn-outline-primary btn-block'
+    .links.d-grid.gap-2
+      = link_to_add_association 'Add Exercise', f, :exercises, class: 'btn btn-outline-primary'
+      = link_to_add_association 'Add Segment', f, :segments, class: 'btn btn-outline-primary'
   hr
-  .form-actions
-    = f.button :submit, class: 'btn btn-block btn-success'
-    = link_to 'Cancel', @workout, class: 'btn btn-block btn-secondary mb-3'
+  .form-actions.d-grid.gap-2
+    = f.button :submit, class: 'btn btn-success'
+    = link_to 'Cancel', @workout, class: 'btn btn-secondary mb-3'

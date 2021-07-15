@@ -6,7 +6,6 @@ module MetricsHelper
   end
 
   def metric_unit_msg(metric)
-    return '' if metric.nil?
     return "Max #{metric.measurement.pluralize}" if metric.value.nil?
     return metric.value == 1 ? '' : metric.value if metric.rep?
     return seconds_to_duration_string(metric.value) if metric.seconds?

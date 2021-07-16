@@ -1077,7 +1077,7 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@orchidjs/sifter@^0.7.2":
+"@orchidjs/sifter@^0.7.4":
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-0.7.4.tgz#0bc5362f215be6958f4d7926f7c3b9b287e65cf4"
   integrity sha512-DGAw6y7z+05zPpMd/lkl6ukoQlh28+dOPi8N+fXjQwwefG9ZeZFUHxmUkG7NnHQbU9uF2H1cBw5KmugaSs0NLA==
@@ -6721,12 +6721,12 @@ toidentifier@1.0.0:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
 
-tom-select@^1.7.5:
-  version "1.7.5"
-  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.7.5.tgz#e144bfa0d6c0c7db2d7cd6628c700bf3430a89c8"
-  integrity sha512-ZDXHkHcpn/NRNtxeMsk2KTK0/ar5Nikgi+ABC5stvyvYDUcNweTouHeDT+ZmiUGZdILHasTu138yioxh64fTow==
+tom-select@^1.7.6:
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.7.6.tgz#6deb4310cca8adfd5fc3d3483b0fe122de52c515"
+  integrity sha512-nG8oVk763ke+oVtsqTxAdbxwIjzo2MbmdZBRAsjkE2j5FWzPcpBry4Lkq1+UnnwoSamrmJ4lM530tA5fxFl6ZQ==
   dependencies:
-    "@orchidjs/sifter" "^0.7.2"
+    "@orchidjs/sifter" "^0.7.4"
 
 ts-pnp@^1.1.6:
   version "1.2.0"

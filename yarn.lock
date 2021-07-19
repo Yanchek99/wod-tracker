@@ -6721,10 +6721,10 @@ toidentifier@1.0.0:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
 
-tom-select@^1.7.6:
-  version "1.7.6"
-  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.7.6.tgz#6deb4310cca8adfd5fc3d3483b0fe122de52c515"
-  integrity sha512-nG8oVk763ke+oVtsqTxAdbxwIjzo2MbmdZBRAsjkE2j5FWzPcpBry4Lkq1+UnnwoSamrmJ4lM530tA5fxFl6ZQ==
+tom-select@^1.7.7:
+  version "1.7.7"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.7.7.tgz#acd6933ded61b5c90db4af50236035f1aa2065e5"
+  integrity sha512-JDm+iHpOtU9q1JgE3CtrHMT+qytVazPXzcXUnpRkwbULJ4Cn/AUjY2AtsJOgcmvDJj97rldEO/Rd74gtcHnaGQ==
   dependencies:
     "@orchidjs/sifter" "^0.7.4"
 

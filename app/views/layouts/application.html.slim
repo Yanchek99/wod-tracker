@@ -30,7 +30,7 @@ html lang="en"
                   i.fas.fa-user
                 .dropdown-menu.dropdown-menu-end aria-labelledby="navbarDropdownMenuLink"
                   = link_to 'Edit Profile', edit_user_registration_path, class: 'dropdown-item'
-                  = link_to 'Admin', rails_admin_path, class: 'dropdown-item' if Current.user.admin?
+                  = link_to 'Admin', admin_root_path, class: 'dropdown-item' if Current.user.admin?
                   = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'dropdown-item'
     = render partial: 'flash', flash: flash
     .mb-3

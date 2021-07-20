@@ -2,6 +2,7 @@
   "name": "wod-tracker",
   "private": true,
   "dependencies": {
+    "@activeadmin/activeadmin": "^2.9.0",
     "@nathanvda/cocoon": "^1.2.14",
     "@popperjs/core": "^2.9.2",
     "@rails/activestorage": "^6.1.4",

@@ -23,7 +23,7 @@ class MovementsController < ApplicationController
 
   private
 
-  # Never trust parameters from the scary internet, only allow the white list through.
+  # Only allow a list of trusted parameters through.
   def movement_params
     params.require(:movement).permit(:name)
   end

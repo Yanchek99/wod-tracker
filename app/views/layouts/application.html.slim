@@ -8,30 +8,31 @@ html lang="en"
     = csrf_meta_tags
     = csp_meta_tag
 
-    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
     script[defer src="https://use.fontawesome.com/releases/v5.0.11/js/all.js" integrity="sha384-ImVoB8Er8knetgQakxuBS4G3RSkyD8IZVVQCAnmRJrDwqJFYUE4YOv+DbIofcO9C" crossorigin="anonymous"]
   body
     - if user_signed_in?
       nav.navbar.navbar-expand-sm.navbar-dark.bg-dark
-        .container
+        .container-fluid
           = link_to 'WODTracker', root_path, class: 'navbar-brand'
           button.navbar-toggler type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
             span.navbar-toggler-icon
           .collapse.navbar-collapse#navbarSupportedContent
-            .navbar-nav.mr-auto
+            .navbar-nav.me-auto
               = link_to 'Schedule', schedules_path, class: nav_item_class(:schedules) unless Current.user.schedules.empty?
               = link_to 'Programs', programs_path, class: nav_item_class(:programs)
               = link_to 'Workouts', workouts_path, class: nav_item_class(:workouts)
               = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
             .navbar-nav
               .nav-item.dropdown
-                = link_to '#', class: 'nav-link dropdown-toggle', id: "navbarDropdownMenuLink", data: { toggle: "dropdown" }, role: "button", aria: { haspopup:"true", expanded: "false" }
+                = link_to '#', class: 'nav-link dropdown-toggle', id: "navbarDropdownMenuLink", "data-bs-toggle": "dropdown", role: "button", aria: { expanded: "false" }
                   i.fas.fa-user
-                .dropdown-menu.dropdown-menu-right
-                  = link_to 'Edit Profile', edit_user_registration_path, class: 'dropdown-item', aria: { labelledby: "navbarDropdownMenuLink" }
-                  = link_to 'Admin', rails_admin_path, class: 'dropdown-item' if Current.user.admin?
+                .dropdown-menu.dropdown-menu-end aria-labelledby="navbarDropdownMenuLink"
+                  = link_to 'Edit Profile', edit_user_registration_path, class: 'dropdown-item'
+                  = link_to 'Admin', admin_root_path, class: 'dropdown-item' if Current.user.admin?
                   = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'dropdown-item'
     = render partial: 'flash', flash: flash
+    .mb-3
     .container
       = yield

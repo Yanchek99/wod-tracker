@@ -1,16 +1,16 @@
-.container
+.container.my-3
   - if @schedules.empty?
     .my-2.alert.alert-warning No schedules
   - else
-    .row.my-2
-      .col.text-left = link_to_next_page @dates, '<', class: 'btn btn-primary'
+    .row
+      .col.text-start = link_to_next_page @dates, '<', class: 'btn btn-primary'
       h3.col-auto.text-center = local_time(@date, '%A %B %e, %Y')
-      .col.text-right = link_to_prev_page @dates, '>', class: 'btn btn-primary'
+      .col.text-end = link_to_prev_page @dates, '>', class: 'btn btn-primary'
     - @schedules.each do |schedule|
       .row.my-3.pt-3.border-top
-        h1.col.text-left
+        h1.col.text-start
           = schedule.workout.name
-        i.col.text-right
+        i.col.text-end
           = link_to schedule.program.name, schedule.program
       .row
         p.col #{schedule.workout.notes}
@@ -21,6 +21,7 @@
           = render partial: 'exercises/exercises', object: schedule.workout.exercises.order(:position)
       .row
         .col-12
-          = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-outline-primary'
-          - if Current.user.logged_workout? schedule.workout
-            / = link_to 'See Previous Results', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-secondary'
+          .d-grid
+            = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-outline-primary'
+            - if Current.user.logged_workout? schedule.workout
+              / = link_to 'See Previous Results', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-secondary'

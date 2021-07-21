@@ -22,7 +22,7 @@
           .col#metrics
             = ml_form.simple_fields_for :metrics do |metric_form|
               = render 'metric_fields', f: metric_form
-            .links
-              = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary btn-block'
-  .form-actions
-    = f.button :submit, 'Save', class: 'btn btn-block btn-primary'
+            .links.d-grid
+              = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary'
+  .form-actions.d-grid
+    = f.button :submit, 'Save', class: 'btn btn-primary'

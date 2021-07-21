@@ -7,12 +7,20 @@ require("@rails/ujs").start()
 require("turbolinks").start()
 require("@rails/activestorage").start()
 require("channels")
-require("bootstrap/dist/js/bootstrap")
-require("selectize/dist/js/standalone/selectize")
 require("jquery")
 require("@nathanvda/cocoon")
 
+import { Tooltip, Toast, Popover } from 'bootstrap'
+
+/**
+ * Refers to app/javascript/stylesheets/application.scss (or application.css)
+ * Note that we don't need to preface this path with "app/javascript" due to the `source_path` config set in config/webpacker.yml. Magical!
+ * The file extension can be left off due to the `extensions` config in config/webpacker.yml.
+ */
+import "stylesheets/application"
+
 import LocalTime from "local-time"
+import TomSelect from "tom-select/dist/js/tom-select.complete"
 
 import font_awesome_extension from './font-awesome'
 import workout_search from './workout_search'
@@ -27,7 +35,6 @@ movements.initialize()
 logs.initialize()
 
 document.addEventListener("turbolinks:load", () => {
-  $('select').selectize()
   workout_search.initialize()
   exercise.initialize()
   metrics.initialize()

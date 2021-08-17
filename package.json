@@ -12,7 +12,7 @@
     "jquery": "^3.6.0",
     "local-time": "^2.1.0",
     "popper.js": "^1.16.1",
-    "tom-select": "^1.7.7",
+    "tom-select": "^1.7.8",
     "turbolinks": "^5.2.0"
   },
   "devDependencies": {

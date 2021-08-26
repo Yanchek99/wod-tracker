@@ -4,18 +4,18 @@
   "dependencies": {
     "@activeadmin/activeadmin": "^2.9.0",
     "@nathanvda/cocoon": "^1.2.14",
-    "@popperjs/core": "^2.9.2",
+    "@popperjs/core": "^2.9.3",
     "@rails/activestorage": "^6.1.4",
     "@rails/ujs": "^6.1.4",
-    "@rails/webpacker": "5.4.0",
-    "bootstrap": "^5.0.2",
+    "@rails/webpacker": "5.4.2",
+    "bootstrap": "^5.1.0",
     "jquery": "^3.6.0",
     "local-time": "^2.1.0",
     "popper.js": "^1.16.1",
-    "tom-select": "^1.7.7",
+    "tom-select": "^1.7.8",
     "turbolinks": "^5.2.0"
   },
   "devDependencies": {
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.0.0"
   }
 }

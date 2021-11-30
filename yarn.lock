@@ -1134,10 +1134,10 @@
   resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-0.8.1.tgz#a89310d3a3047776b2f6eb415507b4c3ac90c032"
   integrity sha512-/lnUP6c4+B5t858HsMGmvK1+GxHMAlq4jupthQ1KpGCi4NA6QjKjw0W4OqJEpTQvwM1+MpKaR8X+qglEba3mwg==
 
-"@popperjs/core@^2.10.2":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.2.tgz#0798c03351f0dea1a5a4cabddf26a55a7cbee590"
-  integrity sha512-IXf3XA7+XyN7CP9gGh/XB0UxVMlvARGEgGXLubFICsUMGz6Q+DU+i4gGlpOxTjKvXjkJDJC8YdqdKkDj9qZHEQ==
+"@popperjs/core@^2.11.0":
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
+  integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
 
 "@rails/activestorage@^6.1.4":
   version "6.1.4"

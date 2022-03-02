@@ -44,7 +44,7 @@ class Workout < ApplicationRecord
   end
 
   def logged?(user)
-    logs.where(user: user)
+    logs.where(user)
   end
 
   def reps_from_interval

@@ -5,7 +5,7 @@ class Metric < ApplicationRecord
                       lb: 'lb', kg: 'kg',
                       time: 'time', weight: 'weight', height: 'height', distance: 'distance' }
 
-  validates :measurable, :measurement, presence: true
+  validates :measurement, presence: true
   validates :measurement, uniqueness: { scope: :measurable }
 
   def self.workout_measurements

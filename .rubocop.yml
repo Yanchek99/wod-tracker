@@ -17,7 +17,7 @@ AllCops:
     - config/initializers/simple_form_bootstrap.rb
   NewCops: enable
   ExtraDetails: true
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.1
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true

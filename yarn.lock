@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@activeadmin/activeadmin@^2.11.0":
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/@activeadmin/activeadmin/-/activeadmin-2.11.0.tgz#b6cd9ba3e1d6658ec91593481a636f2686fb086b"
-  integrity sha512-xuPZf5hM87nm/Z0MPZ4qKeco3oia2uJc5Zznky5tFCN8WgGQPqvaCaJ5JbgvqVIOYGUIwS4b6U7hHWlZDK0fyw==
+"@activeadmin/activeadmin@^2.11.1":
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/@activeadmin/activeadmin/-/activeadmin-2.11.1.tgz#efddb266f9cc88fa6a9c7fbe87558cb7874998a0"
+  integrity sha512-YZ3IhxVcg3BaxojAuiy6fhhzH6xDGWw4TRvLf5lMiWaPGwABjC0G4q9dgf6vdZGCNL2Y3LFqQC4xin2EL9lrQQ==
   dependencies:
     jquery "^3.4.1"
     jquery-ui "^1.12.1"

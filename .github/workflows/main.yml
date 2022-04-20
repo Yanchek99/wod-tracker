@@ -79,5 +79,5 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
         with:
-          coverageCommand: bundle exec rails test
+          coverageCommand: bundle exec rails test:all
           debug: true

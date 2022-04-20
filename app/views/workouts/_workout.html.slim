@@ -1,1 +1,1 @@
-= link_to workout.name, workout, class: "list-group-item list-group-item-action #{'list-group-item-success' if Current.user.logged_workout? workout}"
+= link_to workout.name, workout, id: dom_id(workout), class: "list-group-item list-group-item-action #{'list-group-item-success' if Current.user.logged_workout? workout}", data: { turbo_frame: "_top"}

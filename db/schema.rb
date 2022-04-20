@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_10_195705) do
+ActiveRecord::Schema.define(version: 2021_12_16_200720) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_195705) do
     t.string "content_type"
     t.text "metadata"
     t.bigint "byte_size", null: false
-    t.string "checksum", null: false
+    t.string "checksum"
     t.datetime "created_at", null: false
     t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
@@ -72,7 +72,7 @@ ActiveRecord::Schema.define(version: 2020_12_10_195705) do
     t.integer "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable_type_and_measurable_id"
+    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable"
   end
 
   create_table "movement_logs", force: :cascade do |t|

@@ -44,17 +44,12 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0.3
+          bundler-cache: true
 
       # Install NodeJs
       - uses: actions/setup-node@v1
         with:
           node-version: 14
-
-      - uses: actions/cache@v3
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: ${{ runner.os }}-gem-
 
       - uses: actions/cache@v3
         with:
@@ -64,8 +59,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          gem install bundler
-          bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
           yarn install --cache-folder ~/.cache/yarn
 

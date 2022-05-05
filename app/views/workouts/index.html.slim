@@ -1,12 +1,13 @@
 .container
   h1 Workouts
-  = form_with url: workouts_path, id: :search, method: :get, class: 'form_inline', data: { turboform: '' } do |search_form|
+  / .search data-controller="search" data-search-url-value="#{workouts_path}"
+  /   = text_field_tag :query, "", placeholder: "Searc by name", class: "form-control", data: { action: "keyup->workout-search#fetchResults keydown->workout-search#navigateResults", search_target: "query" }, autofocus: true, autocomplete: "off"
+  /   div data-search-target="results"
+  = form_with(url: workouts_path, method: :get, class: 'form_inline', data: { controller: 'workout-search', turbo_frame: 'workouts', turbo_action: "advance" }) do |search_form|
     .input-group.mb-3
-      = search_form.search_field :query, value: params[:query], placeholder: 'Search workout name', 'aria-label': 'Search', class: 'form-control'
+      = search_form.text_field :query, value: params[:query], placeholder: 'Search workout name', 'aria-label': 'Search', class: 'form-control', data: { action: 'keyup->workout-search#search' }, autocomplete: 'off', autofocus: true
       .input-group-append
         = search_form.submit 'Search', class: 'btn btn-primary'
   .row
     .col.text-end = link_to '+New Workout', new_workout_path
-  #workouts.list-group.my-3
-    - @workouts.each do |workout|
-      = link_to workout.name, workout, class: "list-group-item list-group-item-action #{'list-group-item-success' if Current.user.logged_workout? workout}"
+  = render 'workouts', workouts: @workouts

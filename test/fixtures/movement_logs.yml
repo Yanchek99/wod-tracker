@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-trillion_fran_thruster:
-  log: trillion_fran
+brooke_fran_thruster:
+  log: brooke_fran
   movement: thruster
 
-trillion_fran_pullup:
-  log: trillion_fran
+brooke_fran_pullup:
+  log: brooke_fran
   movement: pullup

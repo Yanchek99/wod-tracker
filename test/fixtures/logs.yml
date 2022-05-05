@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-trillion_fran:
+brooke_fran:
   workout: fran
-  user: trillion
+  user: brooke
 
 matt_murph:
   workout: murph
-  user: matt
+  user: mathew

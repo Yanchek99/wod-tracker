@@ -29,7 +29,7 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install PostgreSQL client
         run: sudo apt-get -yqq install libpq-dev
@@ -44,30 +44,16 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.1
+          bundler-cache: true
 
       # Install NodeJs
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
+          cache: yarn
 
-      - uses: actions/cache@v2
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: ${{ runner.os }}-gem-
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
-
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-          yarn install --cache-folder ~/.cache/yarn
+      - name: Install JS dependencies
+        run: yarn install
 
       - name: Setup test database
         env:
@@ -79,5 +65,5 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
         with:
-          coverageCommand: bundle exec rails test
+          coverageCommand: bundle exec rails test:all
           debug: true

@@ -52,10 +52,8 @@ jobs:
           node-version: 14
           cache: yarn
 
-      - name: Install dependencies
-        run: |
-          bundle install --jobs 4 --retry 3
-          yarn install
+      - name: Install JS dependencies
+        run: yarn install
 
       - name: Setup test database
         env:

@@ -1,4 +1,5 @@
 plugins:
   rubocop:
     enabled: true
+    # https://github.com/codeclimate/codeclimate-rubocop/branches/all?utf8=✓&query=channel%2Frubocop
     channel: rubocop-1-23-0

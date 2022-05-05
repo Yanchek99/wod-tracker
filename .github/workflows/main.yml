@@ -47,20 +47,15 @@ jobs:
           bundler-cache: true
 
       # Install NodeJs
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
-
-      - uses: actions/cache@v3
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
+          cache: yarn
 
       - name: Install dependencies
         run: |
           bundle install --jobs 4 --retry 3
-          yarn install --cache-folder ~/.cache/yarn
+          yarn install
 
       - name: Setup test database
         env:

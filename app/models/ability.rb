@@ -48,6 +48,5 @@ class Ability
     cannot :subscribe, Program do |program|
       program.subscriptions.any? { |s| s.user_id == user.id }
     end
-    can :read, ActiveAdmin::Page, name: 'Dashboard', namespace_name: 'admin'
   end
 end

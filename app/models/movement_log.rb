@@ -6,6 +6,4 @@ class MovementLog < ApplicationRecord
   default_scope { includes(:metrics) }
 
   accepts_nested_attributes_for :metrics, allow_destroy: true
-
-  validates :log, presence: true
 end

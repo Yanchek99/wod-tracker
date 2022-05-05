@@ -8,7 +8,7 @@ class Log < ApplicationRecord
   accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :movement_logs, allow_destroy: true
 
-  validates :user, :workout, :metric, presence: true
+  validates :metric, presence: true
 
   def build_movement_logs
     exercises.each do |e|

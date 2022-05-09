@@ -20,7 +20,7 @@
     "jquery": "^3.6.0",
     "local-time": "^2.1.0",
     "sass": "^1.45.1",
-    "tom-select": "^2.0.1"
+    "tom-select": "^2.0.2"
   },
   "devDependencies": {}
 }

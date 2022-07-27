@@ -29,7 +29,7 @@ class LogsController < ApplicationController
 
     respond_to do |format|
       if @log.save
-        format.html { redirect_to @log, notice: 'Log was successfully created.' }
+        format.html { redirect_to @log, notice: t('.create.notice') }
         format.json { render :show, status: :created, location: @log }
       else
         format.html { render :new }
@@ -43,7 +43,7 @@ class LogsController < ApplicationController
   def update
     respond_to do |format|
       if @log.update(log_params)
-        format.html { redirect_to @log, notice: 'Log was successfully updated.' }
+        format.html { redirect_to @log, notice: t('.update.notice') }
         format.json { render :show, status: :ok, location: @log }
       else
         format.html { render :edit }
@@ -57,7 +57,7 @@ class LogsController < ApplicationController
   def destroy
     @log.destroy
     respond_to do |format|
-      format.html { redirect_to workout_url(@log.workout), notice: 'Log was successfully destroyed.' }
+      format.html { redirect_to workout_url(@log.workout), notice: t('.destroy.notice') }
       format.json { head :no_content }
     end
   end

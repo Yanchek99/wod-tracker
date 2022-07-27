@@ -16,7 +16,7 @@ class SchedulesController < ApplicationController
     @schedule = Schedule.new(schedule_params)
     respond_to do |format|
       if @schedule.save
-        format.html { redirect_to @schedule.workout, notice: 'Schedule was successfully created.' }
+        format.html { redirect_to @schedule.workout, notice: t('.create.notice') }
         format.json { render :show, status: :created, location: @schedule.workout }
       else
         format.html { render :new }

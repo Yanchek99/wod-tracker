@@ -19,7 +19,7 @@ class ProgramsController < ApplicationController
     @program.subscriptions.build(user: Current.user, role: :owner)
     respond_to do |format|
       if @program.save
-        format.html { redirect_to @program, notice: 'Program was successfully created.' }
+        format.html { redirect_to @program, notice: t('.create.notice') }
         format.json { render :show, status: :created, location: @program }
       else
         format.html { render :new }
@@ -33,7 +33,7 @@ class ProgramsController < ApplicationController
   def destroy
     @program.destroy
     respond_to do |format|
-      format.html { redirect_to programs_url, notice: 'Program was successfully destroyed.' }
+      format.html { redirect_to programs_url, notice: t('.destroy.notice') }
       format.json { head :no_content }
     end
   end

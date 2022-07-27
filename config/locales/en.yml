@@ -30,4 +30,32 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            position:
+              taken: only used once per workout
+  workouts:
+    create:
+      notice: Workout was successfully created.
+    update:
+      notice: Workout was successfully updated.
+    destroy:
+      notice: Workout was successfully destroyed.
+  schedules:
+    create:
+      notice: Schedule was successfully created.
+  programs:
+    create:
+      notice: Program was successfully created.
+    destroy:
+      notice: Program was successfully destroyed.
+  logs:
+    create:
+      notice: Log was successfully created.
+    update:
+      notice: Log was successfully updated.
+    destroy:
+      notice: Log was successfully destroyed.

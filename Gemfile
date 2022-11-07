@@ -39,7 +39,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
-gem 'rails_admin', '~> 3.0'
+gem 'rails_admin', '~> 3.1'
 gem 'sassc-rails' # Requred by rails_admin
 
 gem 'cancancan'

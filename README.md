@@ -12,8 +12,8 @@ An open source webapp to track your workout of the day capturing key points of d
 - [RVM](https://rvm.io)
 
 ## RVM setup
-- To install Ruby using RVM `rvm install 3.1.1`
-- Set the current ruby to the one installed above `rvm use 3.1.1`
+- To install Ruby using RVM `rvm install 3.1.3`
+- Set the current ruby to the one installed above `rvm use 3.1.3`
 - Create the gemset needed for this project `rvm gemset create wod-tracker` make sure to use it `rvm gemset use wod-tracker`
 - Ensure at a minimum bundler is install `gem install bundle`
 

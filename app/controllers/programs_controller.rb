@@ -5,12 +5,12 @@ class ProgramsController < ApplicationController
     @programs = Program.all.order(:name)
   end
 
+  def show; end
+
   # GET /programs/new
   def new
     @program = Program.new
   end
-
-  def show; end
 
   # POST /programs
   # POST /programs.json

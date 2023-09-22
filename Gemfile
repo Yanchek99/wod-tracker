@@ -13,7 +13,7 @@ gem 'sprockets-rails'
 gem 'pg'
 
 # Use Puma as the app server
-gem 'puma', '~> 6.3'
+gem 'puma', '~> 6.4'
 
 # Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
 gem 'jsbundling-rails'

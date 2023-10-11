@@ -25,3 +25,6 @@ document.addEventListener("turbo:load", () => {
     added_exercise.find("input[name*='position']").val($('.exercise').length)
   })
 });
+
+import "trix"
+import "@rails/actiontext"

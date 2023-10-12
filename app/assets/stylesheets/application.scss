@@ -12,6 +12,10 @@
  *
  */
 @import "bootstrap/scss/bootstrap";
+ // TomSelect Fix https://github.com/orchidjs/tom-select/pull/601
+$select-color-dropdown-border-top: $input-border-color;
+$select-color-dropdown: $body-bg;
+$input-border-width: $border-width;
 @import "tom-select/dist/scss/tom-select.bootstrap5";
 @import "segments";
 

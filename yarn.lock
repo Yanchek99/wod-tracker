@@ -157,10 +157,10 @@
   resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-7.0.2.tgz#69a6d999f4087e0537dd38fe0963db1f4305d650"
   integrity sha512-G26maXW1Kx0LxQdmNNuNjQlRO/QlXNr3QfuwKiOKb5FZQGYe2OwtHTGXBAjSoiu4dW36XYMT/+L1Wo1Yov4ZXA==
 
-"@rails/activestorage@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@rails/activestorage/-/activestorage-7.1.0.tgz#6aeea30720f98ea25f790596862ac89251bcc05d"
-  integrity sha512-TYc3AkBaXgBlavODTHPgyaOMqt0MRkFlPCa7BiQJJyND17GYS7pP0lT0bgcDQgpuKMvsCdVxQaRwl6tzL5AW0g==
+"@rails/activestorage@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@rails/activestorage/-/activestorage-7.1.1.tgz#3f12e8ac784f460f6a9d205744354abd79a525f2"
+  integrity sha512-QGBj+y4fbZt/QMMpjqnpKlzCKpDGTYrvJ+qc0QLis34AfbBLVgRo7kPzmdmeOTtwvWqpcivB9CrjTcV/C/7ruA==
   dependencies:
     spark-md5 "^3.0.1"
 

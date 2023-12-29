@@ -19,7 +19,7 @@
     "esbuild": "^0.19.10",
     "jquery": "^3.7.1",
     "local-time": "^2.1.0",
-    "sass": "^1.69.5",
+    "sass": "^1.69.6",
     "tom-select": "^2.1.0"
   },
   "devDependencies": {}

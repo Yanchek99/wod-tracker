@@ -75,7 +75,7 @@ GEM
     ast (2.4.2)
     base64 (0.2.0)
     bcrypt (3.1.19)
-    bootsnap (1.17.1)
+    bootsnap (1.18.2)
       msgpack (~> 1.2)
     builder (3.2.4)
     bullet (7.1.6)

@@ -18,7 +18,7 @@ module MeasurableHelper
 
   def measurable_additional_metrics(measurable)
     msg = ''
-    measurable.metrics.where.not(measurement: :rep).each do |metric|
+    measurable.metrics.where.not(measurement: :rep).find_each do |metric|
       msg << " / #{metric_unit_msg(metric)}"
     end
     msg

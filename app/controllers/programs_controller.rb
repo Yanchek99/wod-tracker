@@ -2,15 +2,15 @@ class ProgramsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @programs = Program.all.order(:name)
+    @programs = Program.order(:name)
   end
+
+  def show; end
 
   # GET /programs/new
   def new
     @program = Program.new
   end
-
-  def show; end
 
   # POST /programs
   # POST /programs.json

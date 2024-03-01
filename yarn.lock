@@ -214,10 +214,10 @@ braces@~3.0.2:
   optionalDependencies:
     fsevents "~2.3.2"
 
-cocoon-js-vanilla@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/cocoon-js-vanilla/-/cocoon-js-vanilla-1.4.0.tgz#86792a8f269dd91b94861afa90a3a3282c66647e"
-  integrity sha512-QVcLKfIMk5zi/1sH5txKRIJ9DmDNc5OJMMLusATOumz9wltQx9ZgHv1d5zisOWJaABDzByqjbVcpKiRKB1Gxbw==
+cocoon-js-vanilla@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/cocoon-js-vanilla/-/cocoon-js-vanilla-1.5.1.tgz#ad006086667fd6e3058817205b67ba12290382df"
+  integrity sha512-EGDheeAA4Lwy+S2Dm46rpnb0mJqJoGyboE9G821+g9oV/W+GMVRcuC2YybDLU9WloHZlK6H4klp3hZ91ZZjKyQ==
 
 esbuild@^0.20.1:
   version "0.20.1"

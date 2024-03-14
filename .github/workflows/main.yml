@@ -43,13 +43,13 @@ jobs:
       # Install Ruby
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.1
+          ruby-version: 3.2.3
           bundler-cache: true
 
       # Install NodeJs
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           cache: yarn
 
       - name: Install JS dependencies

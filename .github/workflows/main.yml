@@ -29,7 +29,7 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install PostgreSQL client
         run: sudo apt-get -yqq install libpq-dev
@@ -47,7 +47,7 @@ jobs:
           bundler-cache: true
 
       # Install NodeJs
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: yarn
@@ -61,7 +61,7 @@ jobs:
         run: bundle exec rails db:schema:load
 
       - name: Test & publish code coverage
-        uses: paambaati/codeclimate-action@v3.0.0
+        uses: paambaati/codeclimate-action@v5.0.0
         env:
           CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
         with:

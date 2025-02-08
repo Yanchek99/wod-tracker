@@ -157,10 +157,17 @@
   dependencies:
     jquery "^3.3.1"
 
-"@orchidjs/sifter@^0.9.2":
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-0.9.2.tgz#86c84589fe42c46bb1f5ec1ab8f747a4c928a83b"
-  integrity sha512-8eR1aNWPhDt+cqOevGUajriiZbMzs6nGGdErUjSr99vMAxwMBRztnJu72OT8M7emyHTVjBB8BPjj4rJIoXQgKA==
+"@orchidjs/sifter@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-1.1.0.tgz#b36154ad0cda4898305d1ac44f318b41048a0438"
+  integrity sha512-mYwHCfr736cIWWdhhSZvDbf90AKt2xyrJspKFC3qyIJG1LtrJeJunYEqCGG4Aq2ijENbc4WkOjszcvNaIAS/pQ==
+  dependencies:
+    "@orchidjs/unicode-variants" "^1.1.2"
+
+"@orchidjs/unicode-variants@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@orchidjs/unicode-variants/-/unicode-variants-1.1.2.tgz#1fd71791a67fdd1591ebe0dcaadd3964537a824e"
+  integrity sha512-5DobW1CHgnBROOEpFlEXytED5OosEWESFvg/VYmH0143oXcijYTprRYJTs+55HzGM4IqxiLFSuqEzu9mPNwVsA==
 
 "@parcel/watcher-android-arm64@2.4.1":
   version "2.4.1"
@@ -417,9 +424,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-tom-select@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-2.1.0.tgz#93316cf042a69d9462027b8d6380f18f2a002e9d"
-  integrity sha512-NtE8kACBlMv4QaDakYfnXtEAgM/AVmM7Hw5FNQmij0uwgRgyXC/2kpNJPD1AdT5q/l6mUNkTnInQpTmrwX/tWQ==
+tom-select@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-2.4.2.tgz#9764faf6cba51f6571d03a79bb7c1cac1cac7a5a"
+  integrity sha512-2RWjkL3gMDz9E+u8w+tQy9JWsYq8gaSytEVeugKYDeMus6ZtxT1HttLPnXsfHCnBPlsNubVyj5gtUeN+S+bcpA==
   dependencies:
-    "@orchidjs/sifter" "^0.9.2"
+    "@orchidjs/sifter" "^1.1.0"
+    "@orchidjs/unicode-variants" "^1.1.2"

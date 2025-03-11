@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   resources :movements, only: [:index, :create]
 
   resources :users do
-    resources :movement_logs, only: [:personal_records] do
+    resources :movement_logs, only: [] do
       collection do
         get :personal_records
       end

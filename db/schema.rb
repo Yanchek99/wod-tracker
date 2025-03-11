@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_11_180449) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_11_192624) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -82,6 +82,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_11_180449) do
     t.datetime "updated_at", precision: nil, null: false
     t.integer "measurement"
     t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable"
+    t.index ["measurement", "measurable_id", "measurable_type"], name: "index_metrics_on_measurement_and_measurable", unique: true
   end
 
   create_table "movement_logs", force: :cascade do |t|

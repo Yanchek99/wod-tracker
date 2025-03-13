@@ -1,12 +1,14 @@
 class Metric < ApplicationRecord
   belongs_to :measurable, polymorphic: true
-  enum measurement: { calorie: 'calorie', rep: 'rep', round: 'round', seconds: 'seconds',
-                      inch: 'inch', foot: 'foot', meter: 'meter',
-                      lb: 'lb', kg: 'kg',
-                      time: 'time', weight: 'weight', height: 'height', distance: 'distance' }
+  enum :measurement, {
+    calorie: 0, rep: 1, round: 2, seconds: 3,
+    inch: 4, foot: 5, meter: 6,
+    lb: 7, kg: 8,
+    time: 9, weight: 10, height: 11, distance: 12
+  }
 
   validates :measurement, presence: true
-  validates :measurement, uniqueness: { scope: :measurable }
+  validates :measurement, uniqueness: { scope: [:measurable_id, :measurable_type] }
 
   def self.workout_measurements
     [:calorie, :rep, :round, :time, :weight]
@@ -23,7 +25,7 @@ class Metric < ApplicationRecord
   end
 
   def value=(new_value)
-    super(new_value)
+    super
     return unless time? && new_value.is_a?(String)
 
     if new_value.include? ':'

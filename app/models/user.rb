@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  enum role: { admin: 'admin', user: 'user' }
+  enum :role, { admin: 0, user: 1 }
 
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs

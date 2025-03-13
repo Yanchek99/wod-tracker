@@ -6,16 +6,18 @@ module MetricsHelper
   end
 
   def metric_unit_msg(metric)
-    return "Max #{metric.measurement.pluralize}" if metric.value.nil?
+    return pluralize(1, metric.measurement) if metric.value.nil?
     return metric.value == 1 ? '' : metric.value if metric.rep?
-    return seconds_to_duration_string(metric.value) if metric.seconds?
-    return seconds_to_duration_string(metric.value) if metric.time?
+    return seconds_to_duration_string(metric.value) if metric.seconds? || metric.time?
 
-    pluralize metric.value, metric.measurement
+    pluralize(metric.value.to_i, metric.measurement)
   end
 
   def seconds_to_duration_string(seconds)
     duration = ActiveSupport::Duration.build(seconds).parts
-    format '%<minutes>02d:%<seconds>02d', minutes: duration.fetch(:minutes, 0), seconds: duration.fetch(:seconds, 0)
+    format '%<hours>02d:%<minutes>02d:%<seconds>02d',
+           hours: duration.fetch(:hours, 0),
+           minutes: duration.fetch(:minutes, 0),
+           seconds: duration.fetch(:seconds, 0)
   end
 end

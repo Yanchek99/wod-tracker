@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.2.3'
+ruby '3.3.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.2.2'
+gem 'rails', '~> 8.0.1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
@@ -13,7 +13,7 @@ gem 'sprockets-rails'
 gem 'pg'
 
 # Use Puma as the app server
-gem 'puma', '~> 6.4'
+gem 'puma', '~> 6.6'
 
 # Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
 gem 'jsbundling-rails'
@@ -39,7 +39,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
-gem 'rails_admin', '~> 3.2'
+gem 'rails_admin', '~> 3.3'
 gem 'sassc-rails' # Requred by rails_admin
 
 gem 'cancancan'

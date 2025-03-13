@@ -10,17 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_16_200720) do
-
+ActiveRecord::Schema[8.0].define(version: 2025_03_11_192624) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
@@ -32,7 +41,7 @@ ActiveRecord::Schema.define(version: 2021_12_16_200720) do
     t.text "metadata"
     t.bigint "byte_size", null: false
     t.string "checksum"
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
@@ -46,8 +55,8 @@ ActiveRecord::Schema.define(version: 2021_12_16_200720) do
   create_table "exercises", force: :cascade do |t|
     t.bigint "workout_id"
     t.bigint "movement_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "segment_id"
     t.integer "position"
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
@@ -59,8 +68,8 @@ ActiveRecord::Schema.define(version: 2021_12_16_200720) do
   create_table "logs", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "workout_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_logs_on_user_id"
     t.index ["workout_id"], name: "index_logs_on_workout_id"
   end
@@ -68,41 +77,42 @@ ActiveRecord::Schema.define(version: 2021_12_16_200720) do
   create_table "metrics", force: :cascade do |t|
     t.string "measurable_type"
     t.bigint "measurable_id"
-    t.string "measurement", null: false
     t.integer "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.integer "measurement"
     t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable"
+    t.index ["measurement", "measurable_id", "measurable_type"], name: "index_metrics_on_measurement_and_measurable", unique: true
   end
 
   create_table "movement_logs", force: :cascade do |t|
     t.bigint "log_id"
     t.bigint "movement_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["log_id"], name: "index_movement_logs_on_log_id"
     t.index ["movement_id"], name: "index_movement_logs_on_movement_id"
   end
 
   create_table "movements", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["name"], name: "index_movements_on_name", unique: true
   end
 
   create_table "programs", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "schedules", force: :cascade do |t|
     t.bigint "program_id"
     t.bigint "workout_id"
-    t.datetime "posted_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "posted_at", precision: nil, null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["program_id"], name: "index_schedules_on_program_id"
     t.index ["workout_id"], name: "index_schedules_on_workout_id"
   end
@@ -112,17 +122,17 @@ ActiveRecord::Schema.define(version: 2021_12_16_200720) do
     t.integer "rounds"
     t.integer "time"
     t.integer "interval"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["workout_id"], name: "index_segments_on_workout_id"
   end
 
   create_table "subscriptions", force: :cascade do |t|
     t.bigint "program_id"
     t.bigint "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "role", default: "athlete"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.integer "role"
     t.index ["program_id", "user_id"], name: "index_subscriptions_on_program_id_and_user_id", unique: true
     t.index ["program_id"], name: "index_subscriptions_on_program_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
@@ -132,19 +142,19 @@ ActiveRecord::Schema.define(version: 2021_12_16_200720) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
     t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "role", default: "athlete", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "first_name"
     t.string "last_name"
     t.integer "weight"
+    t.integer "role"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -154,8 +164,8 @@ ActiveRecord::Schema.define(version: 2021_12_16_200720) do
     t.integer "rounds"
     t.integer "time"
     t.string "interval"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.text "notes"
     t.integer "time_cap_seconds"
   end

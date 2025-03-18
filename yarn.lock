@@ -361,10 +361,10 @@ jquery@^3.3.1, jquery@^3.7.1:
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.7.1.tgz#083ef98927c9a6a74d05a6af02806566d16274de"
   integrity sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==
 
-local-time@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/local-time/-/local-time-3.0.2.tgz#2767a1f3a9310f445efe3d75ad3bd07f634fa5f0"
-  integrity sha512-22xNlCU10UxS+ecOtT2sLq17sVo0MQf8D2TvGEagS8Mi2gOtCIrY9cMfWH2dlkPLvEUmoWBfi8kzJNRoCSPvlg==
+local-time@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/local-time/-/local-time-3.0.3.tgz#1738e7c224e562909b6d1f9aa1712bd9800cce7c"
+  integrity sha512-6z9YU1kIqNDhxmNA/ERu4C08XWyjI8guwBYUvkOJd6CbyO8b5hHJdh0UbCV7ZKj8tKjS3DZsRcbtwcNcH+MCdw==
 
 micromatch@^4.0.5:
   version "4.0.8"

@@ -1,4 +1,4 @@
-import TomSelect from "tom-select/dist/js/tom-select.complete"
+import TomSelect from "tom-select/dist/js/tom-select.complete.js"
 
 const metrics = {
   initialize() {

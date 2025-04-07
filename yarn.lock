@@ -267,10 +267,10 @@
   resolved "https://registry.yarnpkg.com/@rails/ujs/-/ujs-7.1.501.tgz#e560a7b6885a12a659c4beb47f4336c8a9353056"
   integrity sha512-7EDRGUlgns12IgP3SXVSaxA3CwRzbLOypPXn1EqEZiZ/NS/PwaQ/oa7Z2VRO4B46JifoVr0PYg+G5ERSGQJHxQ==
 
-bootstrap@^5.3.4:
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.4.tgz#d4d9b670a0322ca60ba57ebcbd67778b61c2642c"
-  integrity sha512-q2oK3ZPDTa5I44FTyY3H76+SDTJREvOBxtX1HNLHcxMni50jMvUtOh+dgFdgpsAHtJ9bfNAWr6d6VezJHJ/7tg==
+bootstrap@^5.3.5:
+  version "5.3.5"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.5.tgz#be42cfe0d580e97ee1abb7d38ce94f5c393c9bb6"
+  integrity sha512-ct1CHKtiobRimyGzmsSldEtM03E8fcEX4Tb3dGXz1V8faRwM50+vfHwTzOxB3IlKO7m+9vTH3s/3C6T2EAPeTA==
 
 braces@^3.0.3:
   version "3.0.3"

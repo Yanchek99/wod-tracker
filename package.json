@@ -14,7 +14,7 @@
     "@popperjs/core": "^2.11.8",
     "@rails/activestorage": "^8.0.200",
     "@rails/ujs": "^7.1.501",
-    "bootstrap": "^5.3.4",
+    "bootstrap": "^5.3.5",
     "cocoon-js-vanilla": "^1.5.1",
     "esbuild": "^0.25.2",
     "jquery": "^3.7.1",

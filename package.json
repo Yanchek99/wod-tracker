@@ -16,7 +16,7 @@
     "@rails/ujs": "^7.1.501",
     "bootstrap": "^5.3.7",
     "cocoon-js-vanilla": "^1.5.1",
-    "esbuild": "^0.25.5",
+    "esbuild": "^0.25.6",
     "jquery": "^3.7.1",
     "local-time": "^3.0.3",
     "sass": "^1.89.2",

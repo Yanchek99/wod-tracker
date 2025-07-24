@@ -59,14 +59,14 @@ jobs:
         env:
           RAILS_ENV: test
         run: bundle exec rails db:schema:load
+          
+      - name: Test
+        run: bundle exec rails test:all
 
-      - name: Test & publish code coverage
-        uses: paambaati/codeclimate-action@v5.0.0
-        env:
-          CC_TEST_REPORTER_ID: 325d29d9ac0a59974a66c6deb68b755a1466b8e00b2ac483ee992864513dfa36
+      - uses: qltysh/qlty-action/coverage@v1
         with:
-          coverageCommand: bundle exec rails test:all
-          debug: true
+          token: ${{secrets.QLTY_COVERAGE_TOKEN}}
+          files: coverage/.resultset.json
 
       # - name: Run RuboCop
       #   run: bundle exec rubocop --parallel

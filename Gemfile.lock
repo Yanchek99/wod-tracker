@@ -196,7 +196,7 @@ GEM
       date
       stringio
     public_suffix (5.0.4)
-    puma (6.6.1)
+    puma (7.0.0)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.0)
@@ -367,7 +367,7 @@ DEPENDENCIES
   kaminari
   local_time
   pg
-  puma (~> 6.6)
+  puma (~> 7.0)
   rails (~> 8.0.2)
   rails_admin (~> 3.3)
   rubocop

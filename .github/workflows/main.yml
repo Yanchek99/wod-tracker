@@ -43,7 +43,7 @@ jobs:
       # Install Ruby
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 3.4.6
           bundler-cache: true
 
       # Install NodeJs

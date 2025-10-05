@@ -75,7 +75,7 @@ class LogsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def log_params
-    expect(log: [
+    params.expect(log: [
              movement_logs_attributes: [
                :id,
                :movement_id,

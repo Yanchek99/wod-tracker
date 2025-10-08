@@ -36,7 +36,7 @@ class Ability
     can :unsubscribe, Program, subscriptions: { user_id: user.id, role: [:athlete, :coach] }
 
     can :create, Schedule do |schedule|
-      return user.programs.manageable.include?(schedule.program)
+      user.programs.manageable.include?(schedule.program)
     end
 
     return unless user&.admin?

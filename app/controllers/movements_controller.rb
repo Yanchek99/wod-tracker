@@ -25,6 +25,6 @@ class MovementsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def movement_params
-    params.require(:movement).permit(:name)
+    params.expect(movement: [:name])
   end
 end

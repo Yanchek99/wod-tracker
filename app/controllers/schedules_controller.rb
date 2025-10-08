@@ -29,6 +29,6 @@ class SchedulesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def schedule_params
-    params.require(:schedule).permit(:workout_id, :program_id, :posted_at)
+    params.expect(schedule: [:workout_id, :program_id, :posted_at])
   end
 end

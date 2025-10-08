@@ -7,20 +7,20 @@
     "build:css": "sass ./app/assets/stylesheets/application.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@fortawesome/fontawesome-free": "^7.1.0",
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.13",
+    "@hotwired/turbo-rails": "^8.0.18",
     "@nathanvda/cocoon": "^1.2.14",
     "@popperjs/core": "^2.11.8",
-    "@rails/activestorage": "^8.0.200",
-    "@rails/ujs": "^7.1.501",
-    "bootstrap": "^5.3.3",
+    "@rails/activestorage": "^8.0.300",
+    "@rails/ujs": "^7.1.502",
+    "bootstrap": "^5.3.8",
     "cocoon-js-vanilla": "^1.5.1",
-    "esbuild": "^0.25.1",
+    "esbuild": "^0.25.10",
     "jquery": "^3.7.1",
     "local-time": "^3.0.3",
-    "sass": "^1.86.0",
-    "tom-select": "^2.4.3"
+    "tom-select": "^2.4.3",
+    "sass": "^1.93.2"
   },
   "devDependencies": {}
 }

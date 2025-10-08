@@ -1,6 +1,7 @@
-require:
+plugins:
   - rubocop-performance
   - rubocop-rails
+  - rubocop-capybara
 
 Rails:
   Enabled: true
@@ -17,7 +18,8 @@ AllCops:
     - config/initializers/simple_form_bootstrap.rb
   NewCops: enable
   ExtraDetails: true
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.4
+  TargetRailsVersion: 8.0
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true

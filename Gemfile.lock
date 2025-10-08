@@ -270,6 +270,9 @@ GEM
     rubocop-ast (1.47.1)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
+    rubocop-capybara (2.22.1)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
     rubocop-performance (1.26.0)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
@@ -354,6 +357,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-22
+  x86_64-darwin-25
   x86_64-linux
 
 DEPENDENCIES
@@ -375,6 +379,7 @@ DEPENDENCIES
   rails (~> 8.0.3)
   rails_admin (~> 3.3)
   rubocop
+  rubocop-capybara
   rubocop-performance
   rubocop-rails
   sassc-rails
@@ -389,7 +394,7 @@ DEPENDENCIES
   webdrivers
 
 RUBY VERSION
-   ruby 3.3.6p108
+   ruby 3.4.6p54
 
 BUNDLED WITH
-   2.5.23
+   2.7.2

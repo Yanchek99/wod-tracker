@@ -5,7 +5,7 @@ import "./controllers"
 import * as bootstrap from "bootstrap"
 import LocalTime from "local-time"
 import "@fortawesome/fontawesome-free/js/all"
-import "tom-select/dist/js/tom-select.complete"
+import "tom-select/dist/js/tom-select.complete.js"
 
 import "./jquery"
 import "@nathanvda/cocoon" // REQUIRES JQUERY

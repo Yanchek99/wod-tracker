@@ -12,7 +12,7 @@
     "@hotwired/turbo-rails": "^8.0.18",
     "@nathanvda/cocoon": "^1.2.14",
     "@popperjs/core": "^2.11.8",
-    "@rails/activestorage": "^8.0.300",
+    "@rails/activestorage": "^8.1.0",
     "@rails/ujs": "^7.1.502",
     "bootstrap": "^5.3.8",
     "cocoon-js-vanilla": "^1.5.1",

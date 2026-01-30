@@ -9,7 +9,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.22",
+    "@hotwired/turbo-rails": "^8.0.23",
     "@nathanvda/cocoon": "^1.2.14",
     "@popperjs/core": "^2.11.8",
     "@rails/activestorage": "^8.1.200",

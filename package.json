@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds",
-    "build:css": "sass ./app/assets/stylesheets/application.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules"
+    "build:css": "sass ./app/assets/stylesheets/application.bootstrap.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.2.0",
@@ -20,7 +20,7 @@
     "jquery": "^4.0.0",
     "local-time": "^3.0.3",
     "sass": "^1.99.0",
-    "tom-select": "^2.1.0"
+    "tom-select": "^2.6.0"
   },
   "devDependencies": {}
 }

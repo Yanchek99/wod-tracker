@@ -1,18 +1,25 @@
-import TomSelect from "tom-select/dist/js/tom-select.complete"
+import TomSelect from "tom-select"
+
+const metric_select_options = {
+  sortField: 'name'
+}
+
+function initializeMetricSelect(select) {
+  if (select.tomselect) return
+
+  new TomSelect(select, metric_select_options)
+}
 
 const metrics = {
-  initialize() {
-    const metric_select_options = {
-      sortField: 'name'
-    }
+  initialize(root = document) {
+    root.querySelectorAll('select.metric').forEach(initializeMetricSelect)
+  },
 
-    document.querySelectorAll('select.metric').forEach(select => {
-    	new TomSelect(select, metric_select_options);
-    });
-
-    $('#exercises, #metrics').on('cocoon:after-insert', function(e, added_exercise) {
+  bind() {
+    $(document).off('cocoon:after-insert.tom-select-metrics', '#exercises, #metrics')
+    $(document).on('cocoon:after-insert.tom-select-metrics', '#exercises, #metrics', function(e, added_exercise) {
       added_exercise.find('select.metric').each(function() {
-        new TomSelect(this, metric_select_options);
+        initializeMetricSelect(this)
       })
     })
   }

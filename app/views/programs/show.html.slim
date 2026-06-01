@@ -5,9 +5,9 @@
     .col.text-right
       .btn-toolbar.justify-content-end
         .btn-group role="group"
-          = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', method: :post if can? :subscribe, @program
-          = link_to '+Unfollow', unsubscribe_program_path(@program), class: 'btn btn-warning', method: :delete if can? :unsubscribe, @program
-          = link_to 'Delete', program_path(@program), class: 'btn btn-danger', method: :delete if can? :destroy, @program
+          = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', data: { turbo_method: :post } if can? :subscribe, @program
+          = link_to '+Unfollow', unsubscribe_program_path(@program), class: 'btn btn-warning', data: { turbo_method: :delete } if can? :unsubscribe, @program
+          = link_to 'Delete', program_path(@program), class: 'btn btn-danger', data: { turbo_method: :delete } if can? :destroy, @program
   - @program.schedules.order(posted_at: :desc).each do |schedule|
     h4.mb-3.border-bottom = local_time(schedule.posted_at.to_date, '%B %e, %Y')
     .row

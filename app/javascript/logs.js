@@ -17,21 +17,18 @@ const logs = {
      }
    }
 
-    $(document).on('turbolinks:load', function() {
-      return $('input[data-auto-calc-reps=true]').on({
-        keyup: function() {
-          var $repFields, $value, field, reps, results, rounds
-          $value = $(this).val().split('+')
-          rounds = parseInt($value[0]) || 0
-          reps = parseInt($value[1]) || 0
-          $repFields = $(this.form).find('.reps-field')
-          results = []
-          for (var i = 0; i < $repFields.length; i++) {
-            results.push(calculateResult($repFields[i], rounds, reps))
-          }
-          return results
-        }
-      })
+    $(document).off('keyup.auto-calc-reps', 'input[data-auto-calc-reps=true]')
+    $(document).on('keyup.auto-calc-reps', 'input[data-auto-calc-reps=true]', function() {
+      var $repFields, $value, field, reps, results, rounds
+      $value = $(this).val().split('+')
+      rounds = parseInt($value[0]) || 0
+      reps = parseInt($value[1]) || 0
+      $repFields = $(this.form).find('.reps-field')
+      results = []
+      for (var i = 0; i < $repFields.length; i++) {
+        results.push(calculateResult($repFields[i], rounds, reps))
+      }
+      return results
     })
   }
 }

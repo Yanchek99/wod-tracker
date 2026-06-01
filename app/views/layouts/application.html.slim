@@ -8,14 +8,14 @@ html lang="en"
     = csrf_meta_tags
     = csp_meta_tag
 
-    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
-    = javascript_include_tag 'application', 'data-turbolinks-track': 'reload', defer: true
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload'
+    = javascript_include_tag 'application', 'data-turbo-track': 'reload', defer: true
   body
     - if user_signed_in?
       nav.navbar.navbar-expand-sm.navbar-dark.bg-dark
         .container-fluid
           = link_to 'WODTracker', root_path, class: 'navbar-brand'
-          button.navbar-toggler type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+          button.navbar-toggler type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
             span.navbar-toggler-icon
           .collapse.navbar-collapse#navbarSupportedContent
             .navbar-nav.me-auto

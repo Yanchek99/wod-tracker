@@ -16,7 +16,7 @@ class MovementsController < ApplicationController
       if @movement.save
         format.json { render json: @movement, status: :created }
       else
-        format.json { render json: @movement.errors, status: :unprocessable_entity }
+        format.json { render json: @movement.errors, status: :unprocessable_content }
       end
     end
   end

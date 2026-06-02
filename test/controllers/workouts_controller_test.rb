@@ -30,6 +30,30 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to workout_url(Workout.last)
   end
 
+  test 'should create workout with nested exercise metrics' do
+    assert_difference('Metric.count', 2) do
+      assert_difference(['Workout.count', 'Exercise.count'], 1) do
+        post workouts_url, params: { workout: {
+          name: 'Nested Workout',
+          metric_attributes: { measurement: :time },
+          exercises_attributes: {
+            '0' => {
+              movement_id: movements(:pullup).id,
+              position: 1,
+              metrics_attributes: {
+                '0' => { measurement: :rep, value: 10 }
+              }
+            }
+          }
+        } }
+      end
+    end
+
+    assert_redirected_to workout_url(Workout.last)
+    assert_equal movements(:pullup), Workout.last.exercises.first.movement
+    assert_equal 10, Workout.last.exercises.first.metrics.find_by!(measurement: :rep).value
+  end
+
   test 'should show workout' do
     get workout_url(@workout)
     assert_response :success

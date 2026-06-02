@@ -13,15 +13,3 @@ progress into the next round.
 - Display the stored score as `rounds + reps`, such as `20+5`.
 - Add coverage for full rounds, partial rounds, and partial reps that cross an
   exercise boundary within the next round.
-
-## Restore Rails System Tests
-
-Update `selenium-webdriver` to a version compatible with the current Rails
-system-test integration. The existing `selenium-webdriver 4.1.0` dependency
-fails before Chrome launches because `Selenium::WebDriver::DriverFinder` is
-missing.
-
-- Upgrade the Selenium dependency and regenerate `Gemfile.lock`.
-- Run `bin/rails test:system`.
-- Add browser coverage for workout creation, workout search, scheduling, and
-  logging.

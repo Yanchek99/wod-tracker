@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module WodTracker
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.0
+    config.load_defaults 8.1
 
     # CSS is compiled ahead of time into app/assets/builds, so Sprockets should
     # serve it directly instead of reparsing it through SassC.

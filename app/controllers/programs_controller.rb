@@ -19,11 +19,11 @@ class ProgramsController < ApplicationController
     @program.subscriptions.build(user: Current.user, role: :owner)
     respond_to do |format|
       if @program.save
-        format.html { redirect_to @program, notice: t('.create.notice') }
+        format.html { redirect_to @program, notice: t('.notice') }
         format.json { render :show, status: :created, location: @program }
       else
         format.html { render :new }
-        format.json { render json: @program.errors, status: :unprocessable_entity }
+        format.json { render json: @program.errors, status: :unprocessable_content }
       end
     end
   end
@@ -33,7 +33,7 @@ class ProgramsController < ApplicationController
   def destroy
     @program.destroy
     respond_to do |format|
-      format.html { redirect_to programs_url, notice: t('.destroy.notice') }
+      format.html { redirect_to programs_url, notice: t('.notice') }
       format.json { head :no_content }
     end
   end

@@ -20,7 +20,7 @@ class SchedulesController < ApplicationController
         format.json { render :show, status: :created, location: @schedule.workout }
       else
         format.html { render :new }
-        format.json { render json: @schedule.errors, status: :unprocessable_entity }
+        format.json { render json: @schedule.errors, status: :unprocessable_content }
       end
     end
   end

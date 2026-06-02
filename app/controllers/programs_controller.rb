@@ -23,7 +23,7 @@ class ProgramsController < ApplicationController
         format.json { render :show, status: :created, location: @program }
       else
         format.html { render :new }
-        format.json { render json: @program.errors, status: :unprocessable_entity }
+        format.json { render json: @program.errors, status: :unprocessable_content }
       end
     end
   end

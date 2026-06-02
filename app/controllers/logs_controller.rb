@@ -33,7 +33,7 @@ class LogsController < ApplicationController
         format.json { render :show, status: :created, location: @log }
       else
         format.html { render :new }
-        format.json { render json: @log.errors, status: :unprocessable_entity }
+        format.json { render json: @log.errors, status: :unprocessable_content }
       end
     end
   end
@@ -47,7 +47,7 @@ class LogsController < ApplicationController
         format.json { render :show, status: :ok, location: @log }
       else
         format.html { render :edit }
-        format.json { render json: @log.errors, status: :unprocessable_entity }
+        format.json { render json: @log.errors, status: :unprocessable_content }
       end
     end
   end
@@ -66,21 +66,23 @@ class LogsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_log
-    @log = Log.find(params[:id])
+    @log = Log.find(params.expect(:id))
   end
 
   def set_workout
-    @workout = Workout.find(params[:workout_id])
+    @workout = Workout.find(params.expect(:workout_id))
   end
 
   # Only allow a list of trusted parameters through.
   def log_params
     params.expect(log: [
-                    movement_logs_attributes: [[
-                      :id,
-                      :movement_id,
-                      { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }
-                    ]], metric_attributes: [:id, :measurement, :value]
+                    {
+                      movement_logs_attributes: [[
+                        :id,
+                        :movement_id,
+                        { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }
+                      ]], metric_attributes: [:id, :measurement, :value]
+                    }
                   ])
   end
 end

@@ -57,6 +57,28 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     get new_workout_log_url(workouts(:murph))
 
     assert_response :success
-    assert_select 'input[data-auto-calc-reps="true"]'
+    assert_select 'form[data-controller~="log-form"][data-controller~="nested-form"]'
+    assert_select 'input[data-auto-calc-reps="true"][data-action="keyup->log-form#calculateReps"]'
+  end
+
+  test 'workout form uses nested form controller' do
+    get new_workout_url
+
+    assert_response :success
+    assert_select 'form[data-controller="nested-form"][data-nested-form-position-exercises-value="true"]'
+  end
+
+  test 'movement and metric selects use stimulus controllers' do
+    get edit_workout_url(workouts(:fran))
+
+    assert_response :success
+    assert_select 'select.movement[data-controller="movement-select"]'
+    assert_select 'select.metric[data-controller="metric-select"]'
+
+    get new_workout_log_url(workouts(:murph))
+
+    assert_response :success
+    assert_select 'select.movement[data-controller="movement-select"]'
+    assert_select 'select.metric[data-controller="metric-select"]'
   end
 end

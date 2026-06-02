@@ -21,7 +21,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
     within '.exercise' do
       find('.ts-control input').set('Pull')
       find('.ts-dropdown .option', text: 'Pull Up').click
-      assert_no_selector '.ts-dropdown', visible: true
+      assert_no_selector '.ts-wrapper.dropdown-active'
       assert_field 'Position', with: '1'
       click_on 'Add Metric'
       find('input[name$="[value]"]').set('10')

@@ -1,15 +1,20 @@
 .nested-fields.card.mb-3
+  = f.hidden_field :_destroy
   .card-body
     .form-row
       .col = f.input :rounds
       .col = f.input :time
       .col = f.input :interval
     .row
-      .col#segmented_exercises
-        = f.simple_fields_for :exercises do |exercise_form|
-          = render 'exercise_fields', f: exercise_form
+      .col#segmented_exercises data-controller="nested-form" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true"
+        .fields data-nested-form-target="container"
+          = f.simple_fields_for :exercises do |exercise_form|
+            = render 'exercise_fields', f: exercise_form
+        template data-nested-form-target="template"
+          = f.simple_fields_for :exercises, Exercise.new, child_index: 'CHILD_EXERCISE' do |exercise_form|
+            = render 'exercise_fields', f: exercise_form
         .links.d-grid
-          = link_to_add_association 'Add Exercise', f, :exercises, class: 'btn btn-sm btn-outline-primary'
+          = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'nested-form#add' }
     .row
       .col.d-grid
-        = link_to_remove_association 'Delete Segment', f, class: 'btn btn-sm btn-danger mt-2'
+        = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'nested-form#remove' }

@@ -1,7 +1,8 @@
 .nested-fields
+  = f.hidden_field :_destroy
   .input-group.mb-3
     = f.input_field :value, as: :string, class: 'form-control', value: f.object.time? ? seconds_to_duration_string(f.object.value) : f.object.value
     = f.select :measurement, options_for_select(Metric.measurements.keys, f.object.measurement), {}, class: 'metric form-control', data: { controller: 'metric-select' }
     .input-group-append
-      = link_to_remove_association f, class: 'btn btn-outline-danger'
+      = link_to '#', class: 'btn btn-outline-danger', data: { action: 'nested-form#remove' }
         i.fas.fa-trash-alt

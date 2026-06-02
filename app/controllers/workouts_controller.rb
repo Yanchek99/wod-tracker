@@ -26,7 +26,7 @@ class WorkoutsController < ApplicationController
     @workout = Workout.new(workout_params)
     respond_to do |format|
       if @workout.save
-        format.html { redirect_to @workout, notice: t('.flash.notice') }
+        format.html { redirect_to @workout, notice: t('.notice') }
         format.json { render :show, status: :created, location: @workout }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -40,7 +40,7 @@ class WorkoutsController < ApplicationController
   def update
     respond_to do |format|
       if @workout.update(workout_params)
-        format.html { redirect_to @workout, notice: t('.flash.notice') }
+        format.html { redirect_to @workout, notice: t('.notice') }
         format.json { render :show, status: :ok, location: @workout }
       else
         format.html { render :edit }
@@ -54,7 +54,7 @@ class WorkoutsController < ApplicationController
   def destroy
     @workout.destroy
     respond_to do |format|
-      format.html { redirect_to workouts_url, notice: t('.flash.notice') }
+      format.html { redirect_to workouts_url, notice: t('.notice') }
       format.json { head :no_content }
     end
   end
@@ -69,11 +69,11 @@ class WorkoutsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def workout_params
     params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
-                            { segments_attributes: [:id, :rounds, :time, :interval, :_destroy,
-                                                    { exercises_attributes: [:id, :reps, :movement_id, :position, :_destroy,
-                                                                             { metrics_attributes: [:id, :measurement, :value, :_destroy] }] }] },
-                            { exercises_attributes: [:id, :reps, :movement_id, :position, :_destroy,
-                                                     { metrics_attributes: [:id, :measurement, :value, :_destroy] }],
+                            { segments_attributes: [[:id, :rounds, :time, :interval, :_destroy,
+                                                    { exercises_attributes: [[:id, :reps, :movement_id, :position, :_destroy,
+                                                                             { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }]] }]] },
+                            { exercises_attributes: [[:id, :reps, :movement_id, :position, :_destroy,
+                                                     { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }]],
                               metric_attributes: [:id, :measurement] }])
   end
 end

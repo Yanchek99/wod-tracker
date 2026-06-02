@@ -29,7 +29,7 @@ class LogsController < ApplicationController
 
     respond_to do |format|
       if @log.save
-        format.html { redirect_to @log, notice: t('.create.notice') }
+        format.html { redirect_to @log, notice: t('.notice') }
         format.json { render :show, status: :created, location: @log }
       else
         format.html { render :new }
@@ -43,7 +43,7 @@ class LogsController < ApplicationController
   def update
     respond_to do |format|
       if @log.update(log_params)
-        format.html { redirect_to @log, notice: t('.update.notice') }
+        format.html { redirect_to @log, notice: t('.notice') }
         format.json { render :show, status: :ok, location: @log }
       else
         format.html { render :edit }
@@ -57,7 +57,7 @@ class LogsController < ApplicationController
   def destroy
     @log.destroy
     respond_to do |format|
-      format.html { redirect_to workout_url(@log.workout), notice: t('.destroy.notice') }
+      format.html { redirect_to workout_url(@log.workout), notice: t('.notice') }
       format.json { head :no_content }
     end
   end
@@ -76,11 +76,11 @@ class LogsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def log_params
     params.expect(log: [
-                    movement_logs_attributes: [
+                    movement_logs_attributes: [[
                       :id,
                       :movement_id,
-                      { metrics_attributes: [:id, :measurement, :value, :_destroy] }
-                    ], metric_attributes: [:id, :measurement, :value]
+                      { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }
+                    ]], metric_attributes: [:id, :measurement, :value]
                   ])
   end
 end

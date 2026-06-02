@@ -1,4 +1,4 @@
-= simple_form_for [@workout, @log], wrapper: :input_group, html: { data: { controller: 'log-form nested-form' } } do |f|
+= simple_form_for [@workout, @log], wrapper: :input_group, html: { data: { controller: 'log-form' } } do |f|
   = f.error_notification
   .row.mt-3
     .col
@@ -19,10 +19,14 @@
       .card-body
         = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select' } }, label: false
         .row
-          .col#metrics
-            = ml_form.simple_fields_for :metrics do |metric_form|
-              = render 'metric_fields', f: metric_form
+          .col#metrics data-controller="nested-form" data-nested-form-placeholder-value="NEW_METRIC"
+            .fields data-nested-form-target="container"
+              = ml_form.simple_fields_for :metrics do |metric_form|
+                = render 'metric_fields', f: metric_form
+            template data-nested-form-target="template"
+              = ml_form.simple_fields_for :metrics, Metric.new, child_index: 'NEW_METRIC' do |metric_form|
+                = render 'metric_fields', f: metric_form
             .links.d-grid
-              = link_to_add_association 'Add Metric', ml_form, :metrics, class: 'btn btn-sm btn-outline-primary'
+              = link_to 'Add Metric', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'nested-form#add' }
   .form-actions.d-grid
     = f.button :submit, 'Save', class: 'btn btn-primary'

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { get, post } from "@rails/request.js"
 import TomSelect from "tom-select"
 
 export default class extends Controller {
@@ -18,26 +19,36 @@ export default class extends Controller {
           return
         }
 
-        $.ajax({
-          type: "POST",
-          url: "/movements",
-          dataType: "json",
-          data: { movement: { name: name } },
-          success(res) {
-            if (res) {
-              callback(res)
-            }
-          },
-          error(xhr) {
-            console.error("Failed to create movement", xhr.responseJSON || xhr.responseText)
-            callback()
-          }
+        post('/movements.json', {
+          body: { movement: { name } },
+          responseKind: 'json'
         })
+          .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+            return response.json
+          })
+          .then(callback)
+          .catch(error => {
+            console.error('Failed to create movement', error)
+            callback()
+          })
       },
       load(query, callback) {
-        $.getJSON("/movements.json", { query: query }, function(data) {
-          callback(data)
+        get('/movements.json', {
+          query: { query },
+          responseKind: 'json'
         })
+          .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+            return response.json
+          })
+          .then(callback)
+          .catch(error => {
+            console.error('Failed to load movements', error)
+            callback()
+          })
       }
     })
   }

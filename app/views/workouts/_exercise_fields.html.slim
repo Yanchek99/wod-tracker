@@ -1,14 +1,19 @@
 .exercise.nested-fields.card.mb-3
+  = f.hidden_field :_destroy
   .card-body
     .row
       .col = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select' } }
       .col-4.col-md-2 = f.input :position
     .row
-      .col#metrics
-        = f.simple_fields_for :metrics do |metric_form|
-          = render 'metric_fields', f: metric_form
+      .col#metrics data-controller="nested-form" data-nested-form-placeholder-value="NEW_METRIC"
+        .fields data-nested-form-target="container"
+          = f.simple_fields_for :metrics do |metric_form|
+            = render 'metric_fields', f: metric_form
+        template data-nested-form-target="template"
+          = f.simple_fields_for :metrics, Metric.new, child_index: 'NEW_METRIC' do |metric_form|
+            = render 'metric_fields', f: metric_form
         .links.d-grid
-          = link_to_add_association 'Add Metric', f, :metrics, class: 'btn btn-sm btn-outline-primary'
+          = link_to 'Add Metric', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'nested-form#add' }
     .row
       .col.d-grid
-        = link_to_remove_association 'Delete Exercise', f, class: 'btn btn-sm btn-danger mt-2'
+        = link_to 'Delete Exercise', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'nested-form#remove' }

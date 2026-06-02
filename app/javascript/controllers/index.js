@@ -6,3 +6,15 @@ import { application } from "./application"
 
 import WorkoutSearchController from "./workout_search_controller.js"
 application.register("workout-search", WorkoutSearchController)
+
+import LogFormController from "./log_form_controller.js"
+application.register("log-form", LogFormController)
+
+import MetricSelectController from "./metric_select_controller.js"
+application.register("metric-select", MetricSelectController)
+
+import MovementSelectController from "./movement_select_controller.js"
+application.register("movement-select", MovementSelectController)
+
+import NestedFormController from "./nested_form_controller.js"
+application.register("nested-form", NestedFormController)

@@ -37,13 +37,18 @@ class Log < ApplicationRecord
   end
 
   def metrics_for_movement_log(exercise)
-    return exercise.metrics unless workout.rep_scored_amrap?
+    metrics = exercise.metrics
+    return ordered_recording_metrics(metrics) unless workout.rep_scored_amrap?
 
     component = exercise.score_component
-    return exercise.metrics unless component
+    return ordered_recording_metrics(metrics) unless component
 
-    exercise.metrics.reject do |metric|
+    ordered_recording_metrics(metrics.reject do |metric|
       metric.rep? && component[:measurement] != 'rep'
-    end
+    end)
+  end
+
+  def ordered_recording_metrics(metrics)
+    metrics.sort_by { |metric| [Metric.recording_order(metric.measurement), metric.id || 0] }
   end
 end

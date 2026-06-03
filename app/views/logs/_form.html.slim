@@ -1,4 +1,4 @@
-= simple_form_for [@workout, @log], wrapper: :input_group, html: { data: { controller: 'log-form' } } do |f|
+= simple_form_for [@workout, @log], wrapper: :input_group do |f|
   = f.error_notification
   .row.mt-3
     .col
@@ -12,7 +12,11 @@
   .row
     = f.simple_fields_for :metric do |metric_form|
       = metric_form.input :measurement, as: :hidden
-      .col = metric_form.input :value, as: :group, prepend: @log.metric.measurement, label: false, input_html: { data: { auto_calc_reps: @workout.metric.round?, action: 'keyup->log-form#calculateReps' } }
+      - if @workout.set_based_lifting?
+        .col
+          p.form-text Score will be calculated from the heaviest successful set.
+      - else
+        .col = metric_form.input :value, as: :group, prepend: @log.metric.measurement, label: false
   h2.mt-3 Exercise Recordings
   = f.simple_fields_for :movement_logs do |ml_form|
     .card.mb-3

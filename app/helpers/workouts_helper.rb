@@ -1,5 +1,6 @@
 module WorkoutsHelper
   def workout_objective(workout)
+    return "#{pluralize workout.rounds, 'set'} for load" if workout.set_based_lifting?
     return "#{pluralize workout.rounds, 'round'} for time" if workout.rounds_for_time?
     return "As many rounds as possible in #{pluralize workout.time, 'minute'}" if workout.amrap?
     return "EMOM #{workout.time}" if workout.emom?

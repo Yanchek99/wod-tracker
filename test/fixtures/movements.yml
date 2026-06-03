@@ -14,8 +14,14 @@ pushup:
 run:
   name: Run
 
+row:
+  name: Row
+
 squat:
   name: Air Squat
 
 thruster:
   name: Thruster
+
+back_squat:
+  name: Back Squat

@@ -1,4 +1,10 @@
 class Metric < ApplicationRecord
+  LOAD_MEASUREMENTS = %w[kg lb weight].freeze
+  DISTANCE_MEASUREMENTS = %w[distance foot inch meter].freeze
+  RECORDING_MEASUREMENT_ORDER = %w[
+    rep calorie distance foot inch meter lb kg weight height seconds time round
+  ].freeze
+
   belongs_to :measurable, polymorphic: true
   enum :measurement, {
     calorie: 0, rep: 1, round: 2, seconds: 3,
@@ -12,6 +18,10 @@ class Metric < ApplicationRecord
 
   def self.workout_measurements
     [:calorie, :rep, :round, :time, :weight]
+  end
+
+  def self.recording_order(measurement)
+    RECORDING_MEASUREMENT_ORDER.index(measurement.to_s) || RECORDING_MEASUREMENT_ORDER.length
   end
 
   def calculated_value(workout)

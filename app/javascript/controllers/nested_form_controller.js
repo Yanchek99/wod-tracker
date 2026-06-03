@@ -16,6 +16,7 @@ export default class extends Controller {
     const content = this.template.innerHTML.replaceAll(this.placeholderValue, this.newId())
     this.container.insertAdjacentHTML('beforeend', content)
     this.assignExercisePosition(this.container.lastElementChild)
+    this.dispatch('add')
   }
 
   remove(event) {
@@ -25,6 +26,7 @@ export default class extends Controller {
     const destroyInput = fields.querySelector('input[name$="[_destroy]"]')
     destroyInput.value = '1'
     fields.hidden = true
+    this.dispatch('remove')
   }
 
   assignExercisePosition(fields) {

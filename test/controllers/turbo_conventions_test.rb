@@ -51,14 +51,12 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?][data-turbo-method="delete"]', log_path(logs(:matt_murph))
   end
 
-  test 'round log score input enables rep auto calculation' do
-    metrics(:murph).update!(measurement: :round)
-
-    get new_workout_log_url(workouts(:murph))
+  test 'amrap log form does not wire score input to movement recording auto calculation' do
+    get new_workout_log_url(workouts(:amrap_couplet))
 
     assert_response :success
-    assert_select 'form[data-controller="log-form"]'
-    assert_select 'input[data-auto-calc-reps="true"][data-action="keyup->log-form#calculateReps"]'
+    assert_select 'form[data-controller="log-form"]', false
+    assert_select 'input[data-auto-calc-reps]', false
     assert_select '[data-controller="nested-form"] template[data-nested-form-target="template"]'
   end
 

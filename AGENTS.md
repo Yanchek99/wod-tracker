@@ -1,3 +1,36 @@
+# CrossFit Knowledge Management
+
+## Knowledge Sources
+
+Before implementing CrossFit domain logic:
+
+1. Read relevant docs in `cf/docs/`.
+2. Use source references only when documentation is missing or needs verification.
+3. Prefer project documentation over assumptions.
+
+## Documentation Maintenance
+
+The files in `cf/docs/` may start sparse. Treat them as living project knowledge: update them when development clarifies terminology, movement standards, programming rules, or architectural/domain decisions.
+
+When CrossFit domain knowledge is discovered or clarified:
+
+- Update the appropriate file in `cf/docs/`.
+- Prefer updating an existing file over creating a new one.
+- Keep documentation concise and factual.
+
+## Architectural Decisions
+
+Project-specific decisions belong in:
+
+- `cf/docs/decisions.md`
+
+When a domain decision is made that affects future development:
+
+1. Add an entry to `decisions.md`.
+2. Include the rationale.
+3. Reference the decision when implementing related features.
+
+
 # Agent Guidelines
 
 Derived from [Andrej Karpathy's observations](https://x.com/karpathy/status/2015883857489522876) on LLM coding pitfalls.

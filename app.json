@@ -2,33 +2,12 @@
   "name": "wod-tracker",
   "description": "Open source Crossfit WOD tracker",
   "repository": "https://github.com/yanchek99/wod-tracker",
-  "scripts": {},
+  "scripts": {
+    "postdeploy": "bundle exec rails db:seed"
+  },
   "env": {
-    "APPLICATION_HOST": {
-      "required": true
-    },
-    "HONEYBADGER_ENV": {
-      "required": true
-    },
-    "LANG": {
-      "required": true
-    },
-    "RACK_ENV": {
-      "required": true
-    },
-    "RAILS_ENV": {
-      "required": true
-    },
-    "RAILS_LOG_TO_STDOUT": {
-      "required": true
-    },
     "RAILS_MASTER_KEY": {
-      "required": true
-    },
-    "RAILS_SERVE_STATIC_FILES": {
-      "required": true
-    },
-    "SECRET_KEY_BASE": {
+      "description": "The Rails master key used to decrypt application credentials.",
       "required": true
     }
   },
@@ -41,7 +20,7 @@
   "addons": [
     "heroku-postgresql"
   ],
-  "stack": "heroku-22",
+  "stack": "heroku-26",
   "buildpacks": [
     {
       "url": "heroku/nodejs"

@@ -2,6 +2,10 @@
   "name": "wod-tracker",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "24.x",
+    "yarn": "1.22.22"
+  },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds",
     "build:css": "sass ./app/assets/stylesheets/application.bootstrap.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules"

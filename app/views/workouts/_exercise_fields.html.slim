@@ -1,9 +1,14 @@
-.exercise.nested-fields.card.mb-3
+- distance_metric = f.object.metrics.reject(&:marked_for_destruction?).any? { |metric| Metric::DISTANCE_MEASUREMENTS.include?(metric.measurement) }
+- distance_units_hidden = f.object.distance_units_per_rep.blank? && !distance_metric
+
+.exercise.nested-fields.card.mb-3 data-controller="exercise-form" data-action="change->exercise-form#toggleDistanceUnits nested-form:add->exercise-form#toggleDistanceUnits nested-form:remove->exercise-form#toggleDistanceUnits" data-exercise-form-distance-measurements-value=Metric::DISTANCE_MEASUREMENTS.to_json
   = f.hidden_field :_destroy
   .card-body
     .row
       .col = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select' } }
       .col-4.col-md-2 = f.input :position
+      .col-12.col-md-4 data-exercise-form-target="distanceUnits" hidden=distance_units_hidden
+        = f.input :distance_units_per_rep, label: 'Distance units per rep'
     .row
       .col#metrics data-controller="nested-form" data-nested-form-placeholder-value="NEW_METRIC"
         .fields data-nested-form-target="container"

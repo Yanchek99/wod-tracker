@@ -20,7 +20,9 @@ class LogsController < ApplicationController
   end
 
   # GET /logs/1/edit
-  def edit; end
+  def edit
+    @workout = @log.workout
+  end
 
   # POST /logs
   # POST /logs.json
@@ -32,7 +34,7 @@ class LogsController < ApplicationController
         format.html { redirect_to @log, notice: t('.notice') }
         format.json { render :show, status: :created, location: @log }
       else
-        format.html { render :new }
+        format.html { render :new, status: :unprocessable_content }
         format.json { render json: @log.errors, status: :unprocessable_content }
       end
     end
@@ -41,12 +43,14 @@ class LogsController < ApplicationController
   # PATCH/PUT /logs/1
   # PATCH/PUT /logs/1.json
   def update
+    @workout = @log.workout
+
     respond_to do |format|
       if @log.update(log_params)
         format.html { redirect_to @log, notice: t('.notice') }
         format.json { render :show, status: :ok, location: @log }
       else
-        format.html { render :edit }
+        format.html { render :edit, status: :unprocessable_content }
         format.json { render json: @log.errors, status: :unprocessable_content }
       end
     end

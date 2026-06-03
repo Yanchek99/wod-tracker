@@ -75,3 +75,39 @@ segmented_second_run:
   workout: segmented
   movement: run
   position: 4
+
+amrap_couplet_pullup:
+  workout: amrap_couplet
+  movement: pullup
+  position: 1
+
+amrap_couplet_pushup:
+  workout: amrap_couplet
+  movement: pushup
+  position: 2
+
+amrap_mixed_row:
+  workout: amrap_mixed
+  movement: row
+  position: 1
+  distance_units_per_rep: 10
+
+amrap_mixed_pushup:
+  workout: amrap_mixed
+  movement: pushup
+  position: 2
+
+amrap_mixed_run:
+  workout: amrap_mixed
+  movement: run
+  position: 3
+
+amrap_unknown_distance_run:
+  workout: amrap_unknown_distance
+  movement: run
+  position: 1
+
+back_squat_5x5_back_squat:
+  workout: back_squat_5x5
+  movement: back_squat
+  position: 1

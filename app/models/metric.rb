@@ -1,4 +1,7 @@
 class Metric < ApplicationRecord
+  LOAD_MEASUREMENTS = %w[kg lb weight].freeze
+  DISTANCE_MEASUREMENTS = %w[distance foot inch meter].freeze
+
   belongs_to :measurable, polymorphic: true
   enum :measurement, {
     calorie: 0, rep: 1, round: 2, seconds: 3,

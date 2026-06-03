@@ -10,3 +10,19 @@ murph:
 
 segmented:
   name: Segmented
+
+amrap_couplet:
+  name: AMRAP Couplet
+  time: 10
+
+amrap_mixed:
+  name: AMRAP Mixed
+  time: 20
+
+amrap_unknown_distance:
+  name: AMRAP Unknown Distance
+  time: 12
+
+back_squat_5x5:
+  name: Back Squat 5x5
+  rounds: 5

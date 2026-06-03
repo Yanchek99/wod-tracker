@@ -7,3 +7,8 @@ brooke_fran:
 matt_murph:
   workout: murph
   user: mathew
+
+matt_amrap:
+  workout: amrap_couplet
+  user: mathew
+  reps_per_round: 25

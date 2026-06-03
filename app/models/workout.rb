@@ -1,4 +1,6 @@
 class Workout < ApplicationRecord
+  include WorkoutScoring
+
   has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, dependent: :destroy
   has_many :movements, through: :exercises

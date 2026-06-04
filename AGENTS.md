@@ -8,6 +8,16 @@ Before implementing CrossFit domain logic:
 2. Use source references only when documentation is missing or needs verification.
 3. Prefer project documentation over assumptions.
 
+## Domain Learning Loop
+
+When researching CrossFit source material for an implementation:
+
+1. Capture durable patterns, terminology, and modeling rules in `cf/docs/`, not just facts needed for the immediate code change.
+2. Prefer documenting source-backed patterns over one-off examples.
+3. If the research changes how future agents should interpret workouts, prescriptions, scaling, scoring, or movement standards, update docs before or alongside code.
+4. If a pattern is plausible but not source-confirmed, document it as uncertain or leave it out.
+5. Add source URLs or source families to `cf/docs/references.md` when they are useful for future verification.
+
 ## Documentation Maintenance
 
 The files in `cf/docs/` may start sparse. Treat them as living project knowledge: update them when development clarifies terminology, movement standards, programming rules, or architectural/domain decisions.

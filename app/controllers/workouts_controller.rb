@@ -68,12 +68,14 @@ class WorkoutsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def workout_params
+    metric_params = %i[id measurement value female_value male_value _destroy]
+    exercise_params = [:id, :reps, :movement_id, :position, :distance_units_per_rep, :_destroy,
+                       { metrics_attributes: [metric_params] }]
+
     params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
                             { segments_attributes: [[:id, :rounds, :time, :interval, :_destroy,
-                                                     { exercises_attributes: [[:id, :reps, :movement_id, :position, :distance_units_per_rep, :_destroy,
-                                                                               { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }]] }]] },
-                            { exercises_attributes: [[:id, :reps, :movement_id, :position, :distance_units_per_rep, :_destroy,
-                                                      { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }]],
+                                                     { exercises_attributes: [exercise_params] }]] },
+                            { exercises_attributes: [exercise_params],
                               metric_attributes: [:id, :measurement] }])
   end
 end

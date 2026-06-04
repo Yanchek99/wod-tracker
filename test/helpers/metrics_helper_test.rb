@@ -18,4 +18,16 @@ class MetricsHelperTest < ActionView::TestCase
 
     assert_equal '202 reps', log_score_msg(log)
   end
+
+  test 'renders paired female and male load values' do
+    metric = Metric.new(measurement: :lb, female_value: 65, male_value: 95)
+
+    assert_equal '♀65lb / ♂95lb', metric_unit_msg(metric)
+  end
+
+  test 'renders paired female and male height values' do
+    metric = Metric.new(measurement: :inch, female_value: 20, male_value: 24)
+
+    assert_equal '♀20-inch / ♂24-inch', metric_unit_msg(metric)
+  end
 end

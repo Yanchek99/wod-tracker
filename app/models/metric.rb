@@ -15,6 +15,7 @@ class Metric < ApplicationRecord
 
   validates :measurement, presence: true
   validates :measurement, uniqueness: { scope: [:measurable_id, :measurable_type] }
+  validate :values_are_unambiguous
 
   def self.workout_measurements
     [:calorie, :rep, :round, :time, :weight]
@@ -45,5 +46,42 @@ class Metric < ApplicationRecord
     else
       super(new_value.to_i)
     end
+  end
+
+  def sex_specific?
+    female_value.present? || male_value.present?
+  end
+
+  private
+
+  def values_are_unambiguous
+    return if valid_value_combination?
+
+    errors.add(:value, 'cannot be set with male and female values') if mixes_unisex_and_sex_specific_values?
+    errors.add(:base, 'male and female values must both be set') if missing_paired_sex_specific_value?
+  end
+
+  def valid_value_combination?
+    no_values? || unisex_value_only? || paired_sex_specific_values_only?
+  end
+
+  def no_values?
+    value.blank? && female_value.blank? && male_value.blank?
+  end
+
+  def unisex_value_only?
+    value.present? && female_value.blank? && male_value.blank?
+  end
+
+  def paired_sex_specific_values_only?
+    value.blank? && female_value.present? && male_value.present?
+  end
+
+  def mixes_unisex_and_sex_specific_values?
+    value.present? && sex_specific?
+  end
+
+  def missing_paired_sex_specific_value?
+    female_value.blank? != male_value.blank?
   end
 end

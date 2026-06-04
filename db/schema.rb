@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_03_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -78,6 +78,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_120000) do
 
   create_table "metrics", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
+    t.integer "female_value"
+    t.integer "male_value"
     t.bigint "measurable_id"
     t.string "measurable_type"
     t.integer "measurement"

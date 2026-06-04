@@ -54,6 +54,32 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 10, Workout.last.exercises.first.metrics.find_by!(measurement: :rep).value
   end
 
+  test 'should create workout with nested sex-specific exercise metrics' do
+    assert_difference('Metric.count', 3) do
+      assert_difference(['Workout.count', 'Exercise.count'], 1) do
+        post workouts_url, params: { workout: {
+          name: 'Sex Specific Workout',
+          metric_attributes: { measurement: :time },
+          exercises_attributes: {
+            '0' => {
+              movement_id: movements(:thruster).id,
+              position: 1,
+              metrics_attributes: {
+                '0' => { measurement: :rep, value: 1 },
+                '1' => { measurement: :lb, female_value: 65, male_value: 95 }
+              }
+            }
+          }
+        } }
+      end
+    end
+
+    load_metric = Workout.last.exercises.first.metrics.find_by!(measurement: :lb)
+    assert_nil load_metric.value
+    assert_equal 65, load_metric.female_value
+    assert_equal 95, load_metric.male_value
+  end
+
   test 'should show workout' do
     get workout_url(@workout)
     assert_response :success

@@ -6,6 +6,7 @@ module MetricsHelper
   end
 
   def metric_unit_msg(metric)
+    return sex_specific_metric_unit_msg(metric) if metric.sex_specific?
     return pluralize(1, metric.measurement) if metric.value.nil?
     return metric.value == 1 ? '' : metric.value if metric.rep?
     return seconds_to_duration_string(metric.value) if metric.seconds? || metric.time?
@@ -42,5 +43,10 @@ module MetricsHelper
            hours: duration.fetch(:hours, 0),
            minutes: duration.fetch(:minutes, 0),
            seconds: duration.fetch(:seconds, 0)
+  end
+
+  def sex_specific_metric_unit_msg(metric)
+    unit = metric.measurement.singularize
+    "♀ #{metric.female_value}-#{unit} / ♂ #{metric.male_value}-#{unit}"
   end
 end

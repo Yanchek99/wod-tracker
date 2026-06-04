@@ -13,10 +13,10 @@
       .col#metrics data-controller="nested-form" data-nested-form-placeholder-value="NEW_METRIC"
         .fields data-nested-form-target="container"
           = f.simple_fields_for :metrics do |metric_form|
-            = render 'metric_fields', f: metric_form
+            = render 'metric_fields', f: metric_form, sex_specific: true
         template data-nested-form-target="template"
           = f.simple_fields_for :metrics, Metric.new, child_index: 'NEW_METRIC' do |metric_form|
-            = render 'metric_fields', f: metric_form
+            = render 'metric_fields', f: metric_form, sex_specific: true
         .links.d-grid
           = link_to 'Add Metric', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'nested-form#add' }
     .row

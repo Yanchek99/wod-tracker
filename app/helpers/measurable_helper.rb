@@ -8,7 +8,7 @@ module MeasurableHelper
     return measurable.movement.name unless rep_metric
 
     movement_name = measurable.movement.name
-    "#{metric_unit_msg rep_metric} #{(rep_metric.value || 0) > 1 ? movement_name.pluralize : movement_name}"
+    [metric_unit_msg(rep_metric), pluralize_movement?(rep_metric) ? movement_name.pluralize : movement_name].reject(&:blank?).join(' ')
   end
 
   def measurable_reps_msg(measurable)
@@ -17,10 +17,16 @@ module MeasurableHelper
   end
 
   def measurable_additional_metrics(measurable)
-    msg = ''
-    measurable.metrics.where.not(measurement: :rep).select(&:value).each do |metric|
-      msg << " / #{metric_unit_msg(metric)}"
-    end
-    msg
+    measurable.metrics.where.not(measurement: :rep)
+              .select { |metric| metric.value.present? || metric.sex_specific? }
+              .map { |metric| " / #{metric_unit_msg(metric)}" }
+              .join
+  end
+
+  def pluralize_movement?(metric)
+    return metric.value > 1 if metric.value.present?
+    return [metric.female_value, metric.male_value].compact.max > 1 if metric.sex_specific?
+
+    false
   end
 end

@@ -1,7 +1,11 @@
 .nested-fields
   = f.hidden_field :_destroy
+  - sex_specific = local_assigns.fetch(:sex_specific, false)
   .input-group.mb-3
     = f.input_field :value, as: :string, class: 'form-control', value: f.object.time? ? seconds_to_duration_string(f.object.value) : f.object.value
+    - if sex_specific
+      = f.input_field :female_value, as: :string, class: 'form-control', placeholder: 'Female value'
+      = f.input_field :male_value, as: :string, class: 'form-control', placeholder: 'Male value'
     = f.select :measurement, options_for_select(Metric.measurements.keys, f.object.measurement), {}, class: 'metric form-control', data: { controller: 'metric-select' }
     .input-group-append
       = link_to '#', class: 'btn btn-outline-danger', data: { action: 'nested-form#remove' }

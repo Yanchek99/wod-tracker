@@ -1,6 +1,6 @@
 module MeasurableHelper
   def measurable_message(measurable)
-    "#{measurable_movement_msg(measurable)}#{measurable_additional_metrics(measurable)}"
+    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable)].compact.join(' ')
   end
 
   def measurable_movement_msg(measurable)
@@ -17,10 +17,11 @@ module MeasurableHelper
   end
 
   def measurable_additional_metrics(measurable)
-    measurable.metrics.where.not(measurement: :rep)
-              .select { |metric| metric.value.present? || metric.sex_specific? }
-              .map { |metric| " / #{metric_unit_msg(metric)}" }
-              .join
+    metrics = measurable.metrics.where.not(measurement: :rep)
+                        .select { |metric| metric.value.present? || metric.sex_specific? }
+    return if metrics.empty?
+
+    "(#{metrics.map { |metric| metric_unit_msg(metric) }.join(' / ')})"
   end
 
   def pluralize_movement?(metric)

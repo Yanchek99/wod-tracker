@@ -49,12 +49,12 @@ paired values for ordinary metric measurements.
 
 Observed source-backed patterns include:
 
-- Box height: `♀ 20-inch / ♂ 24-inch`, and `♀ 24-inch / ♂ 30-inch` when the
+- Box height: `♀20-inch / ♂24-inch`, and `♀24-inch / ♂30-inch` when the
   men's prescription is a 30-inch box.
-- Wall-ball target height: `♀ 9-foot / ♂ 10-foot`.
-- Wall-ball load: `♀ 14-lb / ♂ 20-lb` and heavier `♀ 20-lb / ♂ 30-lb`
+- Wall-ball target height: `♀9-foot / ♂10-foot`.
+- Wall-ball load: `♀14-lb / ♂20-lb` and heavier `♀20-lb / ♂30-lb`
   prescriptions.
-- Weight vest/body armor: `♀ 14-lb / ♂ 20-lb`.
+- Weight vest/body armor: `♀14-lb / ♂20-lb`.
 - Cardio calories can be sex-specific with the female value first, such as
   `22/30-calorie Echo bike`, `15/20-calorie Echo bike`, or
   `10/15-calorie Echo bike`.
@@ -64,16 +64,16 @@ Observed source-backed patterns include:
 - Run distances are commonly unisex within a workout option, but may scale by
   option level rather than by sex.
 - Barbell loads have recurring CrossFit pairs, including:
-  `♀ 35-lb / ♂ 45-lb`, `♀ 45-lb / ♂ 65-lb`,
-  `♀ 55-lb / ♂ 75-lb`, `♀ 65-lb / ♂ 95-lb`,
-  `♀ 75-lb / ♂ 115-lb`, `♀ 80-lb / ♂ 125-lb`,
-  `♀ 95-lb / ♂ 135-lb`, `♀ 105-lb / ♂ 155-lb`,
-  `♀ 125-lb / ♂ 185-lb`, `♀ 155-lb / ♂ 225-lb`,
-  and `♀ 225-lb / ♂ 315-lb`.
+  `♀35-lb / ♂45-lb`, `♀45-lb / ♂65-lb`,
+  `♀55-lb / ♂75-lb`, `♀65-lb / ♂95-lb`,
+  `♀75-lb / ♂115-lb`, `♀80-lb / ♂125-lb`,
+  `♀95-lb / ♂135-lb`, `♀105-lb / ♂155-lb`,
+  `♀125-lb / ♂185-lb`, `♀155-lb / ♂225-lb`,
+  and `♀225-lb / ♂315-lb`.
 - Multi-load barbell prescriptions preserve pair position across the sequence,
-  such as `♀ 105/125/145-lb` with `♂ 155/185/205-lb`.
+  such as `♀105/125/145-lb` with `♂155/185/205-lb`.
 - Dumbbell and kettlebell loads also vary by workout. Examples include
-  `♀ 35-lb / ♂ 50-lb` dumbbells and `♀ 35-lb / ♂ 53-lb` kettlebells.
+  `♀35-lb / ♂50-lb` dumbbells and `♀35-lb / ♂53-lb` kettlebells.
 
 Some workouts combine multiple sex-specific metrics on one movement. For
 example, wall-ball shots can have both sex-specific ball load and sex-specific

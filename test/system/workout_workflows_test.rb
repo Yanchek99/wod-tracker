@@ -63,7 +63,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
 
     assert_current_path %r{/workouts/\d+}
     assert_text 'Sex Specific System Test Workout'
-    assert_text '♀ 65-lb / ♂ 95-lb'
+    assert_text 'Thruster (♀65-lb / ♂95-lb)'
   end
 
   test 'shows distance units per rep only for distance metrics' do

@@ -11,6 +11,6 @@ class MeasurableHelperTest < ActionView::TestCase
     exercise = exercises(:fran_pullup)
     exercise.metrics.create!(measurement: :lb, female_value: 65, male_value: 95)
 
-    assert_equal 'Pull Up / ♀ 65-lb / ♂ 95-lb', measurable_message(exercise)
+    assert_equal 'Pull Up (♀65-lb / ♂95-lb)', measurable_message(exercise)
   end
 end

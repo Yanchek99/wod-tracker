@@ -22,12 +22,12 @@ class MetricsHelperTest < ActionView::TestCase
   test 'renders paired female and male load values' do
     metric = Metric.new(measurement: :lb, female_value: 65, male_value: 95)
 
-    assert_equal '♀ 65-lb / ♂ 95-lb', metric_unit_msg(metric)
+    assert_equal '♀65-lb / ♂95-lb', metric_unit_msg(metric)
   end
 
   test 'renders paired female and male height values' do
     metric = Metric.new(measurement: :inch, female_value: 20, male_value: 24)
 
-    assert_equal '♀ 20-inch / ♂ 24-inch', metric_unit_msg(metric)
+    assert_equal '♀20-inch / ♂24-inch', metric_unit_msg(metric)
   end
 end

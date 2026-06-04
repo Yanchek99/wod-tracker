@@ -6,6 +6,7 @@ module LogScoring
 
   included do
     before_validation :calculate_set_based_lifting_score
+    before_validation :convert_fixed_amrap_round_score_to_reps
     before_validation :normalize_amrap_score
   end
 
@@ -39,6 +40,12 @@ module LogScoring
 
     metric.measurement = score.measurement
     metric.value = score.value
+  end
+
+  def convert_fixed_amrap_round_score_to_reps
+    return unless workout&.fixed_rep_amrap? && metric&.round?
+
+    metric.measurement = :rep
   end
 
   def normalize_amrap_score_value(raw_value, round_total)

@@ -14,6 +14,8 @@ module MeasurableHelper
     return measurable.movement.name unless rep_metric
 
     movement_name = measurable.movement.name
+    return "max reps #{movement_name}" if max_rep_metric?(rep_metric)
+
     [metric_unit_msg(rep_metric), movement_name_for_rep_metric(movement_name, rep_metric)].compact_blank.join(' ')
   end
 
@@ -83,6 +85,8 @@ module MeasurableHelper
 
     false
   end
+
+  def max_rep_metric?(metric) = metric.rep? && metric.value.blank? && !metric.sex_specific?
 
   def duration_movement_msg(measurable, rep_metric, duration_metric)
     movement_name = duration_pluralize_movement?(rep_metric) ? measurable.movement.name.pluralize : measurable.movement.name

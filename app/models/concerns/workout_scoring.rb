@@ -2,14 +2,16 @@ module WorkoutScoring
   extend ActiveSupport::Concern
 
   def rep_scored_amrap?
-    amrap? && metric&.rep?
+    amrap? && (metric&.rep? || fixed_rep_amrap?)
+  end
+
+  def fixed_rep_amrap?
+    amrap? && fixed_amrap_reps_per_round.present?
   end
 
   def set_based_lifting?
-    rounds.present? &&
-      rounds.positive? &&
-      time.blank? &&
-      interval.blank? &&
+    set_based_lifting_structure? &&
+      metric&.weight? &&
       top_level_exercises.any?(&:load_bearing?)
   end
 
@@ -41,7 +43,27 @@ module WorkoutScoring
   end
 
   def amrap_reps_per_round
-    return nil unless rep_scored_amrap?
+    return nil unless amrap?
+
+    fixed_amrap_reps_per_round
+  end
+
+  def log_metric_measurement
+    return :rep if fixed_rep_amrap?
+
+    metric.measurement
+  end
+
+  private
+
+  def set_based_lifting_structure?
+    rounds.present? &&
+      rounds.positive? &&
+      time.blank? &&
+      interval.blank?
+  end
+
+  def fixed_amrap_reps_per_round
     return nil if top_level_exercises.empty?
 
     top_level_exercises.sum do |exercise|
@@ -51,8 +73,6 @@ module WorkoutScoring
       component[:score_reps]
     end
   end
-
-  private
 
   def successful_set_load(exercise, movement_log)
     return unless completed_prescribed_reps?(exercise, movement_log)

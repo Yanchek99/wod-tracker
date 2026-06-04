@@ -42,6 +42,32 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 25, Log.last.reps_per_round
   end
 
+  test 'new log for fixed-rep round-scored amrap uses rep score input' do
+    workout = workouts(:amrap_couplet)
+    workout.metric.update!(measurement: :round)
+
+    get new_workout_log_url(workout)
+
+    assert_response :success
+    assert_select 'input[name="log[metric_attributes][measurement]"][value="rep"]'
+  end
+
+  test 'creates fixed-rep amrap log from stale round score submission' do
+    workout = workouts(:amrap_couplet)
+    workout.metric.update!(measurement: :round)
+
+    assert_difference('Log.count') do
+      post workout_logs_url(workout), params: { log: {
+        metric_attributes: { measurement: :round, value: '20+2' }
+      } }
+    end
+
+    assert_redirected_to log_url(Log.last)
+    assert_equal 'rep', Log.last.metric.measurement
+    assert_equal 502, Log.last.metric.value
+    assert_equal 25, Log.last.reps_per_round
+  end
+
   test 'creates amrap log from raw total reps' do
     assert_difference('Log.count') do
       post workout_logs_url(workouts(:amrap_couplet)), params: { log: {

@@ -19,6 +19,10 @@ Common structures include:
 - A one-round workout scored for time should render as `For Time`, not
   `1 round for time`.
 - AMRAP: complete as many rounds or reps as possible in a fixed time.
+- Fixed-rep AMRAPs such as Cindy and Mary should be logged as rounds plus
+  reps and stored as total reps with a snapshotted reps-per-round value. AMRAPs
+  with a max-rep station, such as Nicole, should not derive a fixed
+  reps-per-round total.
 - EMOM: complete prescribed work every minute on the minute.
 - Interval workouts: repeated work/rest segments or fixed interval schemes such
   as Tabata.

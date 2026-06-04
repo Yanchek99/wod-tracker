@@ -34,6 +34,14 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal '1:00 Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)', measurable_message(exercise)
   end
 
+  test 'renders untimed max-rep station movements with max reps prefix' do
+    toes_to_bar = Movement.create!(name: 'Toes to Bar')
+    exercise = workouts(:fran).exercises.create!(movement: toes_to_bar, position: 3)
+    exercise.metrics.create!(measurement: :rep)
+
+    assert_equal 'max reps Toes to Bar', measurable_message(exercise)
+  end
+
   test 'renders timed station movements without pluralizing fixed single-rep movements' do
     exercise = workouts(:fran).exercises.create!(movement: movements(:row), position: 3)
     exercise.metrics.create!(measurement: :rep, value: 1)

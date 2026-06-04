@@ -24,4 +24,11 @@ class WorkoutTest < ActiveSupport::TestCase
     assert workouts(:back_squat_5x5).set_based_lifting?
     assert_not workouts(:amrap_couplet).set_based_lifting?
   end
+
+  test 'does not identify rep-scored rounds with load-bearing exercises as set-based lifting' do
+    workout = workouts(:back_squat_5x5)
+    workout.metric.update!(measurement: :rep)
+
+    assert_not workout.set_based_lifting?
+  end
 end

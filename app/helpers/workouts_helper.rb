@@ -2,9 +2,9 @@ module WorkoutsHelper
   def workout_objective(workout)
     return "#{pluralize workout.rounds, 'set'} for load" if workout.set_based_lifting?
     return for_time_objective(workout) if workout.rounds_for_time?
-    return "As many rounds as possible in #{pluralize workout.time, 'minute'}" if workout.amrap?
+    return amrap_objective(workout) if workout.amrap?
     return "EMOM #{workout.time}" if workout.emom?
-    return "#{workout.rounds} #{workout.time}-minute rounds" if workout.timed_rounds?
+    return timed_rounds_objective(workout) if workout.timed_rounds?
 
     "#{workout.interval} for #{workout.metric.measurement}"
   end
@@ -17,5 +17,19 @@ module WorkoutsHelper
     return 'For Time' if workout.rounds == 1
 
     "#{pluralize workout.rounds, 'round'} for time"
+  end
+
+  def amrap_objective(workout)
+    score = workout.fixed_rep_amrap? ? 'rounds and reps' : 'rounds'
+
+    "As many #{score} as possible in #{pluralize workout.time, 'minute'}"
+  end
+
+  def timed_rounds_objective(workout)
+    if workout.metric&.rep?
+      "#{pluralize workout.rounds, 'round'}, complete as many reps as possible in #{pluralize workout.time, 'minute'} of"
+    else
+      "#{workout.rounds} #{workout.time}-minute rounds"
+    end
   end
 end

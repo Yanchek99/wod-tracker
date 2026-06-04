@@ -13,7 +13,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     env:
-      PGUSER: runner
+      POSTGRES_USER: runner
 
     services:
       postgres:

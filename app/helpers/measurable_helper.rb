@@ -37,6 +37,7 @@ module MeasurableHelper
               .reject { |metric| metric == leading_work_metric }
               .reject { |metric| duration_metric?(metric) }
               .select { |metric| visible_metric?(metric) }
+              .sort_by { |metric| additional_metric_display_order(metric) }
   end
 
   def grouped_sex_specific_metrics?(metrics)
@@ -56,8 +57,9 @@ module MeasurableHelper
   end
 
   def sex_specific_metrics_msg(metrics)
-    female_values = metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.female_value) }
-    male_values = metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.male_value) }
+    ordered_metrics = metrics.sort_by { |metric| sex_specific_metric_display_order(metric) }
+    female_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.female_value) }
+    male_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.male_value) }
 
     "♀#{female_values.join(' + ')} / ♂#{male_values.join(' + ')}"
   end

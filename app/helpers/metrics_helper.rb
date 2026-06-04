@@ -51,4 +51,18 @@ module MetricsHelper
 
     "♀#{metric.female_value}#{separator}#{unit} / ♂#{metric.male_value}#{separator}#{unit}"
   end
+
+  def additional_metric_display_order(metric)
+    return [0, 1] if metric.calorie? || Metric::DISTANCE_MEASUREMENTS.include?(metric.measurement)
+    return [1, 0] if Metric::LOAD_MEASUREMENTS.include?(metric.measurement)
+
+    [1, 1]
+  end
+
+  def sex_specific_metric_display_order(metric)
+    return [0, 1] if Metric::LOAD_MEASUREMENTS.include?(metric.measurement)
+    return [1, 0] if Metric::DISTANCE_MEASUREMENTS.include?(metric.measurement)
+
+    [1, 1]
+  end
 end

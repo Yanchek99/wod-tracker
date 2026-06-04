@@ -10,6 +10,18 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 25, log.reps_per_round
   end
 
+  test 'normalizes fixed-rep amrap round score submissions to reps' do
+    workout = workouts(:amrap_couplet)
+    workout.metric.update!(measurement: :round)
+    log = workout.logs.build(user: users(:mathew))
+    log.build_metric(measurement: :round, value: '20+2')
+
+    assert log.valid?
+    assert_equal 'rep', log.metric.measurement
+    assert_equal 502, log.metric.value
+    assert_equal 25, log.reps_per_round
+  end
+
   test 'normalizes overflow reps into total reps' do
     log = workouts(:amrap_couplet).logs.build(user: users(:mathew))
     log.build_metric(measurement: :rep, value: '20+27')
@@ -82,6 +94,19 @@ class LogTest < ActiveSupport::TestCase
       assert_equal 5, movement_log.metrics.find(&:rep?).value
       assert_nil movement_log.metrics.find(&:lb?).value
     end
+  end
+
+  test 'builds timed round movement recordings with per-round prescribed reps' do
+    workout = workouts(:back_squat_5x5)
+    workout.update!(time: 3)
+    workout.metric.update!(measurement: :rep)
+
+    log = workout.logs.build(user: users(:mathew))
+    log.build_metric(measurement: :rep)
+    log.build_movement_logs
+
+    assert_equal 1, log.movement_logs.size
+    assert_equal 5, log.movement_logs.first.metrics.find(&:rep?).value
   end
 
   test 'calculates set-based lifting score from heaviest successful set' do

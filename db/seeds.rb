@@ -234,7 +234,7 @@ cfj.schedules.find_or_initialize_by(workout: chelsea).update(posted_at: '28-01-2
 # 15 squats
 cindy = Workout.find_or_create_by(name: 'Cindy') do |workout|
   workout.time = 20
-  workout.build_metric(measurement: :round)
+  workout.build_metric(measurement: :rep)
   workout.exercises.build(movement: pullup, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end
@@ -432,7 +432,7 @@ cfj.schedules.find_or_initialize_by(workout: linda).update(posted_at: '18-01-201
 # 15 pull-ups
 mary = Workout.find_or_create_by(name: 'Mary') do |workout|
   workout.time = 20
-  workout.build_metric(measurement: :round)
+  workout.build_metric(measurement: :rep)
   workout.exercises.build(movement: hspu, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 5)
   end

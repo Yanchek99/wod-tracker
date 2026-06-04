@@ -26,13 +26,9 @@ class Metric < ApplicationRecord
   end
 
   def calculated_value(workout)
-    rounds = workout.rounds
     return value unless rep?
-    return value * workout.reps_from_interval if workout.interval?
-    return nil unless value # Reps can be nil to signify max
-    return value if rounds.nil? || rounds&.zero?
 
-    value * rounds
+    calculated_rep_value(workout)
   end
 
   def value=(new_value)
@@ -53,6 +49,19 @@ class Metric < ApplicationRecord
   end
 
   private
+
+  def calculated_rep_value(workout)
+    return value * workout.reps_from_interval if workout.interval?
+    return value if fixed_timed_rounds?(workout)
+    return nil unless value # Reps can be nil to signify max
+    return value if workout.rounds.nil? || workout.rounds.zero?
+
+    value * workout.rounds
+  end
+
+  def fixed_timed_rounds?(workout)
+    workout.timed_rounds? && !workout.emom?
+  end
 
   def values_are_unambiguous
     return if valid_value_combination?

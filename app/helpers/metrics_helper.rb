@@ -47,6 +47,8 @@ module MetricsHelper
 
   def sex_specific_metric_unit_msg(metric)
     unit = metric.measurement.singularize
-    "♀#{metric.female_value}-#{unit} / ♂#{metric.male_value}-#{unit}"
+    separator = Metric::LOAD_MEASUREMENTS.include?(unit) ? '' : '-'
+
+    "♀#{metric.female_value}#{separator}#{unit} / ♂#{metric.male_value}#{separator}#{unit}"
   end
 end

@@ -13,7 +13,7 @@ modeled as metrics when present in source data.
   vest, sled, sandbag, or object load.
 
 When a movement has multiple measurable properties, model each one separately.
-For example, a wall-ball shot with `♀14-lb to 9-foot / ♂20-lb to 10-foot`
+For example, a wall-ball shot rendered as `Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)`
 should use one `lb` metric and one `foot` metric.
 
 ## Load-Like Measurements

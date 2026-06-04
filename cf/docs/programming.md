@@ -16,6 +16,8 @@ distance, calories, box height, wall-ball target height, and time cap.
 Common structures include:
 
 - For time: complete the prescribed work as fast as possible.
+- A one-round workout scored for time should render as `For Time`, not
+  `1 round for time`.
 - AMRAP: complete as many rounds or reps as possible in a fixed time.
 - EMOM: complete prescribed work every minute on the minute.
 - Interval workouts: repeated work/rest segments or fixed interval schemes such
@@ -52,9 +54,9 @@ Observed source-backed patterns include:
 - Box height: `♀20-inch / ♂24-inch`, and `♀24-inch / ♂30-inch` when the
   men's prescription is a 30-inch box.
 - Wall-ball target height: `♀9-foot / ♂10-foot`.
-- Wall-ball load: `♀14-lb / ♂20-lb` and heavier `♀20-lb / ♂30-lb`
+- Wall-ball load: `♀14lb / ♂20lb` and heavier `♀20lb / ♂30lb`
   prescriptions.
-- Weight vest/body armor: `♀14-lb / ♂20-lb`.
+- Weight vest/body armor: `♀14lb / ♂20lb`.
 - Cardio calories can be sex-specific with the female value first, such as
   `22/30-calorie Echo bike`, `15/20-calorie Echo bike`, or
   `10/15-calorie Echo bike`.
@@ -64,20 +66,32 @@ Observed source-backed patterns include:
 - Run distances are commonly unisex within a workout option, but may scale by
   option level rather than by sex.
 - Barbell loads have recurring CrossFit pairs, including:
-  `♀35-lb / ♂45-lb`, `♀45-lb / ♂65-lb`,
-  `♀55-lb / ♂75-lb`, `♀65-lb / ♂95-lb`,
-  `♀75-lb / ♂115-lb`, `♀80-lb / ♂125-lb`,
-  `♀95-lb / ♂135-lb`, `♀105-lb / ♂155-lb`,
-  `♀125-lb / ♂185-lb`, `♀155-lb / ♂225-lb`,
-  and `♀225-lb / ♂315-lb`.
+  `♀35lb / ♂45lb`, `♀45lb / ♂65lb`,
+  `♀55lb / ♂75lb`, `♀65lb / ♂95lb`,
+  `♀75lb / ♂115lb`, `♀80lb / ♂125lb`,
+  `♀95lb / ♂135lb`, `♀105lb / ♂155lb`,
+  `♀125lb / ♂185lb`, `♀155lb / ♂225lb`,
+  and `♀225lb / ♂315lb`.
 - Multi-load barbell prescriptions preserve pair position across the sequence,
-  such as `♀105/125/145-lb` with `♂155/185/205-lb`.
+  such as `♀105/125/145lb` with `♂155/185/205lb`.
 - Dumbbell and kettlebell loads also vary by workout. Examples include
-  `♀35-lb / ♂50-lb` dumbbells and `♀35-lb / ♂53-lb` kettlebells.
+  `♀35lb / ♂50lb` dumbbells and `♀35lb / ♂53lb` kettlebells.
 
 Some workouts combine multiple sex-specific metrics on one movement. For
 example, wall-ball shots can have both sex-specific ball load and sex-specific
-target height.
+target height, rendered as `Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)`.
+
+Fight Gone Bad-style station workouts prescribe time at each station, not one
+fixed rep. A station with a blank `rep` metric and a `seconds` metric should
+render the duration before the movement, such as
+`1:00 Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)`, and should not show
+`1 Rep`.
+
+Distance and calorie exercise prescriptions lead with the work metric when the
+metric defines the work for that movement. For example, a Murph run segment
+should render as `1600 meter Run`, not `Run (1600 meters)`. Compact
+sex-specific lead prescriptions use the CrossFit shorthand order from the
+source, such as `20/18 calorie Row` or `500/450 meter Row`.
 
 ## Metric Modeling Notes
 

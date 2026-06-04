@@ -1,7 +1,7 @@
 module WorkoutsHelper
   def workout_objective(workout)
     return "#{pluralize workout.rounds, 'set'} for load" if workout.set_based_lifting?
-    return "#{pluralize workout.rounds, 'round'} for time" if workout.rounds_for_time?
+    return for_time_objective(workout) if workout.rounds_for_time?
     return "As many rounds as possible in #{pluralize workout.time, 'minute'}" if workout.amrap?
     return "EMOM #{workout.time}" if workout.emom?
     return "#{workout.rounds} #{workout.time}-minute rounds" if workout.timed_rounds?
@@ -11,5 +11,11 @@ module WorkoutsHelper
 
   def generate_workout_name
     "#{Current.user.email.first(2).upcase}-#{Time.current.strftime('%m%d%g-%H%M')}"
+  end
+
+  def for_time_objective(workout)
+    return 'For Time' if workout.rounds == 1
+
+    "#{pluralize workout.rounds, 'round'} for time"
   end
 end

@@ -8,7 +8,7 @@ time domains, and workout structure.
 
 When CrossFit publishes sex-specific Rx values, the female value is usually
 shown first with the female symbol and the male value second with the male
-symbol, for example `♀105-lb / ♂155-lb`.
+symbol, for example `♀105lb / ♂155lb`.
 
 ## Scaled And Option Levels
 
@@ -26,7 +26,7 @@ time domain instead of only reducing movement difficulty.
 Some CrossFit workouts prescribe different female and male values for the same
 movement property. In this app those are stored as paired metric values:
 
-- Load: `♀65-lb / ♂95-lb`
+- Load: `♀65lb / ♂95lb`
 - Box height: `♀20-inch / ♂24-inch`
 - Wall-ball target height: `♀9-foot / ♂10-foot`
 - Calories: `♀22-calorie / ♂30-calorie`
@@ -48,4 +48,6 @@ When the source context is female/male Rx, interpret these as female value first
 and male value second.
 
 When rendering a movement with only additional metrics, display the metrics in
-parentheses after the movement name, such as `Overhead Squats (♀65-lb / ♂95-lb)`.
+parentheses after the movement name, such as `Overhead Squats (♀65lb / ♂95lb)`.
+When a movement has multiple sex-specific metric properties, group them by sex,
+such as `Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)`.

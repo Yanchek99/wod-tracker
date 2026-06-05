@@ -125,10 +125,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_120000) do
   create_table "segments", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.integer "interval"
+    t.integer "position", null: false
     t.integer "rounds"
     t.integer "time"
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workout_id"
+    t.index ["position", "workout_id"], name: "index_segments_on_position_and_workout_id", unique: true
     t.index ["workout_id"], name: "index_segments_on_workout_id"
   end
 

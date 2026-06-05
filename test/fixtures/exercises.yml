@@ -63,18 +63,18 @@ segmented_hspu:
   workout: segmented
   movement: hspu
   segment: test
-  position: 2
+  position: 1
 
 segmented_pistol:
   workout: segmented
   movement: pistol
   segment: test
-  position: 3
+  position: 2
 
 segmented_second_run:
   workout: segmented
   movement: run
-  position: 4
+  position: 3
 
 amrap_couplet_pullup:
   workout: amrap_couplet

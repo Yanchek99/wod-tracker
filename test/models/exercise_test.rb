@@ -30,6 +30,30 @@ class ExerciseTest < ActiveSupport::TestCase
     assert_includes exercise.errors[:position], 'has already been taken'
   end
 
+  test 'allows segment positions to overlap top-level positions before segment is saved' do
+    workout = Workout.new(name: 'Segmented Seed Workout', rounds: 1)
+    workout.build_metric(measurement: :time)
+    segment = workout.segments.build(rounds: 10)
+
+    workout.exercises.build(movement: movements(:run), position: 1)
+    workout.exercises.build(movement: movements(:pullup), segment:, position: 1)
+    workout.exercises.build(movement: movements(:pushup), segment:, position: 2)
+    workout.exercises.build(movement: movements(:run), position: 2)
+
+    assert workout.valid?
+  end
+
+  test 'rejects duplicate positions within the same unsaved segment' do
+    workout = Workout.new(name: 'Invalid Segmented Seed Workout', rounds: 1)
+    segment = workout.segments.build(rounds: 10)
+    exercise = workout.exercises.build(movement: movements(:pullup), segment:, position: 1)
+
+    workout.exercises.build(movement: movements(:pushup), segment:, position: 1)
+
+    assert_not exercise.valid?
+    assert_includes exercise.errors[:position], 'has already been taken'
+  end
+
   test 'requires distance units per rep to divide prescribed distance evenly' do
     exercise = exercises(:amrap_mixed_row)
 

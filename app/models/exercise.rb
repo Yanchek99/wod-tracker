@@ -15,7 +15,7 @@ class Exercise < ApplicationRecord
                        uniqueness: { scope: :workout_id,
                                      conditions: -> { where(segment_id: nil) },
                                      if: :top_level? }
-  validates :position, uniqueness: { scope: :segment_id, if: :segment }
+  validate :position_unique_within_segment, if: :segment
   validates :distance_units_per_rep,
             numericality: { only_integer: true, greater_than: 0 },
             allow_nil: true
@@ -45,6 +45,37 @@ class Exercise < ApplicationRecord
 
   def top_level?
     segment.blank?
+  end
+
+  def position_unique_within_segment
+    return if position.blank?
+
+    errors.add(:position, 'has already been taken') if duplicate_segment_position?
+  end
+
+  def duplicate_segment_position?
+    persisted_segment_position_exists? || unsaved_segment_position_exists?
+  end
+
+  def persisted_segment_position_exists?
+    return false if segment_id.blank?
+
+    duplicate = Exercise.unscoped.where(segment_id:, position:)
+    duplicate = duplicate.where.not(id:) if id.present?
+
+    duplicate.exists?
+  end
+
+  def unsaved_segment_position_exists?
+    return false if segment_id.present?
+
+    unsaved_segment_siblings.any? { |exercise| exercise.position == position }
+  end
+
+  def unsaved_segment_siblings
+    workout.exercises.select do |exercise|
+      exercise != self && exercise.segment == segment && !exercise.marked_for_destruction?
+    end
   end
 
   def distance_score_component

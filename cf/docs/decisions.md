@@ -1,5 +1,15 @@
 # Decisions
 
+## 2026-06-05: Scope Exercise Positions to Their Workout Part
+
+Top-level exercises are ordered within the workout. Exercises inside a segment
+are ordered within that segment, so each segment may restart movement positions
+at 1.
+
+Rationale: segmented CrossFit workouts commonly number movements per part. A
+workout-level position constraint still protects the unsegmented exercise order,
+while a segment-level constraint lets independent parts use the same positions.
+
 ## 2026-06-03: Store Sex-Specific Prescriptions on Metrics
 
 Metrics support nullable `female_value` and `male_value` columns for prescribed

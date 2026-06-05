@@ -12,7 +12,10 @@ class Exercise < ApplicationRecord
 
   validates :position, presence: true,
                        numericality: { only_integer: true, greater_than: 0 },
-                       uniqueness: { scope: :workout }
+                       uniqueness: { scope: :workout_id,
+                                     conditions: -> { where(segment_id: nil) },
+                                     if: :top_level? }
+  validates :position, uniqueness: { scope: :segment_id, if: :segment }
   validates :distance_units_per_rep,
             numericality: { only_integer: true, greater_than: 0 },
             allow_nil: true
@@ -38,6 +41,10 @@ class Exercise < ApplicationRecord
 
   def set_workout_from_segment
     self.workout = segment.workout if segment
+  end
+
+  def top_level?
+    segment.blank?
   end
 
   def distance_score_component

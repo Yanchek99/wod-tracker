@@ -70,7 +70,7 @@ class LogsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_log
-    @log = Log.find(params.expect(:id))
+    @log = Current.user.logs.find(params.expect(:id))
   end
 
   def set_workout

@@ -9,6 +9,7 @@ class Workout < ApplicationRecord
   has_many :movement_logs, through: :logs
   has_many :schedules, dependent: :destroy
   has_many :programs, through: :schedules
+  has_rich_text :notes
 
   accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :exercises, allow_destroy: true

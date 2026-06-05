@@ -15,13 +15,15 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.23",
     "@popperjs/core": "^2.11.8",
+    "@rails/actiontext": "^8.1.300",
     "@rails/activestorage": "^8.1.300",
     "@rails/request.js": "^0.0.13",
     "bootstrap": "^5.3.8",
     "esbuild": "^0.28.0",
     "local-time": "^3.0.3",
     "sass": "^1.100.0",
-    "tom-select": "^2.6.1"
+    "tom-select": "^2.6.1",
+    "trix": "^2.1.19"
   },
   "devDependencies": {}
 }

@@ -30,6 +30,34 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 45, Log.last.movement_logs.first.metrics.find_by!(measurement: :rep).value
   end
 
+  test 'should not show another user log' do
+    get log_url(logs(:brooke_fran))
+
+    assert_response :not_found
+  end
+
+  test 'should not edit another user log' do
+    get edit_workout_log_url(logs(:brooke_fran).workout, logs(:brooke_fran))
+
+    assert_response :not_found
+  end
+
+  test 'should not update another user log' do
+    patch workout_log_url(logs(:brooke_fran).workout, logs(:brooke_fran)), params: {
+      log: { metric_attributes: { measurement: :time, value: '4:59' } }
+    }
+
+    assert_response :not_found
+  end
+
+  test 'should not destroy another user log' do
+    assert_no_difference('Log.count') do
+      delete log_url(logs(:brooke_fran))
+    end
+
+    assert_response :not_found
+  end
+
   test 'creates amrap log from rounds plus reps score' do
     assert_difference('Log.count') do
       post workout_logs_url(workouts(:amrap_couplet)), params: { log: {

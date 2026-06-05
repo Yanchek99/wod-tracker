@@ -32,9 +32,9 @@
         p
           b Time cap:
           span  #{@workout.time_cap}
-      - unless @workout.notes.blank?
+      - if @workout.notes.present?
         b Notes
-        .notes = simple_format @workout.notes
+        .notes = @workout.notes
       .d-grid.gap-2
         = link_to 'Schedule', nil, class: 'btn btn-secondary', "data-bs-toggle": "modal", "data-bs-target": "#scheduleModal" if can? :create, Schedule
         = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-outline-primary'

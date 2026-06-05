@@ -8,7 +8,9 @@
     = f.simple_fields_for :metric do |metric_form|
       .col-12 = metric_form.input :measurement, collection: Metric.workout_measurements, label: 'For'
     .col-12 = f.input :time_cap
-    .col = f.input :notes
+    .col-12
+      = f.label :notes, class: 'form-label'
+      = f.rich_text_area :notes
   hr
   h3 Exercises
   #exercises

@@ -19,15 +19,17 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create workout' do
-    assert_difference('Workout.count') do
+    assert_difference(['Workout.count', 'ActionText::RichText.count']) do
       post workouts_url, params: { workout: {
         name: @workout.name,
         rounds: @workout.rounds,
+        notes: '<div>Use the prescribed loading.</div>',
         metric_attributes: { measurement: :round }
       } }
     end
 
     assert_redirected_to workout_url(Workout.last)
+    assert_equal 'Use the prescribed loading.', Workout.last.notes.to_plain_text.strip
   end
 
   test 'should create workout with nested exercise metrics' do
@@ -88,11 +90,18 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   test 'should get edit' do
     get edit_workout_url(@workout)
     assert_response :success
+    assert_select 'trix-editor'
   end
 
   test 'should update workout' do
-    patch workout_url(@workout), params: { workout: { name: @workout.name, rounds: @workout.rounds } }
+    patch workout_url(@workout), params: { workout: {
+      name: @workout.name,
+      rounds: @workout.rounds,
+      notes: '<div>Break up the pull-ups early.</div>'
+    } }
+
     assert_redirected_to workout_url(@workout)
+    assert_equal 'Break up the pull-ups early.', @workout.reload.notes.to_plain_text.strip
   end
 
   test 'should destroy workout' do

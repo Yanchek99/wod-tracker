@@ -12,8 +12,9 @@
           = schedule.workout.name
         i.col.text-end
           = link_to schedule.program.name, schedule.program
-      .row
-        p.col #{schedule.workout.notes}
+      - if schedule.workout.notes.present?
+        .row
+          .col = schedule.workout.notes
       .row
         p.col #{workout_objective schedule.workout}
       .row

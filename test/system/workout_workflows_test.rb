@@ -65,6 +65,13 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
     assert_no_selector "#workout_#{workouts(:fran).id}"
   end
 
+  test 'edits workout notes with the rich text editor' do
+    visit edit_workout_url(workouts(:fran))
+
+    assert_selector 'trix-toolbar'
+    assert_selector 'trix-editor[input^="workout_notes_trix_input"]'
+  end
+
   test 'schedules a workout' do
     subscriptions(:one).update!(role: :owner)
     visit workout_url(workouts(:murph))

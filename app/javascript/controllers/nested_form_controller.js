@@ -35,7 +35,7 @@ export default class extends Controller {
     const positionInput = fields.querySelector('input[name$="[position]"]')
     if (!positionInput) return
 
-    positionInput.value = this.element.closest('form').querySelectorAll('.exercise:not([hidden])').length
+    positionInput.value = this.container.querySelectorAll(':scope > .exercise:not([hidden])').length
   }
 
   newId() {

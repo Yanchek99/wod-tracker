@@ -9,6 +9,8 @@ at 1.
 Rationale: segmented CrossFit workouts commonly number movements per part. A
 workout-level position constraint still protects the unsegmented exercise order,
 while a segment-level constraint lets independent parts use the same positions.
+Existing exercise positions are renumbered within the new ordering scopes while
+preserving their prior relative order.
 
 ## 2026-06-03: Store Sex-Specific Prescriptions on Metrics
 

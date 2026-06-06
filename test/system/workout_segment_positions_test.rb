@@ -21,6 +21,8 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
 
     click_on 'Add Segment'
     within all('.segments > .fields > .nested-fields').last do
+      assert_field 'Position', with: '2'
+
       click_on 'Add Exercise'
       assert_field 'Position', with: '1'
 
@@ -30,7 +32,7 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
 
     within '.top-level-exercises' do
       click_on 'Add Exercise'
-      assert_equal %w[1 2], all('.exercise input[name$="[position]"]').map(&:value)
+      assert_equal %w[1 3], all('.exercise input[name$="[position]"]').map(&:value)
     end
   end
 end

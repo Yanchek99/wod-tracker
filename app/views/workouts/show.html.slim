@@ -19,15 +19,13 @@
   .row
     .col
       ul.list-unstyled.mb-3
-        - in_segment = nil
-        - @workout.exercises.order(:position).each do |exercise|
-            - if exercise.segment.present?
-              - unless in_segment
-                li = segment_objective(exercise.segment)
+        - @workout.ordered_parts.each_with_index do |part, index|
+          - if part.is_a?(Segment)
+            li = segment_objective(part, then_prefix: index.positive?)
+            - part.exercises.each do |exercise|
               li.ms-4 #{measurable_message(exercise)}
-            - else
-              li #{measurable_message(exercise)}
-            - in_segment = exercise.segment.present?
+          - else
+            li #{measurable_message(part)}
       - if @workout.time_cap_seconds.present?
         p
           b Time cap:

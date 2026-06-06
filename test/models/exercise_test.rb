@@ -3,8 +3,8 @@ require 'test_helper'
 class ExerciseTest < ActiveSupport::TestCase
   test 'allows positions to repeat across different segments in the same workout' do
     workout = workouts(:segmented)
-    first_segment = workout.segments.create!
-    second_segment = workout.segments.create!
+    first_segment = workout.segments.create!(position: 4)
+    second_segment = workout.segments.create!(position: 5)
 
     workout.exercises.create!(movement: movements(:pullup), segment: first_segment, position: 1)
     exercise = workout.exercises.build(movement: movements(:pushup), segment: second_segment, position: 1)
@@ -14,7 +14,7 @@ class ExerciseTest < ActiveSupport::TestCase
 
   test 'rejects duplicate positions within the same segment' do
     workout = workouts(:segmented)
-    segment = workout.segments.create!
+    segment = workout.segments.create!(position: 4)
 
     workout.exercises.create!(movement: movements(:pullup), segment:, position: 1)
     exercise = workout.exercises.build(movement: movements(:pushup), segment:, position: 1)
@@ -30,22 +30,22 @@ class ExerciseTest < ActiveSupport::TestCase
     assert_includes exercise.errors[:position], 'has already been taken'
   end
 
-  test 'allows segment positions to overlap top-level positions before segment is saved' do
+  test 'allows segment child positions to overlap top-level positions before segment is saved' do
     workout = Workout.new(name: 'Segmented Seed Workout', rounds: 1)
     workout.build_metric(measurement: :time)
-    segment = workout.segments.build(rounds: 10)
+    segment = workout.segments.build(rounds: 10, position: 2)
 
     workout.exercises.build(movement: movements(:run), position: 1)
     workout.exercises.build(movement: movements(:pullup), segment:, position: 1)
     workout.exercises.build(movement: movements(:pushup), segment:, position: 2)
-    workout.exercises.build(movement: movements(:run), position: 2)
+    workout.exercises.build(movement: movements(:run), position: 3)
 
     assert workout.valid?
   end
 
   test 'rejects duplicate positions within the same unsaved segment' do
     workout = Workout.new(name: 'Invalid Segmented Seed Workout', rounds: 1)
-    segment = workout.segments.build(rounds: 10)
+    segment = workout.segments.build(rounds: 10, position: 1)
     exercise = workout.exercises.build(movement: movements(:pullup), segment:, position: 1)
 
     workout.exercises.build(movement: movements(:pushup), segment:, position: 1)

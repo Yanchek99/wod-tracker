@@ -73,7 +73,7 @@ class WorkoutsController < ApplicationController
                        { metrics_attributes: [metric_params] }]
 
     params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
-                            { segments_attributes: [[:id, :rounds, :time, :interval, :_destroy,
+                            { segments_attributes: [[:id, :rounds, :time, :interval, :position, :_destroy,
                                                      { exercises_attributes: [exercise_params] }]] },
                             { exercises_attributes: [exercise_params],
                               metric_attributes: [:id, :measurement] }])

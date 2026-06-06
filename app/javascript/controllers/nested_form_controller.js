@@ -3,7 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values = {
     placeholder: String,
-    positionExercises: Boolean
+    positionExercises: Boolean,
+    positionWorkoutParts: Boolean
   }
 
   connect() {
@@ -15,7 +16,7 @@ export default class extends Controller {
 
     const content = this.template.innerHTML.replaceAll(this.placeholderValue, this.newId())
     this.container.insertAdjacentHTML('beforeend', content)
-    this.assignExercisePosition(this.container.lastElementChild)
+    this.assignPosition(this.container.lastElementChild)
     this.dispatch('add')
   }
 
@@ -29,13 +30,24 @@ export default class extends Controller {
     this.dispatch('remove')
   }
 
-  assignExercisePosition(fields) {
-    if (!this.positionExercisesValue) return
+  assignPosition(fields) {
+    if (!this.positionExercisesValue && !this.positionWorkoutPartsValue) return
 
     const positionInput = fields.querySelector('input[name$="[position]"]')
     if (!positionInput) return
 
-    positionInput.value = this.container.querySelectorAll(':scope > .exercise:not([hidden])').length
+    positionInput.value = this.nextPosition()
+  }
+
+  nextPosition() {
+    if (this.positionWorkoutPartsValue) {
+      return this.element.closest('form').querySelectorAll([
+        '.top-level-exercises > .fields > .exercise:not([hidden])',
+        '.segments > .fields > .nested-fields:not([hidden])'
+      ].join(', ')).length
+    }
+
+    return this.container.querySelectorAll(':scope > .exercise:not([hidden])').length
   }
 
   newId() {

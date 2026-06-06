@@ -2,15 +2,16 @@
 
 ## 2026-06-05: Scope Exercise Positions to Their Workout Part
 
-Top-level exercises are ordered within the workout. Exercises inside a segment
-are ordered within that segment, so each segment may restart movement positions
-at 1.
+Top-level exercises and segments are ordered together within the workout.
+Exercises inside a segment are ordered within that segment, so each segment may
+restart movement positions at 1.
 
 Rationale: segmented CrossFit workouts commonly number movements per part. A
-workout-level position constraint still protects the unsegmented exercise order,
-while a segment-level constraint lets independent parts use the same positions.
-Existing exercise positions are renumbered within the new ordering scopes while
-preserving their prior relative order.
+workout-part position constraint preserves the order between unsegmented
+exercises and segments, while a segment-level constraint lets independent parts
+use the same child exercise positions. Existing exercise and segment positions
+are renumbered within the new ordering scopes while preserving their prior
+relative order.
 
 ## 2026-06-03: Store Sex-Specific Prescriptions on Metrics
 

@@ -1,9 +1,8 @@
-- in_segment = nil
-- exercises.each do |exercise|
-    - if exercise.segment.present?
-      - unless in_segment
-        li = segment_objective(exercise.segment)
-      li.ms-4 #{measurable_message(exercise)}
+- if exercises.any?
+  - exercises.first.workout.ordered_parts.each_with_index do |part, index|
+    - if part.is_a?(Segment)
+      li = segment_objective(part, then_prefix: index.positive?)
+      - part.exercises.each do |exercise|
+        li.ms-4 #{measurable_message(exercise)}
     - else
-      li #{measurable_message(exercise)}
-    - in_segment = exercise.segment.present?
+      li #{measurable_message(part)}

@@ -4,7 +4,7 @@ export default class extends Controller {
   static values = {
     placeholder: String,
     positionExercises: Boolean,
-    positionWorkoutParts: Boolean
+    positionSegments: Boolean
   }
 
   connect() {
@@ -31,7 +31,7 @@ export default class extends Controller {
   }
 
   assignPosition(fields) {
-    if (!this.positionExercisesValue && !this.positionWorkoutPartsValue) return
+    if (!this.positionExercisesValue && !this.positionSegmentsValue) return
 
     const positionInput = fields.querySelector('input[name$="[position]"]')
     if (!positionInput) return
@@ -40,7 +40,7 @@ export default class extends Controller {
   }
 
   nextPosition() {
-    if (this.positionWorkoutPartsValue) {
+    if (this.positionSegmentsValue) {
       return this.element.closest('form').querySelectorAll([
         '.top-level-exercises > .fields > .exercise:not([hidden])',
         '.segments > .fields > .nested-fields:not([hidden])'

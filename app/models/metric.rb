@@ -26,9 +26,20 @@ class Metric < ApplicationRecord
   end
 
   def calculated_value(workout)
-    return value unless rep?
+    return default_value unless rep?
+    return calculated_rep_value(workout) if value.present?
 
-    calculated_rep_value(workout)
+    default_value
+  end
+
+  def default_value(user = Current.user)
+    return value if value.present?
+    return unless sex_specific?
+
+    return male_value if user&.male?
+    return female_value if user&.female?
+
+    male_value.presence || female_value.presence
   end
 
   def value=(new_value)

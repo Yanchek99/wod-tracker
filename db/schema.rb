@@ -85,7 +85,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
     t.integer "measurement"
     t.datetime "updated_at", precision: nil, null: false
     t.integer "value"
-    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable"
+    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable_type_and_measurable_id"
     t.index ["measurement", "measurable_id", "measurable_type"], name: "index_metrics_on_measurement_and_measurable", unique: true
   end
 

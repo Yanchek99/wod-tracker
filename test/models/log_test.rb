@@ -96,6 +96,24 @@ class LogTest < ActiveSupport::TestCase
     end
   end
 
+  test 'defaults sex-specific prescribed load values when building movement logs' do
+    workout = Workout.new(rounds: 1)
+    workout.build_metric(measurement: :time)
+    workout.exercises.build(movement: movements(:back_squat), position: 1) do |exercise|
+      exercise.metrics.build(measurement: :rep, value: 21)
+      exercise.metrics.build(measurement: :lb, female_value: 65, male_value: 95)
+    end
+
+    log = workout.logs.build(user: users(:mathew))
+    log.build_metric(measurement: :time, value: 180)
+    log.build_movement_logs
+
+    lb_metric = log.movement_logs.first.metrics.find(&:lb?)
+
+    assert_equal 95, lb_metric.value
+    assert_equal 'lb', lb_metric.measurement
+  end
+
   test 'builds timed round movement recordings with per-round prescribed reps' do
     workout = workouts(:back_squat_5x5)
     workout.update!(time: 3)

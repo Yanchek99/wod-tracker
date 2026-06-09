@@ -9,5 +9,6 @@
     = f.input :first_name, required: true
     = f.input :last_name, required: true
     = f.input :weight, required: true
+    = f.input :sex, collection: User.sexes.keys.map { |sex| [sex.titleize, sex] }, required: true, prompt: 'Select sex'
   .form-actions.d-grid
     = f.button :submit, "Sign up", class: 'btn btn-success'

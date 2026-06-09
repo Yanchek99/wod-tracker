@@ -31,7 +31,7 @@ class Log < ApplicationRecord
   end
 
   def movement_log_metric_value(metric, exercise)
-    return metric.value if workout&.set_based_lifting?
+    return metric.default_value if workout&.set_based_lifting?
 
     metric.calculated_value(exercise.segment.presence || exercise.workout)
   end

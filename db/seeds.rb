@@ -8,6 +8,7 @@
 User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
   u.first_name = "ADMIN"
   u.last_name = "ADMIN"
+  u.sex = :male
   u.weight = 0
   u.role = :admin
   u.password = Rails.application.credentials.admin_password

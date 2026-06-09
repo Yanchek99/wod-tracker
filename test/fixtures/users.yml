@@ -9,9 +9,11 @@ brooke:
   first_name: Brooke
   last_name: Wells
   weight: 150
+  sex: female
 
 mathew:
   email: mathew.fraser@wod-tracker.com
   first_name: Mathew
   last_name: Fraser
   weight: 195
+  sex: male

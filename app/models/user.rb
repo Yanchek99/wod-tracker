@@ -5,6 +5,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :trackable, :validatable
 
   enum :role, { admin: 0, user: 1 }
+  attribute :sex, :integer
+  enum :sex, { female: 0, male: 1 }
 
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs
@@ -19,7 +21,7 @@ class User < ApplicationRecord
   has_many :schedules, through: :programs
   has_many :scheduled_workouts, through: :schedules, source: :workout, class_name: 'Workout'
 
-  validates :email, :first_name, :last_name, :weight, presence: true
+  validates :email, :first_name, :last_name, :weight, :sex, presence: true
 
   def name
     "#{first_name} #{last_name}"

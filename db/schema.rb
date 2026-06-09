@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,7 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_120000) do
     t.integer "measurement"
     t.datetime "updated_at", precision: nil, null: false
     t.integer "value"
-    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable"
+    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable_type_and_measurable_id"
     t.index ["measurement", "measurable_id", "measurable_type"], name: "index_metrics_on_measurement_and_measurable", unique: true
   end
 
@@ -159,6 +159,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_120000) do
     t.datetime "reset_password_sent_at", precision: nil
     t.string "reset_password_token"
     t.integer "role"
+    t.integer "sex", null: false
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.integer "weight"

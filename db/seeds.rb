@@ -939,11 +939,11 @@ segmented = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
     e.metrics.build(measurement: :rep, value: 1)
     e.metrics.build(measurement: :meter, value: 800)
   end
-  seg = workout.segments.build(rounds: 10)
-  workout.exercises.build(movement: hspu, segment: seg, position: 2) do |e|
+  seg = workout.segments.build(rounds: 10, position: 2)
+  workout.exercises.build(movement: hspu, segment: seg, position: 1) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
-  workout.exercises.build(movement: pistol, segment: seg, position: 3) do |e|
+  workout.exercises.build(movement: pistol, segment: seg, position: 2) do |e|
     e.metrics.build(measurement: :rep, value: 10)
   end
   workout.exercises.build(movement: run, position: 4) do |e|
@@ -968,7 +968,7 @@ cfj.schedules.find_or_initialize_by(workout: segmented).update(posted_at: '02-12
 # 8 intervals. Post reps for each exercise completed
 tabata = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
   workout.build_metric(measurement: :rep)
-  tab1 = workout.segments.build(rounds: 8)
+  tab1 = workout.segments.build(rounds: 8, position: 1)
   workout.exercises.build(movement: hspu, segment: tab1, position: 1) do |e|
     e.metrics.build(measurement: :seconds, value: 20)
   end
@@ -976,15 +976,27 @@ tabata = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
     e.metrics.build(measurement: :seconds, value: 10)
   end
 
-  workout.exercises.build(movement: rest, position: 3) do |e|
+  workout.exercises.build(movement: rest, position: 2) do |e|
     e.metrics.build(measurement: :seconds, value: 60)
   end
 
-  tab2 = workout.segments.build(rounds: 8)
-  workout.exercises.build(movement: pistol, segment: tab2, position: 4) do |e|
+  tab2 = workout.segments.build(rounds: 8, position: 3)
+  workout.exercises.build(movement: pistol, segment: tab2, position: 1) do |e|
     e.metrics.build(measurement: :seconds, value: 20)
   end
-  workout.exercises.build(movement: rest, segment: tab2, position: 5) do |e|
+  workout.exercises.build(movement: rest, segment: tab2, position: 2) do |e|
+    e.metrics.build(measurement: :seconds, value: 10)
+  end
+
+  workout.exercises.build(movement: rest, position: 4) do |e|
+    e.metrics.build(measurement: :seconds, value: 60)
+  end
+
+  tab3 = workout.segments.build(rounds: 8, position: 5)
+  workout.exercises.build(movement: pushup, segment: tab3, position: 1) do |e|
+    e.metrics.build(measurement: :seconds, value: 20)
+  end
+  workout.exercises.build(movement: rest, segment: tab3, position: 2) do |e|
     e.metrics.build(measurement: :seconds, value: 10)
   end
 
@@ -992,23 +1004,11 @@ tabata = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
     e.metrics.build(measurement: :seconds, value: 60)
   end
 
-  tab3 = workout.segments.build(rounds: 8)
-  workout.exercises.build(movement: pushup, segment: tab3, position: 7) do |e|
+  tab4 = workout.segments.build(rounds: 8, position: 7)
+  workout.exercises.build(movement: jumping_lunge, segment: tab4, position: 1) do |e|
     e.metrics.build(measurement: :seconds, value: 20)
   end
-  workout.exercises.build(movement: rest, segment: tab3, position: 8) do |e|
-    e.metrics.build(measurement: :seconds, value: 10)
-  end
-
-  workout.exercises.build(movement: rest, position: 9) do |e|
-    e.metrics.build(measurement: :seconds, value: 60)
-  end
-
-  tab4 = workout.segments.build(rounds: 8)
-  workout.exercises.build(movement: jumping_lunge, segment: tab4, position: 10) do |e|
-    e.metrics.build(measurement: :seconds, value: 20)
-  end
-  workout.exercises.build(movement: rest, segment: tab4, position: 11) do |e|
+  workout.exercises.build(movement: rest, segment: tab4, position: 2) do |e|
     e.metrics.build(measurement: :seconds, value: 10)
   end
 end

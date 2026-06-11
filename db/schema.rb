@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,7 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.datetime "created_at", precision: nil, null: false
     t.integer "distance_units_per_rep"
     t.bigint "movement_id"
-    t.integer "position"
+    t.integer "position", null: false
     t.bigint "segment_id"
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workout_id"

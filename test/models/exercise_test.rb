@@ -54,6 +54,19 @@ class ExerciseTest < ActiveSupport::TestCase
     assert_includes exercise.errors[:position], 'has already been taken'
   end
 
+  test 'rejects duplicate positions among new exercises in a persisted segment' do
+    workout = workouts(:segmented)
+    workout.assign_attributes(
+      segments_attributes: [{ id: segments(:test).id,
+                              exercises_attributes: [{ movement_id: movements(:pullup).id, position: 3 },
+                                                     { movement_id: movements(:pushup).id, position: 3 }] }]
+    )
+
+    assert_not workout.valid?
+    exercise = workout.segments.detect { |segment| segment.id == segments(:test).id }.exercises.detect(&:new_record?)
+    assert_includes exercise.errors[:position], 'has already been taken'
+  end
+
   test 'requires distance units per rep to divide prescribed distance evenly' do
     exercise = exercises(:amrap_mixed_row)
 

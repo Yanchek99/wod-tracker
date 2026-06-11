@@ -51,7 +51,8 @@ class Workout < ApplicationRecord
   end
 
   def ordered_parts
-    (exercises.select { |exercise| exercise.segment.blank? } + segments).sort_by { |part| [part.position, part.id || 0] }
+    (exercises.select { |exercise| exercise.segment.blank? } + segments)
+      .sort_by { |part| [part.position || Float::INFINITY, part.id || 0] }
   end
 
   def reps_from_interval

@@ -15,24 +15,47 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
     visit new_workout_url
 
     click_on 'Add Exercise'
-    within '.top-level-exercises' do
-      assert_field 'Position', with: '1'
-    end
+    assert_field 'Position', with: '1'
 
     click_on 'Add Segment'
-    within all('.segments > .fields > .nested-fields').last do
+    within all('#workout-parts > .fields > .nested-fields').last do
       assert_field 'Position', with: '2'
 
       click_on 'Add Exercise'
       assert_field 'Position', with: '1'
 
       click_on 'Add Exercise'
-      assert_equal %w[1 2], all('.exercise input[name$="[position]"]').map(&:value)
+      positions = all('.exercise input[name$="[position]"]').map(&:value)
+      assert_equal %w[1 2], positions, "expected 2 exercises positions, got #{positions.inspect}"
     end
 
-    within '.top-level-exercises' do
+    within '#workout-parts > .links' do
       click_on 'Add Exercise'
-      assert_equal %w[1 3], all('.exercise input[name$="[position]"]').map(&:value)
     end
+    assert_equal %w[1 3], all('#workout-parts > .fields > .exercise input[name$="[position]"]').map(&:value)
+  end
+
+  test 'assigns positions past removed workout parts' do
+    visit new_workout_url
+
+    click_on 'Add Exercise'
+    assert_field 'Position', with: '1'
+
+    click_on 'Add Segment'
+    within all('#workout-parts > .fields > .nested-fields').last do
+      assert_field 'Position', with: '2'
+    end
+
+    within '#workout-parts > .links' do
+      click_on 'Add Exercise'
+    end
+    assert_field 'Position', with: '3'
+
+    click_on 'Delete Segment'
+
+    within '#workout-parts > .links' do
+      click_on 'Add Exercise'
+    end
+    assert_equal %w[1 3 4], all('#workout-parts > .fields > .exercise input[name$="[position]"]').map(&:value)
   end
 end

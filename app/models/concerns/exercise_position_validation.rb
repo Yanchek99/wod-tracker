@@ -53,15 +53,14 @@ module ExercisePositionValidation
   end
 
   def unsaved_segment_position_exists?
-    return false if segment_id.present?
-
     unsaved_segment_siblings.any? { |exercise| exercise.position == position }
   end
 
   def unsaved_segment_siblings
-    return [] if workout.blank?
+    candidates = segment ? segment.exercises.to_a : []
+    candidates += workout.exercises.to_a if workout
 
-    workout.exercises.select do |exercise|
+    candidates.select do |exercise|
       exercise != self && exercise.segment == segment && !exercise.marked_for_destruction?
     end
   end

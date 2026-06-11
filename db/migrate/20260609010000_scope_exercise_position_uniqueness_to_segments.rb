@@ -17,6 +17,7 @@ class ScopeExercisePositionUniquenessToSegments < ActiveRecord::Migration[8.1]
     remove_index :exercises, name: 'index_exercises_on_position_and_workout_id' if old_exercise_position_index?
     add_column :segments, :position, :integer unless column_exists?(:segments, :position)
 
+    ensure_exercise_positions
     reset_positions
 
     change_column_null :segments, :position, false
@@ -24,6 +25,8 @@ class ScopeExercisePositionUniquenessToSegments < ActiveRecord::Migration[8.1]
 
     add_top_level_exercise_position_index
     add_segment_exercise_position_index
+
+    change_column_null :exercises, :position, false
   end
 
   def down
@@ -31,6 +34,7 @@ class ScopeExercisePositionUniquenessToSegments < ActiveRecord::Migration[8.1]
     remove_index :exercises, name: 'index_exercises_on_position_and_workout_id' if top_level_exercise_position_index?
 
     reset_whole_workout_exercise_positions
+    change_column_null :exercises, :position, true
 
     remove_index :segments, column: [:position, :workout_id] if segment_position_index?
     remove_column :segments, :position if column_exists?(:segments, :position)
@@ -44,6 +48,17 @@ class ScopeExercisePositionUniquenessToSegments < ActiveRecord::Migration[8.1]
     say_with_time 'Resetting exercise positions within their ordering scopes' do
       reset_workout_part_positions
       reset_segment_positions
+    end
+  end
+
+  def ensure_exercise_positions
+    MigrationExercise.where(position: nil).order(:id).each do |exercise|
+      if exercise.segment_id.nil?
+        next_position = MigrationExercise.where(workout_id: exercise.workout_id, segment_id: nil).where.not(position: nil).maximum(:position).to_i + 1
+      else
+        next_position = MigrationExercise.where(segment_id: exercise.segment_id).where.not(position: nil).maximum(:position).to_i + 1
+      end
+      exercise.update!(position: next_position)
     end
   end
 

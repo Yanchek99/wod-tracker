@@ -8,5 +8,5 @@
       = f.input_field :male_value, as: :string, class: 'form-control', placeholder: 'Male value'
     = f.select :measurement, options_for_select(Metric.measurements.keys, f.object.measurement), {}, class: 'metric form-control', data: { controller: 'metric-select' }
     .input-group-append
-      = link_to '#', class: 'btn btn-outline-danger', data: { action: 'nested-form#remove' }
+      = link_to '#', class: 'btn btn-outline-danger', data: { action: 'click->nested-form#remove' }
         i.fas.fa-trash-alt

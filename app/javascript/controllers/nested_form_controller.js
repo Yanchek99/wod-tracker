@@ -14,7 +14,9 @@ export default class extends Controller {
   add(event) {
     event.preventDefault()
 
-    const content = this.template.innerHTML.replaceAll(this.placeholderValue, this.newId())
+    const template = this.templateFor(event.target.dataset.nestedFormTemplate)
+    const placeholderValue = template.dataset.placeholderValue || this.placeholderValue
+    const content = template.innerHTML.replaceAll(placeholderValue, this.newId())
     this.container.insertAdjacentHTML('beforeend', content)
     this.assignPosition(this.container.lastElementChild)
     this.dispatch('add')
@@ -40,14 +42,20 @@ export default class extends Controller {
   }
 
   nextPosition() {
-    if (this.positionSegmentsValue) {
-      return this.element.closest('form').querySelectorAll([
-        '.top-level-exercises > .fields > .exercise:not([hidden])',
-        '.segments > .fields > .nested-fields:not([hidden])'
-      ].join(', ')).length
+    const selector = this.positionSegmentsValue ? ':scope > .nested-fields:not([hidden])' : ':scope > .exercise:not([hidden])'
+    const positions = Array.from(this.container.querySelectorAll(selector))
+      .map(fields => parseInt(fields.querySelector('input[name$="[position]"]')?.value, 10))
+      .filter(position => !Number.isNaN(position))
+
+    return Math.max(0, ...positions) + 1
+  }
+
+  templateFor(name) {
+    if (!name) {
+      return this.template
     }
 
-    return this.container.querySelectorAll(':scope > .exercise:not([hidden])').length
+    return this.element.querySelector(`template[data-nested-form-template="${name}"]`) || this.template
   }
 
   newId() {

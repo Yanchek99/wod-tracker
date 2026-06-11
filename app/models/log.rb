@@ -10,7 +10,11 @@ class Log < ApplicationRecord
   accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :movement_logs, allow_destroy: true
 
-  validates :metric, presence: true
+  enum :score_type, Metric.measurements, prefix: :score
+
+  before_validation :copy_legacy_metric_score
+
+  validates :score_type, presence: true
 
   def build_movement_logs
     workout.exercises_for_log_recording.each do |exercise|
@@ -18,7 +22,40 @@ class Log < ApplicationRecord
     end
   end
 
+  def score_type
+    super || metric&.measurement
+  end
+
+  def score_value
+    super || metric&.value
+  end
+
+  def score_value=(new_value)
+    super
+    return unless new_value.is_a?(String)
+
+    if new_value.include? ':'
+      minutes, seconds = new_value.split(':', 2)
+      super((minutes.to_i.minute + seconds.to_i.second).second)
+    elsif score_type == 'time'
+      super(new_value.to_i)
+    end
+  end
+
+  def score_metric
+    return unless score_type
+
+    Metric.new(measurement: score_type, value: score_value)
+  end
+
   private
+
+  def copy_legacy_metric_score
+    return unless metric
+
+    self.score_type ||= metric.measurement
+    self.score_value ||= metric.value
+  end
 
   def build_movement_log_for(exercise)
     movement_log = movement_logs.build(movement: exercise.movement)

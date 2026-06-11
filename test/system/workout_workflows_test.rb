@@ -92,7 +92,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
     visit workout_url(workouts(:fran))
 
     click_on 'Log'
-    fill_in 'log_metric_attributes_value', with: '5:30'
+    fill_in 'log_score_value', with: '5:30'
     click_on 'Save'
 
     assert_current_path %r{/logs/\d+}
@@ -108,7 +108,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
 
     assert_equal %w[300 10 20], amrap_recording_values
 
-    fill_in 'log_metric_attributes_value', with: '1+35'
+    fill_in 'log_score_value', with: '1+35'
 
     assert_equal %w[300 10 20], amrap_recording_values
 

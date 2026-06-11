@@ -24,30 +24,33 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
         name: @workout.name,
         rounds: @workout.rounds,
         notes: '<div>Use the prescribed loading.</div>',
-        metric_attributes: { measurement: :round }
+        score_type: :round
       } }
     end
 
     assert_redirected_to workout_url(Workout.last)
+    assert_equal ['round', nil], [Workout.last.score_type, Workout.last.metric]
     assert_equal 'Use the prescribed loading.', Workout.last.notes.to_plain_text.strip
   end
 
   test 'should create workout with nested exercise metrics' do
-    assert_difference('Metric.count', 2) do
-      assert_difference(['Workout.count', 'Exercise.count'], 1) do
-        post workouts_url, params: { workout: {
-          name: 'Nested Workout',
-          metric_attributes: { measurement: :time },
-          exercises_attributes: {
-            '0' => {
-              movement_id: movements(:pullup).id,
-              position: 1,
-              metrics_attributes: {
-                '0' => { measurement: :rep, value: 10 }
+    assert_difference('Metric.where(measurable_type: "Workout").count', 0) do
+      assert_difference('Metric.count', 1) do
+        assert_difference(['Workout.count', 'Exercise.count'], 1) do
+          post workouts_url, params: { workout: {
+            name: 'Nested Workout',
+            score_type: :time,
+            exercises_attributes: {
+              '0' => {
+                movement_id: movements(:pullup).id,
+                position: 1,
+                metrics_attributes: {
+                  '0' => { measurement: :rep, value: 10 }
+                }
               }
             }
-          }
-        } }
+          } }
+        end
       end
     end
 
@@ -57,22 +60,24 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create workout with nested sex-specific exercise metrics' do
-    assert_difference('Metric.count', 3) do
-      assert_difference(['Workout.count', 'Exercise.count'], 1) do
-        post workouts_url, params: { workout: {
-          name: 'Sex Specific Workout',
-          metric_attributes: { measurement: :time },
-          exercises_attributes: {
-            '0' => {
-              movement_id: movements(:thruster).id,
-              position: 1,
-              metrics_attributes: {
-                '0' => { measurement: :rep, value: 1 },
-                '1' => { measurement: :lb, female_value: 65, male_value: 95 }
+    assert_difference('Metric.where(measurable_type: "Workout").count', 0) do
+      assert_difference('Metric.count', 2) do
+        assert_difference(['Workout.count', 'Exercise.count'], 1) do
+          post workouts_url, params: { workout: {
+            name: 'Sex Specific Workout',
+            score_type: :time,
+            exercises_attributes: {
+              '0' => {
+                movement_id: movements(:thruster).id,
+                position: 1,
+                metrics_attributes: {
+                  '0' => { measurement: :rep, value: 1 },
+                  '1' => { measurement: :lb, female_value: 65, male_value: 95 }
+                }
               }
             }
-          }
-        } }
+          } }
+        end
       end
     end
 

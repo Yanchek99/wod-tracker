@@ -12,10 +12,10 @@ module LogScoring
 
   def amrap_score_parts
     return nil unless rep_scored_amrap_log?
-    return nil unless metric&.value.present? && reps_per_round.present? && reps_per_round.positive?
+    return nil unless score_value.present? && reps_per_round.present? && reps_per_round.positive?
 
-    rounds, reps = metric.value.divmod(reps_per_round)
-    { rounds: rounds, reps: reps, total: metric.value }
+    rounds, reps = score_value.divmod(reps_per_round)
+    { rounds: rounds, reps: reps, total: score_value }
   end
 
   private
@@ -24,28 +24,28 @@ module LogScoring
     return unless rep_scored_amrap_log?
 
     round_total = submitted_amrap_reps_per_round || workout.amrap_reps_per_round
-    normalized_value = normalize_amrap_score_value(metric.value_before_type_cast, round_total)
+    normalized_value = normalize_amrap_score_value(score_value_before_type_cast, round_total)
 
     return if errors[:base].any? || errors[:metric].any?
 
-    metric.value = normalized_value
+    self.score_value = normalized_value
     self.reps_per_round = round_total if round_total.present?
   end
 
   def calculate_set_based_lifting_score
-    return unless workout&.set_based_lifting? && metric&.weight?
+    return unless workout&.set_based_lifting? && score_type == 'weight'
 
     score = workout.lifting_score(movement_logs)
     return unless score
 
-    metric.measurement = score.measurement
-    metric.value = score.value
+    self.score_type = score.measurement
+    self.score_value = score.value
   end
 
   def convert_fixed_amrap_round_score_to_reps
-    return unless workout&.fixed_rep_amrap? && metric&.round?
+    return unless workout&.fixed_rep_amrap? && score_type == 'round'
 
-    metric.measurement = :rep
+    self.score_type = :rep
   end
 
   def normalize_amrap_score_value(raw_value, round_total)
@@ -64,7 +64,7 @@ module LogScoring
   def normalize_rounds_plus_reps(rounds, reps, round_total)
     if round_total.blank?
       errors.add(:metric, 'rounds plus reps requires a fixed reps-per-round total')
-      return metric.value
+      return score_value
     end
 
     (rounds * round_total) + reps
@@ -72,11 +72,11 @@ module LogScoring
 
   def invalid_amrap_score_value
     errors.add(:metric, 'score must be total reps or rounds plus reps')
-    metric.value
+    score_value
   end
 
   def rep_scored_amrap_log?
-    workout&.rep_scored_amrap? && metric&.rep?
+    workout&.rep_scored_amrap? && score_type == 'rep'
   end
 
   def submitted_amrap_reps_per_round

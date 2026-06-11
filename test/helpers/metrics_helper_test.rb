@@ -7,14 +7,13 @@ class MetricsHelperTest < ActionView::TestCase
 
   test 'renders exact amrap scores as completed rounds and total reps' do
     log = logs(:matt_amrap)
-    log.metric.value = 200
+    log.score_value = 200
 
     assert_equal '8 rounds (200 reps)', log_score_msg(log)
   end
 
   test 'renders unknown amrap round size as total reps' do
-    log = workouts(:amrap_unknown_distance).logs.build(reps_per_round: nil)
-    log.build_metric(measurement: :rep, value: 202)
+    log = workouts(:amrap_unknown_distance).logs.build(score_type: :rep, score_value: 202, reps_per_round: nil)
 
     assert_equal '202 reps', log_score_msg(log)
   end

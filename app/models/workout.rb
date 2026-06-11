@@ -15,7 +15,11 @@ class Workout < ApplicationRecord
   accepts_nested_attributes_for :exercises, allow_destroy: true
   accepts_nested_attributes_for :segments, allow_destroy: true
 
-  validates :name, :metric, presence: true
+  enum :score_type, Metric.measurements, prefix: :score
+
+  before_validation :copy_legacy_metric_score_type
+
+  validates :name, :score_type, presence: true
 
   def self.search_by_name(name)
     return all unless name
@@ -73,5 +77,15 @@ class Workout < ApplicationRecord
     else
       self.time_cap_seconds = time_cap
     end
+  end
+
+  def score_type
+    super || metric&.measurement
+  end
+
+  private
+
+  def copy_legacy_metric_score_type
+    self.score_type ||= metric.measurement if metric&.measurement
   end
 end

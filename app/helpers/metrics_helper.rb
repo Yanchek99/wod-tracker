@@ -15,9 +15,10 @@ module MetricsHelper
   end
 
   def log_score_msg(log)
-    return unless log.metric
+    metric = log.score_metric || log.metric
+    return unless metric
 
-    amrap_score_msg(log) || rep_score_msg(log.metric) || metric_unit_msg(log.metric)
+    amrap_score_msg(log) || rep_score_msg(metric) || metric_unit_msg(metric)
   end
 
   def amrap_score_msg(log)

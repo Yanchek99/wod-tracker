@@ -2,7 +2,7 @@ module WorkoutScoring
   extend ActiveSupport::Concern
 
   def rep_scored_amrap?
-    amrap? && (metric&.rep? || fixed_rep_amrap?)
+    amrap? && (score_type == 'rep' || fixed_rep_amrap?)
   end
 
   def fixed_rep_amrap?
@@ -11,7 +11,7 @@ module WorkoutScoring
 
   def set_based_lifting?
     set_based_lifting_structure? &&
-      metric&.weight? &&
+      score_type == 'weight' &&
       top_level_exercises.any?(&:load_bearing?)
   end
 
@@ -51,7 +51,7 @@ module WorkoutScoring
   def log_metric_measurement
     return :rep if fixed_rep_amrap?
 
-    metric.measurement
+    score_type
   end
 
   private

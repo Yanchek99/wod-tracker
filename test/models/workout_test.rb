@@ -1,6 +1,21 @@
 require 'test_helper'
 
 class WorkoutTest < ActiveSupport::TestCase
+  test 'orders top-level exercises and segments as workout parts' do
+    parts = workouts(:segmented).ordered_parts
+
+    assert_equal [exercises(:segmented_run), segments(:test), exercises(:segmented_second_run)], parts
+  end
+
+  test 'orders unsaved exercises without a position last among workout parts' do
+    workout = workouts(:segmented)
+    unpositioned = workout.exercises.build(movement: movements(:run), position: nil)
+
+    parts = workout.ordered_parts
+
+    assert_equal [exercises(:segmented_run), segments(:test), exercises(:segmented_second_run), unpositioned], parts
+  end
+
   test 'computes reps per round from rep exercises' do
     assert_equal 25, workouts(:amrap_couplet).amrap_reps_per_round
   end

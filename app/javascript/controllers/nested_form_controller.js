@@ -3,7 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values = {
     placeholder: String,
-    positionExercises: Boolean
+    positionExercises: Boolean,
+    positionSegments: Boolean
   }
 
   connect() {
@@ -13,9 +14,11 @@ export default class extends Controller {
   add(event) {
     event.preventDefault()
 
-    const content = this.template.innerHTML.replaceAll(this.placeholderValue, this.newId())
+    const template = this.templateFor(event.target.dataset.nestedFormTemplate)
+    const placeholderValue = template.dataset.placeholderValue || this.placeholderValue
+    const content = template.innerHTML.replaceAll(placeholderValue, this.newId())
     this.container.insertAdjacentHTML('beforeend', content)
-    this.assignExercisePosition(this.container.lastElementChild)
+    this.assignPosition(this.container.lastElementChild)
     this.dispatch('add')
   }
 
@@ -29,13 +32,30 @@ export default class extends Controller {
     this.dispatch('remove')
   }
 
-  assignExercisePosition(fields) {
-    if (!this.positionExercisesValue) return
+  assignPosition(fields) {
+    if (!this.positionExercisesValue && !this.positionSegmentsValue) return
 
     const positionInput = fields.querySelector('input[name$="[position]"]')
     if (!positionInput) return
 
-    positionInput.value = this.element.closest('form').querySelectorAll('.exercise:not([hidden])').length
+    positionInput.value = this.nextPosition()
+  }
+
+  nextPosition() {
+    const selector = this.positionSegmentsValue ? ':scope > .nested-fields:not([hidden])' : ':scope > .exercise:not([hidden])'
+    const positions = Array.from(this.container.querySelectorAll(selector))
+      .map(fields => parseInt(fields.querySelector('input[name$="[position]"]')?.value, 10))
+      .filter(position => !Number.isNaN(position))
+
+    return Math.max(0, ...positions) + 1
+  }
+
+  templateFor(name) {
+    if (!name) {
+      return this.template
+    }
+
+    return this.element.querySelector(`template[data-nested-form-template="${name}"]`) || this.template
   }
 
   newId() {

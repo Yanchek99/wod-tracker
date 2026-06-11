@@ -13,26 +13,24 @@
       = f.rich_text_area :notes
   hr
   h3 Exercises
-  #exercises
-    .top-level-exercises data-controller="nested-form" data-nested-form-placeholder-value="NEW_EXERCISE" data-nested-form-position-exercises-value="true"
-      .fields data-nested-form-target="container"
-        = f.simple_fields_for :exercises do |exercise_form|
-          - unless exercise_form.object.segment.present?
+  #workout-parts data-controller="nested-form" data-nested-form-position-segments-value="true"
+    .fields data-nested-form-target="container"
+      - @workout.ordered_parts.each do |part|
+        - if part.is_a?(Segment)
+          = f.simple_fields_for :segments, part do |segment_form|
+            = render 'segment_fields', f: segment_form
+        - else
+          = f.simple_fields_for :exercises, part do |exercise_form|
             = render 'exercise_fields', f: exercise_form
-      template data-nested-form-target="template"
-        = f.simple_fields_for :exercises, Exercise.new, child_index: 'NEW_EXERCISE' do |exercise_form|
-          = render 'exercise_fields', f: exercise_form
-      .links.d-grid
-        = link_to 'Add Exercise', '#', class: 'btn btn-outline-primary', data: { action: 'nested-form#add' }
-    .segments data-controller="nested-form" data-nested-form-placeholder-value="NEW_SEGMENT"
-      .fields data-nested-form-target="container"
-        = f.simple_fields_for :segments do |segment_form|
-          = render 'segment_fields', f: segment_form
-      template data-nested-form-target="template"
-        = f.simple_fields_for :segments, Segment.new, child_index: 'NEW_SEGMENT' do |segment_form|
-          = render 'segment_fields', f: segment_form
-      .links.d-grid
-        = link_to 'Add Segment', '#', class: 'btn btn-outline-primary', data: { action: 'nested-form#add' }
+    template data-nested-form-template="exercise" data-placeholder-value="NEW_EXERCISE"
+      = f.simple_fields_for :exercises, Exercise.new, child_index: 'NEW_EXERCISE' do |exercise_form|
+        = render 'exercise_fields', f: exercise_form
+    template data-nested-form-template="segment" data-placeholder-value="NEW_SEGMENT"
+      = f.simple_fields_for :segments, Segment.new, child_index: 'NEW_SEGMENT' do |segment_form|
+        = render 'segment_fields', f: segment_form
+    .links.d-grid
+      = link_to 'Add Exercise', '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'exercise' }
+      = link_to 'Add Segment', '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' }
   hr
   .form-actions.d-grid.gap-2
     = f.button :submit, class: 'btn btn-success'

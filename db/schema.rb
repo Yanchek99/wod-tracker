@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,12 +56,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.datetime "created_at", precision: nil, null: false
     t.integer "distance_units_per_rep"
     t.bigint "movement_id"
-    t.integer "position"
+    t.integer "position", null: false
     t.bigint "segment_id"
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workout_id"
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
-    t.index ["position", "workout_id"], name: "index_exercises_on_position_and_workout_id", unique: true
+    t.index ["position", "segment_id"], name: "index_exercises_on_position_and_segment_id", unique: true, where: "(segment_id IS NOT NULL)"
+    t.index ["position", "workout_id"], name: "index_exercises_on_position_and_workout_id", unique: true, where: "(segment_id IS NULL)"
     t.index ["segment_id"], name: "index_exercises_on_segment_id"
     t.index ["workout_id"], name: "index_exercises_on_workout_id"
   end
@@ -124,10 +125,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
   create_table "segments", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.integer "interval"
+    t.integer "position", null: false
     t.integer "rounds"
     t.integer "time"
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workout_id"
+    t.index ["position", "workout_id"], name: "index_segments_on_position_and_workout_id", unique: true
     t.index ["workout_id"], name: "index_segments_on_workout_id"
   end
 

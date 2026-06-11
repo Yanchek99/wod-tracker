@@ -1,4 +1,6 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 test:
+  workout: segmented
   rounds: 10
+  position: 2

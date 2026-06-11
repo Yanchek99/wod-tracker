@@ -5,6 +5,7 @@
       .col = f.input :rounds
       .col = f.input :time
       .col = f.input :interval
+      .col-4.col-md-2 = f.input :position
     .row
       .col#segmented_exercises data-controller="nested-form" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true"
         .fields data-nested-form-target="container"
@@ -14,7 +15,7 @@
           = f.simple_fields_for :exercises, Exercise.new, child_index: 'CHILD_EXERCISE' do |exercise_form|
             = render 'exercise_fields', f: exercise_form
         .links.d-grid
-          = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'nested-form#add' }
+          = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
     .row
       .col.d-grid
-        = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'nested-form#remove' }
+        = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'click->nested-form#remove' }

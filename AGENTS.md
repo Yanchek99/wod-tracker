@@ -59,23 +59,7 @@ CI loads the test schema, runs `bundle exec rails test:all`, and runs RuboCop th
 
 ## CrossFit Domain Knowledge
 
-CrossFit is the subject matter of this app. Treat `cf/docs/` as the durable project knowledge source for workout terminology, scoring, prescriptions, scaling, movement standards, metrics, and programming rules.
-
-Before implementing CrossFit domain logic:
-
-1. Read the relevant docs in `cf/docs/`.
-2. Prefer documented project knowledge over assumptions.
-3. Use external source references only when documentation is missing or needs verification.
-
-When implementation or research clarifies reusable domain knowledge:
-
-- Update the appropriate file in `cf/docs/`.
-- Prefer updating an existing file over creating a new one.
-- Keep documentation concise, factual, and source-backed when external references are used.
-- Add useful source URLs or source families to `cf/docs/references.md`.
-- Put project-specific domain or architecture decisions in `cf/docs/decisions.md` with a short rationale.
-
-Document durable patterns, terminology, and modeling rules rather than one-off examples. If a pattern is plausible but not source-confirmed, mark it as uncertain or leave it out.
+CrossFit is the subject matter of this app. Before implementing domain logic, read `cf/docs/OVERVIEW.md`.
 
 ## Agent Workflow
 
@@ -90,58 +74,10 @@ Document durable patterns, terminology, and modeling rules rather than one-off e
 
 ## Agent Behavioral Guidelines
 
-### 1. Think Before Coding
-
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
-
-### 2. Simplicity First
-
-**Minimum code that solves the problem. Nothing speculative.**
-
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
-
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-### 3. Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
-
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
-
-The test: Every changed line should trace directly to the user's request.
-
-### 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
-
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+- State assumptions before implementing. If uncertain or multiple interpretations exist, ask rather than picking silently.
+- Write the minimum code that solves the problem. No speculative features, abstractions, or flexibility that wasn't asked for.
+- Touch only what the request requires. Don't improve adjacent code, refactor unrelated things, or clean up pre-existing dead code — mention it instead.
+- Remove imports, variables, or functions that *your own changes* made unused. Leave everything else.
+- Match existing style even if you'd do it differently.
+- For multi-step tasks, state a brief plan with a verify step for each stage before starting.
+- Every changed line should trace directly to the user's request.

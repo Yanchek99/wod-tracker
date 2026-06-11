@@ -1,7 +1,6 @@
 module SegmentsHelper
-  def segment_objective(segment)
-    msg = ''
-    msg << 'Then, ' unless segment.exercises.exists?(position: 1)
+  def segment_objective(segment, then_prefix: false)
+    msg = then_prefix ? 'Then, ' : ''
     return "#{msg}#{pluralize segment.rounds, 'round'} of" if segment.rounds.positive?
     return "#{msg}As many rounds as possible in #{pluralize segment.time, 'minute'}" if segment.amrap?
     return "#{msg}EMOM #{segment.time}" if segment.emom?

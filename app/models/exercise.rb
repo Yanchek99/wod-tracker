@@ -1,4 +1,6 @@
 class Exercise < ApplicationRecord
+  include ExercisePositionValidation
+
   belongs_to :workout
   belongs_to :movement
   belongs_to :segment, optional: true
@@ -8,11 +10,6 @@ class Exercise < ApplicationRecord
 
   accepts_nested_attributes_for :metrics, allow_destroy: true
 
-  before_validation :set_workout_from_segment
-
-  validates :position, presence: true,
-                       numericality: { only_integer: true, greater_than: 0 },
-                       uniqueness: { scope: :workout }
   validates :distance_units_per_rep,
             numericality: { only_integer: true, greater_than: 0 },
             allow_nil: true
@@ -35,10 +32,6 @@ class Exercise < ApplicationRecord
   end
 
   private
-
-  def set_workout_from_segment
-    self.workout = segment.workout if segment
-  end
 
   def distance_score_component
     distance = distance_metric

@@ -31,6 +31,6 @@
               = ml_form.simple_fields_for :metrics, Metric.new, child_index: 'NEW_METRIC' do |metric_form|
                 = render 'metric_fields', f: metric_form
             .links.d-grid
-              = link_to 'Add Metric', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'nested-form#add' }
+              = link_to 'Add Metric', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
   .form-actions.d-grid
     = f.button :submit, 'Save', class: 'btn btn-primary'

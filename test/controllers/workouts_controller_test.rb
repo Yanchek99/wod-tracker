@@ -19,25 +19,28 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create workout' do
-    assert_difference(['Workout.count', 'ActionText::RichText.count']) do
-      post workouts_url, params: { workout: {
-        name: @workout.name,
-        rounds: @workout.rounds,
-        notes: '<div>Use the prescribed loading.</div>',
-        metric_attributes: { measurement: :round }
-      } }
+    assert_no_difference('Metric.where(measurable_type: "Workout").count') do
+      assert_difference(['Workout.count', 'ActionText::RichText.count']) do
+        post workouts_url, params: { workout: {
+          name: @workout.name,
+          rounds: @workout.rounds,
+          notes: '<div>Use the prescribed loading.</div>',
+          score_type: :round
+        } }
+      end
     end
 
     assert_redirected_to workout_url(Workout.last)
+    assert_equal 'round', Workout.last.score_type
     assert_equal 'Use the prescribed loading.', Workout.last.notes.to_plain_text.strip
   end
 
   test 'should create workout with nested exercise metrics' do
-    assert_difference('Metric.count', 2) do
+    assert_difference('Metric.count', 1) do
       assert_difference(['Workout.count', 'Exercise.count'], 1) do
         post workouts_url, params: { workout: {
           name: 'Nested Workout',
-          metric_attributes: { measurement: :time },
+          score_type: :time,
           exercises_attributes: {
             '0' => {
               movement_id: movements(:pullup).id,
@@ -57,11 +60,11 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create workout with nested sex-specific exercise metrics' do
-    assert_difference('Metric.count', 3) do
+    assert_difference('Metric.count', 2) do
       assert_difference(['Workout.count', 'Exercise.count'], 1) do
         post workouts_url, params: { workout: {
           name: 'Sex Specific Workout',
-          metric_attributes: { measurement: :time },
+          score_type: :time,
           exercises_attributes: {
             '0' => {
               movement_id: movements(:thruster).id,

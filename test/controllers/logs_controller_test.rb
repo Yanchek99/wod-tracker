@@ -9,23 +9,28 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create log with nested movement metrics' do
-    assert_difference('Metric.count', 2) do
-      assert_difference(['Log.count', 'MovementLog.count'], 1) do
-        post workout_logs_url(@workout), params: { log: {
-          metric_attributes: { measurement: :time, value: '5:30' },
-          movement_logs_attributes: {
-            '0' => {
-              movement_id: movements(:pullup).id,
-              metrics_attributes: {
-                '0' => { measurement: :rep, value: 45 }
+    assert_no_difference('Metric.where(measurable_type: "Log").count') do
+      assert_difference('Metric.count', 1) do
+        assert_difference(['Log.count', 'MovementLog.count'], 1) do
+          post workout_logs_url(@workout), params: { log: {
+            score_type: :time,
+            score_value: '5:30',
+            movement_logs_attributes: {
+              '0' => {
+                movement_id: movements(:pullup).id,
+                metrics_attributes: {
+                  '0' => { measurement: :rep, value: 45 }
+                }
               }
             }
-          }
-        } }
+          } }
+        end
       end
     end
 
     assert_redirected_to log_url(Log.last)
+    assert_equal 'time', Log.last.score_type
+    assert_equal 330, Log.last.score_value
     assert_equal movements(:pullup), Log.last.movement_logs.first.movement
     assert_equal 45, Log.last.movement_logs.first.metrics.find_by!(measurement: :rep).value
   end
@@ -44,7 +49,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should not update another user log' do
     patch workout_log_url(logs(:brooke_fran).workout, logs(:brooke_fran)), params: {
-      log: { metric_attributes: { measurement: :time, value: '4:59' } }
+      log: { score_type: :time, score_value: '4:59' }
     }
 
     assert_response :not_found
@@ -61,56 +66,56 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
   test 'creates amrap log from rounds plus reps score' do
     assert_difference('Log.count') do
       post workout_logs_url(workouts(:amrap_couplet)), params: { log: {
-        metric_attributes: { measurement: :rep, value: '20+2' }
+        score_type: :rep, score_value: '20+2'
       } }
     end
 
     assert_redirected_to log_url(Log.last)
-    assert_equal 502, Log.last.metric.value
+    assert_equal 502, Log.last.score_value
     assert_equal 25, Log.last.reps_per_round
   end
 
   test 'new log for fixed-rep round-scored amrap uses rep score input' do
     workout = workouts(:amrap_couplet)
-    workout.metric.update!(measurement: :round)
+    workout.update!(score_type: :round)
 
     get new_workout_log_url(workout)
 
     assert_response :success
-    assert_select 'input[name="log[metric_attributes][measurement]"][value="rep"]'
+    assert_select 'input[name="log[score_type]"][value="rep"]'
   end
 
   test 'creates fixed-rep amrap log from stale round score submission' do
     workout = workouts(:amrap_couplet)
-    workout.metric.update!(measurement: :round)
+    workout.update!(score_type: :round)
 
     assert_difference('Log.count') do
       post workout_logs_url(workout), params: { log: {
-        metric_attributes: { measurement: :round, value: '20+2' }
+        score_type: :round, score_value: '20+2'
       } }
     end
 
     assert_redirected_to log_url(Log.last)
-    assert_equal 'rep', Log.last.metric.measurement
-    assert_equal 502, Log.last.metric.value
+    assert_equal 'rep', Log.last.score_type
+    assert_equal 502, Log.last.score_value
     assert_equal 25, Log.last.reps_per_round
   end
 
   test 'creates amrap log from raw total reps' do
     assert_difference('Log.count') do
       post workout_logs_url(workouts(:amrap_couplet)), params: { log: {
-        metric_attributes: { measurement: :rep, value: '202' }
+        score_type: :rep, score_value: '202'
       } }
     end
 
-    assert_equal 202, Log.last.metric.value
+    assert_equal 202, Log.last.score_value
     assert_equal 25, Log.last.reps_per_round
   end
 
   test 'does not create amrap log from invalid rounds plus reps score' do
     assert_no_difference('Log.count') do
       post workout_logs_url(workouts(:amrap_couplet)), params: { log: {
-        metric_attributes: { measurement: :rep, value: '2.5' }
+        score_type: :rep, score_value: '2.5'
       } }
     end
 

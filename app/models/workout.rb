@@ -11,11 +11,12 @@ class Workout < ApplicationRecord
   has_many :programs, through: :schedules
   has_rich_text :notes
 
-  accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :exercises, allow_destroy: true
   accepts_nested_attributes_for :segments, allow_destroy: true
 
-  validates :name, :metric, presence: true
+  enum :score_type, Metric.measurements, prefix: :score
+
+  validates :name, :score_type, presence: true
 
   def self.search_by_name(name)
     return all unless name
@@ -59,6 +60,10 @@ class Workout < ApplicationRecord
     return nil unless interval?
 
     interval.split('-').sum(&:to_i)
+  end
+
+  def score_measurement
+    score_type || metric&.measurement
   end
 
   # Time cap that formats the seconds DB value to "Minutes:Seconds"

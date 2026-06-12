@@ -31,8 +31,7 @@ class ExerciseTest < ActiveSupport::TestCase
   end
 
   test 'allows segment child positions to overlap top-level positions before segment is saved' do
-    workout = Workout.new(name: 'Segmented Seed Workout', rounds: 1)
-    workout.build_metric(measurement: :time)
+    workout = Workout.new(name: 'Segmented Seed Workout', rounds: 1, score_type: :time)
     segment = workout.segments.build(rounds: 10, position: 2)
 
     workout.exercises.build(movement: movements(:run), position: 1)

@@ -6,7 +6,7 @@ module WorkoutsHelper
     return "EMOM #{workout.time}" if workout.emom?
     return timed_rounds_objective(workout) if workout.timed_rounds?
 
-    "#{workout.interval} for #{workout.metric.measurement}"
+    "#{workout.interval} for #{workout.score_measurement}"
   end
 
   def generate_workout_name
@@ -26,7 +26,7 @@ module WorkoutsHelper
   end
 
   def timed_rounds_objective(workout)
-    if workout.metric&.rep?
+    if workout.score_measurement == 'rep'
       "#{pluralize workout.rounds, 'round'}, complete as many reps as possible in #{pluralize workout.time, 'minute'} of"
     else
       "#{workout.rounds} #{workout.time}-minute rounds"

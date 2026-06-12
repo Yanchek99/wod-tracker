@@ -14,8 +14,7 @@ class LogsController < ApplicationController
 
   # GET /logs/new
   def new
-    @log = @workout.logs.build
-    @log.build_metric(measurement: @workout.log_metric_measurement)
+    @log = @workout.logs.build(score_type: @workout.log_metric_measurement)
     @log.build_movement_logs
   end
 
@@ -80,12 +79,14 @@ class LogsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def log_params
     params.expect(log: [
+                    :score_type,
+                    :score_value,
                     {
                       movement_logs_attributes: [[
                         :id,
                         :movement_id,
                         { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }
-                      ]], metric_attributes: [:id, :measurement, :value]
+                      ]]
                     }
                   ])
   end

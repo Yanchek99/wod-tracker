@@ -7,14 +7,32 @@ class Log < ApplicationRecord
   has_many :exercises, through: :workout
   has_many :movement_logs, dependent: :destroy
 
-  accepts_nested_attributes_for :metric
   accepts_nested_attributes_for :movement_logs, allow_destroy: true
 
-  validates :metric, presence: true
+  enum :score_type, Metric.measurements, prefix: :score
+
+  validates :score_type, presence: true
 
   def build_movement_logs
     workout.exercises_for_log_recording.each do |exercise|
       build_movement_log_for(exercise)
+    end
+  end
+
+  def score_measurement
+    score_type || metric&.measurement
+  end
+
+  def score_value
+    super || metric&.value
+  end
+
+  def score_value=(new_value)
+    if new_value.is_a?(String) && new_value.include?(':')
+      minutes, seconds = new_value.split(':', 2)
+      super((minutes.to_i.minute + seconds.to_i.second).second)
+    else
+      super
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_12_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -126,10 +126,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
 
   create_table "segments", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
-    t.integer "interval"
+    t.string "interval_scheme"
+    t.string "name"
+    t.text "notes"
     t.integer "position", null: false
+    t.integer "rest_seconds"
     t.integer "rounds"
-    t.integer "time"
+    t.integer "time_seconds"
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workout_id"
     t.index ["position", "workout_id"], name: "index_segments_on_position_and_workout_id", unique: true

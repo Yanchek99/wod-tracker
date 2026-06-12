@@ -41,7 +41,7 @@ class SchedulesController < ApplicationController
         workout: [
           :metric,
           :rich_text_notes,
-          { exercises: [:movement, :metrics, { segment: [:metric, :exercises] }] }
+          { exercises: [:movement, :metrics, { segment: :exercises }] }
         ]
       )
   end

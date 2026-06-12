@@ -2,10 +2,14 @@
   = f.hidden_field :_destroy
   .card-body
     .form-row
+      .col = f.input :name
       .col = f.input :rounds
-      .col = f.input :time
-      .col = f.input :interval
+      .col = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200'
+      .col = f.input :interval_scheme, placeholder: '21-15-9...'
       .col-4.col-md-2 = f.input :position
+    .form-row
+      .col = f.input :rest_seconds
+      .col = f.input :notes
     .row
       .col#segmented_exercises data-controller="nested-form" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true"
         .fields data-nested-form-target="container"

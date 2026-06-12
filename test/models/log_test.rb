@@ -47,6 +47,17 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 5, log.movement_logs.first.metrics.find(&:rep?).value
   end
 
+  test 'multiplies prescribed reps by segment rounds for segment exercises' do
+    exercises(:segmented_hspu).metrics.create!(measurement: :rep, value: 10)
+
+    log = workouts(:segmented).logs.build(user: users(:mathew), score_type: :time)
+    log.build_movement_logs
+
+    hspu_log = log.movement_logs.find { |movement_log| movement_log.movement == movements(:hspu) }
+
+    assert_equal 100, hspu_log.metrics.find(&:rep?).value
+  end
+
   test 'calculates set-based lifting score from heaviest successful set' do
     log = workouts(:back_squat_5x5).logs.build(user: users(:mathew), score_type: :weight)
     log.build_movement_logs

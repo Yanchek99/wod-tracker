@@ -1,6 +1,5 @@
 class Segment < ApplicationRecord
   belongs_to :workout
-  has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, dependent: :destroy
 
   accepts_nested_attributes_for :exercises, allow_destroy: true
@@ -15,17 +14,39 @@ class Segment < ApplicationRecord
   validate :position_unique_within_workout_parts
 
   def rounds?
-    rounds.present? && time.blank? && interval.blank?
+    rounds.present? && time_seconds.blank? && interval_scheme.blank?
   end
 
   def amrap?
-    time.present? && rounds.blank? && interval.blank?
+    time_seconds.present? && rounds.blank? && interval_scheme.blank?
+  end
+
+  def emom?
+    time_seconds.present? && rounds.present? && (time_seconds % (60 * rounds)).zero?
+  end
+
+  def timed_rounds?
+    rounds.present? && time_seconds.present? && interval_scheme.nil?
+  end
+
+  def interval?
+    interval_scheme.present?
   end
 
   def reps_from_interval
     return nil unless interval?
 
-    interval.split('-').sum(&:to_i)
+    interval_scheme.split('-').sum(&:to_i)
+  end
+
+  # Time is a number of seconds or a string in the format "Minutes:Seconds" or "Hours:Minutes:Seconds"
+  def time_seconds=(value)
+    if value.is_a?(String) && value.include?(':')
+      parts = value.split(':').map(&:to_i)
+      super(parts.reverse.each_with_index.sum { |part, index| part * (60**index) })
+    else
+      super
+    end
   end
 
   private

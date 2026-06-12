@@ -21,7 +21,7 @@
     "@rails/activestorage": "^8.1.300",
     "@rails/request.js": "^0.0.13",
     "bootstrap": "^5.3.8",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "local-time": "^3.0.3",
     "sass": "^1.100.0",
     "tom-select": "^2.6.1",

@@ -14,7 +14,6 @@ class WorkoutsController < ApplicationController
   # GET /workouts/new
   def new
     @workout = Workout.new
-    @workout.build_metric
   end
 
   # GET /workouts/1/edit
@@ -73,9 +72,9 @@ class WorkoutsController < ApplicationController
                        { metrics_attributes: [metric_params] }]
 
     params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
+                            :score_type,
                             { segments_attributes: [[:id, :rounds, :time, :interval, :position, :_destroy,
                                                      { exercises_attributes: [exercise_params] }]] },
-                            { exercises_attributes: [exercise_params],
-                              metric_attributes: [:id, :measurement] }])
+                            { exercises_attributes: [exercise_params] }])
   end
 end

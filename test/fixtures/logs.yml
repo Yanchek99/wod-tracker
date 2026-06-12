@@ -3,12 +3,18 @@
 brooke_fran:
   workout: fran
   user: brooke
+  score_type: time
+  score_value: 330
 
 matt_murph:
   workout: murph
   user: mathew
+  score_type: time
+  score_value: 3600
 
 matt_amrap:
   workout: amrap_couplet
   user: mathew
+  score_type: rep
+  score_value: 202
   reps_per_round: 25

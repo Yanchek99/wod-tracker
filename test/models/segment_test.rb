@@ -23,8 +23,7 @@ class SegmentTest < ActiveSupport::TestCase
   end
 
   test 'rejects duplicate positions among unsaved segments in the same workout' do
-    workout = Workout.new(name: 'Invalid Segment Positions')
-    workout.build_metric(measurement: :time)
+    workout = Workout.new(name: 'Invalid Segment Positions', score_type: :time)
     segment = workout.segments.build(position: 1)
 
     workout.segments.build(position: 1)

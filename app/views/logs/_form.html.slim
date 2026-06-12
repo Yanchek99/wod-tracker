@@ -10,13 +10,12 @@
   .row.col
     p = workout_objective @workout
   .row
-    = f.simple_fields_for :metric do |metric_form|
-      = metric_form.input :measurement, as: :hidden
-      - if @workout.set_based_lifting?
-        .col
-          p.form-text Score will be calculated from the heaviest successful set.
-      - else
-        .col = metric_form.input :value, as: :group, prepend: @log.metric.measurement, label: false
+    = f.input :score_type, as: :hidden
+    - if @workout.set_based_lifting?
+      .col
+        p.form-text Score will be calculated from the heaviest successful set.
+    - else
+      .col = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false
   h2.mt-3 Exercise Recordings
   = f.simple_fields_for :movement_logs do |ml_form|
     .card.mb-3

@@ -15,8 +15,7 @@ class WorkoutsHelperTest < ActionView::TestCase
 
   test 'renders timed rep-scored rounds as round amraps' do
     workout = workouts(:back_squat_5x5)
-    workout.update!(time: 3)
-    workout.metric.update!(measurement: :rep)
+    workout.update!(time: 3, score_type: :rep)
 
     assert_equal '5 rounds, complete as many reps as possible in 3 minutes of', workout_objective(workout)
   end

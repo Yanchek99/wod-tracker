@@ -34,3 +34,12 @@ Examples:
 Use daily workout pages to verify current Rx, intermediate, beginner, and
 female/male prescription patterns. CrossFit commonly uses compact slash notation
 for paired values, such as `800/1,000-meter row` or `105/155-lb push press`.
+
+## CrossFit Movement List
+
+Source:
+https://www.crossfit.com/crossfit-movements
+
+Use this page as the source for the base seeded movement names. Seed names are
+normalized for app display by removing leading `The`, preserving CrossFit
+hyphenation, and deduplicating case variants.

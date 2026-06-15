@@ -3,13 +3,13 @@
 - expanded = f.object.new_record?
 - summary = f.object.persisted? ? measurable_message(f.object) : 'New exercise'
 
-.exercise.nested-fields.card.mb-3 data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
+.exercise.nested-fields.mb-3 data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
   = f.hidden_field :_destroy
-  .card-body
-    button.exercise-summary type="button" data-action="click->exercise-card#expand" data-exercise-card-target="summaryButton" aria-expanded=expanded
-      span.exercise-summary__text data-exercise-card-target="summaryText" = summary
-      span.exercise-summary__hint Edit
-    .exercise-editor data-exercise-card-target="editor" hidden=(!expanded)
+  button.exercise-summary type="button" data-action="click->exercise-card#expand" data-exercise-card-target="summaryButton" aria-expanded=expanded
+    span.exercise-summary__text data-exercise-card-target="summaryText" = summary
+    span.exercise-summary__hint Edit
+  .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
+    .card-body
       .row.g-2
         .col-12.col-md = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect' } }
         .col-6.col-md-2 = f.input :position

@@ -24,9 +24,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
       find('.ts-dropdown .option', text: 'Pull Up').click
       assert_no_selector '.ts-wrapper.dropdown-active'
       assert_field 'Position', with: '1'
-      click_on 'Add Metric'
-      find('input[name$="[value]"]').set('10')
-      find('select.metric', visible: :all).select('rep')
+      fill_in 'Reps', with: '10'
       assert_no_field 'Distance units per rep'
     end
 
@@ -48,9 +46,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
     within '.exercise' do
       assert_no_field 'Distance units per rep'
 
-      click_on 'Add Metric'
-      find('input[name$="[value]"]').set('400')
-      find('select.metric', visible: :all).select('meter')
+      fill_in 'Distance', with: '400', exact: true
 
       assert_field 'Distance units per rep'
     end

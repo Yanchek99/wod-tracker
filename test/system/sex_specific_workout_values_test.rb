@@ -22,14 +22,10 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
       find('.ts-control input').set('Thruster')
       find('.ts-dropdown .option', text: 'Thruster').click
 
-      click_on 'Add Metric'
-      find('input[name$="[value]"]').set('1')
-      find('select.metric', visible: :all).select('rep')
-
-      click_on 'Add Metric'
-      all('input[placeholder="Female value"]').last.set('65')
-      all('input[placeholder="Male value"]').last.set('95')
-      all('select.metric', visible: :all).last.select('lb')
+      fill_in 'Reps', with: '1'
+      fill_in 'Female load', with: '65'
+      fill_in 'Male load', with: '95'
+      select 'lb', from: 'Load unit'
     end
 
     click_on 'Create Workout'

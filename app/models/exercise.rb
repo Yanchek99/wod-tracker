@@ -11,8 +11,6 @@ class Exercise < ApplicationRecord
 
   default_scope { order(:position).includes(:metrics) }
 
-  accepts_nested_attributes_for :metrics, allow_destroy: true
-
   validates :reps, :calories,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :duration_seconds, :load, :female_load, :male_load,

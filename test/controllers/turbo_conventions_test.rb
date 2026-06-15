@@ -73,8 +73,8 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     get edit_workout_url(workouts(:fran))
 
     assert_response :success
+    # Exercise prescriptions are direct columns now; only the movement select remains here.
     assert_select 'select.movement[data-controller="movement-select"]'
-    assert_select 'select.metric[data-controller="metric-select"]'
 
     get new_workout_log_url(workouts(:murph))
 

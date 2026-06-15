@@ -35,8 +35,8 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Use the prescribed loading.', Workout.last.notes.to_plain_text.strip
   end
 
-  test 'should create workout with nested exercise metrics' do
-    assert_difference('Metric.count', 1) do
+  test 'should create workout with direct exercise prescriptions' do
+    assert_no_difference('Metric.where(measurable_type: "Exercise").count') do
       assert_difference(['Workout.count', 'Exercise.count'], 1) do
         post workouts_url, params: { workout: {
           name: 'Nested Workout',
@@ -45,9 +45,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
             '0' => {
               movement_id: movements(:pullup).id,
               position: 1,
-              metrics_attributes: {
-                '0' => { measurement: :rep, value: 10 }
-              }
+              reps: 10
             }
           }
         } }
@@ -55,12 +53,13 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to workout_url(Workout.last)
-    assert_equal movements(:pullup), Workout.last.exercises.first.movement
-    assert_equal 10, Workout.last.exercises.first.metrics.find_by!(measurement: :rep).value
+    exercise = Workout.last.exercises.first
+    assert_equal movements(:pullup), exercise.movement
+    assert_equal 10, exercise.reps
   end
 
-  test 'should create workout with nested sex-specific exercise metrics' do
-    assert_difference('Metric.count', 2) do
+  test 'should create workout with sex-specific exercise prescriptions' do
+    assert_no_difference('Metric.where(measurable_type: "Exercise").count') do
       assert_difference(['Workout.count', 'Exercise.count'], 1) do
         post workouts_url, params: { workout: {
           name: 'Sex Specific Workout',
@@ -69,20 +68,19 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
             '0' => {
               movement_id: movements(:thruster).id,
               position: 1,
-              metrics_attributes: {
-                '0' => { measurement: :rep, value: 1 },
-                '1' => { measurement: :lb, female_value: 65, male_value: 95 }
-              }
+              reps: 1,
+              female_load: 65, male_load: 95, load_unit: :lb
             }
           }
         } }
       end
     end
 
-    load_metric = Workout.last.exercises.first.metrics.find_by!(measurement: :lb)
-    assert_nil load_metric.value
-    assert_equal 65, load_metric.female_value
-    assert_equal 95, load_metric.male_value
+    exercise = Workout.last.exercises.first
+    assert_nil exercise.load
+    assert_equal 65, exercise.female_load
+    assert_equal 95, exercise.male_load
+    assert_equal 'lb', exercise.load_unit
   end
 
   test 'should show workout' do

@@ -34,6 +34,7 @@ export default class extends Controller {
     if (!this.hasEditorTarget) return
 
     this.editorTarget.hidden = !this.expandedValue
+    this.summaryButtonTarget.hidden = this.expandedValue
     this.summaryButtonTarget.setAttribute("aria-expanded", this.expandedValue.toString())
   }
 

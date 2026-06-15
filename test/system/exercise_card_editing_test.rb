@@ -20,6 +20,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
       click_on 'Thruster (95 weights)'
 
+      assert_no_text 'Thruster (95 weights)'
       assert_field 'Reps', with: ''
       fill_in 'Reps', with: '15'
       click_on 'Save Exercise'
@@ -49,6 +50,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
         assert_text '400 meter Run'
 
         click_on '400 meter Run'
+        assert_no_text '400 meter Run'
         assert_field 'Distance', with: '400'
       end
     end

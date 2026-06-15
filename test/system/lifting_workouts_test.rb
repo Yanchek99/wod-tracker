@@ -21,15 +21,15 @@ class LiftingWorkoutsTest < ApplicationSystemTestCase
     assert_selector '.card.mb-3', count: 5
     movement_logs = all('.card.mb-3')
     movement_logs.each do |movement_log|
-      values = movement_log.all('input[name$="[value]"]').map(&:value)
+      values = movement_log.all('.recording-value').map(&:value)
 
-      assert_equal ['5', ''], values
+      assert_equal ['5', ''], values # [reps, load]
     end
 
     [95, 115, 135, 145, 155].each.with_index do |load, index|
-      movement_logs[index].all('input[name$="[value]"]')[1].set(load)
+      movement_logs[index].all('.recording-value')[1].set(load)
     end
-    movement_logs[4].first('input[name$="[value]"]').set(2)
+    movement_logs[4].first('.recording-value').set(2)
 
     click_on 'Save'
 

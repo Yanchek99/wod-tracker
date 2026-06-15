@@ -41,11 +41,38 @@ class Log < ApplicationRecord
   def build_movement_log_for(exercise)
     movement_log = movement_logs.build(movement: exercise.movement)
     metrics_for_movement_log(exercise).each do |metric|
-      movement_log.metrics.build(
-        measurement: metric.measurement,
-        value: movement_log_metric_value(metric, exercise)
-      )
+      assign_performance(movement_log, metric, movement_log_metric_value(metric, exercise))
     end
+  end
+
+  # Copies a selected prescription dimension onto the movement log's performance columns. reps and
+  # calories have no unit, so a recorded-but-unprescribed (max-effort) dimension is stored as 0 to
+  # keep the recording form input rendered; load and distance use their unit as the active marker.
+  def assign_performance(movement_log, metric, value)
+    case metric.measurement
+    when 'rep' then movement_log.reps = value || 0
+    when 'calorie' then movement_log.calories = value || 0
+    when 'seconds', 'time' then movement_log.duration_seconds = value
+    else assign_load_or_distance(movement_log, metric.measurement, value)
+    end
+  end
+
+  def assign_load_or_distance(movement_log, measurement, value)
+    if Metric::LOAD_MEASUREMENTS.include?(measurement)
+      assign_load(movement_log, measurement, value)
+    elsif Metric::DISTANCE_MEASUREMENTS.include?(measurement)
+      assign_distance(movement_log, measurement, value)
+    end
+  end
+
+  def assign_load(movement_log, measurement, value)
+    movement_log.load_unit = measurement == 'kg' ? :kg : :lb
+    movement_log.load = value
+  end
+
+  def assign_distance(movement_log, measurement, value)
+    movement_log.distance_unit = measurement if %w[meter foot inch].include?(measurement)
+    movement_log.distance = value
   end
 
   def movement_log_metric_value(metric, exercise)

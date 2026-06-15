@@ -19,18 +19,24 @@
       .col = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false
   h2.mt-3 Exercise Recordings
   = f.simple_fields_for :movement_logs do |ml_form|
+    - ml = ml_form.object
     .card.mb-3
       .card-body
         = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select' } }, label: false
         .row.g-2
-          .col#metrics data-controller="nested-form" data-nested-form-placeholder-value="NEW_METRIC"
-            .fields data-nested-form-target="container"
-              = ml_form.simple_fields_for :metrics do |metric_form|
-                = render 'metric_fields', f: metric_form
-            template data-nested-form-target="template"
-              = ml_form.simple_fields_for :metrics, Metric.new, child_index: 'NEW_METRIC' do |metric_form|
-                = render 'metric_fields', f: metric_form
-            .links.d-grid.gap-2
-              = link_to 'Add Metric', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
+          - if ml.records_reps?
+            .col = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }
+          - if ml.records_duration?
+            .col = ml_form.input :duration_seconds, label: 'Duration (s)', input_html: { class: 'recording-value' }
+          - if ml.records_load?
+            .col
+              = ml_form.input :load, label: "Load (#{ml.load_unit})", input_html: { class: 'recording-value' }
+              = ml_form.hidden_field :load_unit
+          - if ml.records_distance?
+            .col
+              = ml_form.input :distance, label: "Distance (#{ml.distance_unit || 'distance'})", input_html: { class: 'recording-value' }
+              = ml_form.hidden_field :distance_unit
+          - if ml.records_calories?
+            .col = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
   .form-actions.d-grid
     = f.button :submit, 'Save', class: 'btn btn-primary'

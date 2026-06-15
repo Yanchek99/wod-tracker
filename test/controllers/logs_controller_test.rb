@@ -8,31 +8,28 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:mathew)
   end
 
-  test 'should create log with nested movement metrics' do
-    assert_no_difference('Metric.where(measurable_type: "Log").count') do
-      assert_difference('Metric.count', 1) do
-        assert_difference(['Log.count', 'MovementLog.count'], 1) do
-          post workout_logs_url(@workout), params: { log: {
-            score_type: :time,
-            score_value: '5:30',
-            movement_logs_attributes: {
-              '0' => {
-                movement_id: movements(:pullup).id,
-                metrics_attributes: {
-                  '0' => { measurement: :rep, value: 45 }
-                }
-              }
+  test 'should create log with direct movement recordings' do
+    assert_no_difference('Metric.where(measurable_type: "MovementLog").count') do
+      assert_difference(['Log.count', 'MovementLog.count'], 1) do
+        post workout_logs_url(@workout), params: { log: {
+          score_type: :time,
+          score_value: '5:30',
+          movement_logs_attributes: {
+            '0' => {
+              movement_id: movements(:pullup).id,
+              reps: 45
             }
-          } }
-        end
+          }
+        } }
       end
     end
 
     assert_redirected_to log_url(Log.last)
     assert_equal 'time', Log.last.score_type
     assert_equal 330, Log.last.score_value
-    assert_equal movements(:pullup), Log.last.movement_logs.first.movement
-    assert_equal 45, Log.last.movement_logs.first.metrics.find_by!(measurement: :rep).value
+    movement_log = Log.last.movement_logs.first
+    assert_equal movements(:pullup), movement_log.movement
+    assert_equal 45, movement_log.reps
   end
 
   test 'should not show another user log' do

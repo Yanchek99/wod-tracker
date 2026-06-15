@@ -9,8 +9,9 @@ class LogTest < ActiveSupport::TestCase
 
     log.movement_logs.each do |movement_log|
       assert_equal movements(:back_squat), movement_log.movement
-      assert_equal 5, movement_log.metrics.find(&:rep?).value
-      assert_nil movement_log.metrics.find(&:lb?).value
+      assert_equal 5, movement_log.reps
+      assert_nil movement_log.load
+      assert_equal 'lb', movement_log.load_unit
     end
   end
 
@@ -24,10 +25,10 @@ class LogTest < ActiveSupport::TestCase
     log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: 180)
     log.build_movement_logs
 
-    lb_metric = log.movement_logs.first.metrics.find(&:lb?)
+    movement_log = log.movement_logs.first
 
-    assert_equal 95, lb_metric.value
-    assert_equal 'lb', lb_metric.measurement
+    assert_equal 95, movement_log.load
+    assert_equal 'lb', movement_log.load_unit
   end
 
   test 'parses duration score values before score type assignment' do
@@ -44,7 +45,7 @@ class LogTest < ActiveSupport::TestCase
     log.build_movement_logs
 
     assert_equal 1, log.movement_logs.size
-    assert_equal 5, log.movement_logs.first.metrics.find(&:rep?).value
+    assert_equal 5, log.movement_logs.first.reps
   end
 
   test 'records per-round prescribed reps for segment exercises' do
@@ -55,7 +56,7 @@ class LogTest < ActiveSupport::TestCase
 
     hspu_log = log.movement_logs.find { |movement_log| movement_log.movement == movements(:hspu) }
 
-    assert_equal 10, hspu_log.metrics.find(&:rep?).value
+    assert_equal 10, hspu_log.reps
   end
 
   test 'builds movement logs from direct column prescriptions' do
@@ -68,8 +69,9 @@ class LogTest < ActiveSupport::TestCase
 
     movement_log = log.movement_logs.first
 
-    assert_equal 21, movement_log.metrics.find(&:rep?).value
-    assert_equal 95, movement_log.metrics.find(&:lb?).value
+    assert_equal 21, movement_log.reps
+    assert_equal 95, movement_log.load
+    assert_equal 'lb', movement_log.load_unit
   end
 
   test 'calculates set-based lifting score from heaviest successful set' do
@@ -77,9 +79,9 @@ class LogTest < ActiveSupport::TestCase
     log.build_movement_logs
 
     [95, 115, 135, 145, 155].each.with_index do |load, index|
-      log.movement_logs[index].metrics.find(&:lb?).value = load
+      log.movement_logs[index].load = load
     end
-    log.movement_logs[4].metrics.find(&:rep?).value = 2
+    log.movement_logs[4].reps = 2
 
     assert log.valid?
     assert_equal 'lb', log.score_type

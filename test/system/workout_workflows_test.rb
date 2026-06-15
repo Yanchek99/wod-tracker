@@ -124,7 +124,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
 
   def amrap_recording_values
     all('.card.mb-3').map do |movement_log|
-      movement_log.find('input[name$="[value]"]').value
+      movement_log.find('.recording-value').value
     end
   end
 end

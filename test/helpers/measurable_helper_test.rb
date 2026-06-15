@@ -109,4 +109,11 @@ class MeasurableHelperTest < ActionView::TestCase
 
     assert_equal '30 Wall-ball Shots (20 lbs / 10 ft)', measurable_message(movement_log)
   end
+
+  test 'renders a movement log from its performance columns' do
+    movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:row),
+                                                         distance: 300, distance_unit: :meter)
+
+    assert_equal 'Row (300 meters)', measurable_message(movement_log)
+  end
 end

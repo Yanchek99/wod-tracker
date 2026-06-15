@@ -1,6 +1,6 @@
 = simple_form_for @workout, wrapper: :vertical_form do |f|
   = f.error_notification
-  .form-inputs.row
+  .form-inputs.row.g-2
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
     .col-sm-4 = f.input :rounds
     .col-sm-4 = f.input :time, as: :group, append: 'minutes'
@@ -27,7 +27,7 @@
     template data-nested-form-template="segment" data-placeholder-value="NEW_SEGMENT"
       = f.simple_fields_for :segments, Segment.new, child_index: 'NEW_SEGMENT' do |segment_form|
         = render 'segment_fields', f: segment_form
-    .links.d-grid
+    .links.d-grid.gap-2
       = link_to 'Add Exercise', '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'exercise' }
       = link_to 'Add Segment', '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' }
   hr

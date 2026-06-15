@@ -1,12 +1,20 @@
-.nested-fields
+.nested-fields.metric-fields
   = f.hidden_field :_destroy
   - sex_specific = local_assigns.fetch(:sex_specific, false)
-  .input-group.mb-3
-    = f.input_field :value, as: :string, class: 'form-control', value: f.object.time? ? seconds_to_duration_string(f.object.value) : f.object.value
+  .metric-fields__grid class=('metric-fields__grid--sex-specific' if sex_specific)
+    .metric-fields__cell
+      .metric-fields__label Value
+      = f.input_field :value, as: :string, class: 'form-control', value: f.object.time? ? seconds_to_duration_string(f.object.value) : f.object.value
+    .metric-fields__cell
+      .metric-fields__label Unit
+      = f.select :measurement, options_for_select(Metric.measurements.keys, f.object.measurement), {}, class: 'metric form-select', data: { controller: 'metric-select' }
     - if sex_specific
-      = f.input_field :female_value, as: :string, class: 'form-control', placeholder: 'Female value'
-      = f.input_field :male_value, as: :string, class: 'form-control', placeholder: 'Male value'
-    = f.select :measurement, options_for_select(Metric.measurements.keys, f.object.measurement), {}, class: 'metric form-control', data: { controller: 'metric-select' }
-    .input-group-append
-      = link_to '#', class: 'btn btn-outline-danger', data: { action: 'click->nested-form#remove' }
-        i.fas.fa-trash-alt
+      .metric-fields__cell
+        .metric-fields__label Male
+        = f.input_field :male_value, as: :string, class: 'form-control', placeholder: 'Male value'
+      .metric-fields__cell
+        .metric-fields__label Female
+        = f.input_field :female_value, as: :string, class: 'form-control', placeholder: 'Female value'
+  .d-grid.mb-3
+    = link_to '#', class: 'btn btn-outline-danger metric-fields__remove', data: { action: 'click->nested-form#remove' }, aria: { label: 'Remove metric' }
+      i.fas.fa-trash-alt

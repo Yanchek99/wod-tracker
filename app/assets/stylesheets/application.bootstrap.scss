@@ -16,3 +16,53 @@ $input-border-width: $border-width;
 .fs-8 {
   font-size: 8pt;
 }
+
+.metric-fields {
+  .metric-fields__grid {
+    display: grid;
+    gap: .5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, auto);
+    margin-bottom: .5rem;
+  }
+
+  .metric-fields__grid--sex-specific {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric-fields__label {
+    color: $text-muted;
+    font-size: .75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: .25rem;
+    text-transform: uppercase;
+  }
+
+  .metric-fields__remove {
+    min-height: 2.375rem;
+  }
+
+  @include media-breakpoint-up(md) {
+    .metric-fields__grid {
+      align-items: end;
+      grid-template-columns: minmax(0, 1fr) minmax(10rem, auto);
+    }
+
+    .metric-fields__grid--sex-specific {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .metric-fields__remove {
+      min-width: 2.75rem;
+    }
+  }
+}
+
+.exercise .links {
+  position: relative;
+  z-index: 20;
+}
+
+.exercise .movement.ts-wrapper .ts-dropdown {
+  z-index: 10;
+}

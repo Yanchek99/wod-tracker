@@ -15,13 +15,16 @@ export default class extends Controller {
 
   connect() {
     this.handleOpening = this.handleOpening.bind(this)
+    this.handleDocumentClick = this.handleDocumentClick.bind(this)
     document.addEventListener("exercise-card:opening", this.handleOpening)
+    document.addEventListener("click", this.handleDocumentClick, true)
 
     this.render()
   }
 
   disconnect() {
     document.removeEventListener("exercise-card:opening", this.handleOpening)
+    document.removeEventListener("click", this.handleDocumentClick, true)
   }
 
   expand() {
@@ -40,6 +43,12 @@ export default class extends Controller {
     if (this.saveIfValid()) return
 
     event.preventDefault()
+  }
+
+  handleDocumentClick(event) {
+    if (!this.expandedValue || this.element.contains(event.target) || this.tomSelectOwns(event.target)) return
+
+    this.saveIfValid()
   }
 
   requestExclusiveOpen() {
@@ -152,6 +161,10 @@ export default class extends Controller {
 
   get movementErrorElement() {
     return this.movementWrapper.parentElement.querySelector("[data-exercise-card-movement-error]")
+  }
+
+  tomSelectOwns(target) {
+    return target.closest(".ts-dropdown") && this.element.contains(this.movementSelectTarget.tomselect?.wrapper)
   }
 
   leading() {

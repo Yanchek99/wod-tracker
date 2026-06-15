@@ -125,16 +125,18 @@ export default class extends Controller {
     const movementName = this.movementName()
     if (!movementName) return "New exercise"
 
-    const leading = this.leading()
+    const metrics = this.prescriptionMetrics()
+    const leading = this.leading(metrics)
     const leadingText = leading.text
-    const details = this.detailItems()
-      .filter((detail) => detail.kind !== leading.kind)
-      .map((detail) => detail.text)
-    const movementText = [leadingText, this.movementNameForLeadingText(movementName, leadingText)].filter(Boolean).join(" ")
+    const movementText = [
+      leadingText,
+      this.movementNameForLeadingMetric(movementName, leading.metric)
+    ].filter(Boolean).join(" ")
+    const details = this.additionalMetrics(metrics, leading.metric)
 
     if (details.length === 0) return movementText
 
-    return `${movementText} (${details.join(" / ")})`
+    return `${movementText} (${this.additionalMetricsText(details)})`
   }
 
   movementName() {
@@ -167,67 +169,162 @@ export default class extends Controller {
     return target.closest(".ts-dropdown") && this.element.contains(this.movementSelectTarget.tomselect?.wrapper)
   }
 
-  leading() {
-    if (this.hasDurationInputTarget && this.durationInputTarget.value.trim() !== "") {
-      return { kind: "duration", text: this.durationText(this.durationInputTarget.value) }
-    }
-
-    if (this.hasDistanceInputTarget && this.distanceInputTarget.value.trim() !== "" && !this.hasAdditionalWorkDetails()) {
-      return { kind: "distance", text: this.leadingValueWithUnit(this.distanceInputTarget.value, this.distanceUnit()) }
-    }
-
-    if (this.hasCaloriesInputTarget && this.caloriesInputTarget.value.trim() !== "" && !this.hasAdditionalWorkDetails()) {
-      return { kind: "calorie", text: this.leadingValueWithUnit(this.caloriesInputTarget.value, "calorie") }
-    }
-
-    if (!this.hasRepsInputTarget || this.repsInputTarget.value.trim() === "") return { kind: null, text: "" }
-    if (this.repsInputTarget.value.trim() === "0") return { kind: "reps", text: "max reps" }
-
-    return { kind: "reps", text: this.repsInputTarget.value.trim() }
+  prescriptionMetrics() {
+    return [
+      this.metric("rep", "rep", this.repsInputTarget),
+      this.metric("duration", "seconds", this.durationInputTarget),
+      this.metric("load", this.loadUnit(), this.loadInputTarget, this.femaleLoadInputTarget, this.maleLoadInputTarget),
+      this.metric("distance", this.distanceUnit(), this.distanceInputTarget, this.femaleDistanceInputTarget, this.maleDistanceInputTarget),
+      this.metric("calorie", "calorie", this.caloriesInputTarget, this.femaleCaloriesInputTarget, this.maleCaloriesInputTarget)
+    ].filter(Boolean)
   }
 
-  movementNameForLeadingText(movementName, leadingText) {
-    if (!leadingText) return movementName
-    if (leadingText === "max reps") return movementName
-    if (/^\d+$/.test(leadingText) && parseInt(leadingText, 10) !== 1) return this.pluralizeMovement(movementName)
+  metric(kind, measurement, valueInput, femaleInput = null, maleInput = null) {
+    if (!valueInput) return null
+
+    const value = valueInput.value.trim()
+    const femaleValue = femaleInput?.value.trim() || ""
+    const maleValue = maleInput?.value.trim() || ""
+    if (value === "" && femaleValue === "" && maleValue === "") return null
+
+    return {
+      kind,
+      measurement,
+      value: kind === "rep" && value === "0" ? "" : value,
+      femaleValue,
+      maleValue,
+      sexSpecific: femaleValue !== "" && maleValue !== ""
+    }
+  }
+
+  leading(metrics) {
+    const durationMetric = metrics.find((metric) => this.durationMetric(metric) && metric.value !== "")
+    if (durationMetric) return { metric: durationMetric, text: this.durationText(durationMetric.value) }
+
+    const leadingWorkMetric = this.leadingWorkMetric(metrics)
+    if (leadingWorkMetric) {
+      return { metric: leadingWorkMetric, text: this.leadingWorkMetricText(leadingWorkMetric) }
+    }
+
+    const repMetric = metrics.find((metric) => metric.kind === "rep")
+    if (!repMetric) return { metric: null, text: "" }
+    if (repMetric.value === "" && !repMetric.sexSpecific) return { metric: repMetric, text: "max reps" }
+
+    return { metric: repMetric, text: this.metricUnitText(repMetric) }
+  }
+
+  leadingWorkMetric(metrics) {
+    const candidate = metrics.find((metric) => this.visibleMetric(metric) && this.leadingWorkMetricKind(metric))
+    if (!candidate) return null
+
+    return metrics.every((metric) => !this.visibleMetric(metric) || metric === candidate || this.structuralSingleRepMetric(metric))
+      ? candidate
+      : null
+  }
+
+  additionalMetrics(metrics, leadingMetric) {
+    return metrics
+      .filter((metric) => metric.kind !== "rep")
+      .filter((metric) => metric !== leadingMetric)
+      .filter((metric) => !this.durationMetric(metric))
+      .filter((metric) => this.visibleMetric(metric))
+      .sort((left, right) => this.compareOrders(this.additionalMetricDisplayOrder(left), this.additionalMetricDisplayOrder(right)))
+  }
+
+  additionalMetricsText(metrics) {
+    if (metrics.length > 1 && metrics.every((metric) => metric.sexSpecific)) {
+      return this.sexSpecificMetricsText(metrics)
+    }
+
+    return metrics.map((metric) => this.metricUnitText(metric)).join(" / ")
+  }
+
+  sexSpecificMetricsText(metrics) {
+    const orderedMetrics = [...metrics].sort((left, right) => (
+      this.compareOrders(this.sexSpecificMetricDisplayOrder(left), this.sexSpecificMetricDisplayOrder(right))
+    ))
+    const femaleValues = orderedMetrics.map((metric) => this.sexSpecificMetricValueText(metric, metric.femaleValue))
+    const maleValues = orderedMetrics.map((metric) => this.sexSpecificMetricValueText(metric, metric.maleValue))
+
+    return `♀${femaleValues.join(" + ")} / ♂${maleValues.join(" + ")}`
+  }
+
+  metricUnitText(metric) {
+    if (metric.sexSpecific) return this.sexSpecificMetricUnitText(metric)
+    if (metric.value === "") return this.valueWithUnit("1", metric.measurement)
+    if (metric.kind === "rep") return metric.value === "1" ? "" : metric.value
+    if (this.durationMetric(metric)) return this.durationText(metric.value)
+
+    return this.valueWithUnit(metric.value, metric.measurement)
+  }
+
+  sexSpecificMetricUnitText(metric) {
+    const unit = this.singularUnit(metric.measurement)
+    const separator = this.loadMeasurement(unit) ? "" : "-"
+
+    return `♀${metric.femaleValue}${separator}${unit} / ♂${metric.maleValue}${separator}${unit}`
+  }
+
+  sexSpecificMetricValueText(metric, value) {
+    const unit = metric.measurement === "foot" ? "ft" : this.singularUnit(metric.measurement)
+    const separator = this.loadMeasurement(unit) || unit === "ft" ? "" : "-"
+
+    return `${value}${separator}${unit}`
+  }
+
+  leadingWorkMetricText(metric) {
+    if (metric.sexSpecific) return `${metric.maleValue}/${metric.femaleValue} ${this.singularUnit(metric.measurement)}`
+
+    return this.leadingValueWithUnit(metric.value, metric.measurement)
+  }
+
+  movementNameForLeadingMetric(movementName, metric) {
+    if (!metric) return movementName
+    if (metric.kind === "rep" && metric.value === "" && !metric.sexSpecific) return movementName
+    if (this.durationMetric(metric)) {
+      return this.repsInputTarget.value.trim() === "0" ? this.pluralizeMovement(movementName) : movementName
+    }
+    if (metric.kind === "rep" && parseInt(metric.value, 10) > 1) return this.pluralizeMovement(movementName)
 
     return movementName
   }
 
-  detailItems() {
-    return [
-      { kind: "load", text: this.sexSpecificDetail(this.femaleLoadInputTarget, this.maleLoadInputTarget, this.loadUnit(), "") },
-      { kind: "load", text: this.scalarDetail(this.loadInputTarget, this.loadUnit()) },
-      { kind: "distance", text: this.sexSpecificDetail(this.femaleDistanceInputTarget, this.maleDistanceInputTarget, this.distanceUnit(), "-") },
-      { kind: "distance", text: this.scalarDetail(this.distanceInputTarget, this.distanceUnit()) },
-      { kind: "calorie", text: this.sexSpecificDetail(this.femaleCaloriesInputTarget, this.maleCaloriesInputTarget, "calorie", "-") },
-      { kind: "calorie", text: this.scalarDetail(this.caloriesInputTarget, "calorie") }
-    ].filter(Boolean)
-      .filter((detail) => detail.text)
+  visibleMetric(metric) {
+    return metric.value !== "" || metric.sexSpecific
   }
 
-  scalarDetail(input, unit) {
-    if (!input || input.value.trim() === "") return null
-
-    return this.valueWithUnit(input.value, unit)
+  durationMetric(metric) {
+    return metric.kind === "duration"
   }
 
-  sexSpecificDetail(femaleInput, maleInput, unit, separator) {
-    if (!femaleInput || !maleInput) return null
-
-    const female = femaleInput.value.trim()
-    const male = maleInput.value.trim()
-    if (female === "" || male === "") return null
-
-    return `♀${female}${separator}${this.singularUnit(unit)} / ♂${male}${separator}${this.singularUnit(unit)}`
+  leadingWorkMetricKind(metric) {
+    return metric.kind === "calorie" || metric.kind === "distance"
   }
 
-  hasAdditionalWorkDetails() {
-    return [
-      this.loadInputTarget, this.femaleLoadInputTarget, this.maleLoadInputTarget,
-      this.femaleDistanceInputTarget, this.maleDistanceInputTarget,
-      this.femaleCaloriesInputTarget, this.maleCaloriesInputTarget
-    ].some((input) => input && input.value.trim() !== "")
+  structuralSingleRepMetric(metric) {
+    return metric.kind === "rep" && metric.value === "1"
+  }
+
+  additionalMetricDisplayOrder(metric) {
+    if (metric.kind === "calorie" || metric.kind === "distance") return [0, 1]
+    if (metric.kind === "load") return [1, 0]
+
+    return [1, 1]
+  }
+
+  sexSpecificMetricDisplayOrder(metric) {
+    if (metric.kind === "load") return [0, 1]
+    if (metric.kind === "distance") return [1, 0]
+
+    return [1, 1]
+  }
+
+  compareOrders(left, right) {
+    return left[0] - right[0] || left[1] - right[1]
+  }
+
+  loadMeasurement(unit) {
+    return ["lb", "kg"].includes(unit)
   }
 
   valueWithUnit(value, unit) {

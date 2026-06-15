@@ -58,6 +58,20 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 100, hspu_log.metrics.find(&:rep?).value
   end
 
+  test 'builds movement logs from direct column prescriptions' do
+    workout = Workout.new(rounds: 1, score_type: :time)
+    workout.exercises.build(movement: movements(:back_squat), position: 1,
+                            reps: 21, female_load: 65, male_load: 95, load_unit: :lb)
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: 180)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+
+    assert_equal 21, movement_log.metrics.find(&:rep?).value
+    assert_equal 95, movement_log.metrics.find(&:lb?).value
+  end
+
   test 'calculates set-based lifting score from heaviest successful set' do
     log = workouts(:back_squat_5x5).logs.build(user: users(:mathew), score_type: :weight)
     log.build_movement_logs

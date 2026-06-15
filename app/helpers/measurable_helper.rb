@@ -4,7 +4,7 @@ module MeasurableHelper
   end
 
   def measurable_movement_msg(measurable)
-    rep_metric = measurable.metrics.find_by(measurement: :rep)
+    rep_metric = measurable.prescription_metrics.find(&:rep?)
     duration_metric = duration_metric(measurable)
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
@@ -20,7 +20,7 @@ module MeasurableHelper
   end
 
   def measurable_reps_msg(measurable)
-    rep_metric = measurable.metrics.find_by(measurement: :rep)
+    rep_metric = measurable.prescription_metrics.find(&:rep?)
     metric_unit_msg(rep_metric)
   end
 
@@ -35,7 +35,7 @@ module MeasurableHelper
   def additional_metrics(measurable)
     leading_work_metric = leading_work_metric(measurable)
 
-    measurable.metrics.where.not(measurement: :rep)
+    measurable.prescription_metrics.reject(&:rep?)
               .reject { |metric| metric == leading_work_metric }
               .reject { |metric| duration_metric?(metric) }
               .select { |metric| visible_metric?(metric) }
@@ -49,7 +49,7 @@ module MeasurableHelper
   def visible_metric?(metric) = metric.value.present? || metric.sex_specific?
 
   def duration_metric(measurable)
-    measurable.metrics.find { |metric| duration_metric?(metric) && metric.value.present? }
+    measurable.prescription_metrics.find { |metric| duration_metric?(metric) && metric.value.present? }
   end
 
   def duration_metric?(metric) = metric.seconds? || metric.time?
@@ -109,8 +109,9 @@ module MeasurableHelper
   def leading_work_metric(measurable)
     return unless measurable.is_a?(Exercise)
 
-    candidate = measurable.metrics.find { |metric| leading_work_candidate?(metric) }
-    candidate if leading_work_metric_stands_alone?(candidate, measurable.metrics)
+    metrics = measurable.prescription_metrics
+    candidate = metrics.find { |metric| leading_work_candidate?(metric) }
+    candidate if leading_work_metric_stands_alone?(candidate, metrics)
   end
 
   def leading_work_candidate?(metric) = visible_metric?(metric) && leading_work_metric?(metric)

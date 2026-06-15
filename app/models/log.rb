@@ -55,7 +55,7 @@ class Log < ApplicationRecord
   end
 
   def metrics_for_movement_log(exercise)
-    metrics = exercise.metrics
+    metrics = exercise.prescription_metrics
     return ordered_recording_metrics(metrics) unless workout.rep_scored_amrap?
 
     component = exercise.score_component

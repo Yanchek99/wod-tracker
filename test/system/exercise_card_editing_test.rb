@@ -55,4 +55,50 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
       end
     end
   end
+
+  test 'opening another card saves and collapses the currently open exercise' do
+    visit edit_workout_url(workouts(:fran))
+
+    cards = all('.exercise')
+
+    within cards.first do
+      click_on 'Thruster (95 weights)'
+      fill_in 'Reps', with: '15'
+    end
+
+    within cards[1] do
+      click_on 'Pull Up'
+      assert_field 'Reps', with: ''
+    end
+
+    within cards.first do
+      assert_no_field 'Reps'
+      assert_text '15 Thrusters'
+    end
+  end
+
+  test 'opening another card is blocked when the current exercise cannot be saved' do
+    visit new_workout_url
+
+    click_on 'Add Exercise'
+
+    within first('.exercise') do
+      find('.ts-control input').set('Pull')
+      find('.ts-dropdown .option', text: 'Pull Up').click
+      click_on 'Save Exercise'
+      assert_text 'Pull Up'
+    end
+
+    click_on 'Add Exercise'
+
+    within first('.exercise') do
+      click_on 'Pull Up'
+      assert_no_field 'Reps'
+    end
+
+    within all('.exercise').last do
+      assert_field 'Reps'
+      assert_text 'Select a movement'
+    end
+  end
 end

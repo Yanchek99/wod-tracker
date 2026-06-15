@@ -3,7 +3,7 @@
 - expanded = f.object.new_record?
 - summary = f.object.persisted? ? measurable_message(f.object) : 'New exercise'
 
-.exercise.nested-fields.card.mb-3 data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits" data-exercise-card-expanded-value=expanded
+.exercise.nested-fields.card.mb-3 data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
   = f.hidden_field :_destroy
   .card-body
     button.exercise-summary type="button" data-action="click->exercise-card#expand" data-exercise-card-target="summaryButton" aria-expanded=expanded

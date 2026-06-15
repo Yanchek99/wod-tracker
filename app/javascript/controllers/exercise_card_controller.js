@@ -14,16 +14,49 @@ export default class extends Controller {
   }
 
   connect() {
+    this.handleOpening = this.handleOpening.bind(this)
+    document.addEventListener("exercise-card:opening", this.handleOpening)
+
     this.render()
   }
 
+  disconnect() {
+    document.removeEventListener("exercise-card:opening", this.handleOpening)
+  }
+
   expand() {
+    if (this.expandedValue) return
+    if (!this.requestExclusiveOpen()) return
+
     this.expandedValue = true
   }
 
   save() {
+    this.saveIfValid()
+  }
+
+  handleOpening(event) {
+    if (event.detail.card === this || !this.expandedValue) return
+    if (this.saveIfValid()) return
+
+    event.preventDefault()
+  }
+
+  requestExclusiveOpen() {
+    return this.element.dispatchEvent(new CustomEvent("exercise-card:opening", {
+      bubbles: true,
+      cancelable: true,
+      detail: { card: this }
+    }))
+  }
+
+  saveIfValid() {
+    if (!this.validateEditor()) return false
+
     this.summaryTextTarget.textContent = this.summaryText()
     this.expandedValue = false
+
+    return true
   }
 
   expandedValueChanged() {
@@ -36,6 +69,47 @@ export default class extends Controller {
     this.editorTarget.hidden = !this.expandedValue
     this.summaryButtonTarget.hidden = this.expandedValue
     this.summaryButtonTarget.setAttribute("aria-expanded", this.expandedValue.toString())
+  }
+
+  validateEditor() {
+    this.clearMovementError()
+
+    if (!this.movementName()) {
+      this.showMovementError("Select a movement")
+      return false
+    }
+
+    const invalidControl = this.editorControls.find((control) => !control.checkValidity())
+    if (!invalidControl) return true
+
+    invalidControl.reportValidity()
+    return false
+  }
+
+  showMovementError(message) {
+    this.movementSelectTarget.setCustomValidity(message)
+    this.movementSelectTarget.tomselect?.control_input.focus()
+
+    if (this.movementErrorElement) {
+      this.movementErrorElement.textContent = message
+      return
+    }
+
+    const error = document.createElement("div")
+    error.className = "invalid-feedback d-block"
+    error.dataset.exerciseCardMovementError = "true"
+    error.textContent = message
+
+    this.movementWrapper.classList.add("is-invalid")
+    this.movementWrapper.insertAdjacentElement("afterend", error)
+  }
+
+  clearMovementError() {
+    if (!this.hasMovementSelectTarget) return
+
+    this.movementSelectTarget.setCustomValidity("")
+    this.movementWrapper.classList.remove("is-invalid")
+    this.movementErrorElement?.remove()
   }
 
   summaryText() {
@@ -66,6 +140,18 @@ export default class extends Controller {
     }
 
     return select.selectedOptions[0]?.textContent.trim() || ""
+  }
+
+  get editorControls() {
+    return Array.from(this.editorTarget.querySelectorAll("input, select, textarea"))
+  }
+
+  get movementWrapper() {
+    return this.movementSelectTarget.tomselect?.wrapper || this.movementSelectTarget
+  }
+
+  get movementErrorElement() {
+    return this.movementWrapper.parentElement.querySelector("[data-exercise-card-movement-error]")
   }
 
   leading() {

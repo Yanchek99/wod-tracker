@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_12_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_12_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,10 +53,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_000000) do
   end
 
   create_table "exercises", force: :cascade do |t|
+    t.integer "calories"
     t.datetime "created_at", precision: nil, null: false
+    t.integer "distance"
+    t.integer "distance_unit"
     t.integer "distance_units_per_rep"
+    t.integer "duration_seconds"
+    t.integer "female_calories"
+    t.integer "female_distance"
+    t.integer "female_load"
+    t.integer "load"
+    t.integer "load_unit"
+    t.integer "male_calories"
+    t.integer "male_distance"
+    t.integer "male_load"
     t.bigint "movement_id"
+    t.string "notes"
     t.integer "position", null: false
+    t.integer "reps"
     t.bigint "segment_id"
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workout_id"

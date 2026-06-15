@@ -5,9 +5,11 @@
 
 .exercise.nested-fields.mb-3 data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
   = f.hidden_field :_destroy
-  button.exercise-summary type="button" data-action="click->exercise-card#expand" data-exercise-card-target="summaryButton" aria-expanded=expanded
-    span.exercise-summary__text data-exercise-card-target="summaryText" = summary
-    span.exercise-summary__hint Edit
+  .exercise-summary data-exercise-card-target="summaryButton"
+    button.exercise-summary__button type="button" data-action="click->exercise-card#expand" data-exercise-card-target="expandButton" aria-expanded=expanded
+      span.exercise-summary__text data-exercise-card-target="summaryText" = summary
+    = link_to '#', class: 'exercise-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
+      i.fas.fa-trash-alt aria-hidden="true"
   .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
     .card-body
       .row.g-2

@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "summaryButton", "summaryText", "editor", "movementSelect",
+    "summaryButton", "summaryText", "expandButton", "editor", "movementSelect",
     "repsInput", "durationInput",
     "loadInput", "femaleLoadInput", "maleLoadInput", "loadUnitSelect",
     "distanceInput", "femaleDistanceInput", "maleDistanceInput", "distanceUnitSelect",
@@ -77,7 +77,7 @@ export default class extends Controller {
 
     this.editorTarget.hidden = !this.expandedValue
     this.summaryButtonTarget.hidden = this.expandedValue
-    this.summaryButtonTarget.setAttribute("aria-expanded", this.expandedValue.toString())
+    this.expandButtonTarget.setAttribute("aria-expanded", this.expandedValue.toString())
   }
 
   validateEditor() {

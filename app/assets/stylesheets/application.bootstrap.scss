@@ -6,6 +6,7 @@ $select-color-dropdown: $body-bg;
 $input-border-width: $border-width;
 @import "tom-select/dist/scss/tom-select.bootstrap5";
 @import "segments";
+@import "workouts";
 
 .auth-links {
   li:not(:last-of-type):after {

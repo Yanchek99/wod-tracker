@@ -1,3 +1,45 @@
 // Place all the styles related to the Workouts controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.exercise-summary {
+  align-items: center;
+  background: var(--bs-light);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  color: var(--bs-body-color);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  width: 100%;
+}
+
+.exercise-summary__text {
+  flex: 1 1 auto;
+  font-weight: 600;
+  line-height: 1.25;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.exercise-summary__hint {
+  color: var(--bs-secondary-color);
+  flex: 0 0 auto;
+  font-size: 0.875rem;
+}
+
+.exercise-editor {
+  padding-top: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .exercise-summary {
+    min-height: 2.5rem;
+    padding-block: 0.375rem;
+  }
+}

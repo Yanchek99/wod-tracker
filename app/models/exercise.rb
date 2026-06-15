@@ -1,5 +1,8 @@
 class Exercise < ApplicationRecord
   include ExercisePositionValidation
+  include ExercisePrescription
+
+  SEX_PAIRED_DIMENSIONS = %i[load distance calories].freeze
 
   belongs_to :workout
   belongs_to :movement
@@ -8,11 +11,15 @@ class Exercise < ApplicationRecord
 
   default_scope { order(:position).includes(:metrics) }
 
-  accepts_nested_attributes_for :metrics, allow_destroy: true
-
+  validates :reps, :calories,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :duration_seconds, :load, :female_load, :male_load,
+            :distance, :female_distance, :male_distance, :female_calories, :male_calories,
+            numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :distance_units_per_rep,
             numericality: { only_integer: true, greater_than: 0 },
             allow_nil: true
+  validate :prescription_values_are_unambiguous
   validate :distance_units_per_rep_matches_prescribed_distance
 
   def score_component
@@ -28,7 +35,7 @@ class Exercise < ApplicationRecord
   end
 
   def load_bearing?
-    metrics.any? { |metric| Metric::LOAD_MEASUREMENTS.include?(metric.measurement) }
+    prescription_metrics.any? { |metric| Metric::LOAD_MEASUREMENTS.include?(metric.measurement) }
   end
 
   private
@@ -55,15 +62,29 @@ class Exercise < ApplicationRecord
   end
 
   def metric_for(measurement)
-    metrics.find { |metric| metric.measurement == measurement.to_s }
+    prescription_metrics.find { |metric| metric.measurement == measurement.to_s }
   end
 
   def distance_metric
-    metrics.find { |metric| Metric::DISTANCE_MEASUREMENTS.include?(metric.measurement) }
+    prescription_metrics.find { |metric| Metric::DISTANCE_MEASUREMENTS.include?(metric.measurement) }
   end
 
   def scorable_metric?(metric)
     metric&.value.present? && metric.value.positive?
+  end
+
+  def prescription_values_are_unambiguous
+    SEX_PAIRED_DIMENSIONS.each do |dimension|
+      value = self[dimension]
+      female = self[:"female_#{dimension}"]
+      male = self[:"male_#{dimension}"]
+
+      if value.present? && (female.present? || male.present?)
+        errors.add(dimension, 'cannot be set with sex-specific values')
+      elsif female.blank? != male.blank?
+        errors.add(:base, "#{dimension} requires both female and male values")
+      end
+    end
   end
 
   def distance_units_per_rep_matches_prescribed_distance

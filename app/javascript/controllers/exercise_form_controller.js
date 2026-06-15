@@ -1,31 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["distanceUnits"]
-  static values = {
-    distanceMeasurements: Array
-  }
+  static targets = ["distanceUnits", "distanceValue", "distanceUnitSelect"]
 
   connect() {
     this.toggleDistanceUnits()
   }
 
   toggleDistanceUnits(event) {
-    const usesDistanceMetric = this.metricSelects.some((select) => {
-      const fields = select.closest(".nested-fields")
+    const hasDistance =
+      this.distanceValueTargets.some((input) => input.value.trim() !== "") ||
+      (this.hasDistanceUnitSelectTarget && this.distanceUnitSelectTarget.value !== "")
 
-      return !fields?.hidden && this.distanceMeasurementsValue.includes(select.value)
-    })
+    this.distanceUnitsTarget.hidden = !hasDistance
 
-    this.distanceUnitsTarget.hidden = !usesDistanceMetric
-
-    if (!usesDistanceMetric && event) {
+    if (!hasDistance && event) {
       this.distanceUnitsInput.value = ""
     }
-  }
-
-  get metricSelects() {
-    return Array.from(this.element.querySelectorAll("select.metric"))
   }
 
   get distanceUnitsInput() {

@@ -83,4 +83,56 @@ class ExerciseTest < ActiveSupport::TestCase
     assert_not exercise.valid?
     assert_includes exercise.errors[:distance_units_per_rep], 'requires a distance metric'
   end
+
+  # --- direct-column prescriptions (the #1651 read path) ---
+
+  test 'load_bearing? reads the load unit column' do
+    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, load_unit: :lb)
+
+    assert_predicate exercise, :load_bearing?
+  end
+
+  test 'score_component reads the rep prescription from columns' do
+    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, reps: 21)
+
+    assert_equal 21, exercise.score_component[:score_reps]
+  end
+
+  test 'score_component reads the calorie prescription from columns' do
+    exercise = workouts(:fran).exercises.build(movement: movements(:row), position: 3, reps: 1, calories: 20)
+
+    assert_equal 'calorie', exercise.score_component[:measurement]
+    assert_equal 20, exercise.score_component[:score_reps]
+  end
+
+  test 'treats the reps zero sentinel as max and not scorable' do
+    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, reps: 0)
+
+    assert_nil exercise.score_component
+  end
+
+  test 'rejects a unisex value combined with sex-specific values' do
+    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3,
+                                               load: 50, female_load: 65, male_load: 95, load_unit: :lb)
+
+    assert_not exercise.valid?
+    assert_includes exercise.errors[:load], 'cannot be set with sex-specific values'
+  end
+
+  test 'requires both sex-specific values when only one is present' do
+    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3,
+                                               female_load: 65, load_unit: :lb)
+
+    assert_not exercise.valid?
+    assert_includes exercise.errors[:base], 'load requires both female and male values'
+  end
+
+  test 'validates distance units per rep against the column distance' do
+    exercise = workouts(:fran).exercises.build(movement: movements(:run), position: 3,
+                                               reps: 1, distance: 400, distance_unit: :meter,
+                                               distance_units_per_rep: 30)
+
+    assert_not exercise.valid?
+    assert_includes exercise.errors[:distance_units_per_rep], 'must divide the prescribed distance evenly'
+  end
 end

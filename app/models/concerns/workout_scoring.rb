@@ -83,7 +83,7 @@ module WorkoutScoring
   end
 
   def completed_prescribed_reps?(exercise, movement_log)
-    prescribed_reps = exercise.metrics.find(&:rep?)&.value
+    prescribed_reps = exercise.prescription_metrics.find(&:rep?)&.value
     completed_reps = movement_log.metrics.find(&:rep?)&.value
 
     prescribed_reps.present? && completed_reps.present? && completed_reps >= prescribed_reps

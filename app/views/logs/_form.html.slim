@@ -1,15 +1,16 @@
 = simple_form_for [@workout, @log], wrapper: :input_group do |f|
   = f.error_notification
-  .row.mt-3
+  .row.mt-3.g-2
     .col
       h1
         = @workout.name
         | &nbsp;
         = link_to workout_path(@workout)
           i.fas.fa-external-link-alt
-  .row.col
-    p = workout_objective @workout
   .row
+    .col
+      p = workout_objective @workout
+  .row.g-2
     = f.input :score_type, as: :hidden
     - if @workout.set_based_lifting?
       .col
@@ -21,7 +22,7 @@
     .card.mb-3
       .card-body
         = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select' } }, label: false
-        .row
+        .row.g-2
           .col#metrics data-controller="nested-form" data-nested-form-placeholder-value="NEW_METRIC"
             .fields data-nested-form-target="container"
               = ml_form.simple_fields_for :metrics do |metric_form|
@@ -29,7 +30,7 @@
             template data-nested-form-target="template"
               = ml_form.simple_fields_for :metrics, Metric.new, child_index: 'NEW_METRIC' do |metric_form|
                 = render 'metric_fields', f: metric_form
-            .links.d-grid
+            .links.d-grid.gap-2
               = link_to 'Add Metric', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
   .form-actions.d-grid
     = f.button :submit, 'Save', class: 'btn btn-primary'

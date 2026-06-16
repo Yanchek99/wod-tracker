@@ -4,23 +4,35 @@ import Sortable from "sortablejs"
 export default class extends Controller {
   static targets = ["container"]
   static values = {
-    draggableSelector: { type: String, default: ".nested-fields:not([hidden])" }
+    draggableSelector: { type: String, default: ".nested-fields:not([hidden])" },
+    handleSelector: String
   }
 
   connect() {
-    this.sortable = Sortable.create(this.containerTarget, {
+    const options = {
       animation: 150,
       draggable: this.draggableSelectorValue,
+      fallbackOnBody: true,
+      fallbackTolerance: 3,
       filter: "input, select, textarea, .ts-control, .ts-dropdown, trix-editor, [contenteditable]",
+      forceFallback: true,
       ghostClass: "workout-sortable-ghost",
       chosenClass: "workout-sortable-chosen",
       dragClass: "workout-sortable-drag",
+      invertSwap: true,
+      swapThreshold: 0.35,
+      onChange: () => this.refresh(),
       onEnd: (event) => {
         this.refresh()
         this.clearDragState(event.item)
       },
-      onUnchoose: (event) => this.clearDragState(event.item)
-    })
+      onUnchoose: (event) => this.clearDragState(event.item),
+      onUpdate: () => this.refresh()
+    }
+
+    if (this.hasHandleSelectorValue) options.handle = this.handleSelectorValue
+
+    this.sortable = Sortable.create(this.containerTarget, options)
 
     this.refresh()
   }

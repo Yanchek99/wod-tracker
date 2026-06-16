@@ -7,7 +7,7 @@
 .exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
   = f.hidden_field :_destroy
   = f.hidden_field :position
-  .workout-sortable-item
+  .workout-sortable-item class=(workout_part ? 'workout-part-drag-surface' : nil)
     .workout-sortable-item__body
       .exercise-summary data-exercise-card-target="summaryButton"
         button.exercise-summary__button type="button" data-action="click->exercise-card#expand" data-exercise-card-target="expandButton" aria-expanded=expanded

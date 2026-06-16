@@ -26,7 +26,7 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
       fill_in 'Female load', with: '65'
       fill_in 'Male load', with: '95'
       select 'lb', from: 'Load unit'
-      click_on 'Save Exercise'
+      click_on 'Done'
       assert_text 'Thruster (♀65lb / ♂95lb)'
       assert_no_field 'Female load'
     end

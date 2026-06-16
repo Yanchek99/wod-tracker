@@ -26,7 +26,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
       assert_field 'Position', with: '1'
       fill_in 'Reps', with: '10'
       assert_no_field 'Distance units per rep'
-      click_on 'Save Exercise'
+      click_on 'Done'
       assert_no_field 'Reps'
       assert_text '10 Pull Ups'
     end

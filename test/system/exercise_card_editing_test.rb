@@ -23,7 +23,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
       assert_no_text 'Thruster (95 weights)'
       assert_field 'Reps', with: ''
       fill_in 'Reps', with: '15'
-      click_on 'Save Exercise'
+      click_on 'Done'
 
       assert_no_field 'Reps'
       assert_text '15 Thrusters'
@@ -44,7 +44,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
         find('.ts-dropdown .option', text: 'Run').click
         fill_in 'Distance', with: '400', exact: true
         select 'meter', from: 'Distance unit'
-        click_on 'Save Exercise'
+        click_on 'Done'
 
         assert_no_field 'Distance'
         assert_text '400 meter Run'
@@ -85,7 +85,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
     within first('.exercise') do
       find('.ts-control input').set('Pull')
       find('.ts-dropdown .option', text: 'Pull Up').click
-      click_on 'Save Exercise'
+      click_on 'Done'
       assert_text 'Pull Up'
     end
 

@@ -22,7 +22,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       select 'meter', from: 'Distance unit'
       fill_in 'Load', with: '95'
       select 'lb', from: 'Load unit'
-      click_on 'Save Exercise'
+      click_on 'Done'
 
       assert_text 'Run (10 meters / 95 lbs)'
     end
@@ -41,7 +41,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
-      click_on 'Save Exercise'
+      click_on 'Done'
 
       assert_text 'Run (♀65lb + 80-meter / ♂95lb + 100-meter)'
     end
@@ -57,9 +57,22 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
-      click_on 'Save Exercise'
+      click_on 'Done'
 
       assert_text '100/80 meter Run'
+    end
+  end
+
+  test 'omits zero calories from the local summary' do
+    visit new_workout_url
+    click_on 'Add Exercise'
+
+    within '.exercise' do
+      select_movement 'Row'
+      fill_in 'Calories', with: '0'
+      click_on 'Done'
+
+      assert_text 'Row'
     end
   end
 

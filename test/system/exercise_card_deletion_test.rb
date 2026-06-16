@@ -19,7 +19,7 @@ class ExerciseCardDeletionTest < ApplicationSystemTestCase
     within '.exercise' do
       find('.ts-control input').set('Pull')
       find('.ts-dropdown .option', text: 'Pull Up').click
-      click_on 'Save Exercise'
+      click_on 'Done'
 
       assert_text 'Pull Up'
       find('[aria-label="Delete exercise"]').click

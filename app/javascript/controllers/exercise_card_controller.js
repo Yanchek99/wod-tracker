@@ -147,6 +147,7 @@ export default class extends Controller {
     if (!value) return ""
 
     if (select.tomselect) {
+      // TomSelect stores server-provided Movement JSON with a name key; created options may only expose text.
       return select.tomselect.options[value]?.name || select.tomselect.options[value]?.text || ""
     }
 
@@ -190,7 +191,7 @@ export default class extends Controller {
     return {
       kind,
       measurement,
-      value: kind === "rep" && value === "0" ? "" : value,
+      value: ["rep", "calorie"].includes(kind) && value === "0" ? "" : value,
       femaleValue,
       maleValue,
       sexSpecific: femaleValue !== "" && maleValue !== ""

@@ -9,6 +9,8 @@ module MovementLogPerformance
   included do
     enum :load_unit, { lb: 0, kg: 1 }, prefix: :load_unit
     enum :distance_unit, { meter: 0, foot: 1, inch: 2 }, prefix: :distance_unit
+
+    before_validation :clear_blank_performance_units
   end
 
   # Recorded performance as in-memory Metric objects, preferring the direct columns and falling
@@ -31,6 +33,13 @@ module MovementLogPerformance
   def records_calories? = calories.present?
 
   private
+
+  # The recording form always submits a unit (defaulting to lb/meter) for every movement log, so a
+  # dimension the athlete left blank would otherwise persist an orphan unit and build a stray metric.
+  def clear_blank_performance_units
+    self.load_unit = nil if load.blank?
+    self.distance_unit = nil if distance.blank?
+  end
 
   def build_performance_metrics
     return metrics.to_a unless uses_direct_performance?

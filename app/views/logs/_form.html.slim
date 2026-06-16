@@ -23,20 +23,17 @@
     .card.mb-3
       .card-body
         = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select' } }, label: false
+        / Always render every recording dimension so a scaled movement (e.g. rowing calories in
+        / place of a prescribed run) can be logged, not only the prescribed dimensions.
         .row.g-2
-          - if ml.records_reps?
-            .col = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }
-          - if ml.records_duration?
-            .col = ml_form.input :duration_seconds, label: 'Duration (s)', input_html: { class: 'recording-value' }
-          - if ml.records_load?
-            .col
-              = ml_form.input :load, label: "Load (#{ml.load_unit})", input_html: { class: 'recording-value' }
-              = ml_form.hidden_field :load_unit
-          - if ml.records_distance?
-            .col
-              = ml_form.input :distance, label: "Distance (#{ml.distance_unit || 'distance'})", input_html: { class: 'recording-value' }
-              = ml_form.hidden_field :distance_unit
-          - if ml.records_calories?
-            .col = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
+          .col = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }
+          .col = ml_form.input :duration_seconds, label: 'Duration (s)', input_html: { class: 'recording-value' }
+          .col
+            = ml_form.input :load, label: "Load (#{ml.load_unit || 'lb'})", input_html: { class: 'recording-value' }
+            = ml_form.hidden_field :load_unit, value: ml.load_unit || 'lb'
+          .col
+            = ml_form.input :distance, label: "Distance (#{ml.distance_unit || 'meter'})", input_html: { class: 'recording-value' }
+            = ml_form.hidden_field :distance_unit, value: ml.distance_unit || 'meter'
+          .col = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
   .form-actions.d-grid
     = f.button :submit, 'Save', class: 'btn btn-primary'

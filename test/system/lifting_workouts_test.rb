@@ -23,11 +23,11 @@ class LiftingWorkoutsTest < ApplicationSystemTestCase
     movement_logs.each do |movement_log|
       values = movement_log.all('.recording-value').map(&:value)
 
-      assert_equal ['5', ''], values # [reps, load]
+      assert_equal ['5', '', '', '', ''], values # [reps, duration, load, distance, calories]
     end
 
     [95, 115, 135, 145, 155].each.with_index do |load, index|
-      movement_logs[index].all('.recording-value')[1].set(load)
+      movement_logs[index].all('.recording-value')[2].set(load)
     end
     movement_logs[4].first('.recording-value').set(2)
 

@@ -82,6 +82,16 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'input[name="log[score_type]"][value="rep"]'
   end
 
+  test 'recording form exposes every performance dimension so scaled movements can be logged' do
+    # Murph only prescribes reps and distance, but the form must still let an athlete record an
+    # off-prescription dimension (e.g. calories from a scaled row) on any movement.
+    get new_workout_log_url(workouts(:murph))
+
+    %w[reps duration_seconds load distance calories].each do |dimension|
+      assert_select "input[name*='[#{dimension}]']", { minimum: 1 }, "expected a #{dimension} recording input"
+    end
+  end
+
   test 'creates fixed-rep amrap log from stale round score submission' do
     workout = workouts(:amrap_couplet)
     workout.update!(score_type: :round)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_12_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -107,9 +107,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_130000) do
   end
 
   create_table "movement_logs", force: :cascade do |t|
+    t.integer "calories"
     t.datetime "created_at", precision: nil, null: false
+    t.integer "distance"
+    t.integer "distance_unit"
+    t.integer "duration_seconds"
+    t.integer "load"
+    t.integer "load_unit"
     t.bigint "log_id"
     t.bigint "movement_id"
+    t.string "notes"
+    t.integer "reps"
     t.datetime "updated_at", precision: nil, null: false
     t.index ["log_id"], name: "index_movement_logs_on_log_id"
     t.index ["movement_id"], name: "index_movement_logs_on_movement_id"

@@ -36,6 +36,10 @@ class User < ApplicationRecord
   end
 
   def personal_records
-    movement_logs.joins(:metrics).order('metrics.value').uniq(&:movement_id)
+    movement_logs
+      .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \
+             'OR calories IS NOT NULL OR duration_seconds IS NOT NULL')
+      .order(Arel.sql('COALESCE(load, distance, calories, duration_seconds, reps)'))
+      .uniq(&:movement_id)
   end
 end

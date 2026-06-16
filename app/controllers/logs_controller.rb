@@ -83,9 +83,9 @@ class LogsController < ApplicationController
                     :score_value,
                     {
                       movement_logs_attributes: [[
-                        :id,
-                        :movement_id,
-                        { metrics_attributes: [[:id, :measurement, :value, :_destroy]] }
+                        :id, :movement_id,
+                        :reps, :duration_seconds, :load, :load_unit,
+                        :distance, :distance_unit, :calories, :notes
                       ]]
                     }
                   ])

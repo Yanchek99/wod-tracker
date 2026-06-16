@@ -77,14 +77,14 @@ module WorkoutScoring
   def successful_set_load(exercise, movement_log)
     return unless completed_prescribed_reps?(exercise, movement_log)
 
-    movement_log.metrics.find do |metric|
+    movement_log.prescription_metrics.find do |metric|
       Metric::LOAD_MEASUREMENTS.include?(metric.measurement) && metric.value.present?
     end
   end
 
   def completed_prescribed_reps?(exercise, movement_log)
     prescribed_reps = exercise.prescription_metrics.find(&:rep?)&.value
-    completed_reps = movement_log.metrics.find(&:rep?)&.value
+    completed_reps = movement_log.prescription_metrics.find(&:rep?)&.value
 
     prescribed_reps.present? && completed_reps.present? && completed_reps >= prescribed_reps
   end

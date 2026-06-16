@@ -47,7 +47,7 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 5, log.movement_logs.first.metrics.find(&:rep?).value
   end
 
-  test 'multiplies prescribed reps by segment rounds for segment exercises' do
+  test 'records per-round prescribed reps for segment exercises' do
     exercises(:segmented_hspu).metrics.create!(measurement: :rep, value: 10)
 
     log = workouts(:segmented).logs.build(user: users(:mathew), score_type: :time)
@@ -55,7 +55,7 @@ class LogTest < ActiveSupport::TestCase
 
     hspu_log = log.movement_logs.find { |movement_log| movement_log.movement == movements(:hspu) }
 
-    assert_equal 100, hspu_log.metrics.find(&:rep?).value
+    assert_equal 10, hspu_log.metrics.find(&:rep?).value
   end
 
   test 'builds movement logs from direct column prescriptions' do

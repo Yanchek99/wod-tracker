@@ -62,16 +62,10 @@ class Metric < ApplicationRecord
   private
 
   def calculated_rep_value(workout)
+    # Interval ladders (e.g. 21-15-9) record total work; everything else records one round's reps.
     return value * workout.reps_from_interval if workout.interval?
-    return value if fixed_timed_rounds?(workout)
-    return nil unless value # Reps can be nil to signify max
-    return value if workout.rounds.nil? || workout.rounds.zero?
 
-    value * workout.rounds
-  end
-
-  def fixed_timed_rounds?(workout)
-    workout.timed_rounds? && !workout.emom?
+    value
   end
 
   def values_are_unambiguous

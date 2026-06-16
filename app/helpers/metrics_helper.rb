@@ -5,14 +5,19 @@ module MetricsHelper
     {}
   end
 
+  HEIGHT_MEASUREMENTS = %w[foot inch].freeze
+
   def metric_unit_msg(metric)
     return sex_specific_metric_unit_msg(metric) if metric.sex_specific?
+    return "#{metric.value.to_i} ft" if metric.foot? # Rails has no foot -> feet inflection
     return pluralize(1, metric.measurement) if metric.value.nil?
-    return metric.value == 1 ? '' : metric.value if metric.rep?
+    return rep_count_msg(metric) if metric.rep?
     return seconds_to_duration_string(metric.value) if metric.seconds? || metric.time?
 
     pluralize(metric.value.to_i, metric.measurement)
   end
+
+  def rep_count_msg(metric) = metric.value == 1 ? '' : metric.value
 
   def log_score_msg(log)
     return unless log.score_measurement
@@ -54,6 +59,7 @@ module MetricsHelper
   end
 
   def additional_metric_display_order(metric)
+    return [2, 0] if HEIGHT_MEASUREMENTS.include?(metric.measurement) # target height is a qualifier
     return [0, 1] if metric.calorie? || Metric::DISTANCE_MEASUREMENTS.include?(metric.measurement)
     return [1, 0] if Metric::LOAD_MEASUREMENTS.include?(metric.measurement)
 

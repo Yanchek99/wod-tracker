@@ -2,8 +2,9 @@
 - distance_units_hidden = f.object.distance_units_per_rep.blank? && !has_distance
 - expanded = f.object.new_record?
 - summary = f.object.persisted? ? measurable_message(f.object) : 'New exercise'
+- workout_part = local_assigns.fetch(:workout_part, false)
 
-.exercise.nested-fields.mb-3 data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
+.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
   = f.hidden_field :_destroy
   = f.hidden_field :position
   .workout-sortable-item

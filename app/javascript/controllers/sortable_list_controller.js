@@ -3,11 +3,14 @@ import Sortable from "sortablejs"
 
 export default class extends Controller {
   static targets = ["container"]
+  static values = {
+    draggableSelector: { type: String, default: ".nested-fields:not([hidden])" }
+  }
 
   connect() {
     this.sortable = Sortable.create(this.containerTarget, {
       animation: 150,
-      draggable: ".nested-fields:not([hidden])",
+      draggable: this.draggableSelectorValue,
       filter: "input, select, textarea, .ts-control, .ts-dropdown, trix-editor, [contenteditable]",
       ghostClass: "workout-sortable-ghost",
       chosenClass: "workout-sortable-chosen",
@@ -54,6 +57,6 @@ export default class extends Controller {
   }
 
   get items() {
-    return Array.from(this.containerTarget.querySelectorAll(":scope > .nested-fields:not([hidden])"))
+    return Array.from(this.containerTarget.querySelectorAll(`:scope > ${this.draggableSelectorValue}`))
   }
 }

@@ -136,6 +136,17 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     assert_text_order '100 Pull Ups', '1600 distance Run'
   end
 
+  test 'edits a tabata workout with rest moved before the first segment' do
+    workout = create_tabata_workout
+    visit edit_workout_url(workout)
+
+    reorder_sortable_list('#workout-parts', from: 1, to: 0)
+    click_on 'Update Workout'
+
+    assert_current_path workout_path(workout)
+    assert_text_order '1:00 Rest', '8 rounds of'
+  end
+
   test 'normalizes positions after reorder and delete' do
     visit new_workout_url
 
@@ -158,5 +169,19 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     assert_current_path %r{/workouts/\d+}
     assert_text_order '400 meter Run', '10 Pull Ups'
     assert_no_text '20 Push Ups'
+  end
+
+  private
+
+  def create_tabata_workout
+    rest = Movement.find_or_create_by!(name: 'Rest')
+    workout = Workout.create!(name: 'CFJ-181226 Reorder Test', score_type: :rep)
+    first_segment = workout.segments.create!(rounds: 8, position: 1)
+    first_segment.exercises.create!(workout:, movement: movements(:hspu), position: 1, duration_seconds: 20)
+    first_segment.exercises.create!(workout:, movement: rest, position: 2, duration_seconds: 10)
+    workout.exercises.create!(movement: rest, position: 2, duration_seconds: 60)
+    second_segment = workout.segments.create!(rounds: 8, position: 3)
+    second_segment.exercises.create!(workout:, movement: movements(:pistol), position: 1, duration_seconds: 20)
+    workout
   end
 end

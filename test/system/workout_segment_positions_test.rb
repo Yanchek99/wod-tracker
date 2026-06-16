@@ -27,6 +27,11 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
       click_on 'Add Exercise'
       positions = all('.exercise input[name$="[position]"]').map(&:value)
       assert_equal %w[1 2], positions, "expected 2 exercises positions, got #{positions.inspect}"
+
+      within all('.exercise').last do
+        click_on 'Delete Exercise'
+      end
+      assert_equal 1, all('.exercise').size
     end
 
     within '#workout-parts > .links' do

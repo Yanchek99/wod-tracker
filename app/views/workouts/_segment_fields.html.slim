@@ -1,7 +1,6 @@
-.nested-fields.card.mb-3.workout-part
+.nested-fields.card.mb-3.workout-part.workout-part-drag-surface
   = f.hidden_field :_destroy
   = f.hidden_field :position
-  .card-header.workout-part-drag-surface Segment
   .card-body
     .workout-sortable-item
       .workout-sortable-item__body
@@ -14,7 +13,7 @@
           .col-12.col-md-4 = f.input :rest_seconds
           .col-12.col-md-8 = f.input :notes
         .row
-          .col#segmented_exercises data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true" data-sortable-list-draggable-selector-value=".segment-exercise:not([hidden])"
+          .col.segment-exercises-list#segmented_exercises data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true" data-sortable-list-draggable-selector-value=".segment-exercise:not([hidden])"
             .fields data-nested-form-target="container" data-sortable-list-target="container"
               = f.simple_fields_for :exercises do |exercise_form|
                 = render 'exercise_fields', f: exercise_form, workout_part: false

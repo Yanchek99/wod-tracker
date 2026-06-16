@@ -12,7 +12,7 @@
       = f.rich_text_area :notes
   hr
   h3 Exercises
-  #workout-parts data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-position-segments-value="true" data-sortable-list-draggable-selector-value=".workout-part:not([hidden])" data-sortable-list-handle-selector-value=".workout-part-drag-surface"
+  #workout-parts data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-position-segments-value="true" data-sortable-list-draggable-selector-value=".workout-part:not([hidden])" data-sortable-list-filter-selector-value="input, select, textarea, .ts-control, .ts-dropdown, trix-editor, [contenteditable], .segment-exercises-list, .segment-exercises-list *" data-sortable-list-handle-selector-value=".workout-part-drag-surface"
     .fields data-nested-form-target="container" data-sortable-list-target="container"
       - @workout.ordered_parts.each do |part|
         - if part.is_a?(Segment)

@@ -16,10 +16,16 @@
 
 .workout-part-drag-surface {
   cursor: grab;
+  user-select: none;
 }
 
 .workout-part-drag-surface:active {
   cursor: grabbing;
+}
+
+.workout-sorting,
+.workout-sorting * {
+  user-select: none;
 }
 
 .workout-sortable-item__body {

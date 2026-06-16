@@ -62,11 +62,17 @@ module WorkoutDragOrderingSystemHelpers
   def drag_sortable_list_item(root, from:, to:)
     root = find(root) if root.is_a?(String)
     items = root.all(':scope > .fields > .workout-part', visible: :all)
-    source = items[from].find('.workout-part-drag-surface')
+    source = drag_surface_for(items[from])
     target = items[to]
 
     scroll_to source, align: :center
     drag_element_to(source, target)
+  end
+
+  def drag_surface_for(item)
+    return item if item[:class].split.include?('workout-part-drag-surface')
+
+    item.find('.workout-part-drag-surface')
   end
 
   def drag_element_to(source, target)

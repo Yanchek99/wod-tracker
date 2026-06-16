@@ -59,34 +59,6 @@ module WorkoutDragOrderingSystemHelpers
     JS
   end
 
-  def drag_sortable_list_item(root, from:, to:)
-    root = find(root) if root.is_a?(String)
-    items = root.all(':scope > .fields > .workout-part', visible: :all)
-    source = drag_surface_for(items[from])
-    target = items[to]
-
-    scroll_to source, align: :center
-    drag_element_to(source, target)
-  end
-
-  def drag_surface_for(item)
-    return item if item[:class].split.include?('workout-part-drag-surface')
-
-    item.find('.workout-part-drag-surface')
-  end
-
-  def drag_element_to(source, target)
-    page.driver.browser.action
-        .move_to(source.native)
-        .click_and_hold
-        .pause
-        .move_to(target.native)
-        .pause
-        .move_by(0, target.native.rect.height)
-        .release
-        .perform
-  end
-
   def assert_text_order(*texts)
     list_text = find('ul.list-unstyled.mb-3').text
     indexes = texts.map { |text| list_text.index(text) }
@@ -168,7 +140,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     workout = create_tabata_workout
     visit edit_workout_url(workout)
 
-    drag_sortable_list_item('#workout-parts', from: 0, to: 1)
+    reorder_sortable_list('#workout-parts', from: 1, to: 0)
     click_on 'Update Workout'
 
     assert_current_path workout_path(workout)

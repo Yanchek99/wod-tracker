@@ -14,44 +14,6 @@
   cursor: grabbing;
 }
 
-.workout-part-drag-surface {
-  cursor: grab;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.workout-part-drag-surface:active {
-  cursor: grabbing;
-}
-
-.workout-part {
-  position: relative;
-}
-
-.workout-part-drag-rail {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  top: 0;
-  touch-action: none;
-  width: 1.25rem;
-  z-index: 1;
-}
-
-.workout-part-drag-rail + .card-body {
-  padding-left: 1.75rem;
-}
-
-.workout-part-drag-rail:hover {
-  background: rgba(var(--bs-primary-rgb), 0.08);
-}
-
-.workout-sorting,
-.workout-sorting * {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
 .workout-sortable-item__body {
   flex: 1 1 auto;
   min-width: 0;

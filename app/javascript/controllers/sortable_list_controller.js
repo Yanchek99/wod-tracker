@@ -9,7 +9,13 @@ export default class extends Controller {
       animation: 150,
       draggable: ".nested-fields:not([hidden])",
       filter: "input, select, textarea, .ts-control, .ts-dropdown, trix-editor, [contenteditable]",
-      onEnd: () => this.refresh()
+      ghostClass: "workout-sortable-ghost",
+      chosenClass: "workout-sortable-chosen",
+      dragClass: "workout-sortable-drag",
+      onEnd: () => {
+        this.refresh()
+        this.clearDragClasses()
+      }
     })
 
     this.refresh()
@@ -23,6 +29,14 @@ export default class extends Controller {
     this.items.forEach((item, index) => {
       const positionInput = item.querySelector('input[name$="[position]"]')
       if (positionInput) positionInput.value = index + 1
+    })
+  }
+
+  clearDragClasses() {
+    requestAnimationFrame(() => {
+      this.containerTarget.querySelectorAll(".sortable-ghost, .sortable-chosen, .sortable-drag, .workout-sortable-ghost, .workout-sortable-chosen, .workout-sortable-drag").forEach((item) => {
+        item.classList.remove("sortable-ghost", "sortable-chosen", "sortable-drag", "workout-sortable-ghost", "workout-sortable-chosen", "workout-sortable-drag")
+      })
     })
   }
 

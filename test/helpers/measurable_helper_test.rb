@@ -99,4 +99,14 @@ class MeasurableHelperTest < ActionView::TestCase
 
     assert_equal 'Row (300 meters)', measurable_message(movement_log)
   end
+
+  test 'renders single-value target heights as ft after load' do
+    wall_ball = Movement.create!(name: 'Wall-ball Shot')
+    movement_log = logs(:matt_amrap).movement_logs.create!(movement: wall_ball)
+    movement_log.metrics.create!(measurement: :rep, value: 30)
+    movement_log.metrics.create!(measurement: :lb, value: 20)
+    movement_log.metrics.create!(measurement: :foot, value: 10)
+
+    assert_equal '30 Wall-ball Shots (20 lbs / 10 ft)', measurable_message(movement_log)
+  end
 end

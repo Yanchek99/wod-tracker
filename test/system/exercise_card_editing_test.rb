@@ -39,7 +39,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
       click_on 'Add Exercise'
 
       within '.exercise' do
-        assert_field 'Position', with: '1'
+        assert_equal '1', find('input[name$="[position]"]', visible: false).value
         find('.ts-control input').set('Run')
         find('.ts-dropdown .option', text: 'Run').click
         fill_in 'Distance', with: '400', exact: true

@@ -23,7 +23,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
       find('.ts-control input').set('Pull')
       find('.ts-dropdown .option', text: 'Pull Up').click
       assert_no_selector '.ts-wrapper.dropdown-active'
-      assert_field 'Position', with: '1'
+      assert_equal '1', find('input[name$="[position]"]', visible: false).value
       fill_in 'Reps', with: '10'
       assert_no_field 'Distance units per rep'
       click_on 'Done'

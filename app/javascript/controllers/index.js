@@ -21,3 +21,6 @@ application.register("exercise-card", ExerciseCardController)
 
 import NestedFormController from "./nested_form_controller.js"
 application.register("nested-form", NestedFormController)
+
+import SortableListController from "./sortable_list_controller.js"
+application.register("sortable-list", SortableListController)

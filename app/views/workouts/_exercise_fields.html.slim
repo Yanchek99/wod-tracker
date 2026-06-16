@@ -5,38 +5,42 @@
 
 .exercise.nested-fields.mb-3 data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
   = f.hidden_field :_destroy
-  .exercise-summary data-exercise-card-target="summaryButton"
-    button.exercise-summary__button type="button" data-action="click->exercise-card#expand" data-exercise-card-target="expandButton" aria-expanded=expanded
-      span.exercise-summary__text data-exercise-card-target="summaryText" = summary
-    = link_to '#', class: 'exercise-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
-      i.fas.fa-trash-alt aria-hidden="true"
-  .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
-    .card-body
-      .row.g-2
-        .col-12.col-md = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect' } }
-        .col-6.col-md-2 = f.input :position
-      .row.g-2
-        .col-6.col-md-3 = f.input :reps, hint: '0 = max reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
-        .col-6.col-md-3 = f.input :duration_seconds, label: 'Duration (s)', input_html: { data: { 'exercise-card-target': 'durationInput' } }
-      .row.g-2
-        .col-6.col-md-3 = f.input :load, input_html: { data: { 'exercise-card-target': 'loadInput' } }
-        .col-6.col-md-3 = f.input :female_load, input_html: { data: { 'exercise-card-target': 'femaleLoadInput' } }
-        .col-6.col-md-3 = f.input :male_load, input_html: { data: { 'exercise-card-target': 'maleLoadInput' } }
-        .col-6.col-md-3 = f.input :load_unit, collection: Exercise.load_units.keys, prompt: 'Load unit', input_html: { data: { 'exercise-card-target': 'loadUnitSelect' } }
-      .row.g-2
-        .col-6.col-md-3 = f.input :distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'distanceInput' } }
-        .col-6.col-md-3 = f.input :female_distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'femaleDistanceInput' } }
-        .col-6.col-md-3 = f.input :male_distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'maleDistanceInput' } }
-        .col-6.col-md-3 = f.input :distance_unit, collection: Exercise.distance_units.keys, prompt: 'Distance unit', input_html: { data: { 'exercise-form-target': 'distanceUnitSelect', 'exercise-card-target': 'distanceUnitSelect' } }
-      .row.g-2
-        .col-6.col-md-3 = f.input :calories, hint: '0 = max calories', input_html: { data: { 'exercise-card-target': 'caloriesInput' } }
-        .col-6.col-md-3 = f.input :female_calories, input_html: { data: { 'exercise-card-target': 'femaleCaloriesInput' } }
-        .col-6.col-md-3 = f.input :male_calories, input_html: { data: { 'exercise-card-target': 'maleCaloriesInput' } }
-        .col-12.col-md-4 data-exercise-form-target="distanceUnits" hidden=distance_units_hidden
-          = f.input :distance_units_per_rep, label: 'Distance units per rep'
-      .row.g-2
-        .col = f.input :notes
-      .row
-        .col.d-grid.gap-2
-          button.btn.btn-sm.btn-primary.mt-2 type="button" data-action="click->exercise-card#save" Done
-          = link_to 'Delete Exercise', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }
+  = f.hidden_field :position
+  .workout-sortable-item
+    button.drag-handle.btn.btn-sm.btn-outline-secondary type="button" aria-label="Drag to reorder"
+      i.fas.fa-grip-vertical aria-hidden="true"
+    .workout-sortable-item__body
+      .exercise-summary data-exercise-card-target="summaryButton"
+        button.exercise-summary__button type="button" data-action="click->exercise-card#expand" data-exercise-card-target="expandButton" aria-expanded=expanded
+          span.exercise-summary__text data-exercise-card-target="summaryText" = summary
+        = link_to '#', class: 'exercise-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
+          i.fas.fa-trash-alt aria-hidden="true"
+      .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
+        .card-body
+          .row.g-2
+            .col-12 = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect' } }
+          .row.g-2
+            .col-6.col-md-3 = f.input :reps, hint: '0 = max reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
+            .col-6.col-md-3 = f.input :duration_seconds, label: 'Duration (s)', input_html: { data: { 'exercise-card-target': 'durationInput' } }
+          .row.g-2
+            .col-6.col-md-3 = f.input :load, input_html: { data: { 'exercise-card-target': 'loadInput' } }
+            .col-6.col-md-3 = f.input :female_load, input_html: { data: { 'exercise-card-target': 'femaleLoadInput' } }
+            .col-6.col-md-3 = f.input :male_load, input_html: { data: { 'exercise-card-target': 'maleLoadInput' } }
+            .col-6.col-md-3 = f.input :load_unit, collection: Exercise.load_units.keys, prompt: 'Load unit', input_html: { data: { 'exercise-card-target': 'loadUnitSelect' } }
+          .row.g-2
+            .col-6.col-md-3 = f.input :distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'distanceInput' } }
+            .col-6.col-md-3 = f.input :female_distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'femaleDistanceInput' } }
+            .col-6.col-md-3 = f.input :male_distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'maleDistanceInput' } }
+            .col-6.col-md-3 = f.input :distance_unit, collection: Exercise.distance_units.keys, prompt: 'Distance unit', input_html: { data: { 'exercise-form-target': 'distanceUnitSelect', 'exercise-card-target': 'distanceUnitSelect' } }
+          .row.g-2
+            .col-6.col-md-3 = f.input :calories, hint: '0 = max calories', input_html: { data: { 'exercise-card-target': 'caloriesInput' } }
+            .col-6.col-md-3 = f.input :female_calories, input_html: { data: { 'exercise-card-target': 'femaleCaloriesInput' } }
+            .col-6.col-md-3 = f.input :male_calories, input_html: { data: { 'exercise-card-target': 'maleCaloriesInput' } }
+            .col-12.col-md-4 data-exercise-form-target="distanceUnits" hidden=distance_units_hidden
+              = f.input :distance_units_per_rep, label: 'Distance units per rep'
+          .row.g-2
+            .col = f.input :notes
+          .row
+            .col.d-grid.gap-2
+              button.btn.btn-sm.btn-primary.mt-2 type="button" data-action="click->exercise-card#save" Done
+              = link_to 'Delete Exercise', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }

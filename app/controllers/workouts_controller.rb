@@ -37,8 +37,18 @@ class WorkoutsController < ApplicationController
   # PATCH/PUT /workouts/1
   # PATCH/PUT /workouts/1.json
   def update
+    attributes = workout_params
+    updated = false
+
+    @workout.transaction do
+      @workout.reserve_submitted_positions!(attributes)
+      @workout.reload
+      updated = @workout.update(attributes)
+      raise ActiveRecord::Rollback unless updated
+    end
+
     respond_to do |format|
-      if @workout.update(workout_params)
+      if updated
         format.html { redirect_to @workout, notice: t('.notice') }
         format.json { render :show, status: :ok, location: @workout }
       else

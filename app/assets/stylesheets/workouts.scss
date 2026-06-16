@@ -2,6 +2,34 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.workout-sortable-item {
+  align-items: stretch;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.workout-sortable-item__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.drag-handle {
+  align-items: center;
+  cursor: grab;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  touch-action: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.sortable-ghost {
+  opacity: 0.5;
+}
+
 .exercise-summary {
   align-items: center;
   background: var(--bs-light);

@@ -12,8 +12,8 @@
       = f.rich_text_area :notes
   hr
   h3 Exercises
-  #workout-parts data-controller="nested-form" data-nested-form-position-segments-value="true"
-    .fields data-nested-form-target="container"
+  #workout-parts data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-position-segments-value="true"
+    .fields data-nested-form-target="container" data-sortable-list-target="container"
       - @workout.ordered_parts.each do |part|
         - if part.is_a?(Segment)
           = f.simple_fields_for :segments, part do |segment_form|

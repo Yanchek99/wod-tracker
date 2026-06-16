@@ -1,25 +1,29 @@
 .nested-fields.card.mb-3
   = f.hidden_field :_destroy
+  = f.hidden_field :position
   .card-body
-    .row.g-2
-      .col-12.col-lg-4 = f.input :name
-      .col-6.col-md-3.col-lg-2 = f.input :rounds
-      .col-6.col-md-3.col-lg-2 = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200'
-      .col-12.col-md-6.col-lg-3 = f.input :interval_scheme, placeholder: '21-15-9...'
-      .col-6.col-md-3.col-lg-1 = f.input :position
-    .row.g-2
-      .col-12.col-md-4 = f.input :rest_seconds
-      .col-12.col-md-8 = f.input :notes
-    .row
-      .col#segmented_exercises data-controller="nested-form" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true"
-        .fields data-nested-form-target="container"
-          = f.simple_fields_for :exercises do |exercise_form|
-            = render 'exercise_fields', f: exercise_form
-        template data-nested-form-target="template"
-          = f.simple_fields_for :exercises, Exercise.new, child_index: 'CHILD_EXERCISE' do |exercise_form|
-            = render 'exercise_fields', f: exercise_form
-        .links.d-grid.gap-2
-          = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
-    .row
-      .col.d-grid
-        = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'click->nested-form#remove' }
+    .workout-sortable-item
+      button.drag-handle.btn.btn-sm.btn-outline-secondary type="button" aria-label="Drag to reorder"
+        i.fas.fa-grip-vertical aria-hidden="true"
+      .workout-sortable-item__body
+        .row.g-2
+          .col-12.col-lg-4 = f.input :name
+          .col-6.col-md-3.col-lg-2 = f.input :rounds
+          .col-6.col-md-3.col-lg-2 = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200'
+          .col-12.col-md-6.col-lg-4 = f.input :interval_scheme, placeholder: '21-15-9...'
+        .row.g-2
+          .col-12.col-md-4 = f.input :rest_seconds
+          .col-12.col-md-8 = f.input :notes
+        .row
+          .col#segmented_exercises data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true"
+            .fields data-nested-form-target="container" data-sortable-list-target="container"
+              = f.simple_fields_for :exercises do |exercise_form|
+                = render 'exercise_fields', f: exercise_form
+            template data-nested-form-target="template"
+              = f.simple_fields_for :exercises, Exercise.new, child_index: 'CHILD_EXERCISE' do |exercise_form|
+                = render 'exercise_fields', f: exercise_form
+            .links.d-grid.gap-2
+              = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
+        .row
+          .col.d-grid
+            = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'click->nested-form#remove' }

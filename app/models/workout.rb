@@ -1,4 +1,5 @@
 class Workout < ApplicationRecord
+  include WorkoutPositionReservation
   include WorkoutScoring
 
   has_one :metric, as: :measurable, dependent: :destroy

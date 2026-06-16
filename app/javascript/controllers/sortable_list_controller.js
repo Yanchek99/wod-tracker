@@ -12,6 +12,7 @@ export default class extends Controller {
       animation: 150,
       draggable: this.draggableSelectorValue,
       filter: "input, select, textarea, .ts-control, .ts-dropdown, trix-editor, [contenteditable]",
+      preventOnFilter: false,
       ghostClass: "workout-sortable-ghost",
       chosenClass: "workout-sortable-chosen",
       dragClass: "workout-sortable-drag",

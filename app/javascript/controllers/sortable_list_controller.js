@@ -8,7 +8,7 @@ export default class extends Controller {
     this.sortable = Sortable.create(this.containerTarget, {
       animation: 150,
       draggable: ".nested-fields:not([hidden])",
-      handle: ".drag-handle",
+      filter: "input, select, textarea, .ts-control, .ts-dropdown, trix-editor, [contenteditable]",
       onEnd: () => this.refresh()
     })
 

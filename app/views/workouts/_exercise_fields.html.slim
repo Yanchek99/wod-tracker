@@ -7,8 +7,6 @@
   = f.hidden_field :_destroy
   = f.hidden_field :position
   .workout-sortable-item
-    button.drag-handle.btn.btn-sm.btn-outline-secondary type="button" aria-label="Drag to reorder"
-      i.fas.fa-grip-vertical aria-hidden="true"
     .workout-sortable-item__body
       .exercise-summary data-exercise-card-target="summaryButton"
         button.exercise-summary__button type="button" data-action="click->exercise-card#expand" data-exercise-card-target="expandButton" aria-expanded=expanded

@@ -4,8 +4,14 @@
 
 .workout-sortable-item {
   align-items: stretch;
+  cursor: grab;
   display: flex;
   gap: 0.5rem;
+  touch-action: none;
+}
+
+.workout-sortable-item:active {
+  cursor: grabbing;
 }
 
 .workout-sortable-item__body {
@@ -13,17 +19,12 @@
   min-width: 0;
 }
 
-.drag-handle {
-  align-items: center;
-  cursor: grab;
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  touch-action: none;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
+.workout-sortable-item input,
+.workout-sortable-item select,
+.workout-sortable-item textarea,
+.workout-sortable-item .ts-control,
+.workout-sortable-item trix-editor {
+  cursor: auto;
 }
 
 .sortable-ghost {

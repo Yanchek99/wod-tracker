@@ -11,7 +11,9 @@
     button.segment-summary__button type="button" data-action="click->segment-card#expand" data-segment-card-target="expandButton" aria-expanded=expanded
       span.segment-summary__content
         span.segment-summary__text data-segment-card-target="summaryText" = summary
-        span.segment-summary__details data-segment-card-target="summaryDetails" hidden=exercise_summaries.blank? = exercise_summaries.join(' · ')
+        span.segment-summary__details data-segment-card-target="summaryDetails" hidden=exercise_summaries.blank?
+          - exercise_summaries.each do |exercise_summary|
+            span.segment-summary__detail = exercise_summary
     = link_to '#', class: 'segment-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete segment' } do
       i.fas.fa-trash-alt aria-hidden="true"
   .segment-editor.card-body data-segment-card-target="editor" hidden=(!expanded)

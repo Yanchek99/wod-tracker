@@ -41,6 +41,7 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
       assert_text '10 rounds of'
       assert_text 'Handstand Push Up'
       assert_text 'Pistol'
+      assert_equal ['Handstand Push Up', 'Pistol'], all('.segment-summary__detail').map(&:text)
       assert_selector '.workout-sortable-handle'
       assert_no_field 'Rounds'
 
@@ -91,7 +92,25 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
 
       within '.segment-summary' do
         assert_text '12 Pull Ups'
+        assert_equal ['12 Pull Ups'], all('.segment-summary__detail').map(&:text)
       end
+    end
+  end
+
+  test 'collapses an open segment when clicking outside it' do
+    visit edit_workout_url(workouts(:segmented))
+
+    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]')
+    within segment do
+      find('.segment-summary__button').click
+      assert_field 'Rounds'
+    end
+
+    find_by_id('workout_name').click
+
+    within segment do
+      assert_no_field 'Rounds'
+      assert_text '10 rounds of'
     end
   end
 end

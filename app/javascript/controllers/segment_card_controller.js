@@ -11,7 +11,14 @@ export default class extends Controller {
   }
 
   connect() {
+    this.handleDocumentClick = this.handleDocumentClick.bind(this)
+    document.addEventListener("click", this.handleDocumentClick, true)
+
     this.render()
+  }
+
+  disconnect() {
+    document.removeEventListener("click", this.handleDocumentClick, true)
   }
 
   expand() {
@@ -26,9 +33,14 @@ export default class extends Controller {
     }
 
     this.summaryTextTarget.textContent = this.summaryText()
-    this.summaryDetailsTarget.textContent = this.exerciseSummaryText()
-    this.summaryDetailsTarget.hidden = this.summaryDetailsTarget.textContent === ""
+    this.renderExerciseSummaryDetails()
     this.expandedValue = false
+  }
+
+  handleDocumentClick(event) {
+    if (!this.expandedValue || this.element.contains(event.target)) return
+
+    this.save()
   }
 
   expandedValueChanged() {
@@ -72,8 +84,14 @@ export default class extends Controller {
     return `${seconds} ${seconds === 1 ? "second" : "seconds"}`
   }
 
-  exerciseSummaryText() {
-    return this.exerciseSummaryElements.map((element) => element.textContent.trim()).filter(Boolean).join(" · ")
+  renderExerciseSummaryDetails() {
+    this.summaryDetailsTarget.replaceChildren(...this.exerciseSummaryTexts.map((summary) => {
+      const element = document.createElement("span")
+      element.className = "segment-summary__detail"
+      element.textContent = summary
+      return element
+    }))
+    this.summaryDetailsTarget.hidden = this.exerciseSummaryTexts.length === 0
   }
 
   get editorControls() {
@@ -83,5 +101,9 @@ export default class extends Controller {
   get exerciseSummaryElements() {
     return Array.from(this.editorTarget.querySelectorAll(".segment-exercise .exercise-summary__text"))
       .filter((element) => !element.closest(".segment-exercise").hidden)
+  }
+
+  get exerciseSummaryTexts() {
+    return this.exerciseSummaryElements.map((element) => element.textContent.trim()).filter(Boolean)
   }
 }

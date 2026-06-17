@@ -59,7 +59,7 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
     end
     assert_hidden_position all('#workout-parts > .fields > .exercise').last, '3'
 
-    click_on 'Delete Segment'
+    find('[aria-label="Delete segment"]').click
 
     within '#workout-parts > .links' do
       click_on 'Add Exercise'

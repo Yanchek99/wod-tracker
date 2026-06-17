@@ -107,9 +107,16 @@
 
 .segment-summary__details {
   color: var(--bs-secondary-color);
+  display: flex;
+  flex-direction: column;
   font-size: 0.875rem;
+  gap: 0.125rem;
   line-height: 1.2;
   min-width: 0;
+  overflow: hidden;
+}
+
+.segment-summary__detail {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

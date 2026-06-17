@@ -36,6 +36,58 @@ The pair belongs to the metric measurement. A wall-ball prescription with both
 ball load and target height uses two metric rows: one `lb` metric and one `foot`
 metric.
 
+## Program, Schedule, And Subscription
+
+A `Program` is a named stream of programming. A `Schedule` places one workout in
+a program on a `posted_at` date. A `Subscription` connects a user to a program
+with a role of owner, coach, or athlete. Coaches author programming; athletes
+consume it and log their performances.
+
+## Track
+
+A track is a parallel programming stream within or alongside a program, such as a
+competitor, fitness, or masters track. Athletes follow one track at a time. A
+track is distinct from a scale: a track is a separate plan, while a scale is a
+difficulty version of the same workout.
+
+## Scale
+
+A scale is a difficulty version of a single workout, such as Rx, intermediate, or
+beginner. Scale is this app's term for the option levels described in the
+prescription docs. A scale may change load, volume, skill demand, height/target,
+or time domain, and should preserve the intended stimulus.
+
+## Intended Stimulus
+
+The intended stimulus is the coach's goal for a workout: the target time domain,
+effort, pacing, and feel (for example sprint, grind, or skill/quality work). It
+guides which scale an athlete should choose.
+
+## Time Domain
+
+The time domain is the expected duration band for a workout: short (roughly under
+5 minutes), medium (roughly 5 to 15 minutes), or long (roughly over 15 minutes).
+It is one component of the intended stimulus.
+
+## Strength Percentage And 1RM
+
+A strength percentage prescribes load relative to an athlete's max, such as
+`80% 1RM`. `1RM` is a one-rep max; a training max is a deliberately reduced max
+used for percentage work. Resolving a percentage into a working load requires a
+stored athlete max.
+
+## Coach Note
+
+A coach note is programming guidance authored by a coach, such as stimulus,
+strategy, pacing, or scaling advice. It is distinct from an athlete's log note,
+which records the athlete's own performance and experience.
+
+## Cycle, Week, And Day
+
+A cycle (or block) is a multi-week training phase. A program's structured
+schedule groups days into weeks and weeks into cycles to express progression,
+rather than a flat list of dated workouts.
+
 ## Slash Notation
 
 CrossFit sometimes writes paired values compactly without symbols:

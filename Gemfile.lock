@@ -173,7 +173,7 @@ GEM
       prism (~> 1.5)
     msgpack (1.8.1)
     nested_form (0.3.2)
-    net-imap (0.6.4)
+    net-imap (0.6.4.1)
       date
       net-protocol
     net-pop (0.1.2)
@@ -393,7 +393,7 @@ DEPENDENCIES
   tzinfo-data
 
 RUBY VERSION
-   ruby 3.4.9p82
+   ruby 4.0.5p0
 
 BUNDLED WITH
    2.6.9

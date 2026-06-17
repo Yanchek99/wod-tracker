@@ -16,6 +16,9 @@ application.register("exercise-form", ExerciseFormController)
 import ExerciseCardController from "./exercise_card_controller.js"
 application.register("exercise-card", ExerciseCardController)
 
+import SegmentCardController from "./segment_card_controller.js"
+application.register("segment-card", SegmentCardController)
+
 import NestedFormController from "./nested_form_controller.js"
 application.register("nested-form", NestedFormController)
 

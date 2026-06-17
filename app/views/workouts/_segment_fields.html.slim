@@ -1,14 +1,24 @@
-.nested-fields.card.mb-3.workout-part
+- expanded = f.object.new_record?
+- summary = f.object.persisted? ? segment_objective(f.object) : 'New segment'
+
+.nested-fields.card.mb-3.workout-part data-controller="segment-card" data-segment-card-expanded-value=expanded
   = f.hidden_field :_destroy
   = f.hidden_field :position
-  .card-body
+  .segment-summary.card-body data-segment-card-target="summary"
+    button.workout-sortable-handle.segment-summary__handle type="button" aria-label="Drag segment"
+      i.fas.fa-grip-vertical aria-hidden="true"
+    button.segment-summary__button type="button" data-action="click->segment-card#expand" data-segment-card-target="expandButton" aria-expanded=expanded
+      span.segment-summary__text data-segment-card-target="summaryText" = summary
+    = link_to '#', class: 'segment-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete segment' } do
+      i.fas.fa-trash-alt aria-hidden="true"
+  .segment-editor.card-body data-segment-card-target="editor" hidden=(!expanded)
     .workout-sortable-item
       .workout-sortable-item__body
         .row.g-2
-          .col-12.col-lg-4 = f.input :name
-          .col-6.col-md-3.col-lg-2 = f.input :rounds
-          .col-6.col-md-3.col-lg-2 = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200'
-          .col-12.col-md-6.col-lg-4 = f.input :interval_scheme, placeholder: '21-15-9...'
+          .col-12.col-lg-4 = f.input :name, input_html: { data: { 'segment-card-target': 'nameInput' } }
+          .col-6.col-md-3.col-lg-2 = f.input :rounds, input_html: { data: { 'segment-card-target': 'roundsInput' } }
+          .col-6.col-md-3.col-lg-2 = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200', input_html: { data: { 'segment-card-target': 'timeInput' } }
+          .col-12.col-md-6.col-lg-4 = f.input :interval_scheme, placeholder: '21-15-9...', input_html: { data: { 'segment-card-target': 'intervalInput' } }
         .row.g-2
           .col-12.col-md-4 = f.input :rest_seconds
           .col-12.col-md-8 = f.input :notes
@@ -23,5 +33,6 @@
             .links.d-grid.gap-2
               = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
         .row
-          .col.d-grid
-            = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'click->nested-form#remove' }
+          .col.d-grid.gap-2
+            button.btn.btn-sm.btn-primary.mt-2 type="button" data-action="click->segment-card#save" Done
+            = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }

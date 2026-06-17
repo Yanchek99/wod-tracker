@@ -10,6 +10,8 @@
   .workout-sortable-item
     .workout-sortable-item__body
       .exercise-summary data-exercise-card-target="summaryButton"
+        button.workout-sortable-handle.exercise-summary__handle type="button" aria-label="Drag exercise"
+          i.fas.fa-grip-vertical aria-hidden="true"
         button.exercise-summary__button type="button" data-action="click->exercise-card#expand" data-exercise-card-target="expandButton" aria-expanded=expanded
           span.exercise-summary__text data-exercise-card-target="summaryText" = summary
         = link_to '#', class: 'exercise-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do

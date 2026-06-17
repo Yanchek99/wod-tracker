@@ -15,7 +15,7 @@ class ExerciseCardOutsideClickTest < ApplicationSystemTestCase
     visit edit_workout_url(workouts(:fran))
 
     within first('.exercise') do
-      click_on 'Thruster (95 weights)'
+      click_on 'Thruster (95 lbs)'
       fill_in 'Reps', with: '15'
     end
 

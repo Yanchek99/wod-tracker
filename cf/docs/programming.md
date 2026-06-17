@@ -7,31 +7,27 @@ The app already models individual workouts and places them on a calendar through
 The next programming concepts to model build on that base. They are listed in the
 intended order of implementation, and each can become its own follow-up issue.
 
-1. Scales (option levels). A workout published in multiple difficulty versions
-   such as Rx, intermediate, and beginner. These already exist conceptually in
-   the prescription docs as option levels; the next step is making them
-   first-class so an athlete can log against the version they performed. Scales
-   change load, volume, skill demand, height/target, or time domain while
-   preserving the intended stimulus.
-2. Intended stimulus. The coach's goal for a workout, such as the target time
+1. Intended stimulus. The coach's goal for a workout, such as the target time
    domain, effort, pacing, or whether it is meant to be a sprint, a grind, or a
-   skill/quality piece. Stimulus guides which scale an athlete should choose.
-3. Time domains. The expected duration band for a workout. CrossFit commonly
+   skill/quality piece. The intended stimulus is what the programmer prescribes;
+   it is the fixed target that scaling must preserve for each athlete.
+2. Time domains. The expected duration band for a workout. CrossFit commonly
    groups efforts as short (roughly under 5 minutes), medium (roughly 5 to 15
    minutes), and long (roughly over 15 minutes). Time domain is part of the
    intended stimulus and should be derivable from, or stored alongside, the
    workout's existing `time`, `time_cap_seconds`, and structure fields.
-4. Strength percentages. Loads prescribed relative to an athlete's max, such as
+3. Strength percentages. Loads prescribed relative to an athlete's max, such as
    `5x3 @ 80% 1RM`. This needs both a percentage on the prescription and an
    athlete max (1RM or training max) to resolve the percentage into a working
-   load. Until maxes are modeled, percentage prescriptions are display-only
-   guidance.
-5. Coach notes. Programming intent written by the coach, distinct from an
-   athlete's own log notes. Coach notes carry stimulus, strategy, pacing, and
-   scaling guidance. `Workout`, `Segment`, and `Exercise` already have `notes`
-   fields; the modeling question is how to separate coach-authored programming
-   notes from athlete-authored log notes.
-6. Cycle / week / day structure. Structured programs group scheduled days into
+   load. Percentage-based loading is inherently per-athlete, so athlete maxes are
+   the first piece of athlete-individualized state the app needs. Until maxes are
+   modeled, percentage prescriptions are display-only guidance.
+4. Coach notes. Programming intent written by the coach, distinct from an
+   athlete's own log notes. Coach notes carry stimulus, strategy, and pacing
+   guidance. `Workout`, `Segment`, and `Exercise` already have `notes` fields;
+   the modeling question is how to separate coach-authored programming notes from
+   athlete-authored log notes.
+5. Cycle / week / day structure. Structured programs group scheduled days into
    weeks and weeks into cycles (training blocks). Today a `Schedule` only carries
    a `posted_at` date. Structured programming adds an ordered cycle → week → day
    grouping so a program can express progression across a block rather than a
@@ -40,6 +36,24 @@ intended order of implementation, and each can become its own follow-up issue.
 Document and decide each concept's modeling approach in `decisions.md` before
 implementing it. Prefer reusing existing models (metrics, exercises, schedules)
 over introducing parallel structures.
+
+## Scaling Is Individualized
+
+Scaling is not a fixed set of generalist versions the programmer authors. The
+programmer prescribes the workout and its intended stimulus; the right scale to
+hit that stimulus depends on the individual athlete's capacity, skills, injuries,
+and history. The published CrossFit option levels (Rx, intermediate, beginner)
+are a coarse, generalist approximation of this — useful as source data and as a
+starting point, but not the same as scaling a workout to a specific athlete.
+
+Individualizing scaling per athlete is the core problem this app aims to solve,
+eventually through machine learning: given an athlete's history and a workout's
+intended stimulus, suggest the load, volume, skill, height/target, and time-domain
+adjustments that keep that athlete inside the intended stimulus. The concepts
+modeled first (intended stimulus, time domains, strength percentages and athlete
+maxes, coach notes) are the inputs and labels that future individualized scaling
+will depend on, which is why the intended stimulus is modeled as the fixed target
+rather than as one of several authored scale levels.
 
 ## Programming Methodology
 

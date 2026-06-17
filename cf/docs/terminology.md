@@ -50,18 +50,23 @@ competitor, fitness, or masters track. Athletes follow one track at a time. A
 track is distinct from a scale: a track is a separate plan, while a scale is a
 difficulty version of the same workout.
 
-## Scale
+## Scaling
 
-A scale is a difficulty version of a single workout, such as Rx, intermediate, or
-beginner. Scale is this app's term for the option levels described in the
-prescription docs. A scale may change load, volume, skill demand, height/target,
-or time domain, and should preserve the intended stimulus.
+Scaling is adjusting a workout so a specific athlete stays inside its intended
+stimulus. It is individualized to the athlete rather than authored as generalist
+versions: a scale may change load, volume, skill demand, height/target, or time
+domain, but the intended stimulus is the fixed target it preserves. The published
+CrossFit option levels (Rx, intermediate, beginner) are a coarse generalist
+approximation of scaling, useful as source data but not athlete-specific.
+Individualized scaling is the core problem the app aims to solve, eventually
+through machine learning.
 
 ## Intended Stimulus
 
 The intended stimulus is the coach's goal for a workout: the target time domain,
 effort, pacing, and feel (for example sprint, grind, or skill/quality work). It
-guides which scale an athlete should choose.
+is what the programmer prescribes and the fixed target that scaling preserves for
+each athlete.
 
 ## Time Domain
 

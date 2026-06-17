@@ -16,12 +16,12 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
     within first('.exercise') do
       assert_no_field 'Reps'
-      assert_text 'Thruster (95 weights)'
+      assert_text 'Thruster (95 lbs)'
 
-      click_on 'Thruster (95 weights)'
+      click_on 'Thruster (95 lbs)'
 
-      assert_no_text 'Thruster (95 weights)'
-      assert_field 'Reps', with: ''
+      assert_no_text 'Thruster (95 lbs)'
+      assert_field 'Reps', with: '1'
       fill_in 'Reps', with: '15'
       click_on 'Done'
 
@@ -62,13 +62,13 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
     cards = all('.exercise')
 
     within cards.first do
-      click_on 'Thruster (95 weights)'
+      click_on 'Thruster (95 lbs)'
       fill_in 'Reps', with: '15'
     end
 
     within cards[1] do
       click_on 'Pull Up'
-      assert_field 'Reps', with: ''
+      assert_field 'Reps', with: '1'
     end
 
     within cards.first do

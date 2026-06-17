@@ -19,15 +19,13 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create workout' do
-    assert_no_difference('Metric.where(measurable_type: "Workout").count') do
-      assert_difference(['Workout.count', 'ActionText::RichText.count']) do
-        post workouts_url, params: { workout: {
-          name: @workout.name,
-          rounds: @workout.rounds,
-          notes: '<div>Use the prescribed loading.</div>',
-          score_type: :round
-        } }
-      end
+    assert_difference(['Workout.count', 'ActionText::RichText.count']) do
+      post workouts_url, params: { workout: {
+        name: @workout.name,
+        rounds: @workout.rounds,
+        notes: '<div>Use the prescribed loading.</div>',
+        score_type: :round
+      } }
     end
 
     assert_redirected_to workout_url(Workout.last)
@@ -36,20 +34,18 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create workout with direct exercise prescriptions' do
-    assert_no_difference('Metric.where(measurable_type: "Exercise").count') do
-      assert_difference(['Workout.count', 'Exercise.count'], 1) do
-        post workouts_url, params: { workout: {
-          name: 'Nested Workout',
-          score_type: :time,
-          exercises_attributes: {
-            '0' => {
-              movement_id: movements(:pullup).id,
-              position: 1,
-              reps: 10
-            }
+    assert_difference(['Workout.count', 'Exercise.count'], 1) do
+      post workouts_url, params: { workout: {
+        name: 'Nested Workout',
+        score_type: :time,
+        exercises_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            position: 1,
+            reps: 10
           }
-        } }
-      end
+        }
+      } }
     end
 
     assert_redirected_to workout_url(Workout.last)
@@ -59,21 +55,19 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create workout with sex-specific exercise prescriptions' do
-    assert_no_difference('Metric.where(measurable_type: "Exercise").count') do
-      assert_difference(['Workout.count', 'Exercise.count'], 1) do
-        post workouts_url, params: { workout: {
-          name: 'Sex Specific Workout',
-          score_type: :time,
-          exercises_attributes: {
-            '0' => {
-              movement_id: movements(:thruster).id,
-              position: 1,
-              reps: 1,
-              female_load: 65, male_load: 95, load_unit: :lb
-            }
+    assert_difference(['Workout.count', 'Exercise.count'], 1) do
+      post workouts_url, params: { workout: {
+        name: 'Sex Specific Workout',
+        score_type: :time,
+        exercises_attributes: {
+          '0' => {
+            movement_id: movements(:thruster).id,
+            position: 1,
+            reps: 1,
+            female_load: 65, male_load: 95, load_unit: :lb
           }
-        } }
-      end
+        }
+      } }
     end
 
     exercise = Workout.last.exercises.first

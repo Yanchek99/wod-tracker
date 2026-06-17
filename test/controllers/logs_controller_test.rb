@@ -9,19 +9,17 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create log with direct movement recordings' do
-    assert_no_difference('Metric.where(measurable_type: "MovementLog").count') do
-      assert_difference(['Log.count', 'MovementLog.count'], 1) do
-        post workout_logs_url(@workout), params: { log: {
-          score_type: :time,
-          score_value: '5:30',
-          movement_logs_attributes: {
-            '0' => {
-              movement_id: movements(:pullup).id,
-              reps: 45
-            }
+    assert_difference(['Log.count', 'MovementLog.count'], 1) do
+      post workout_logs_url(@workout), params: { log: {
+        score_type: :time,
+        score_value: '5:30',
+        movement_logs_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            reps: 45
           }
-        } }
-      end
+        }
+      } }
     end
 
     assert_redirected_to log_url(Log.last)

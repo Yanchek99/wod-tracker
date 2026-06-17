@@ -15,22 +15,6 @@ class LogTest < ActiveSupport::TestCase
     end
   end
 
-  test 'defaults sex-specific prescribed load values when building movement logs' do
-    workout = Workout.new(rounds: 1, score_type: :time)
-    workout.exercises.build(movement: movements(:back_squat), position: 1) do |exercise|
-      exercise.metrics.build(measurement: :rep, value: 21)
-      exercise.metrics.build(measurement: :lb, female_value: 65, male_value: 95)
-    end
-
-    log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: 180)
-    log.build_movement_logs
-
-    movement_log = log.movement_logs.first
-
-    assert_equal 95, movement_log.load
-    assert_equal 'lb', movement_log.load_unit
-  end
-
   test 'parses duration score values before score type assignment' do
     log = Log.new(workout: workouts(:fran), user: users(:mathew), score_value: '5:30', score_type: :time)
 
@@ -49,7 +33,7 @@ class LogTest < ActiveSupport::TestCase
   end
 
   test 'records per-round prescribed reps for segment exercises' do
-    exercises(:segmented_hspu).metrics.create!(measurement: :rep, value: 10)
+    exercises(:segmented_hspu).update!(reps: 10)
 
     log = workouts(:segmented).logs.build(user: users(:mathew), score_type: :time)
     log.build_movement_logs

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_16_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,19 +91,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_120000) do
     t.bigint "workout_id"
     t.index ["user_id"], name: "index_logs_on_user_id"
     t.index ["workout_id"], name: "index_logs_on_workout_id"
-  end
-
-  create_table "metrics", force: :cascade do |t|
-    t.datetime "created_at", precision: nil, null: false
-    t.integer "female_value"
-    t.integer "male_value"
-    t.bigint "measurable_id"
-    t.string "measurable_type"
-    t.integer "measurement"
-    t.datetime "updated_at", precision: nil, null: false
-    t.integer "value"
-    t.index ["measurable_type", "measurable_id"], name: "index_metrics_on_measurable_type_and_measurable_id"
-    t.index ["measurement", "measurable_id", "measurable_type"], name: "index_metrics_on_measurement_and_measurable", unique: true
   end
 
   create_table "movement_logs", force: :cascade do |t|

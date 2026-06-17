@@ -39,9 +39,8 @@ class SchedulesController < ApplicationController
       .includes(
         :program,
         workout: [
-          :metric,
           :rich_text_notes,
-          { exercises: [:movement, :metrics, { segment: :exercises }] }
+          { exercises: [:movement, { segment: :exercises }] }
         ]
       )
   end

@@ -7,9 +7,8 @@ class Exercise < ApplicationRecord
   belongs_to :workout
   belongs_to :movement
   belongs_to :segment, optional: true
-  has_many :metrics, as: :measurable, dependent: :destroy
 
-  default_scope { order(:position).includes(:metrics) }
+  default_scope { order(:position) }
 
   validates :reps, :calories,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true

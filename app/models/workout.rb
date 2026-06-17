@@ -1,7 +1,6 @@
 class Workout < ApplicationRecord
   include WorkoutScoring
 
-  has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, dependent: :destroy
   has_many :movements, through: :exercises
   has_many :segments, dependent: :destroy
@@ -63,7 +62,7 @@ class Workout < ApplicationRecord
   end
 
   def score_measurement
-    score_type || metric&.measurement
+    score_type
   end
 
   # Time cap that formats the seconds DB value to "Minutes:Seconds"

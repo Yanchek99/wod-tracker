@@ -1,10 +1,4 @@
 module MetricsHelper
-  def measurement_value_input_html(metric)
-    return { class: 'reps-field', data: { original_reps: metric.value } } if metric.rep?
-
-    {}
-  end
-
   HEIGHT_MEASUREMENTS = %w[foot inch].freeze
 
   def metric_unit_msg(metric)

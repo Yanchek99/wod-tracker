@@ -1,37 +1,16 @@
 module ExercisePrescription
   extend ActiveSupport::Concern
 
-  # Columns that indicate an exercise carries its prescription directly (not via legacy metrics).
-  DIRECT_PRESCRIPTION_COLUMNS = %i[
-    reps duration_seconds
-    load female_load male_load load_unit
-    distance female_distance male_distance distance_unit
-    calories female_calories male_calories
-  ].freeze
-
   included do
     enum :load_unit, { lb: 0, kg: 1 }, prefix: :load_unit
     enum :distance_unit, { meter: 0, foot: 1, inch: 2 }, prefix: :distance_unit
   end
 
-  # Canonical prescription, preferring the direct columns and falling back to legacy metric rows
-  # while both exist (legacy metrics are removed in a later phase). Rendering, scoring, and log
-  # recording all read this, so column-backed and metric-backed exercises behave identically.
-  # Memoized so the helper's object-identity comparisons see the same column-built instances.
+  # Canonical prescription, built from the exercise's columns as in-memory Metric value objects.
+  # Rendering, scoring, and log recording all read this. Memoized so the helper's object-identity
+  # comparisons see the same column-built instances.
   def prescription_metrics
-    @prescription_metrics ||= build_prescription_metrics
-  end
-
-  def uses_direct_prescriptions?
-    DIRECT_PRESCRIPTION_COLUMNS.any? { |column| self[column].present? }
-  end
-
-  private
-
-  def build_prescription_metrics
-    return metrics.to_a unless uses_direct_prescriptions?
-
-    [
+    @prescription_metrics ||= [
       rep_prescription_metric,
       duration_prescription_metric,
       load_prescription_metric,
@@ -39,6 +18,8 @@ module ExercisePrescription
       calorie_prescription_metric
     ].compact
   end
+
+  private
 
   def rep_prescription_metric
     return if reps.nil?

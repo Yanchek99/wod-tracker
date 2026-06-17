@@ -3,7 +3,6 @@ class Log < ApplicationRecord
 
   belongs_to :user, default: -> { Current.user }
   belongs_to :workout
-  has_one :metric, as: :measurable, dependent: :destroy
   has_many :exercises, through: :workout
   has_many :movement_logs, dependent: :destroy
 
@@ -20,11 +19,7 @@ class Log < ApplicationRecord
   end
 
   def score_measurement
-    score_type || metric&.measurement
-  end
-
-  def score_value
-    super || metric&.value
+    score_type
   end
 
   def score_value=(new_value)
@@ -94,6 +89,6 @@ class Log < ApplicationRecord
   end
 
   def ordered_recording_metrics(metrics)
-    metrics.sort_by { |metric| [Metric.recording_order(metric.measurement), metric.id || 0] }
+    metrics.sort_by { |metric| Metric.recording_order(metric.measurement) }
   end
 end

@@ -1,21 +1,27 @@
-class Metric < ApplicationRecord
+# In-memory value object describing one dimension of a prescription, performance, or score.
+# Exercises, movement logs, workouts, and logs build these from their own columns; nothing is
+# persisted. The legacy `metrics` table this used to back was dropped once those columns were
+# backfilled.
+class Metric
+  MEASUREMENTS = {
+    calorie: 0, rep: 1, round: 2, seconds: 3,
+    inch: 4, foot: 5, meter: 6,
+    lb: 7, kg: 8,
+    time: 9, weight: 10, height: 11, distance: 12
+  }.freeze
+
   LOAD_MEASUREMENTS = %w[kg lb weight].freeze
   DISTANCE_MEASUREMENTS = %w[distance foot inch meter].freeze
   RECORDING_MEASUREMENT_ORDER = %w[
     rep calorie distance foot inch meter lb kg weight height seconds time round
   ].freeze
 
-  belongs_to :measurable, polymorphic: true
-  enum :measurement, {
-    calorie: 0, rep: 1, round: 2, seconds: 3,
-    inch: 4, foot: 5, meter: 6,
-    lb: 7, kg: 8,
-    time: 9, weight: 10, height: 11, distance: 12
-  }
+  attr_accessor :value, :female_value, :male_value
+  attr_reader :measurement
 
-  validates :measurement, presence: true
-  validates :measurement, uniqueness: { scope: [:measurable_id, :measurable_type] }
-  validate :values_are_unambiguous
+  def self.measurements
+    @measurements ||= MEASUREMENTS.stringify_keys.freeze
+  end
 
   def self.workout_measurements
     [:calorie, :rep, :round, :time, :weight]
@@ -23,6 +29,17 @@ class Metric < ApplicationRecord
 
   def self.recording_order(measurement)
     RECORDING_MEASUREMENT_ORDER.index(measurement.to_s) || RECORDING_MEASUREMENT_ORDER.length
+  end
+
+  def initialize(measurement:, value: nil, female_value: nil, male_value: nil)
+    @measurement = measurement.to_s
+    @value = value
+    @female_value = female_value
+    @male_value = male_value
+  end
+
+  MEASUREMENTS.each_key do |name|
+    define_method(:"#{name}?") { measurement == name.to_s }
   end
 
   def calculated_value(workout)
@@ -42,19 +59,6 @@ class Metric < ApplicationRecord
     male_value.presence || female_value.presence
   end
 
-  def value=(new_value)
-    super
-    return unless time? && new_value.is_a?(String)
-
-    if new_value.include? ':'
-      minutes, seconds = new_value.split(':', 2)
-      time_in_seconds = (minutes.to_i.minute + seconds.to_i.second).second
-      super(time_in_seconds)
-    else
-      super(new_value.to_i)
-    end
-  end
-
   def sex_specific?
     female_value.present? || male_value.present?
   end
@@ -66,36 +70,5 @@ class Metric < ApplicationRecord
     return value * workout.reps_from_interval if workout.interval?
 
     value
-  end
-
-  def values_are_unambiguous
-    return if valid_value_combination?
-
-    errors.add(:value, 'cannot be set with male and female values') if mixes_unisex_and_sex_specific_values?
-    errors.add(:base, 'male and female values must both be set') if missing_paired_sex_specific_value?
-  end
-
-  def valid_value_combination?
-    no_values? || unisex_value_only? || paired_sex_specific_values_only?
-  end
-
-  def no_values?
-    value.blank? && female_value.blank? && male_value.blank?
-  end
-
-  def unisex_value_only?
-    value.present? && female_value.blank? && male_value.blank?
-  end
-
-  def paired_sex_specific_values_only?
-    value.blank? && female_value.present? && male_value.present?
-  end
-
-  def mixes_unisex_and_sex_specific_values?
-    value.present? && sex_specific?
-  end
-
-  def missing_paired_sex_specific_value?
-    female_value.blank? != male_value.blank?
   end
 end

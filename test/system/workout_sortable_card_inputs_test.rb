@@ -39,6 +39,8 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
     segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]')
     within segment do
       assert_text '10 rounds of'
+      assert_text 'Handstand Push Up'
+      assert_text 'Pistol'
       assert_selector '.workout-sortable-handle'
       assert_no_field 'Rounds'
 
@@ -65,6 +67,31 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
       click_on 'Done'
 
       assert_selector '.workout-sortable-handle'
+    end
+  end
+
+  test 'shows nested exercise summaries when a segment collapses' do
+    visit new_workout_url
+
+    fill_in 'Name', with: 'Segment Exercise Summaries'
+    select 'time', from: 'For'
+    click_on 'Add Segment'
+
+    segment = all('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]').last
+    within segment do
+      click_on 'Add Exercise'
+      within all('.exercise').last do
+        find('.ts-control input').set('Pull')
+        find('.ts-dropdown .option', text: 'Pull Up').click
+        fill_in 'Reps', with: '12'
+        click_on 'Done'
+      end
+
+      click_on 'Done'
+
+      within '.segment-summary' do
+        assert_text '12 Pull Ups'
+      end
     end
   end
 end

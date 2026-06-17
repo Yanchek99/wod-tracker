@@ -87,11 +87,28 @@
   text-align: left;
 }
 
+.segment-summary__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .exercise-summary__text,
 .segment-summary__text {
   flex: 1 1 auto;
   font-weight: 600;
   line-height: 1.25;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.segment-summary__details {
+  color: var(--bs-secondary-color);
+  font-size: 0.875rem;
+  line-height: 1.2;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

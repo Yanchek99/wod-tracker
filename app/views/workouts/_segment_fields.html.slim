@@ -1,5 +1,6 @@
 - expanded = f.object.new_record?
 - summary = f.object.persisted? ? segment_objective(f.object) : 'New segment'
+- exercise_summaries = f.object.exercises.reject(&:marked_for_destruction?).sort_by { |exercise| exercise.position || 0 }.map { |exercise| measurable_message(exercise) }
 
 .nested-fields.card.mb-3.workout-part data-controller="segment-card" data-segment-card-expanded-value=expanded
   = f.hidden_field :_destroy
@@ -8,7 +9,9 @@
     button.workout-sortable-handle.segment-summary__handle type="button" aria-label="Drag segment"
       i.fas.fa-grip-vertical aria-hidden="true"
     button.segment-summary__button type="button" data-action="click->segment-card#expand" data-segment-card-target="expandButton" aria-expanded=expanded
-      span.segment-summary__text data-segment-card-target="summaryText" = summary
+      span.segment-summary__content
+        span.segment-summary__text data-segment-card-target="summaryText" = summary
+        span.segment-summary__details data-segment-card-target="summaryDetails" hidden=exercise_summaries.blank? = exercise_summaries.join(' · ')
     = link_to '#', class: 'segment-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete segment' } do
       i.fas.fa-trash-alt aria-hidden="true"
   .segment-editor.card-body data-segment-card-target="editor" hidden=(!expanded)

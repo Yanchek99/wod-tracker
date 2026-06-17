@@ -1,7 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["summary", "summaryText", "expandButton", "editor", "nameInput", "roundsInput", "timeInput", "intervalInput"]
+  static targets = [
+    "summary", "summaryText", "summaryDetails", "expandButton", "editor",
+    "nameInput", "roundsInput", "timeInput", "intervalInput"
+  ]
 
   static values = {
     expanded: Boolean
@@ -23,6 +26,8 @@ export default class extends Controller {
     }
 
     this.summaryTextTarget.textContent = this.summaryText()
+    this.summaryDetailsTarget.textContent = this.exerciseSummaryText()
+    this.summaryDetailsTarget.hidden = this.summaryDetailsTarget.textContent === ""
     this.expandedValue = false
   }
 
@@ -67,7 +72,16 @@ export default class extends Controller {
     return `${seconds} ${seconds === 1 ? "second" : "seconds"}`
   }
 
+  exerciseSummaryText() {
+    return this.exerciseSummaryElements.map((element) => element.textContent.trim()).filter(Boolean).join(" · ")
+  }
+
   get editorControls() {
     return Array.from(this.editorTarget.querySelectorAll("input, select, textarea"))
+  }
+
+  get exerciseSummaryElements() {
+    return Array.from(this.editorTarget.querySelectorAll(".segment-exercise .exercise-summary__text"))
+      .filter((element) => !element.closest(".segment-exercise").hidden)
   }
 }

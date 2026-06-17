@@ -126,7 +126,8 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
 
   def amrap_recording_values
     all('.card.mb-3').map do |movement_log|
-      movement_log.find('input[name$="[value]"]').value
+      # Every dimension input renders now; read the one the prescription populated.
+      movement_log.all('.recording-value').map(&:value).compact_blank.first
     end
   end
 end

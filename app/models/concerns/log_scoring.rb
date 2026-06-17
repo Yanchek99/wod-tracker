@@ -94,7 +94,7 @@ module LogScoring
   end
 
   def submitted_score_reps_for(component, movement_log)
-    metric = movement_log.metrics.find { |m| m.measurement == component[:measurement] }
+    metric = movement_log.prescription_metrics.find { |m| m.measurement == component[:measurement] }
     return nil unless metric&.value.present? && metric.value.positive?
     return submitted_distance_score_reps(metric, component[:distance_units_per_rep]) if component[:distance_units_per_rep]
 

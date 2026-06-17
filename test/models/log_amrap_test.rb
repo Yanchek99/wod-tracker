@@ -32,7 +32,7 @@ class LogAmrapTest < ActiveSupport::TestCase
     log.build_movement_logs
 
     pushup_recording = log.movement_logs.find { |movement_log| movement_log.movement == movements(:pushup) }
-    pushup_recording.metrics.find(&:rep?).value = 5
+    pushup_recording.reps = 5
 
     assert log.valid?
     assert_equal 302, log.score_value

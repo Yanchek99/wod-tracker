@@ -57,7 +57,6 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'form[data-controller="log-form"]', false
     assert_select 'input[data-auto-calc-reps]', false
-    assert_select '[data-controller="nested-form"] template[data-nested-form-target="template"]'
   end
 
   test 'workout form uses nested form controller' do
@@ -79,7 +78,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     get new_workout_log_url(workouts(:murph))
 
     assert_response :success
+    # Movement recordings are direct columns now; only the movement select remains.
     assert_select 'select.movement[data-controller="movement-select"]'
-    assert_select 'select.metric[data-controller="metric-select"]'
   end
 end

@@ -1,5 +1,44 @@
 # Decisions
 
+## 2026-06-18: Prescribed Load Identity Is A Canonical Magnitude, Not (Value, Unit)
+
+Decision recorded for a follow-up issue; not yet implemented.
+
+CrossFit expresses a single prescribed load in whichever unit suits the audience —
+pounds, kilograms, or pood — and these are display conventions for the same
+prescription, not different prescriptions. The current model stores load as a
+value plus a `load_unit` enum on the exercise, which folds the display unit into
+the load's identity. That is the wrong layer: the prescribed *magnitude* is the
+identity, and lb/kg/pood are presentations derived from it.
+
+The equivalences are rounded conventions tied to standard implements, not exact
+arithmetic. CrossFit kettlebell prescriptions are the standard 16/24/32 kg
+implements, labeled 1/1.5/2 pood and (approximately) 35/53/70 lb; 2 pood is
+exactly ~72 lb but is published as 70 lb. Barbell Rx similarly publishes pairs
+such as 95 lb / 43 kg even though 43 kg is ~94.8 lb. So load cannot be canonicalized
+by physics (converting everything to grams would split 95 lb from 43 kg, which is
+backwards) — canonicalization must follow CrossFit's published standard-equivalence
+table.
+
+Direction (to be confirmed in the implementing issue): store load as one canonical
+magnitude and treat lb/kg/pood as input/display formats normalized through a
+source-confirmed CrossFit standard-equivalence table; display unit becomes a
+presentation/user-preference concern rather than part of load identity. A heavier
+alternative is a first-class `StandardLoad` concept that exercises reference for Rx
+loads, with arbitrary/user loads keeping a raw magnitude.
+
+The exact equivalence table (pood and lb/kg Rx pairs) must be source-confirmed
+from the L1/L2 guides and CrossFit prescriptions before encoding, per
+`OVERVIEW.md`; the specific values above are stated as illustration and are not yet
+source-verified.
+
+Rationale: this is a prerequisite for content-based workout deduplication (see the
+repeat/benchmark decision below). A content fingerprint can only guarantee
+uniqueness up to its canonical form, so if the same prescription can be stored as
+both 95 lb and 43 kg the fingerprint will create duplicate `Workout` rows. Fixing
+load identity first makes the fingerprint reliable. Scoped to its own issue to keep
+the idempotency schema/seed change (#1673) small.
+
 ## 2026-06-18: Repeat/Benchmark Workouts Are One Workout On Many Schedules
 
 A repeated or benchmark workout (Fran, Cindy, Grace, Murph, etc.) is modeled as a

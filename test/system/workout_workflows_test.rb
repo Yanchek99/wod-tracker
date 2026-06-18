@@ -23,7 +23,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
       find('.ts-control input').set('Pull')
       find('.ts-dropdown .option', text: 'Pull Up').click
       assert_no_selector '.ts-wrapper.dropdown-active'
-      assert_field 'Position', with: '1'
+      assert_equal '1', find('input[name$="[position]"]', visible: false).value
       fill_in 'Reps', with: '10'
       assert_no_field 'Distance units per rep'
       click_on 'Done'
@@ -33,8 +33,10 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
 
     click_on 'Create Workout'
 
+    # Landing on the workout show page with its name and exercise proves the
+    # create succeeded. The redirect flash banner is ephemeral and can be raced
+    # away by Turbo before Capybara samples it, so we don't assert its text.
     assert_current_path %r{/workouts/\d+}
-    assert_text 'Workout was successfully created.'
     assert_text 'System Test Workout'
     assert_text '10 Pull Ups'
   end

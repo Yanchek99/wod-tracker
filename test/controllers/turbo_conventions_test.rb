@@ -63,7 +63,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     get new_workout_url
 
     assert_response :success
-    assert_select '[data-controller="nested-form"][data-nested-form-position-exercises-value="true"]'
+    assert_select '[data-controller~="nested-form"][data-nested-form-position-exercises-value="true"]'
     assert_select 'template[data-nested-form-target="template"]'
     assert_select 'a[data-action="click->nested-form#add"]'
   end

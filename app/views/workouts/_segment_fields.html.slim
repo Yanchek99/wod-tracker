@@ -1,25 +1,43 @@
-.nested-fields.card.mb-3
+- expanded = f.object.new_record?
+- summary = f.object.persisted? ? segment_objective(f.object) : 'New segment'
+- exercise_summaries = f.object.exercises.reject(&:marked_for_destruction?).sort_by { |exercise| exercise.position || 0 }.map { |exercise| measurable_message(exercise) }
+
+.nested-fields.card.mb-3.workout-part data-controller="segment-card" data-segment-card-expanded-value=expanded
   = f.hidden_field :_destroy
-  .card-body
-    .row.g-2
-      .col-12.col-lg-4 = f.input :name
-      .col-6.col-md-3.col-lg-2 = f.input :rounds
-      .col-6.col-md-3.col-lg-2 = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200'
-      .col-12.col-md-6.col-lg-3 = f.input :interval_scheme, placeholder: '21-15-9...'
-      .col-6.col-md-3.col-lg-1 = f.input :position
-    .row.g-2
-      .col-12.col-md-4 = f.input :rest_seconds
-      .col-12.col-md-8 = f.input :notes
-    .row
-      .col#segmented_exercises data-controller="nested-form" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true"
-        .fields data-nested-form-target="container"
-          = f.simple_fields_for :exercises do |exercise_form|
-            = render 'exercise_fields', f: exercise_form
-        template data-nested-form-target="template"
-          = f.simple_fields_for :exercises, Exercise.new, child_index: 'CHILD_EXERCISE' do |exercise_form|
-            = render 'exercise_fields', f: exercise_form
-        .links.d-grid.gap-2
-          = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
-    .row
-      .col.d-grid
-        = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger mt-2', data: { action: 'click->nested-form#remove' }
+  = f.hidden_field :position
+  .segment-summary.card-body data-segment-card-target="summary"
+    button.workout-sortable-handle.segment-summary__handle type="button" aria-label="Drag segment" data-action="keydown->sortable-list#moveWithKeyboard"
+      i.fas.fa-grip-vertical aria-hidden="true"
+    button.segment-summary__button type="button" data-action="click->segment-card#expand" data-segment-card-target="expandButton" aria-expanded=expanded
+      span.segment-summary__content
+        span.segment-summary__text data-segment-card-target="summaryText" = summary
+        span.segment-summary__details data-segment-card-target="summaryDetails" hidden=exercise_summaries.blank?
+          - exercise_summaries.each do |exercise_summary|
+            span.segment-summary__detail = exercise_summary
+    = link_to '#', class: 'segment-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete segment' } do
+      i.fas.fa-trash-alt aria-hidden="true"
+  .segment-editor.card-body data-segment-card-target="editor" hidden=(!expanded)
+    .workout-sortable-item
+      .workout-sortable-item__body
+        .row.g-2
+          .col-12.col-lg-4 = f.input :name, input_html: { data: { 'segment-card-target': 'nameInput' } }
+          .col-6.col-md-3.col-lg-2 = f.input :rounds, input_html: { data: { 'segment-card-target': 'roundsInput' } }
+          .col-6.col-md-3.col-lg-2 = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200', input_html: { data: { 'segment-card-target': 'timeInput' } }
+          .col-12.col-md-6.col-lg-4 = f.input :interval_scheme, placeholder: '21-15-9...', input_html: { data: { 'segment-card-target': 'intervalInput' } }
+        .row.g-2
+          .col-12.col-md-4 = f.input :rest_seconds, input_html: { data: { 'segment-card-target': 'restInput' } }
+          .col-12.col-md-8 = f.input :notes, input_html: { data: { 'segment-card-target': 'notesInput' } }
+        .row
+          .col#segmented_exercises data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true" data-sortable-list-draggable-selector-value=".segment-exercise:not([hidden])"
+            .fields data-nested-form-target="container" data-sortable-list-target="container"
+              = f.simple_fields_for :exercises do |exercise_form|
+                = render 'exercise_fields', f: exercise_form, workout_part: false
+            template data-nested-form-target="template"
+              = f.simple_fields_for :exercises, Exercise.new, child_index: 'CHILD_EXERCISE' do |exercise_form|
+                = render 'exercise_fields', f: exercise_form, workout_part: false
+            .links.d-grid.gap-2
+              = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
+        .row
+          .col.d-grid.gap-2
+            button.btn.btn-sm.btn-primary.mt-2 type="button" data-action="click->segment-card#save" Done
+            = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }

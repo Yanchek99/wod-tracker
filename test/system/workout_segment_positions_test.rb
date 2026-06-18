@@ -15,17 +15,17 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
     visit new_workout_url
 
     click_on 'Add Exercise'
-    assert_field 'Position', with: '1'
+    assert_hidden_position all('#workout-parts > .fields > .exercise').last, '1'
 
     click_on 'Add Segment'
     within all('#workout-parts > .fields > .nested-fields').last do
-      assert_field 'Position', with: '2'
+      assert_equal '2', find('input[name$="[position]"]', visible: false).value
 
       click_on 'Add Exercise'
-      assert_field 'Position', with: '1'
+      assert_hidden_position all('.exercise').last, '1'
 
       click_on 'Add Exercise'
-      positions = all('.exercise input[name$="[position]"]').map(&:value)
+      positions = all('.exercise input[name$="[position]"]', visible: false).map(&:value)
       assert_equal %w[1 2], positions, "expected 2 exercises positions, got #{positions.inspect}"
 
       within all('.exercise').last do
@@ -37,30 +37,42 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
     within '#workout-parts > .links' do
       click_on 'Add Exercise'
     end
-    assert_equal %w[1 3], all('#workout-parts > .fields > .exercise input[name$="[position]"]').map(&:value)
+    assert_equal %w[1 3], all(
+      '#workout-parts > .fields > .exercise input[name$="[position]"]',
+      visible: false
+    ).map(&:value)
   end
 
-  test 'assigns positions past removed workout parts' do
+  test 'normalizes positions after removed workout parts' do
     visit new_workout_url
 
     click_on 'Add Exercise'
-    assert_field 'Position', with: '1'
+    assert_hidden_position all('#workout-parts > .fields > .exercise').last, '1'
 
     click_on 'Add Segment'
     within all('#workout-parts > .fields > .nested-fields').last do
-      assert_field 'Position', with: '2'
+      assert_equal '2', find('input[name$="[position]"]', visible: false).value
     end
 
     within '#workout-parts > .links' do
       click_on 'Add Exercise'
     end
-    assert_field 'Position', with: '3'
+    assert_hidden_position all('#workout-parts > .fields > .exercise').last, '3'
 
-    click_on 'Delete Segment'
+    find('[aria-label="Delete segment"]').click
 
     within '#workout-parts > .links' do
       click_on 'Add Exercise'
     end
-    assert_equal %w[1 3 4], all('#workout-parts > .fields > .exercise input[name$="[position]"]').map(&:value)
+    assert_equal %w[1 2 3], all(
+      '#workout-parts > .fields > .exercise:not([hidden]) input[name$="[position]"]',
+      visible: false
+    ).map(&:value)
+  end
+
+  private
+
+  def assert_hidden_position(scope, value)
+    assert_equal value, scope.find('input[name$="[position]"]', visible: false).value
   end
 end

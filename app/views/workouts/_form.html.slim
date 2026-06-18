@@ -12,18 +12,18 @@
       = f.rich_text_area :notes
   hr
   h3 Exercises
-  #workout-parts data-controller="nested-form" data-nested-form-position-segments-value="true"
-    .fields data-nested-form-target="container"
+  #workout-parts data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-position-segments-value="true" data-sortable-list-draggable-selector-value=".workout-part:not([hidden])"
+    .fields data-nested-form-target="container" data-sortable-list-target="container"
       - @workout.ordered_parts.each do |part|
         - if part.is_a?(Segment)
           = f.simple_fields_for :segments, part do |segment_form|
             = render 'segment_fields', f: segment_form
         - else
           = f.simple_fields_for :exercises, part do |exercise_form|
-            = render 'exercise_fields', f: exercise_form
+            = render 'exercise_fields', f: exercise_form, workout_part: true
     template data-nested-form-template="exercise" data-placeholder-value="NEW_EXERCISE"
       = f.simple_fields_for :exercises, Exercise.new, child_index: 'NEW_EXERCISE' do |exercise_form|
-        = render 'exercise_fields', f: exercise_form
+        = render 'exercise_fields', f: exercise_form, workout_part: true
     template data-nested-form-template="segment" data-placeholder-value="NEW_SEGMENT"
       = f.simple_fields_for :segments, Segment.new, child_index: 'NEW_SEGMENT' do |segment_form|
         = render 'segment_fields', f: segment_form

@@ -1,4 +1,5 @@
 class Workout < ApplicationRecord
+  include WorkoutPositionReservation
   include WorkoutScoring
 
   has_many :exercises, dependent: :destroy

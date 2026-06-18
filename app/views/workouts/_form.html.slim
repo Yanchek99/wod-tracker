@@ -16,22 +16,23 @@
   h3 Exercises
   #workout-parts data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-position-segments-value="true" data-sortable-list-draggable-selector-value=".workout-part:not([hidden])"
     .workout-builder-toolbar role="toolbar" aria-label="Workout builder actions"
-      button.btn.btn-success type="submit"
-        i.fa-solid.fa-floppy-disk aria-hidden="true"
-        span Save Workout
-      = link_to cancel_path, class: 'btn btn-secondary' do
-        i.fa-solid.fa-xmark aria-hidden="true"
-        span Cancel Workout
-      = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'exercise' } do
-        i.fa-solid.fa-dumbbell aria-hidden="true"
-        span Add Exercise
-      = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' } do
-        i.fa-solid.fa-layer-group aria-hidden="true"
-        span Add Segment
-      - if @workout.persisted?
-        = link_to workout_path(@workout), class: 'btn btn-danger', data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } do
-          i.fa-solid.fa-trash-can aria-hidden="true"
-          span Delete Workout
+      .workout-builder-toolbar__actions
+        button.btn.btn-success type="submit"
+          i.fa-solid.fa-floppy-disk aria-hidden="true"
+          span Save Workout
+        = link_to cancel_path, class: 'btn btn-secondary' do
+          i.fa-solid.fa-xmark aria-hidden="true"
+          span Cancel Workout
+        = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'exercise' } do
+          i.fa-solid.fa-dumbbell aria-hidden="true"
+          span Add Exercise
+        = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' } do
+          i.fa-solid.fa-layer-group aria-hidden="true"
+          span Add Segment
+        - if @workout.persisted?
+          = link_to workout_path(@workout), class: 'btn btn-danger', data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } do
+            i.fa-solid.fa-trash-can aria-hidden="true"
+            span Delete Workout
     .fields data-nested-form-target="container" data-sortable-list-target="container"
       - @workout.ordered_parts.each do |part|
         - if part.is_a?(Segment)

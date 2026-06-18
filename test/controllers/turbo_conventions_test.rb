@@ -64,6 +64,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select '.workout-builder-toolbar[role="toolbar"]' do
+      assert_select '.workout-builder-toolbar__actions'
       assert_select 'button[type="submit"]', text: 'Save Workout'
       assert_select 'a[href=?]', workouts_path, text: 'Cancel Workout'
       assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="exercise"]', text: 'Add Exercise'

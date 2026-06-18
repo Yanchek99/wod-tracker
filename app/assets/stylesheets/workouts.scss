@@ -15,17 +15,21 @@
 .workout-builder-toolbar {
   background: var(--bs-body-bg);
   border-top: 1px solid var(--bs-border-color);
+  bottom: 0;
+  left: 0;
+  padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+  position: fixed;
+  width: 100%;
+  z-index: 1030;
+}
+
+.workout-builder-toolbar__actions {
   display: grid;
   gap: 0.5rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  bottom: 0;
-  left: 50%;
+  margin: 0 auto;
   max-width: 1320px;
-  padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
-  position: fixed;
-  transform: translateX(-50%);
   width: calc(100% - 1.5rem);
-  z-index: 1030;
 }
 
 .workout-builder-toolbar .btn {
@@ -48,36 +52,36 @@
   font-size: 1rem;
 }
 
-.workout-builder-toolbar:has(.btn:nth-child(5)) {
+.workout-builder-toolbar__actions:has(.btn:nth-child(5)) {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 @media (min-width: 576px) {
-  .workout-builder-toolbar {
+  .workout-builder-toolbar__actions {
     max-width: 540px;
   }
 }
 
 @media (min-width: 768px) {
-  .workout-builder-toolbar {
+  .workout-builder-toolbar__actions {
     max-width: 720px;
   }
 }
 
 @media (min-width: 992px) {
-  .workout-builder-toolbar {
+  .workout-builder-toolbar__actions {
     max-width: 960px;
   }
 }
 
 @media (min-width: 1200px) {
-  .workout-builder-toolbar {
+  .workout-builder-toolbar__actions {
     max-width: 1140px;
   }
 }
 
 @media (min-width: 1400px) {
-  .workout-builder-toolbar {
+  .workout-builder-toolbar__actions {
     max-width: 1320px;
   }
 }

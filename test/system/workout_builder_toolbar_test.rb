@@ -41,4 +41,32 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
   ensure
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
+
+  test 'uses a full-width toolbar bar with container-width actions' do
+    page.driver.browser.manage.window.resize_to(1400, 900)
+    visit new_workout_url
+
+    assert_selector '.workout-builder-toolbar__actions'
+    layout = evaluate_script(<<~JS)
+      (() => {
+        const toolbar = document.querySelector('.workout-builder-toolbar').getBoundingClientRect()
+        const actions = document.querySelector('.workout-builder-toolbar__actions').getBoundingClientRect()
+
+        return {
+          toolbarLeft: toolbar.left,
+          toolbarRight: toolbar.right,
+          viewportWidth: window.innerWidth,
+          actionsWidth: actions.width,
+          actionsCenter: actions.left + (actions.width / 2)
+        }
+      })()
+    JS
+
+    assert_in_delta 0, layout['toolbarLeft'], 1
+    assert_in_delta layout['viewportWidth'], layout['toolbarRight'], 1
+    assert_operator layout['actionsWidth'], :<=, 1320
+    assert_in_delta layout['viewportWidth'] / 2, layout['actionsCenter'], 1
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
 end

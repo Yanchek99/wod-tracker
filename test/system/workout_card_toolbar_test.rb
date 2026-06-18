@@ -21,7 +21,7 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
     within all('#workout-parts > .fields > .exercise').last do
       within '.workout-card-toolbar' do
         assert_button 'Done'
-        assert_link 'Delete Exercise'
+        assert_no_link 'Delete Exercise'
       end
       assert_no_selector '.d-grid'
     end

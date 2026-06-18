@@ -50,34 +50,10 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
 
     within all('#workout-parts > .fields > .exercise').last do
       within '.exercise-editor__movement-row' do
-        assert_selector '[aria-label="Drag exercise"]'
+        assert_no_selector '[aria-label="Drag exercise"]'
         assert_field 'Movement'
         assert_selector '[aria-label="Delete exercise"]'
       end
-    end
-  end
-
-  test 'collapses an expanded exercise before dragging it' do
-    visit new_workout_url
-
-    fill_in 'Name', with: 'Collapse Exercise Before Drag'
-    select 'time', from: 'For'
-    click_on 'Add Exercise'
-
-    exercise = all('#workout-parts > .fields > .exercise').last
-    within exercise do
-      find('.ts-control input').set('Pull')
-      find('.ts-dropdown .option', text: 'Pull Up').click
-      fill_in 'Reps', with: '10'
-      assert_field 'Reps'
-    end
-
-    handle = exercise.find('.exercise-editor__handle')
-    page.execute_script("arguments[0].dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))", handle)
-
-    within exercise do
-      assert_no_field 'Reps'
-      assert_text '10 Pull Ups'
     end
   end
 end

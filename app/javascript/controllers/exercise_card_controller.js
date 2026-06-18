@@ -38,14 +38,6 @@ export default class extends Controller {
     this.saveIfValid()
   }
 
-  collapseForDrag(event) {
-    if (!this.expandedValue) return
-    if (this.saveIfValid()) return
-
-    event.preventDefault()
-    event.stopImmediatePropagation()
-  }
-
   handleOpening(event) {
     if (event.detail.card === this || !this.expandedValue) return
     if (this.saveIfValid()) return

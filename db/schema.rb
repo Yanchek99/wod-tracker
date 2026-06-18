@@ -178,8 +178,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_120000) do
   end
 
   create_table "solid_queue_jobs", force: :cascade do |t|
-    t.text "arguments"
     t.string "active_job_id"
+    t.text "arguments"
     t.string "class_name", null: false
     t.string "concurrency_key"
     t.datetime "created_at", null: false

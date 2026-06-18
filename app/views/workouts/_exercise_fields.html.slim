@@ -10,7 +10,7 @@
   .workout-sortable-item
     .workout-sortable-item__body
       .exercise-summary data-exercise-card-target="summaryButton"
-        button.workout-sortable-handle.exercise-summary__handle type="button" aria-label="Drag exercise"
+        button.workout-sortable-handle.exercise-summary__handle type="button" aria-label="Drag exercise" data-action="keydown->sortable-list#moveWithKeyboard"
           i.fas.fa-grip-vertical aria-hidden="true"
         button.exercise-summary__button type="button" data-action="click->exercise-card#expand" data-exercise-card-target="expandButton" aria-expanded=expanded
           span.exercise-summary__text data-exercise-card-target="summaryText" = summary

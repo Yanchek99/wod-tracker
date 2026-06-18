@@ -33,6 +33,8 @@ module WorkoutPositionReservation
   def reserve_records(records)
     records.each.with_index(1) do |record, index|
       # Reserve submitted rows inside the update transaction so uniqueness indexes allow position swaps.
+      # The workout form submits every persisted sibling with a hidden positive
+      # position; validation rollback protects us if that invariant is broken.
       record.update_columns(position: -index) # rubocop:disable Rails/SkipsModelValidations
     end
   end

@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "summary", "summaryText", "summaryDetails", "expandButton", "editor",
-    "nameInput", "roundsInput", "timeInput", "intervalInput"
+    "nameInput", "roundsInput", "timeInput", "intervalInput", "restInput", "notesInput"
   ]
 
   static values = {
@@ -95,7 +95,14 @@ export default class extends Controller {
   }
 
   get editorControls() {
-    return Array.from(this.editorTarget.querySelectorAll("input, select, textarea"))
+    return [
+      this.nameInputTarget,
+      this.roundsInputTarget,
+      this.timeInputTarget,
+      this.intervalInputTarget,
+      this.restInputTarget,
+      this.notesInputTarget
+    ]
   }
 
   get exerciseSummaryElements() {

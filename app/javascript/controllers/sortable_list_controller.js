@@ -39,7 +39,27 @@ export default class extends Controller {
     })
   }
 
+  moveWithKeyboard(event) {
+    if (!["ArrowUp", "ArrowDown"].includes(event.key)) return
+
+    const item = this.itemContaining(event.target)
+    if (!item) return
+
+    event.preventDefault()
+
+    if (event.key === "ArrowUp") {
+      this.moveBeforePrevious(item)
+    } else {
+      this.moveAfterNext(item)
+    }
+
+    this.refresh()
+    item.querySelector(this.handleSelectorValue)?.focus()
+  }
+
   clearDragState(item) {
+    // SortableJS can leave chosen/drag classes behind briefly after drop. Clear
+    // once immediately and twice after its animation/microtask cleanup settles.
     [0, 50, 200].forEach((delay) => {
       setTimeout(() => this.clearDragClasses(item), delay)
     })
@@ -53,10 +73,42 @@ export default class extends Controller {
 
   dragClassElements(item) {
     const selector = ".sortable-ghost, .sortable-chosen, .sortable-drag, .workout-sortable-ghost, .workout-sortable-chosen, .workout-sortable-drag"
-    const elements = Array.from(document.querySelectorAll(selector))
+    const elements = Array.from(this.containerTarget.querySelectorAll(selector))
     if (item) elements.push(item)
 
     return elements
+  }
+
+  moveBeforePrevious(item) {
+    const previous = this.itemBefore(item)
+    if (!previous) return
+
+    this.containerTarget.insertBefore(item, previous)
+  }
+
+  moveAfterNext(item) {
+    const next = this.itemAfter(item)
+    if (!next) return
+
+    this.containerTarget.insertBefore(item, next.nextSibling)
+  }
+
+  itemBefore(item) {
+    const index = this.items.indexOf(item)
+    if (index <= 0) return null
+
+    return this.items[index - 1]
+  }
+
+  itemAfter(item) {
+    const index = this.items.indexOf(item)
+    if (index < 0 || index >= this.items.length - 1) return null
+
+    return this.items[index + 1]
+  }
+
+  itemContaining(target) {
+    return this.items.find((item) => item.contains(target))
   }
 
   get items() {

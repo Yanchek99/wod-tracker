@@ -1,4 +1,5 @@
 class Workout < ApplicationRecord
+  include WorkoutFingerprint
   include WorkoutPositionReservation
   include WorkoutScoring
 

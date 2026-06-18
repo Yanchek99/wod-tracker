@@ -305,17 +305,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_130000) do
   end
 
   create_table "workouts", force: :cascade do |t|
+    t.string "content_key"
     t.datetime "created_at", precision: nil, null: false
     t.string "interval"
     t.string "name"
     t.integer "rounds"
     t.integer "score_type", null: false
     t.string "source"
-    t.string "source_ref"
     t.integer "time"
     t.integer "time_cap_seconds"
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["source", "source_ref"], name: "index_workouts_on_source_and_source_ref", unique: true
+    t.index ["content_key"], name: "index_workouts_on_content_key", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

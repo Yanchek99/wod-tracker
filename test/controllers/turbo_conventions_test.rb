@@ -64,10 +64,14 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select '.workout-builder-toolbar[role="toolbar"]' do
-      assert_select 'input[type="submit"][value="Save Workout"]'
+      assert_select 'button[type="submit"]', text: 'Save Workout'
       assert_select 'a[href=?]', workouts_path, text: 'Cancel Workout'
       assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="exercise"]', text: 'Add Exercise'
       assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="segment"]', text: 'Add Segment'
+      assert_select '.fa-floppy-disk'
+      assert_select '.fa-xmark'
+      assert_select '.fa-dumbbell'
+      assert_select '.fa-layer-group'
     end
     assert_select '[data-controller~="nested-form"][data-nested-form-position-exercises-value="true"]'
     assert_select 'template[data-nested-form-target="template"]'

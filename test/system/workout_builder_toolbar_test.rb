@@ -11,16 +11,18 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
     Warden.test_reset!
   end
 
-  test 'keeps workout builder toolbar visible while scrolling' do
+  test 'keeps workout builder toolbar fixed to the bottom while scrolling' do
     visit new_workout_url
 
     8.times { click_on 'Add Exercise', match: :first }
-    execute_script('window.scrollTo(0, document.body.scrollHeight)')
+    execute_script('window.scrollTo(0, Math.floor(document.body.scrollHeight / 2))')
 
     assert_selector '.workout-builder-toolbar'
-    toolbar_top = evaluate_script("document.querySelector('.workout-builder-toolbar').getBoundingClientRect().top")
-    assert_operator toolbar_top, :>=, 0
-    assert_operator toolbar_top, :<=, 16
+    toolbar_bottom = evaluate_script(<<~JS)
+      window.innerHeight - document.querySelector('.workout-builder-toolbar').getBoundingClientRect().bottom
+    JS
+    assert_operator toolbar_bottom, :>=, 0
+    assert_operator toolbar_bottom, :<=, 16
   end
 
   test 'lays out workout builder toolbar on mobile' do

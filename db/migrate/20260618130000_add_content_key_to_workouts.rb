@@ -1,6 +1,5 @@
-class AddSourceAndContentKeyToWorkouts < ActiveRecord::Migration[8.1]
+class AddContentKeyToWorkouts < ActiveRecord::Migration[8.1]
   def up
-    add_column :workouts, :source, :string
     add_column :workouts, :content_key, :string
     add_index :workouts, :content_key, unique: true
 
@@ -13,6 +12,5 @@ class AddSourceAndContentKeyToWorkouts < ActiveRecord::Migration[8.1]
   def down
     remove_index :workouts, :content_key
     remove_column :workouts, :content_key
-    remove_column :workouts, :source
   end
 end

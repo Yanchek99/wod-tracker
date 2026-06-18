@@ -20,7 +20,10 @@ implemented:
 
 - Intended stimulus is modeled as the fixed target a workout prescribes, not as
   one of several authored scale levels, so that individualized scaling can be
-  evaluated against it.
+  evaluated against it. Stimulus is general guidance on how movements should be
+  performed and what loads and volumes fit; it is not pacing. A workout's priority
+  type (task priority or time priority) and time domain are inputs to its
+  stimulus, not the whole of it.
 - Strength percentages are stored on the prescription, but resolving them into a
   working load requires modeling athlete maxes (1RM or training max). Until maxes
   exist, percentages are display-only.

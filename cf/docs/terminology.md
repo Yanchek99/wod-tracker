@@ -61,18 +61,29 @@ approximation of scaling, useful as source data but not athlete-specific.
 Individualized scaling is the core problem the app aims to solve, eventually
 through machine learning.
 
+## Task Priority And Time Priority
+
+CrossFit workouts are classified by what is fixed. A task-priority workout fixes
+the work and scores time: complete a set amount of work as fast as possible (For
+Time workouts such as Fran and Grace). A time-priority workout fixes the time and
+scores work: do as much work as possible in a set time (AMRAPs, EMOMs, and
+interval schemes). The priority type contributes to a workout's general stimulus.
+
 ## Intended Stimulus
 
-The intended stimulus is the coach's goal for a workout: the target time domain,
-effort, pacing, and feel (for example sprint, grind, or skill/quality work). It
-is what the programmer prescribes and the fixed target that scaling preserves for
-each athlete.
+The intended stimulus is a general description of how a workout should be
+performed, used to guide scaling. It is not pacing. It describes how movements
+should be performed and what loads and volumes are appropriate so the workout
+does what it is meant to do — for example, Grace's load should allow fast singles,
+and Cindy should let an athlete do the pull-ups unbroken. Stimulus follows from a
+workout's priority type, movements, and loads. It is the coach's tool for scaling
+athletes, and the app will use it to design individualized workout variations.
 
 ## Time Domain
 
 The time domain is the expected duration band for a workout: short (roughly under
 5 minutes), medium (roughly 5 to 15 minutes), or long (roughly over 15 minutes).
-It is one component of the intended stimulus.
+It is one component of the intended stimulus, not the whole of it.
 
 ## Strength Percentage And 1RM
 

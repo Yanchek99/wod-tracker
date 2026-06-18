@@ -7,15 +7,23 @@ The app already models individual workouts and places them on a calendar through
 The next programming concepts to model build on that base. They are listed in the
 intended order of implementation, and each can become its own follow-up issue.
 
-1. Intended stimulus. The coach's goal for a workout, such as the target time
-   domain, effort, pacing, or whether it is meant to be a sprint, a grind, or a
-   skill/quality piece. The intended stimulus is what the programmer prescribes;
-   it is the fixed target that scaling must preserve for each athlete.
+1. Intended stimulus. A general description of how a workout should be performed,
+   used to guide scaling. Stimulus is not pacing. It expresses how movements
+   should be performed and what loads and volumes are appropriate so the workout
+   does what it is meant to do — for example, Grace's load should be light enough
+   to allow fast singles, and Cindy should let an athlete do the pull-ups
+   unbroken. Every workout has a general stimulus that follows from its priority
+   type (see Workout Structures) as well as its movements and loads; time domain
+   is only one part of it. Stimulus is the coach's tool for scaling athletes, and
+   the app will use it to design individualized workout variations. The programmer
+   prescribes the stimulus; it is the fixed target that scaling must preserve for
+   each athlete.
 2. Time domains. The expected duration band for a workout. CrossFit commonly
    groups efforts as short (roughly under 5 minutes), medium (roughly 5 to 15
-   minutes), and long (roughly over 15 minutes). Time domain is part of the
-   intended stimulus and should be derivable from, or stored alongside, the
-   workout's existing `time`, `time_cap_seconds`, and structure fields.
+   minutes), and long (roughly over 15 minutes). Time domain is one component of
+   the intended stimulus, not the whole of it, and should be derivable from, or
+   stored alongside, the workout's existing `time`, `time_cap_seconds`, and
+   structure fields.
 3. Strength percentages. Loads prescribed relative to an athlete's max, such as
    `5x3 @ 80% 1RM`. This needs both a percentage on the prescription and an
    athlete max (1RM or training max) to resolve the percentage into a working
@@ -48,12 +56,12 @@ starting point, but not the same as scaling a workout to a specific athlete.
 
 Individualizing scaling per athlete is the core problem this app aims to solve,
 eventually through machine learning: given an athlete's history and a workout's
-intended stimulus, suggest the load, volume, skill, height/target, and time-domain
-adjustments that keep that athlete inside the intended stimulus. The concepts
-modeled first (intended stimulus, time domains, strength percentages and athlete
-maxes, coach notes) are the inputs and labels that future individualized scaling
-will depend on, which is why the intended stimulus is modeled as the fixed target
-rather than as one of several authored scale levels.
+intended stimulus, design a workout variation — adjusting load, volume, skill,
+height/target, or movements — that keeps that athlete inside the intended
+stimulus. The concepts modeled first (intended stimulus, time domains, strength
+percentages and athlete maxes, coach notes) are the inputs and labels that future
+individualized scaling will depend on, which is why the intended stimulus is
+modeled as the fixed target rather than as one of several authored scale levels.
 
 ## Programming Methodology
 
@@ -67,6 +75,15 @@ how the athlete performs or scores the workout. Common examples are load, reps,
 distance, calories, box height, wall-ball target height, and time cap.
 
 ## Workout Structures
+
+CrossFit workouts are either task priority or time priority, and this split
+shapes the general stimulus:
+
+- Task priority: the work is fixed and the score is time. The athlete completes a
+  set amount of work as fast as possible, as in For Time workouts like Fran and
+  Grace.
+- Time priority: the time is fixed and the score is work. The athlete does as
+  much work as possible in a set time, as in AMRAPs, EMOMs, and interval schemes.
 
 Common structures include:
 

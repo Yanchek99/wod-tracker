@@ -3,9 +3,9 @@
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time
-domains, strength percentages, coach notes, and cycle/week/day structure. Each is
-documented in `programming.md` and `terminology.md` so follow-up implementation
-issues can be created from a shared model rather than ad hoc choices.
+domains, strength percentages, and coach notes. Each is documented in
+`programming.md` and `terminology.md` so follow-up implementation issues can be
+created from a shared model rather than ad hoc choices.
 
 Scaling is treated as individualized to the athlete, not as a set of generalist
 versions the programmer authors. The programmer prescribes the workout and its
@@ -30,15 +30,14 @@ implemented:
 - Coach notes are distinguished from athlete log notes. `Workout`, `Segment`, and
   `Exercise` already carry `notes`; those are coach-authored programming notes,
   while athlete notes belong with `Log`/`MovementLog`.
-- Cycle/week/day structure groups `Schedule` entries. Today a `Schedule` carries
-  only `posted_at`; structured programs add an ordered cycle → week → day grouping
-  layered on top of scheduling rather than replacing the dated feed.
+
+Cycle/week/day training blocks and parallel tracks are intentionally excluded.
+Fixed multi-week blocks run counter to CrossFit's constantly-varied prescription,
+and individualized scaling is intended to remove the need for separate tracks.
 
 Rationale: documenting the concepts and their preferred mapping to existing models
 first keeps later implementation aligned with current patterns (metrics,
-exercises, schedules, subscriptions) and avoids parallel structures. Tracks are
-named in terminology for clarity but are deferred; they are not in the first
-implementation set.
+exercises, schedules, subscriptions) and avoids parallel structures.
 
 ## 2026-06-05: Scope Exercise Positions to Their Workout Part
 

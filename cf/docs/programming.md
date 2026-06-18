@@ -18,10 +18,6 @@ exercise. The breadth and depth of a program's stimulus determine the breadth an
 depth of the adaptation it elicits, so the prescription of functional movement and
 intensity is kept constantly varied.
 
-CrossFit's charter for the best balance of safety, efficacy, and efficiency is
-mechanics, consistency, then — and only then — intensity. Movements must be
-performed correctly and consistently before load and speed are added.
-
 ## Modalities
 
 CrossFit programming draws from three modalities (L1 guide):
@@ -105,9 +101,7 @@ load; aspects of that combination can be adjusted for each individual so the
 workout produces relatively similar effects on each athlete regardless of physical
 abilities.
 
-Scaling follows the same charter as all CrossFit training: mechanics and
-consistency before intensity. For newer athletes the two factors to scale are
-intensity and volume (L1 guide):
+For newer athletes the two factors to scale are intensity and volume (L1 guide):
 
 - Intensity is the power an athlete generates and is modified through load, speed,
   or volume. Load is scaled first because it is the easiest way to preserve the
@@ -159,12 +153,14 @@ intended order of implementation, and each can become its own follow-up issue.
    part of the prescribed stimulus. The programmer prescribes the stimulus, and
    the app will use it as the fixed target when designing individualized workout
    variations.
-2. Time domains. The expected duration band for a workout, reflecting the
-   metabolic pathway it targets (phosphagen, glycolytic, or oxidative) and
-   commonly grouped as short, medium, or long. Time domain is one component of the
-   intended stimulus, not the whole of it, and should be derivable from, or stored
-   alongside, the workout's existing `time`, `time_cap_seconds`, and structure
-   fields.
+2. Time domains. The expected duration of a workout, reflecting the metabolic
+   pathway it targets (phosphagen, glycolytic, or oxidative) and commonly grouped
+   as short, medium, or long. For a task-priority workout this is how long the
+   prescribed work should take; for a time-priority workout the total time is fixed
+   and the domain reflects how long each round or interval should take. Time domain
+   is one component of the intended stimulus, not the whole of it, and should be
+   derivable from, or stored alongside, the workout's existing `time`,
+   `time_cap_seconds`, and structure fields.
 3. Strength percentages. Loads prescribed relative to an athlete's capacity, such
    as a percentage of body weight (the L1 template uses loads like `thruster 50%
    of body weight`) or of a lift max (`5x3 @ 80% 1RM`). Resolving a percentage
@@ -177,11 +173,6 @@ intended order of implementation, and each can become its own follow-up issue.
    guidance. `Workout`, `Segment`, and `Exercise` already have `notes` fields;
    the modeling question is how to separate coach-authored programming notes from
    athlete-authored log notes.
-5. Cycle / week / day structure. Structured programs group scheduled days into
-   weeks and weeks into cycles (training blocks). Today a `Schedule` only carries
-   a `posted_at` date. Structured programming adds an ordered cycle → week → day
-   grouping so a program can express progression across a block rather than a
-   flat calendar feed.
 
 Document and decide each concept's modeling approach in `decisions.md` before
 implementing it. Prefer reusing existing models (metrics, exercises, schedules)

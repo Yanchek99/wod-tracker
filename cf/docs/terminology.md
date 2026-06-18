@@ -18,27 +18,12 @@ core to extremity, are compound (multi-joint), and are effective at moving large
 loads over long distances quickly. Load, distance, and speed together let
 functional movements produce high power (L1 guide).
 
-## Fitness
-
-The L1 guide defines fitness through four models: the 10 general physical skills
-(cardiovascular/respiratory endurance, stamina, strength, flexibility, power,
-speed, coordination, agility, balance, accuracy); the performance of athletic
-tasks (the "hopper" of random physical challenges); the three metabolic pathways;
-and the sickness-wellness-fitness continuum, where fitness is "super-wellness."
-An athlete is as fit as they are competent across all of these.
-
 ## Intensity And Power
 
 Intensity is defined exactly as power (L1 guide). It is the independent variable
 most commonly associated with maximizing the rate of return of favorable
 adaptation to exercise. Intensity is modified through load, speed, or volume, and
 is relative to each athlete's capacity.
-
-## Mechanics, Consistency, Intensity
-
-CrossFit's charter for the best balance of safety, efficacy, and efficiency is
-mechanics, consistency, then — and only then — intensity (L1 guide). Movements
-must be correct and consistent before load and speed are added.
 
 ## Modalities
 
@@ -62,13 +47,6 @@ overhead squat, shoulder press, push press, push jerk, deadlift, sumo deadlift
 high pull, and medicine-ball clean — plus four additional movements: the pull-up,
 thruster, muscle-up, and snatch.
 
-## Points Of Performance And Faults
-
-Points of performance are the criteria for proper execution of a movement,
-including set-up and finish positions (L1 guide). A fault is a deviation from a
-point of performance. Coaching is teaching the points of performance, seeing
-deviations in real time, and correcting them.
-
 ## Intended Stimulus
 
 The intended stimulus is the effect a workout is meant to produce. The L1 guide
@@ -83,8 +61,11 @@ individualized workout variations.
 ## Time Domain
 
 The time domain is the expected duration of a workout, reflecting the metabolic
-pathway it targets and commonly grouped as short, medium, or long. It is one
-component of the intended stimulus, not the whole of it.
+pathway it targets and commonly grouped as short, medium, or long. For a
+task-priority workout it describes how long the prescribed work should take. For a
+time-priority workout the total time is fixed, so the time domain instead reflects
+how long each round or interval should take. It is one component of the intended
+stimulus, not the whole of it.
 
 ## Task Priority And Time Priority
 
@@ -171,21 +152,8 @@ a program on a `posted_at` date. A `Subscription` connects a user to a program
 with a role of owner, coach, or athlete. Coaches author programming; athletes
 consume it and log their performances.
 
-## Track
-
-A track is a parallel programming stream within or alongside a program, such as a
-competitor, fitness, or masters track. Athletes follow one track at a time. A
-track is distinct from a scale: a track is a separate plan, while a scale is a
-version of the same workout adjusted for an athlete.
-
 ## Coach Note
 
 A coach note is programming guidance authored by a coach, such as stimulus,
 scaling, or strategy advice. It is distinct from an athlete's log note, which
 records the athlete's own performance and experience.
-
-## Cycle, Week, And Day
-
-A cycle (or block) is a multi-week training phase. A program's structured
-schedule groups days into weeks and weeks into cycles to express progression,
-rather than a flat list of dated workouts.

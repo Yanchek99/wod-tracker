@@ -74,6 +74,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
       assert_select '.fa-layer-group'
       assert_select 'a[data-turbo-method="delete"]', false
     end
+    assert_select '.form-actions', false
     assert_select '[data-controller~="nested-form"][data-nested-form-position-exercises-value="true"]'
     assert_select 'template[data-nested-form-target="template"]'
     assert_select 'a[data-action="click->nested-form#add"]'

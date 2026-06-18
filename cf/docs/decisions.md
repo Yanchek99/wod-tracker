@@ -1,5 +1,31 @@
 # Decisions
 
+## 2026-06-18: Repeat/Benchmark Workouts Are One Workout On Many Schedules
+
+A repeated or benchmark workout (Fran, Cindy, Grace, Murph, etc.) is modeled as a
+single canonical `Workout` placed on multiple dates through multiple `Schedule`
+records (`posted_at`). It is not a new duplicate `Workout` per date. The same
+workout scheduled five times is one `Workout` and five `Schedule`s, and the
+system must not create duplicate `Workout` rows for identical content. Workout
+identity is content-based — defined by its movements, loads, rep scheme,
+structure, and intended stimulus — and is independent of when it is scheduled.
+
+Rationale: a benchmark is a measurement instrument. The L1 guide's argument that
+comparing two attempts of a workout reports the change in an athlete's power and
+work capacity ("This is your fitness") only holds when the work is constant across
+attempts, so both attempts must reference the same workout definition. Treating
+each scheduled occurrence as a distinct `Workout` would fragment a benchmark's
+history and break score-over-time comparison. One `Workout` reused across many
+`Schedule` (`posted_at`) rows is the direct extension of the existing
+`Program`/`Schedule`/`Subscription` model — a `Schedule` already places one
+workout on a date — so repeating a workout means adding schedules, not workouts,
+and an athlete's logs across those schedules form the benchmark's progress
+history.
+
+This entry records the modeling rule so importer and seed work can rely on it. It
+does not specify the deduplication mechanism (how identical content is detected);
+that is left to the implementing issue.
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time

@@ -1,103 +1,81 @@
 # Programming
 
-## Programming Concepts To Model First
+This file describes CrossFit programming as defined by the Level 1 and Level 2
+Training Guides (see `references.md`), followed by the app-specific modeling and
+rendering conventions built on top of that domain knowledge.
 
-The app already models individual workouts and places them on a calendar through
-`Program`, `Schedule` (`posted_at`), and `Subscription` (owner/coach/athlete).
-The next programming concepts to model build on that base. They are listed in the
-intended order of implementation, and each can become its own follow-up issue.
+## The CrossFit Prescription
 
-1. Intended stimulus. The effect a workout is meant to produce. The L1 guide
-   defines the stimulus as the effects of the specific combination of movements,
-   time domain, and load; the L2 guide reviews a workout's intended stimulus as
-   its movement functions, loading parameters, time frame, and volume of
-   repetitions. It is the target a coach scales toward so the workout produces
-   relatively similar effects on each athlete regardless of ability. Stimulus is
-   not a prescribed pace — speed is one way an athlete modulates intensity, not
-   part of the prescribed stimulus. The programmer prescribes the stimulus, and
-   the app will use it as the fixed target when designing individualized workout
-   variations.
-2. Time domains. The expected duration band for a workout. CrossFit commonly
-   groups efforts as short (roughly under 5 minutes), medium (roughly 5 to 15
-   minutes), and long (roughly over 15 minutes). Time domain is one component of
-   the intended stimulus, not the whole of it, and should be derivable from, or
-   stored alongside, the workout's existing `time`, `time_cap_seconds`, and
-   structure fields.
-3. Strength percentages. Loads prescribed relative to an athlete's max, such as
-   `5x3 @ 80% 1RM`. This needs both a percentage on the prescription and an
-   athlete max (1RM or training max) to resolve the percentage into a working
-   load. Percentage-based loading is inherently per-athlete, so athlete maxes are
-   the first piece of athlete-individualized state the app needs. Until maxes are
-   modeled, percentage prescriptions are display-only guidance.
-4. Coach notes. Programming intent written by the coach, distinct from an
-   athlete's own log notes. Coach notes carry stimulus, scaling, and strategy
-   guidance. `Workout`, `Segment`, and `Exercise` already have `notes` fields;
-   the modeling question is how to separate coach-authored programming notes from
-   athlete-authored log notes.
-5. Cycle / week / day structure. Structured programs group scheduled days into
-   weeks and weeks into cycles (training blocks). Today a `Schedule` only carries
-   a `posted_at` date. Structured programming adds an ordered cycle → week → day
-   grouping so a program can express progression across a block rather than a
-   flat calendar feed.
+CrossFit's prescription is "constantly varied, high-intensity functional
+movement" (L1 guide). Functional movements are universal motor recruitment
+patterns: they move from core to extremity, are compound (multi-joint), and move
+large loads over long distances quickly. Those three attributes — load, distance,
+and speed — produce high power.
 
-Document and decide each concept's modeling approach in `decisions.md` before
-implementing it. Prefer reusing existing models (metrics, exercises, schedules)
-over introducing parallel structures.
+Intensity is defined exactly as power, and it is the independent variable most
+commonly associated with maximizing the rate of return of favorable adaptation to
+exercise. The breadth and depth of a program's stimulus determine the breadth and
+depth of the adaptation it elicits, so the prescription of functional movement and
+intensity is kept constantly varied.
 
-## Scaling Is Individualized
+CrossFit's charter for the best balance of safety, efficacy, and efficiency is
+mechanics, consistency, then — and only then — intensity. Movements must be
+performed correctly and consistently before load and speed are added.
 
-The CrossFit principle for scaling is "preserve the stimulus" (L1 guide). Because
-the stimulus is the combination of movements, time domain, and load, aspects of
-that combination can be adjusted for each individual so the workout produces
-relatively similar effects on each athlete regardless of physical abilities.
-Scaling is therefore individual to the athlete, not a fixed set of generalist
-versions the programmer authors, and it is a "moving target" as an athlete's
-capacity changes (L2 guide).
+## Modalities
 
-The L2 guide scales by reviewing the workout's intended stimulus — movement
-functions, loading, time frame, and volume — and adhering to as many of those
-variables as possible in light of the individual's capacity while still providing
-a significant challenge. Load is scaled first because it most easily preserves
-the stimulus; reducing volume (time, reps/rounds, distance) and substituting
-movements that keep a similar function and range of motion follow. The guide's
-worked examples are Amanda (9-7-5 muscle-ups and 135-lb snatches: high-skill
-movements, moderate load, short time frame of about 5 minutes, low volume) and
-Elizabeth (21-15-9 cleans at 135 lb and ring dips: short, moderate loading),
-scaled by adjusting load, volume, or movement to fit the athlete while holding
-the original intent.
+CrossFit programming draws from three modalities (L1 guide):
 
-The published CrossFit option levels (Rx, intermediate, beginner) are a coarse,
-generalist approximation of this — useful as source data, but not the same as
-scaling a workout to a specific athlete. Individualizing scaling per athlete is
-the core problem this app aims to solve, eventually through machine learning:
-given an athlete's history and a workout's intended stimulus, design a workout
-variation that preserves the stimulus for that athlete. The concepts modeled
-first (intended stimulus, time domains, strength percentages and athlete maxes,
-coach notes) are the inputs and labels that future individualized scaling will
-depend on, which is why the intended stimulus is modeled as the fixed target
-rather than as one of several authored scale levels.
+- Metabolic conditioning (M): run, bike, row, jump rope.
+- Gymnastics (G): air squat, pull-up, push-up, dip, handstand push-up, rope
+  climb, muscle-up, press to handstand, back/hip extension, sit-up, jump, lunge.
+- Weightlifting (W): deadlift, clean, press, snatch, clean and jerk, medicine-ball
+  drills, kettlebell swing.
 
-## Programming Methodology
+A workout's structure varies by including one, two, or three modalities.
 
-CrossFit programming combines measurable work, movement standards, and intended
-stimulus. A workout prescription is more than a list of movements: it can encode
-the loading, height, distance, calories, time domain, rest, interval pattern,
-round structure, and score type.
+## Metabolic Pathways And Time Domains
 
-When modeling CrossFit workouts, preserve the prescribed properties that affect
-how the athlete performs or scores the workout. Common examples are load, reps,
-distance, calories, box height, wall-ball target height, and time cap.
+Three metabolic pathways provide the energy for all human action (L1 guide):
+
+- Phosphagen: dominates the highest-powered activities lasting less than about 10
+  seconds.
+- Glycolytic: dominates moderate-powered activities lasting up to several minutes.
+- Oxidative (aerobic): dominates low-powered activities lasting in excess of
+  several minutes.
+
+Total fitness requires competency in all three pathways, controlled by varying
+the duration and intensity of effort. A workout's time domain — its expected
+duration, commonly grouped as short, medium, or long — reflects which pathway it
+targets and is one component of the intended stimulus. The L2 guide describes
+short workouts such as Amanda and Elizabeth as taking about 5 minutes.
+
+## The Theoretical Template
+
+The L1 guide presents a theoretical template for programming. Three days on and
+one day off allows maximum sustainability at maximum intensity. Days are
+structured by the number of modalities they include:
+
+- Single-element days: element priority. A single effort — long, slow distance
+  (M); a single high skill (G); or a single heavy lift (W). Recovery is not a
+  limiting factor.
+- Two-element days: task priority. A couplet repeated 3-5 rounds for time, with
+  two moderately to intensely challenging elements. Work/rest interval management
+  is critical.
+- Three-element days: time priority. A triplet repeated for a set number of
+  minutes for rotations, with three lightly to moderately challenging elements.
+  Work/rest interval is a marginal factor.
 
 ## Workout Structures
 
-CrossFit workouts are either task priority or time priority, and this split
-shapes the general stimulus:
+CrossFit workouts are either task priority or time priority (L1 guide):
 
-- Task priority: the work is fixed and the score is time. The athlete completes a
-  set amount of work as fast as possible, as in For Time workouts like Fran and
-  Grace.
-- Time priority: the time is fixed and the score is work. The athlete does as
-  much work as possible in a set time, as in AMRAPs, EMOMs, and interval schemes.
+- Task priority: the work is fixed and the score is time. The task is set and the
+  time varies; the workout is scored by the time to complete the prescribed work,
+  as in For Time workouts like Fran and Grace.
+- Time priority: the time is fixed and the score is work. The athlete is kept
+  moving for a set time and scored by rotations or repetitions completed, as in
+  AMRAPs, EMOMs, and interval schemes.
 
 Common structures include:
 
@@ -119,20 +97,95 @@ Intervals such as `21-15-9` define rep schemes across listed movements. A rep
 metric of `1` on a movement in an interval workout means the interval supplies
 the reps.
 
-## Scaling Methodology
+## Scaling: Preserve The Stimulus
 
-CrossFit scaling commonly changes several dimensions together:
+The main principle of scaling is "preserve the stimulus" (L1 guide). The stimulus
+is the effect produced by the specific combination of movements, time domain, and
+load; aspects of that combination can be adjusted for each individual so the
+workout produces relatively similar effects on each athlete regardless of physical
+abilities.
 
-- Load: barbell, dumbbell, kettlebell, medicine ball, vest, sled, or object
-  weight.
-- Volume: reps, rounds, calories, or distance.
-- Skill demand: movement substitutions or reduced movement complexity.
-- Height/target: box height, wall-ball target height, or burpee target height.
-- Time domain: caps, intervals, or total workout duration.
+Scaling follows the same charter as all CrossFit training: mechanics and
+consistency before intensity. For newer athletes the two factors to scale are
+intensity and volume (L1 guide):
 
-Scaling should be source-driven when importing canonical CrossFit workouts.
+- Intensity is the power an athlete generates and is modified through load, speed,
+  or volume. Load is scaled first because it is the easiest way to preserve the
+  stimulus relative to an athlete's capacity.
+- Volume is the total work accomplished and is reduced through time, reps/rounds,
+  or distance.
+- Movement substitutions should preserve a similar movement function and range of
+  motion. Substitute the movement only after adjusting load, distance, and reps.
+
+To scale a workout, review its intended stimulus — movement functions, loading,
+time frame, and volume (L2 guide) — and adhere to as many of those variables as
+possible in light of the individual's capacity while still providing a significant
+challenge. Scaling is a "moving target" as capacities change.
+
+When importing canonical CrossFit workouts, scaling should be source-driven.
 Recurring patterns are useful for review, but source text wins when it conflicts
 with a pattern.
+
+## Scaling Is Individualized
+
+The published CrossFit option levels (Rx, intermediate, beginner) are a coarse,
+generalist approximation of scaling — useful as source data, but not the same as
+scaling a workout to a specific athlete. Because the stimulus must be preserved
+for each individual, scaling is inherently per-athlete rather than a fixed set of
+versions the programmer authors.
+
+Individualizing scaling per athlete is the core problem this app aims to solve,
+eventually through machine learning: given an athlete's history and a workout's
+intended stimulus, design a workout variation that preserves the stimulus for that
+athlete. The concepts modeled first (intended stimulus, time domains, strength
+percentages and athlete maxes, coach notes) are the inputs and labels that future
+individualized scaling will depend on, which is why the intended stimulus is
+modeled as the fixed target rather than as one of several authored scale levels.
+
+## Programming Concepts To Model First
+
+The app already models individual workouts and places them on a calendar through
+`Program`, `Schedule` (`posted_at`), and `Subscription` (owner/coach/athlete).
+The next programming concepts to model build on that base. They are listed in the
+intended order of implementation, and each can become its own follow-up issue.
+
+1. Intended stimulus. The effect a workout is meant to produce. The L1 guide
+   defines the stimulus as the effects of the specific combination of movements,
+   time domain, and load; the L2 guide reviews a workout's intended stimulus as
+   its movement functions, loading parameters, time frame, and volume of
+   repetitions. It is the target a coach scales toward so the workout produces
+   relatively similar effects on each athlete regardless of ability. Stimulus is
+   not a prescribed pace — speed is one way an athlete modulates intensity, not
+   part of the prescribed stimulus. The programmer prescribes the stimulus, and
+   the app will use it as the fixed target when designing individualized workout
+   variations.
+2. Time domains. The expected duration band for a workout, reflecting the
+   metabolic pathway it targets (phosphagen, glycolytic, or oxidative) and
+   commonly grouped as short, medium, or long. Time domain is one component of the
+   intended stimulus, not the whole of it, and should be derivable from, or stored
+   alongside, the workout's existing `time`, `time_cap_seconds`, and structure
+   fields.
+3. Strength percentages. Loads prescribed relative to an athlete's capacity, such
+   as a percentage of body weight (the L1 template uses loads like `thruster 50%
+   of body weight`) or of a lift max (`5x3 @ 80% 1RM`). Resolving a percentage
+   into a working load requires per-athlete data — body weight or a stored max
+   (1RM or training max). Percentage-based loading is inherently per-athlete, so
+   athlete maxes are the first piece of athlete-individualized state the app needs.
+   Until that data is modeled, percentage prescriptions are display-only guidance.
+4. Coach notes. Programming intent written by the coach, distinct from an
+   athlete's own log notes. Coach notes carry stimulus, scaling, and strategy
+   guidance. `Workout`, `Segment`, and `Exercise` already have `notes` fields;
+   the modeling question is how to separate coach-authored programming notes from
+   athlete-authored log notes.
+5. Cycle / week / day structure. Structured programs group scheduled days into
+   weeks and weeks into cycles (training blocks). Today a `Schedule` only carries
+   a `posted_at` date. Structured programming adds an ordered cycle → week → day
+   grouping so a program can express progression across a block rather than a
+   flat calendar feed.
+
+Document and decide each concept's modeling approach in `decisions.md` before
+implementing it. Prefer reusing existing models (metrics, exercises, schedules)
+over introducing parallel structures.
 
 ## CrossFit Sex-Specific Prescription Patterns
 

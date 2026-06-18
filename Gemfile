@@ -12,6 +12,12 @@ gem 'sprockets-rails'
 # Use postgresql as the database for Active Record
 gem 'pg'
 
+# Database-backed Active Job queuing backend
+gem 'solid_queue'
+
+# HTML/XML parsing for the WOD scraper
+gem 'nokogiri'
+
 # Use Puma as the app server
 gem 'puma', '~> 8.0'
 
@@ -73,4 +79,5 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'simplecov', '0.22.0', require: false # Version locked because of code climate issues
+  gem 'webmock' # Stub and disable external HTTP in tests
 end

@@ -5,7 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
+admin = User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
   u.first_name = "ADMIN"
   u.last_name = "ADMIN"
   u.sex = :male
@@ -162,6 +162,12 @@ Movement.find_or_create_by(name: 'Zercher Squat')
 
 # Programs
 cfj = Program.find_or_create_by(name: 'Crossfit Journal')
+
+# Destination program for scraped CrossFit.com main-site WODs, owned by the admin user.
+crossfit_main = Program.find_or_create_by(name: 'CrossFit.com Main Site')
+crossfit_main.subscriptions.find_or_create_by(user: admin) do |subscription|
+  subscription.role = :owner
+end
 
 # Fight Gone Bad
 # In this workout you move from each of 5 stations after a minute.

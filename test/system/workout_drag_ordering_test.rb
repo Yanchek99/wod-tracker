@@ -7,7 +7,7 @@ module WorkoutDragOrderingSystemHelpers
   end
 
   def add_top_level_exercise(movement:, reps: nil, distance: nil)
-    within '#workout-parts > .links' do
+    within '.workout-builder-toolbar' do
       click_on 'Add Exercise'
     end
 
@@ -16,7 +16,7 @@ module WorkoutDragOrderingSystemHelpers
   end
 
   def add_segment(name: nil)
-    within '#workout-parts > .links' do
+    within '.workout-builder-toolbar' do
       click_on 'Add Segment'
     end
 

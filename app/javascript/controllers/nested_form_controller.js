@@ -14,7 +14,7 @@ export default class extends Controller {
   add(event) {
     event.preventDefault()
 
-    const template = this.templateFor(event.target.dataset.nestedFormTemplate)
+    const template = this.templateFor(event.currentTarget.dataset.nestedFormTemplate)
     const placeholderValue = template.dataset.placeholderValue || this.placeholderValue
     const content = template.innerHTML.replaceAll(placeholderValue, this.newId())
     this.container.insertAdjacentHTML('beforeend', content)

@@ -72,6 +72,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
       assert_select '.fa-xmark'
       assert_select '.fa-dumbbell'
       assert_select '.fa-layer-group'
+      assert_select 'a[data-turbo-method="delete"]', false
     end
     assert_select '[data-controller~="nested-form"][data-nested-form-position-exercises-value="true"]'
     assert_select 'template[data-nested-form-target="template"]'
@@ -83,6 +84,10 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select '.workout-builder-toolbar a[href=?]', workout_path(workouts(:fran)), text: 'Cancel Workout'
+    assert_select '.workout-builder-toolbar a[href=?][data-turbo-method="delete"][data-turbo-confirm="Are you sure?"]',
+                  workout_path(workouts(:fran)),
+                  text: 'Delete Workout'
+    assert_select '.workout-builder-toolbar .fa-trash-can'
   end
 
   test 'movement and metric selects use stimulus controllers' do

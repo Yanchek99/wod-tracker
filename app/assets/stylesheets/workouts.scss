@@ -46,6 +46,10 @@
   font-size: 1rem;
 }
 
+.workout-builder-toolbar:has(.btn:nth-child(5)) {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .workout-sortable-item__body {
   flex: 1 1 auto;
   min-width: 0;
@@ -177,6 +181,10 @@
     right: auto;
     transform: translateX(-50%);
     width: calc(100% - 1rem);
+  }
+
+  .workout-builder-toolbar:has(.btn:nth-child(5)) {
+    max-width: 900px;
   }
 
   .workout-builder-toolbar .btn {

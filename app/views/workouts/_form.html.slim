@@ -28,6 +28,10 @@
       = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' } do
         i.fa-solid.fa-layer-group aria-hidden="true"
         span Add Segment
+      - if @workout.persisted?
+        = link_to workout_path(@workout), class: 'btn btn-danger', data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } do
+          i.fa-solid.fa-trash-can aria-hidden="true"
+          span Delete Workout
     .fields data-nested-form-target="container" data-sortable-list-target="container"
       - @workout.ordered_parts.each do |part|
         - if part.is_a?(Segment)

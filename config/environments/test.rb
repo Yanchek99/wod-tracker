@@ -36,6 +36,10 @@ Rails.application.configure do
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
 
+  # Keep Active Job on the in-memory test adapter so jobs are captured rather
+  # than dispatched to SolidQueue.
+  config.active_job.queue_adapter = :test
+
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: 'example.com' }
 

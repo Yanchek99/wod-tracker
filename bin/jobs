@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require_relative '../config/boot'
+require 'solid_queue/cli'
+
+SolidQueue::Cli.start(ARGV)

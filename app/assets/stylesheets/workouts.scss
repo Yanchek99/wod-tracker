@@ -18,9 +18,13 @@
   display: grid;
   gap: 0.5rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  inset: auto 0 0;
+  bottom: 0;
+  left: 50%;
+  max-width: 1320px;
   padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
   position: fixed;
+  transform: translateX(-50%);
+  width: calc(100% - 1.5rem);
   z-index: 1030;
 }
 
@@ -46,6 +50,36 @@
 
 .workout-builder-toolbar:has(.btn:nth-child(5)) {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (min-width: 576px) {
+  .workout-builder-toolbar {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .workout-builder-toolbar {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .workout-builder-toolbar {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .workout-builder-toolbar {
+    max-width: 1140px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .workout-builder-toolbar {
+    max-width: 1320px;
+  }
 }
 
 .workout-sortable-item__body {

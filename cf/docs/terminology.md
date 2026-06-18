@@ -1,5 +1,93 @@
 # Terminology
 
+Core CrossFit terms are defined from the Level 1 and Level 2 Training Guides (see
+`references.md`). App-specific terms describe how this app models and renders
+workouts.
+
+## CrossFit
+
+CrossFit's prescription is "constantly varied, high-intensity functional
+movement" (L1 guide). The program prepares athletes for unknown and unknowable
+physical challenges by training across broad time and modal domains rather than a
+fixed, specialized routine.
+
+## Functional Movement
+
+Functional movements are universal motor recruitment patterns: they move from
+core to extremity, are compound (multi-joint), and are effective at moving large
+loads over long distances quickly. Load, distance, and speed together let
+functional movements produce high power (L1 guide).
+
+## Intensity And Power
+
+Intensity is defined exactly as power (L1 guide). It is the independent variable
+most commonly associated with maximizing the rate of return of favorable
+adaptation to exercise. Intensity is modified through load, speed, or volume, and
+is relative to each athlete's capacity.
+
+## Modalities
+
+Workouts draw from three modalities (L1 guide): metabolic conditioning (M; run,
+bike, row, jump rope), gymnastics (G; bodyweight movements such as air squats,
+pull-ups, push-ups), and weightlifting (W; loaded movements such as deadlift,
+clean, press, snatch). Workout structure varies by including one, two, or three
+modalities.
+
+## Metabolic Pathways
+
+Three pathways supply energy for all human action (L1 guide): the phosphagen
+pathway (highest power, under about 10 seconds), the glycolytic pathway (moderate
+power, up to several minutes), and the oxidative or aerobic pathway (low power,
+in excess of several minutes). Total fitness requires competency in all three.
+
+## Foundational Movements
+
+The L1 Course teaches nine foundational movements — the air squat, front squat,
+overhead squat, shoulder press, push press, push jerk, deadlift, sumo deadlift
+high pull, and medicine-ball clean — plus four additional movements: the pull-up,
+thruster, muscle-up, and snatch.
+
+## Intended Stimulus
+
+The intended stimulus is the effect a workout is meant to produce. The L1 guide
+defines it as the combination of movements, time domain, and load; the L2 guide
+reviews it as movement functions, loading parameters, time frame, and volume of
+repetitions. It is the target a coach scales toward so the workout produces
+relatively similar effects on each athlete regardless of ability. Stimulus is not
+a prescribed pace — speed is one way an athlete modulates intensity, not part of
+the prescribed stimulus. The app will use the intended stimulus to design
+individualized workout variations.
+
+## Time Domain
+
+The time domain is the expected duration of a workout, reflecting the metabolic
+pathway it targets and commonly grouped as short, medium, or long. For a
+task-priority workout it describes how long the prescribed work should take. For a
+time-priority workout the total time is fixed, so the time domain instead reflects
+how long each round or interval should take. It is one component of the intended
+stimulus, not the whole of it.
+
+## Task Priority And Time Priority
+
+CrossFit workouts are classified by what is fixed (L1 guide). A task-priority
+workout fixes the work and scores time: the task is set, the time varies, and the
+workout is scored by the time to complete it (For Time workouts such as Fran and
+Grace). A time-priority workout fixes the time and scores work: the athlete is
+kept moving for a set time and scored by rotations or repetitions (AMRAPs, EMOMs,
+and interval schemes).
+
+## Scaling
+
+Scaling is adjusting a workout so a specific athlete stays inside its intended
+stimulus; the principle is "preserve the stimulus" (L1 guide). It is
+individualized to the athlete rather than authored as generalist versions: a scale
+may change load, volume, skill demand, height/target, or time domain, but the
+intended stimulus is the fixed target it preserves. Load is scaled first, then
+volume, then movement substitution that keeps a similar function and range of
+motion. Scaling is a "moving target" as an athlete's capacity changes (L2 guide).
+Individualized scaling is the core problem the app aims to solve, eventually
+through machine learning.
+
 ## Rx
 
 Rx means the prescribed version of a workout. Rx prescriptions can include
@@ -15,11 +103,16 @@ symbol, for example `♀105lb / ♂155lb`.
 CrossFit workouts often publish multiple versions such as Rx, intermediate, and
 beginner. These are option levels, not athlete records. Option levels may change
 load, reps, calories, distance, movement complexity, target height, box height,
-rounds, or time domain.
+rounds, or time domain. They are a generalist starting point; true scaling is
+individual to the athlete (see Scaling).
 
-Scaling should preserve the intended stimulus when possible. For example, a
-scaled workout may reduce calories or load to keep the workout in the intended
-time domain instead of only reducing movement difficulty.
+## Strength Percentage And 1RM
+
+A strength percentage prescribes load relative to an athlete's capacity — a
+percentage of body weight (as in the L1 template, e.g. `50% of body weight`) or
+of a lift max (e.g. `80% 1RM`). `1RM` is a one-rep max; a training max is a
+deliberately reduced max used for percentage work. Resolving a percentage into a
+working load requires stored per-athlete data.
 
 ## Sex-Specific Prescribed Values
 
@@ -51,3 +144,16 @@ When rendering a movement with only additional metrics, display the metrics in
 parentheses after the movement name, such as `Overhead Squats (♀65lb / ♂95lb)`.
 When a movement has multiple sex-specific metric properties, group them by sex,
 such as `Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)`.
+
+## Program, Schedule, And Subscription
+
+A `Program` is a named stream of programming. A `Schedule` places one workout in
+a program on a `posted_at` date. A `Subscription` connects a user to a program
+with a role of owner, coach, or athlete. Coaches author programming; athletes
+consume it and log their performances.
+
+## Coach Note
+
+A coach note is programming guidance authored by a coach, such as stimulus,
+scaling, or strategy advice. It is distinct from an athlete's log note, which
+records the athlete's own performance and experience.

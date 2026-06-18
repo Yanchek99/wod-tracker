@@ -1,9 +1,12 @@
 # Movement Standards
 
+This file describes how the app models the numeric movement properties found in
+workout prescriptions. How movements are performed and judged is out of scope.
+
 ## Measurement-Bearing Movement Properties
 
-Some movement standards include numeric prescription properties that should be
-modeled as metrics when present in source data.
+Some movements include numeric prescription properties that should be modeled as
+metrics when present in source data.
 
 - Wall-ball shots can prescribe ball load and target height.
 - Box jumps and step-ups can prescribe box height.

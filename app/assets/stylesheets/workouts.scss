@@ -56,8 +56,34 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+.workout-card-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.workout-card-toolbar--start {
+  justify-content: flex-start;
+}
+
+.workout-card-toolbar .btn {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 6rem;
+  white-space: normal;
+}
+
 .workout-form .exercise .movement.ts-wrapper .ts-dropdown {
   z-index: 1040;
+}
+
+@media (max-width: 575.98px) {
+  .workout-card-toolbar .btn {
+    flex: 1 1 8rem;
+  }
 }
 
 @media (min-width: 576px) {

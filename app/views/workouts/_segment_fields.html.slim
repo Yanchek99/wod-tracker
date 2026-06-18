@@ -35,9 +35,8 @@
             template data-nested-form-target="template"
               = f.simple_fields_for :exercises, Exercise.new, child_index: 'CHILD_EXERCISE' do |exercise_form|
                 = render 'exercise_fields', f: exercise_form, workout_part: false
-            .links.d-grid.gap-2
+            .links.workout-card-toolbar.workout-card-toolbar--start
               = link_to 'Add Exercise', '#', class: 'btn btn-sm btn-outline-primary', data: { action: 'click->nested-form#add' }
-        .row
-          .col.d-grid.gap-2
-            button.btn.btn-sm.btn-primary.mt-2 type="button" data-action="click->segment-card#save" Done
-            = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }
+        .workout-card-toolbar.mt-2
+          button.btn.btn-sm.btn-primary type="button" data-action="click->segment-card#save" Done
+          = link_to 'Delete Segment', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }

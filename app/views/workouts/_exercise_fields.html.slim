@@ -41,7 +41,6 @@
               = f.input :distance_units_per_rep, label: 'Distance units per rep'
           .row.g-2
             .col = f.input :notes
-          .row
-            .col.d-grid.gap-2
-              button.btn.btn-sm.btn-primary.mt-2 type="button" data-action="click->exercise-card#save" Done
-              = link_to 'Delete Exercise', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }
+          .workout-card-toolbar.mt-2
+            button.btn.btn-sm.btn-primary type="button" data-action="click->exercise-card#save" Done
+            = link_to 'Delete Exercise', '#', class: 'btn btn-sm btn-danger', data: { action: 'click->nested-form#remove' }

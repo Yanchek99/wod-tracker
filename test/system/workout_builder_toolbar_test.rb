@@ -55,7 +55,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
         return {
           toolbarLeft: toolbar.left,
           toolbarRight: toolbar.right,
-          viewportWidth: window.innerWidth,
+          viewportWidth: document.documentElement.clientWidth,
           actionsWidth: actions.width,
           actionsCenter: actions.left + (actions.width / 2)
         }

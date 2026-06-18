@@ -100,6 +100,11 @@
   min-width: 2.25rem;
 }
 
+.exercise-editor__handle,
+.exercise-editor__delete {
+  margin-top: 2rem;
+}
+
 @media (max-width: 575.98px) {
   .workout-card-toolbar .btn {
     flex: 1 1 8rem;

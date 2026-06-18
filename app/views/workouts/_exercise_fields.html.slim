@@ -19,7 +19,7 @@
       .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
         .card-body
           .exercise-editor__movement-row
-            button.workout-sortable-handle.exercise-editor__handle type="button" aria-label="Drag exercise" data-action="keydown->sortable-list#moveWithKeyboard"
+            button.workout-sortable-handle.exercise-editor__handle type="button" aria-label="Drag exercise" data-action="pointerdown->exercise-card#collapseForDrag touchstart->exercise-card#collapseForDrag keydown->exercise-card#collapseForDrag keydown->sortable-list#moveWithKeyboard"
               i.fas.fa-grip-vertical aria-hidden="true"
             .exercise-editor__movement
               = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect' } }

@@ -71,13 +71,14 @@ interval schemes). The priority type contributes to a workout's general stimulus
 
 ## Intended Stimulus
 
-The intended stimulus is a general description of how a workout should be
-performed, used to guide scaling. It is not pacing. It describes how movements
-should be performed and what loads and volumes are appropriate so the workout
-does what it is meant to do — for example, Grace's load should allow fast singles,
-and Cindy should let an athlete do the pull-ups unbroken. Stimulus follows from a
-workout's priority type, movements, and loads. It is the coach's tool for scaling
-athletes, and the app will use it to design individualized workout variations.
+The intended stimulus is the effect a workout is meant to produce. The L1 guide
+defines it as the combination of movements, time domain, and load; the L2 guide
+reviews it as movement functions, loading parameters, time frame, and volume of
+repetitions. It is the target a coach scales toward so the workout produces
+relatively similar effects on each athlete regardless of ability. Stimulus is not
+a prescribed pace — speed is one way an athlete modulates intensity, not part of
+the prescribed stimulus. The app will use the intended stimulus to design
+individualized workout variations.
 
 ## Time Domain
 

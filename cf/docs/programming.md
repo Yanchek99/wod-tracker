@@ -7,17 +7,16 @@ The app already models individual workouts and places them on a calendar through
 The next programming concepts to model build on that base. They are listed in the
 intended order of implementation, and each can become its own follow-up issue.
 
-1. Intended stimulus. A general description of how a workout should be performed,
-   used to guide scaling. Stimulus is not pacing. It expresses how movements
-   should be performed and what loads and volumes are appropriate so the workout
-   does what it is meant to do — for example, Grace's load should be light enough
-   to allow fast singles, and Cindy should let an athlete do the pull-ups
-   unbroken. Every workout has a general stimulus that follows from its priority
-   type (see Workout Structures) as well as its movements and loads; time domain
-   is only one part of it. Stimulus is the coach's tool for scaling athletes, and
-   the app will use it to design individualized workout variations. The programmer
-   prescribes the stimulus; it is the fixed target that scaling must preserve for
-   each athlete.
+1. Intended stimulus. The effect a workout is meant to produce. The L1 guide
+   defines the stimulus as the effects of the specific combination of movements,
+   time domain, and load; the L2 guide reviews a workout's intended stimulus as
+   its movement functions, loading parameters, time frame, and volume of
+   repetitions. It is the target a coach scales toward so the workout produces
+   relatively similar effects on each athlete regardless of ability. Stimulus is
+   not a prescribed pace — speed is one way an athlete modulates intensity, not
+   part of the prescribed stimulus. The programmer prescribes the stimulus, and
+   the app will use it as the fixed target when designing individualized workout
+   variations.
 2. Time domains. The expected duration band for a workout. CrossFit commonly
    groups efforts as short (roughly under 5 minutes), medium (roughly 5 to 15
    minutes), and long (roughly over 15 minutes). Time domain is one component of
@@ -31,7 +30,7 @@ intended order of implementation, and each can become its own follow-up issue.
    the first piece of athlete-individualized state the app needs. Until maxes are
    modeled, percentage prescriptions are display-only guidance.
 4. Coach notes. Programming intent written by the coach, distinct from an
-   athlete's own log notes. Coach notes carry stimulus, strategy, and pacing
+   athlete's own log notes. Coach notes carry stimulus, scaling, and strategy
    guidance. `Workout`, `Segment`, and `Exercise` already have `notes` fields;
    the modeling question is how to separate coach-authored programming notes from
    athlete-authored log notes.
@@ -47,21 +46,36 @@ over introducing parallel structures.
 
 ## Scaling Is Individualized
 
-Scaling is not a fixed set of generalist versions the programmer authors. The
-programmer prescribes the workout and its intended stimulus; the right scale to
-hit that stimulus depends on the individual athlete's capacity, skills, injuries,
-and history. The published CrossFit option levels (Rx, intermediate, beginner)
-are a coarse, generalist approximation of this — useful as source data and as a
-starting point, but not the same as scaling a workout to a specific athlete.
+The CrossFit principle for scaling is "preserve the stimulus" (L1 guide). Because
+the stimulus is the combination of movements, time domain, and load, aspects of
+that combination can be adjusted for each individual so the workout produces
+relatively similar effects on each athlete regardless of physical abilities.
+Scaling is therefore individual to the athlete, not a fixed set of generalist
+versions the programmer authors, and it is a "moving target" as an athlete's
+capacity changes (L2 guide).
 
-Individualizing scaling per athlete is the core problem this app aims to solve,
-eventually through machine learning: given an athlete's history and a workout's
-intended stimulus, design a workout variation — adjusting load, volume, skill,
-height/target, or movements — that keeps that athlete inside the intended
-stimulus. The concepts modeled first (intended stimulus, time domains, strength
-percentages and athlete maxes, coach notes) are the inputs and labels that future
-individualized scaling will depend on, which is why the intended stimulus is
-modeled as the fixed target rather than as one of several authored scale levels.
+The L2 guide scales by reviewing the workout's intended stimulus — movement
+functions, loading, time frame, and volume — and adhering to as many of those
+variables as possible in light of the individual's capacity while still providing
+a significant challenge. Load is scaled first because it most easily preserves
+the stimulus; reducing volume (time, reps/rounds, distance) and substituting
+movements that keep a similar function and range of motion follow. The guide's
+worked examples are Amanda (9-7-5 muscle-ups and 135-lb snatches: high-skill
+movements, moderate load, short time frame of about 5 minutes, low volume) and
+Elizabeth (21-15-9 cleans at 135 lb and ring dips: short, moderate loading),
+scaled by adjusting load, volume, or movement to fit the athlete while holding
+the original intent.
+
+The published CrossFit option levels (Rx, intermediate, beginner) are a coarse,
+generalist approximation of this — useful as source data, but not the same as
+scaling a workout to a specific athlete. Individualizing scaling per athlete is
+the core problem this app aims to solve, eventually through machine learning:
+given an athlete's history and a workout's intended stimulus, design a workout
+variation that preserves the stimulus for that athlete. The concepts modeled
+first (intended stimulus, time domains, strength percentages and athlete maxes,
+coach notes) are the inputs and labels that future individualized scaling will
+depend on, which is why the intended stimulus is modeled as the fixed target
+rather than as one of several authored scale levels.
 
 ## Programming Methodology
 

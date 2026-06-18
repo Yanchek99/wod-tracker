@@ -69,4 +69,26 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
   ensure
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
+
+  test 'stacks movement dropdowns above the workout builder toolbar' do
+    visit new_workout_url
+
+    click_on 'Add Exercise', match: :first
+    find('.ts-control').click
+
+    assert_selector '.ts-dropdown'
+    z_indexes = evaluate_script(<<~JS)
+      (() => {
+        const dropdown = document.querySelector('.workout-form .ts-dropdown')
+        const toolbar = document.querySelector('.workout-builder-toolbar')
+
+        return {
+          dropdown: Number(window.getComputedStyle(dropdown).zIndex),
+          toolbar: Number(window.getComputedStyle(toolbar).zIndex)
+        }
+      })()
+    JS
+
+    assert_operator z_indexes['dropdown'], :>, z_indexes['toolbar']
+  end
 end

@@ -56,6 +56,10 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+.workout-form .exercise .movement.ts-wrapper .ts-dropdown {
+  z-index: 1040;
+}
+
 @media (min-width: 576px) {
   .workout-builder-toolbar__actions {
     max-width: 540px;

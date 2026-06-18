@@ -18,8 +18,13 @@
           i.fas.fa-trash-alt aria-hidden="true"
       .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
         .card-body
-          .row.g-2
-            .col-12 = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect' } }
+          .exercise-editor__movement-row
+            button.workout-sortable-handle.exercise-editor__handle type="button" aria-label="Drag exercise" data-action="keydown->sortable-list#moveWithKeyboard"
+              i.fas.fa-grip-vertical aria-hidden="true"
+            .exercise-editor__movement
+              = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect' } }
+            = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
+              i.fas.fa-trash-alt aria-hidden="true"
           .row.g-2
             .col-6.col-md-3 = f.input :reps, hint: '0 = max reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
             .col-6.col-md-3 = f.input :duration_seconds, label: 'Duration (s)', input_html: { data: { 'exercise-card-target': 'durationInput' } }

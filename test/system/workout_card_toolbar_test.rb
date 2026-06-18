@@ -40,4 +40,20 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
       assert_no_selector '.d-grid'
     end
   end
+
+  test 'renders expanded exercise movement row actions inline' do
+    visit new_workout_url
+
+    fill_in 'Name', with: 'Inline Exercise Movement Row'
+    select 'time', from: 'For'
+    click_on 'Add Exercise'
+
+    within all('#workout-parts > .fields > .exercise').last do
+      within '.exercise-editor__movement-row' do
+        assert_selector '[aria-label="Drag exercise"]'
+        assert_field 'Movement'
+        assert_selector '[aria-label="Delete exercise"]'
+      end
+    end
+  end
 end

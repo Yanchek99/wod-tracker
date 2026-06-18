@@ -80,6 +80,26 @@
   z-index: 1040;
 }
 
+.exercise-editor__movement-row {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.exercise-editor__movement {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.exercise-editor__delete {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-height: 2.25rem;
+  min-width: 2.25rem;
+}
+
 @media (max-width: 575.98px) {
   .workout-card-toolbar .btn {
     flex: 1 1 8rem;

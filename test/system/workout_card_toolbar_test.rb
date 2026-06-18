@@ -30,11 +30,10 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
 
     segment = all('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]').last
     within segment do
+      assert_selector '.workout-card-toolbar', count: 1
+
       within '.links.workout-card-toolbar' do
         assert_link 'Add Exercise'
-      end
-
-      within '.workout-card-toolbar:not(.links)' do
         assert_button 'Done'
         assert_link 'Delete Segment'
       end

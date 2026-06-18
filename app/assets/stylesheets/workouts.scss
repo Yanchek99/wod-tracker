@@ -8,6 +8,29 @@
   gap: 0.5rem;
 }
 
+.workout-builder-toolbar {
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  position: sticky;
+  top: 0.5rem;
+  z-index: 30;
+}
+
+.workout-builder-toolbar .btn {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 0;
+  white-space: normal;
+}
+
 .workout-sortable-item__body {
   flex: 1 1 auto;
   min-width: 0;
@@ -129,6 +152,10 @@
 }
 
 @media (min-width: 768px) {
+  .workout-builder-toolbar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .exercise-summary,
   .segment-summary {
     min-height: 2.5rem;

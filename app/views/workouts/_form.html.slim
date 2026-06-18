@@ -1,3 +1,5 @@
+- cancel_path = @workout.persisted? ? workout_path(@workout) : workouts_path
+
 = simple_form_for @workout, wrapper: :vertical_form do |f|
   = f.error_notification
   .form-inputs.row.g-2
@@ -13,6 +15,11 @@
   hr
   h3 Exercises
   #workout-parts data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-position-segments-value="true" data-sortable-list-draggable-selector-value=".workout-part:not([hidden])"
+    .workout-builder-toolbar role="toolbar" aria-label="Workout builder actions"
+      = f.button :submit, 'Save Workout', class: 'btn btn-success'
+      = link_to 'Cancel Workout', cancel_path, class: 'btn btn-secondary'
+      = link_to 'Add Exercise', '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'exercise' }
+      = link_to 'Add Segment', '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' }
     .fields data-nested-form-target="container" data-sortable-list-target="container"
       - @workout.ordered_parts.each do |part|
         - if part.is_a?(Segment)
@@ -32,5 +39,5 @@
       = link_to 'Add Segment', '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' }
   hr
   .form-actions.d-grid.gap-2
-    = f.button :submit, class: 'btn btn-success'
-    = link_to 'Cancel', @workout, class: 'btn btn-secondary mb-3'
+    = f.button :submit, 'Save Workout', class: 'btn btn-success'
+    = link_to 'Cancel Workout', cancel_path, class: 'btn btn-secondary mb-3'

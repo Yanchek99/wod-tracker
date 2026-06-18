@@ -34,7 +34,7 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
       assert_equal 1, all('.exercise').size
     end
 
-    within '#workout-parts > .links' do
+    within '.workout-builder-toolbar' do
       click_on 'Add Exercise'
     end
     assert_equal %w[1 3], all(
@@ -54,14 +54,14 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
       assert_equal '2', find('input[name$="[position]"]', visible: false).value
     end
 
-    within '#workout-parts > .links' do
+    within '.workout-builder-toolbar' do
       click_on 'Add Exercise'
     end
     assert_hidden_position all('#workout-parts > .fields > .exercise').last, '3'
 
     find('[aria-label="Delete segment"]').click
 
-    within '#workout-parts > .links' do
+    within '.workout-builder-toolbar' do
       click_on 'Add Exercise'
     end
     assert_equal %w[1 2 3], all(

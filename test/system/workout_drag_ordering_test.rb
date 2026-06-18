@@ -7,7 +7,7 @@ module WorkoutDragOrderingSystemHelpers
   end
 
   def add_top_level_exercise(movement:, reps: nil, distance: nil)
-    within '#workout-parts > .links' do
+    within '.workout-builder-toolbar' do
       click_on 'Add Exercise'
     end
 
@@ -16,7 +16,7 @@ module WorkoutDragOrderingSystemHelpers
   end
 
   def add_segment(name: nil)
-    within '#workout-parts > .links' do
+    within '.workout-builder-toolbar' do
       click_on 'Add Segment'
     end
 
@@ -88,7 +88,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     add_top_level_exercise(movement: 'Run', distance: '400')
 
     reorder_sortable_list('#workout-parts', from: 1, to: 0)
-    click_on 'Create Workout'
+    click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
     assert_text_order '400 meter Run', '10 Pull Ups'
@@ -103,7 +103,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     add_segment(name: 'Middle')
 
     reorder_sortable_list('#workout-parts', from: 2, to: 1)
-    click_on 'Create Workout'
+    click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
     assert_text_order '10 Pull Ups', 'Then, Middle:', '400 meter Run'
@@ -120,7 +120,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     end
 
     reorder_sortable_list(all('#segmented_exercises').last, from: 1, to: 0)
-    click_on 'Create Workout'
+    click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
     assert_text_order 'Segment:', '400 meter Run', '10 Pull Ups'
@@ -130,7 +130,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     visit edit_workout_url(workouts(:murph))
 
     reorder_sortable_list('#workout-parts', from: 1, to: 0)
-    click_on 'Update Workout'
+    click_on 'Save Workout'
 
     assert_current_path workout_path(workouts(:murph))
     assert_text_order '100 Pull Ups', '1600 distance Run'
@@ -141,7 +141,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     visit edit_workout_url(workout)
 
     reorder_sortable_list('#workout-parts', from: 1, to: 0)
-    click_on 'Update Workout'
+    click_on 'Save Workout'
 
     assert_current_path workout_path(workout)
     assert_text_order '1:00 Rest', '8 rounds of'
@@ -164,7 +164,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
                     visible: false).map(&:value)
     assert_equal %w[1 2], positions
 
-    click_on 'Create Workout'
+    click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
     assert_text_order '400 meter Run', '10 Pull Ups'

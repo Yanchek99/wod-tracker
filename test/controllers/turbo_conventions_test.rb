@@ -63,9 +63,33 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     get new_workout_url
 
     assert_response :success
+    assert_select '.workout-builder-toolbar[role="toolbar"]' do
+      assert_select '.workout-builder-toolbar__actions'
+      assert_select 'button[type="submit"]', text: 'Save Workout'
+      assert_select 'a[href=?]', workouts_path, text: 'Cancel Workout'
+      assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="exercise"]', text: 'Add Exercise'
+      assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="segment"]', text: 'Add Segment'
+      assert_select '.fa-floppy-disk'
+      assert_select '.fa-xmark'
+      assert_select '.fa-dumbbell'
+      assert_select '.fa-layer-group'
+      assert_select 'a[data-turbo-method="delete"]', false
+    end
+    assert_select '.form-actions', false
     assert_select '[data-controller~="nested-form"][data-nested-form-position-exercises-value="true"]'
     assert_select 'template[data-nested-form-target="template"]'
     assert_select 'a[data-action="click->nested-form#add"]'
+  end
+
+  test 'workout edit form cancels to the workout show page' do
+    get edit_workout_url(workouts(:fran))
+
+    assert_response :success
+    assert_select '.workout-builder-toolbar a[href=?]', workout_path(workouts(:fran)), text: 'Cancel Workout'
+    assert_select '.workout-builder-toolbar a[href=?][data-turbo-method="delete"][data-turbo-confirm="Are you sure?"]',
+                  workout_path(workouts(:fran)),
+                  text: 'Delete Workout'
+    assert_select '.workout-builder-toolbar .fa-trash-can'
   end
 
   test 'movement and metric selects use stimulus controllers' do

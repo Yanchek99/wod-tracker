@@ -31,7 +31,7 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
       assert_no_field 'Female load'
     end
 
-    click_on 'Create Workout'
+    click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
     assert_text 'Sex Specific System Test Workout'

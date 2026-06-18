@@ -31,7 +31,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
       assert_text '10 Pull Ups'
     end
 
-    click_on 'Create Workout'
+    click_on 'Save Workout', match: :first
 
     # Landing on the workout show page with its name and exercise proves the
     # create succeeded. The redirect flash banner is ephemeral and can be raced

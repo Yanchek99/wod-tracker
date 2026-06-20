@@ -47,6 +47,13 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_not workout.set_based_lifting?
   end
 
+  test 'identifies weight-scored rounds as set-based lifting without a prescribed load' do
+    workout = workouts(:back_squat_5x5)
+    workout.exercises.each { |exercise| exercise.update!(load: nil, load_unit: nil, female_load: nil, male_load: nil) }
+
+    assert workout.reload.set_based_lifting?
+  end
+
   test 'assigns a content key from the workout structure on save' do
     workout = build_fran('Fran A')
     workout.save!

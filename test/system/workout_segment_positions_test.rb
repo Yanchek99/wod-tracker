@@ -29,7 +29,7 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
       assert_equal %w[1 2], positions, "expected 2 exercises positions, got #{positions.inspect}"
 
       within all('.exercise').last do
-        click_on 'Delete Exercise'
+        find('[aria-label="Delete exercise"]').click
       end
       assert_equal 1, all('.exercise').size
     end

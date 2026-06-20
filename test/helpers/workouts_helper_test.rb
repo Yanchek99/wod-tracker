@@ -9,6 +9,13 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal '5 sets for load', workout_objective(workouts(:back_squat_5x5))
   end
 
+  test 'renders weight-scored rounds as sets for load without a prescribed load' do
+    workout = workouts(:back_squat_5x5)
+    workout.exercises.each { |exercise| exercise.update!(load: nil, load_unit: nil, female_load: nil, male_load: nil) }
+
+    assert_equal '5 sets for load', workout_objective(workout.reload)
+  end
+
   test 'renders fixed-rep amraps as rounds and reps' do
     assert_equal 'As many rounds and reps as possible in 10 minutes', workout_objective(workouts(:amrap_couplet))
   end

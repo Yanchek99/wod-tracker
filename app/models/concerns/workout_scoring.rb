@@ -11,8 +11,7 @@ module WorkoutScoring
 
   def set_based_lifting?
     set_based_lifting_structure? &&
-      score_measurement == 'weight' &&
-      top_level_exercises.any?(&:load_bearing?)
+      score_measurement == 'weight'
   end
 
   def exercises_for_log_recording

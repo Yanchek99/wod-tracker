@@ -118,7 +118,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.bigint "movement_id", null: false
     t.bigint "substitute_movement_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["movement_id", "substitute_movement_id", "direction"], name: "idx_movement_substitutions_unique_direction", unique: true
+    t.index ["movement_id", "substitute_movement_id"], name: "idx_movement_substitutions_unique_pair", unique: true
     t.index ["movement_id"], name: "index_movement_substitutions_on_movement_id"
     t.index ["substitute_movement_id"], name: "index_movement_substitutions_on_substitute_movement_id"
   end
@@ -132,12 +132,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.integer "pattern"
     t.integer "skill_level"
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["equipment"], name: "index_movements_on_equipment"
     t.index ["family"], name: "index_movements_on_family"
-    t.index ["load_bearing"], name: "index_movements_on_load_bearing"
     t.index ["name"], name: "index_movements_on_name", unique: true
-    t.index ["pattern"], name: "index_movements_on_pattern"
-    t.index ["skill_level"], name: "index_movements_on_skill_level"
   end
 
   create_table "programs", force: :cascade do |t|

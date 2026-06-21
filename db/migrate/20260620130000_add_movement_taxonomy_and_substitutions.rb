@@ -7,10 +7,6 @@ class AddMovementTaxonomyAndSubstitutions < ActiveRecord::Migration[8.1]
     add_column :movements, :load_bearing, :boolean, null: false, default: false
 
     add_index :movements, :family
-    add_index :movements, :pattern
-    add_index :movements, :equipment
-    add_index :movements, :skill_level
-    add_index :movements, :load_bearing
 
     create_table :movement_substitutions do |t|
       t.references :movement, null: false, foreign_key: true
@@ -21,8 +17,8 @@ class AddMovementTaxonomyAndSubstitutions < ActiveRecord::Migration[8.1]
     end
 
     add_index :movement_substitutions,
-              %i[movement_id substitute_movement_id direction],
+              %i[movement_id substitute_movement_id],
               unique: true,
-              name: 'idx_movement_substitutions_unique_direction'
+              name: 'idx_movement_substitutions_unique_pair'
   end
 end

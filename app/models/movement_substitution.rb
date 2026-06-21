@@ -11,7 +11,7 @@ class MovementSubstitution < ApplicationRecord
   enum :direction, DIRECTIONS, prefix: true
 
   validates :direction, presence: true
-  validates :substitute_movement_id, uniqueness: { scope: %i[movement_id direction] }
+  validates :substitute_movement_id, uniqueness: { scope: :movement_id }
   validate :substitute_is_different_movement
 
   private

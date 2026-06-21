@@ -6,17 +6,31 @@ module WorkoutFingerprint
   end
 
   # Deterministic identity for the workout's prescribed content: its scoring scheme
-  # and ordered parts (top-level exercises and segments). Independent of the
-  # workout's name, its schedules, and the database ids of its parts, so the same
-  # prescription always fingerprints the same regardless of when it is scheduled.
+  # and ordered parts (top-level exercises and segments, with their prescriptions and
+  # prescription notes). Independent of the workout's name, its schedules, and the
+  # database ids of its parts, so the same prescription always fingerprints the same
+  # regardless of when it is scheduled.
   #
-  # Returns nil for a workout with no parts: an empty workout has no content to
-  # deduplicate, and a nil key stays distinct under the unique index.
+  # Records marked for destruction are excluded so a nested destroy fingerprints the
+  # resulting content, not the rows about to be removed. Returns nil for a workout
+  # with no parts: an empty workout has no content to deduplicate, and a nil key
+  # stays distinct under the unique index.
   def content_fingerprint
-    parts = ordered_parts
+    parts = ordered_parts.reject(&:marked_for_destruction?)
     return if parts.empty?
 
     Digest::SHA256.hexdigest(canonical_content(parts).to_json)
+  end
+
+  # Recomputes and persists the key without running validations or callbacks. Used by
+  # the content-bearing child records (exercises, segments) whose direct changes are
+  # not seen by the workout's own before_save. Resets the cached associations first so
+  # the fingerprint reflects the current persisted parts even when a loaded child was
+  # changed or destroyed.
+  def refresh_content_key!
+    exercises.reset
+    segments.reset
+    update_columns(content_key: content_fingerprint) # rubocop:disable Rails/SkipsModelValidations
   end
 
   private
@@ -43,7 +57,8 @@ module WorkoutFingerprint
         time_seconds: segment.time_seconds,
         interval_scheme: segment.interval_scheme,
         rest_seconds: segment.rest_seconds,
-        exercises: segment.exercises.map { |exercise| canonical_exercise(exercise) }
+        notes: segment.notes,
+        exercises: segment.exercises.reject(&:marked_for_destruction?).map { |exercise| canonical_exercise(exercise) }
       }
     }
   end
@@ -64,7 +79,8 @@ module WorkoutFingerprint
       distance_units_per_rep: exercise.distance_units_per_rep,
       calories: exercise.calories,
       female_calories: exercise.female_calories,
-      male_calories: exercise.male_calories
+      male_calories: exercise.male_calories,
+      notes: exercise.notes
     }
   end
 

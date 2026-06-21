@@ -85,6 +85,54 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_nil workout.content_key
   end
 
+  test 'prescription notes change the fingerprint' do
+    noted = build_fran('Noted')
+    noted.exercises.first.notes = '1 1/2 body weight'
+
+    assert_not_equal build_fran('Plain').content_fingerprint, noted.content_fingerprint
+  end
+
+  test 'refreshes the content key when an exercise changes directly' do
+    workout = build_fran('Direct')
+    workout.save!
+    original = workout.content_key
+
+    workout.exercises.first.update!(notes: 'body weight')
+
+    assert_not_equal original, workout.reload.content_key
+  end
+
+  test 'refreshes the content key when a part is added to an empty workout' do
+    workout = Workout.create!(name: 'Grows', score_type: :time)
+    assert_nil workout.content_key
+
+    workout.exercises.create!(movement: movements(:pullup), position: 1, reps: 21)
+
+    assert workout.reload.content_key.present?
+  end
+
+  test 'refreshes the content key when an exercise is destroyed directly' do
+    workout = build_fran('Shrinks')
+    workout.save!
+    original = workout.content_key
+
+    workout.exercises.find { |exercise| exercise.movement == movements(:pullup) }.destroy!
+
+    assert_not_equal original, workout.reload.content_key
+  end
+
+  test 'excludes exercises marked for destruction from the fingerprint' do
+    workout = build_fran('Trimmed')
+    workout.save!
+
+    remaining = Workout.new(name: 'Remaining', score_type: :time, interval: '21-15-9')
+    remaining.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95, load_unit: :lb)
+
+    workout.exercises.find { |exercise| exercise.movement == movements(:pullup) }.mark_for_destruction
+
+    assert_equal remaining.content_fingerprint, workout.content_fingerprint
+  end
+
   private
 
   def build_fran(name)

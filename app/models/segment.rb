@@ -1,4 +1,6 @@
 class Segment < ApplicationRecord
+  include RefreshesWorkoutContentKey
+
   belongs_to :workout
   has_many :exercises, dependent: :destroy
 

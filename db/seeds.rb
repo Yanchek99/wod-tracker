@@ -161,8 +161,6 @@ Movement.find_or_create_by(name: 'Windshield Wiper')
 Movement.find_or_create_by(name: 'Zercher Squat')
 
 # Programs
-# Crossfit.com is the curated benchmark library seeded below and the destination
-# for scraped main-site WODs, owned by the admin user.
 cf = Program.find_or_create_by(name: 'Crossfit.com')
 cf.subscriptions.find_or_create_by(user: admin) do |subscription|
   subscription.role = :owner

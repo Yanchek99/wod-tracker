@@ -2,8 +2,7 @@ module RefreshesWorkoutContentKey
   extend ActiveSupport::Concern
 
   included do
-    after_save :refresh_workout_content_key
-    after_destroy :refresh_workout_content_key
+    after_commit :refresh_workout_content_key
   end
 
   private

@@ -85,11 +85,11 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_nil workout.content_key
   end
 
-  test 'prescription notes change the fingerprint' do
+  test 'notes do not change the fingerprint' do
     noted = build_fran('Noted')
     noted.exercises.first.notes = '1 1/2 body weight'
 
-    assert_not_equal build_fran('Plain').content_fingerprint, noted.content_fingerprint
+    assert_equal build_fran('Plain').content_fingerprint, noted.content_fingerprint
   end
 
   test 'refreshes the content key when an exercise changes directly' do
@@ -97,7 +97,7 @@ class WorkoutTest < ActiveSupport::TestCase
     workout.save!
     original = workout.content_key
 
-    workout.exercises.first.update!(notes: 'body weight')
+    workout.exercises.first.update!(reps: 15)
 
     assert_not_equal original, workout.reload.content_key
   end

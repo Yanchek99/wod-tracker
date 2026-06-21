@@ -6,10 +6,12 @@ module WorkoutFingerprint
   end
 
   # Deterministic identity for the workout's prescribed content: its scoring scheme
-  # and ordered parts (top-level exercises and segments, with their prescriptions and
-  # prescription notes). Independent of the workout's name, its schedules, and the
-  # database ids of its parts, so the same prescription always fingerprints the same
-  # regardless of when it is scheduled.
+  # and ordered parts (top-level exercises and segments, with their prescriptions).
+  # Independent of the workout's name, its schedules, and the database ids of its
+  # parts, so the same prescription always fingerprints the same regardless of when
+  # it is scheduled. Free-text notes are intentionally excluded: they are not a stable
+  # prescription field, and bodyweight/percentage loads currently parked in notes are
+  # tracked for proper modeling separately (see cf/docs/decisions.md, #1684).
   #
   # Records marked for destruction are excluded so a nested destroy fingerprints the
   # resulting content, not the rows about to be removed. Returns nil for a workout
@@ -57,7 +59,6 @@ module WorkoutFingerprint
         time_seconds: segment.time_seconds,
         interval_scheme: segment.interval_scheme,
         rest_seconds: segment.rest_seconds,
-        notes: segment.notes,
         exercises: segment.exercises.reject(&:marked_for_destruction?).map { |exercise| canonical_exercise(exercise) }
       }
     }
@@ -79,8 +80,7 @@ module WorkoutFingerprint
       distance_units_per_rep: exercise.distance_units_per_rep,
       calories: exercise.calories,
       female_calories: exercise.female_calories,
-      male_calories: exercise.male_calories,
-      notes: exercise.notes
+      male_calories: exercise.male_calories
     }
   end
 

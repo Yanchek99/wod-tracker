@@ -796,9 +796,6 @@ cfj.schedules.find_or_initialize_by(workout: tabata).update(posted_at: '26-12-20
 #
 # ♀ 95-lb. barbell and 95-lb. sled / ♂ 135-lb. barbell and 135-lb. sled
 #
-# Intermediate option: ♀ 65-lb. / ♂ 95-lb. barbell and sled.
-# Beginner option: 800-meter drag, ♀ 15-lb. / ♂ 35-lb. barbell and sled.
-#
 # The sled attaches at the waist. Take strategic breaks to hold a steady pace
 # rather than dragging until forced to stop. Bent-over rows are a penalty for
 # stopping, so the number performed depends on how often the athlete breaks;
@@ -809,17 +806,16 @@ sled_drag_carry = Workout.find_or_create_by!(name: 'CFJ-260620') do |workout|
   workout.notes = 'Drag the sled 1,600 meters while carrying a barbell in the'\
                   ' front rack; the barbell and sled are loaded the same and the'\
                   ' sled attaches at the waist. Every time you stop, complete 15'\
-                  ' bent-over rows before resuming. Intermediate: ♀ 65-lb. /'\
-                  ' ♂ 95-lb. barbell and sled. Beginner: 800-meter drag with'\
-                  ' ♀ 15-lb. / ♂ 35-lb. barbell and sled. Take strategic breaks'\
-                  ' to hold a steady pace rather than dragging until forced to stop.'
+                  ' bent-over rows before resuming. Take strategic breaks to hold'\
+                  ' a steady pace rather than dragging until forced to stop.'
   workout.exercises.build(movement: sled_drag, position: 1, reps: 1, distance: 1600, distance_unit: :meter,
                           female_load: 95, male_load: 135, load_unit: :lb,
                           notes: 'Carry a barbell in the front rack while dragging the waist sled;'\
                                  ' barbell and sled loaded the same.')
   workout.exercises.build(movement: bent_over_row, position: 2, reps: 15,
-                          notes: 'Penalty: 15 reps every time you stop before resuming. Log the total'\
-                                 ' reps actually completed.')
+                          female_load: 95, male_load: 135, load_unit: :lb,
+                          notes: 'Penalty: 15 reps with the barbell every time you stop before'\
+                                 ' resuming. Log the total reps actually completed.')
 end
 
 cfj.schedules.find_or_initialize_by(workout: sled_drag_carry).update(posted_at: '20-06-2026')

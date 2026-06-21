@@ -40,5 +40,25 @@ dumbbell thruster shows as `2×♀35lb / ♂50lb`. A count above `1` requires a 
 
 The field only applies to handheld implements, so the workout and log forms surface
 it only for movements where `Movement#supports_implement_count?` is true. That check
-is name-based (dumbbell/kettlebell) until the equipment taxonomy (#1629) lands, at
-which point it should key off equipment instead.
+uses equipment taxonomy for classified movements and falls back to dumbbell/
+kettlebell names while older movement records remain unclassified.
+
+## Movement Taxonomy
+
+Movement taxonomy is stored as structured metadata on each movement so athlete
+history and future scaling can query movement similarity without parsing names.
+
+- Family tracks the primary CrossFit modality: monostructural, gymnastics,
+  weightlifting, rest, or mixed.
+- Pattern tracks the dominant movement function: squat, hinge, press, pull,
+  lunge, carry, rotation, locomotion, inversion, jump, rest, or mixed.
+- Equipment tracks the primary implement or station when one is required.
+- Skill level is a coarse basic/intermediate/advanced scale for substitution
+  decisions.
+- Load-bearing marks movements whose intended stimulus commonly depends on
+  external load.
+
+Substitutions are directed from an original movement to a substitute and marked
+as easier, harder, or lateral. Substitutions should preserve similar movement
+function and range of motion when possible; movement substitution comes after
+load, distance, and rep adjustments when preserving a workout stimulus.

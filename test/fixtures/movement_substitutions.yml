@@ -1,0 +1,9 @@
+pullup_pushup:
+  movement: pullup
+  substitute_movement: pushup
+  direction: 0
+
+pullup_hspu:
+  movement: pullup
+  substitute_movement: hspu
+  direction: 2

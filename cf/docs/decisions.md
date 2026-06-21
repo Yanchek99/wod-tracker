@@ -89,6 +89,18 @@ into an existing one's content yields a single workout, with the edit redirected
 the survivor. Free-text notes are excluded from the fingerprint; canonical load
 identity (lb/kg/pood) is the remaining gap (see #1684).
 
+## 2026-06-20: Store Movement Taxonomy On Movements
+
+Movement metadata is stored directly on `Movement` using one primary family,
+pattern, equipment class, skill level, and load-bearing flag. Substitutions live
+in a directed join table with an easier/harder/lateral direction.
+
+Rationale: future scaling needs queryable movement similarity and directed
+substitution options before it can choose individualized variations. A single
+primary value per taxonomy dimension is enough to support exact movement history,
+family fallback history, and first-pass substitution recommendations without
+introducing a broader tagging system prematurely.
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time

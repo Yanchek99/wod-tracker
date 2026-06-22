@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_18_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -110,32 +110,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
     t.index ["movement_id"], name: "index_movement_logs_on_movement_id"
   end
 
-  create_table "movement_substitutions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "direction", null: false
-    t.bigint "movement_id", null: false
-    t.bigint "substitute_movement_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["movement_id", "substitute_movement_id", "direction"], name: "idx_movement_substitutions_unique_direction", unique: true
-    t.index ["movement_id"], name: "index_movement_substitutions_on_movement_id"
-    t.index ["substitute_movement_id"], name: "index_movement_substitutions_on_substitute_movement_id"
-  end
-
   create_table "movements", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
-    t.integer "equipment"
-    t.integer "family"
-    t.boolean "load_bearing", default: false, null: false
     t.string "name"
-    t.integer "pattern"
-    t.integer "skill_level"
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["equipment"], name: "index_movements_on_equipment"
-    t.index ["family"], name: "index_movements_on_family"
-    t.index ["load_bearing"], name: "index_movements_on_load_bearing"
     t.index ["name"], name: "index_movements_on_name", unique: true
-    t.index ["pattern"], name: "index_movements_on_pattern"
-    t.index ["skill_level"], name: "index_movements_on_skill_level"
   end
 
   create_table "programs", force: :cascade do |t|
@@ -157,7 +136,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
   end
 
   create_table "segments", force: :cascade do |t|
-    t.string "condition"
     t.datetime "created_at", precision: nil, null: false
     t.string "interval_scheme"
     t.string "name"
@@ -327,7 +305,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
   end
 
   create_table "workouts", force: :cascade do |t|
-    t.string "content_key"
     t.datetime "created_at", precision: nil, null: false
     t.string "interval"
     t.string "name"
@@ -336,7 +313,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
     t.integer "time"
     t.integer "time_cap_seconds"
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["content_key"], name: "index_workouts_on_content_key", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -346,8 +322,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
   add_foreign_key "exercises", "workouts"
   add_foreign_key "movement_logs", "logs"
   add_foreign_key "movement_logs", "movements"
-  add_foreign_key "movement_substitutions", "movements"
-  add_foreign_key "movement_substitutions", "movements", column: "substitute_movement_id"
   add_foreign_key "schedules", "programs"
   add_foreign_key "schedules", "workouts"
   add_foreign_key "segments", "workouts"

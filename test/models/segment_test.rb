@@ -54,18 +54,6 @@ class SegmentTest < ActiveSupport::TestCase
     assert_not_predicate Segment.new, :interval?
   end
 
-  test 'identifies conditional segments by their condition' do
-    assert_predicate Segment.new(condition: 'Every time you stop'), :conditional?
-    assert_not_predicate Segment.new, :conditional?
-  end
-
-  test 'rejects conditions combined with another mode' do
-    segment = workouts(:segmented).segments.build(condition: 'Every time you stop', rounds: 3)
-
-    assert_not segment.valid?
-    assert_includes segment.errors[:condition], 'cannot be combined with rounds, time, or an interval scheme'
-  end
-
   test 'sums interval scheme reps' do
     assert_equal 45, Segment.new(interval_scheme: '21-15-9').reps_from_interval
     assert_nil Segment.new.reps_from_interval

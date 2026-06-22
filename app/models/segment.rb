@@ -12,12 +12,6 @@ class Segment < ApplicationRecord
                        numericality: { only_integer: true, greater_than: 0 },
                        uniqueness: { scope: :workout_id }
   validate :position_unique_within_workout_parts
-  validate :condition_excludes_other_modes
-
-  # A conditional segment has no fixed rounds, time, or interval; its work is triggered by an event
-  # described in `condition` (e.g. "Every time you stop") and repeated an unknown number of times,
-  # so the volume is captured per performance when the workout is logged.
-  def conditional? = condition.present?
 
   def rounds?
     rounds.present? && time_seconds.blank? && interval_scheme.blank?
@@ -56,12 +50,6 @@ class Segment < ApplicationRecord
   end
 
   private
-
-  def condition_excludes_other_modes
-    return if condition.blank? || (rounds.blank? && time_seconds.blank? && interval_scheme.blank?)
-
-    errors.add(:condition, 'cannot be combined with rounds, time, or an interval scheme')
-  end
 
   def assign_position
     return if workout.blank?

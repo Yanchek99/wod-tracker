@@ -29,15 +29,6 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal '21-15-9 of', segment_objective(Segment.new(interval_scheme: '21-15-9'))
   end
 
-  test 'renders conditional segments as their condition' do
-    assert_equal 'Every time you stop:', segment_objective(Segment.new(condition: 'Every time you stop'))
-  end
-
-  test 'omits the then prefix for conditional segments' do
-    assert_equal 'Every time you stop:',
-                 segment_objective(Segment.new(condition: 'Every time you stop'), then_prefix: true)
-  end
-
   test 'falls back to the segment name' do
     assert_equal 'Skill work:', segment_objective(Segment.new(name: 'Skill work'))
   end

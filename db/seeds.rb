@@ -163,6 +163,32 @@ Movement.find_or_create_by(name: 'Zercher Squat')
 # Programs
 cfj = Program.find_or_create_by(name: 'Crossfit Journal')
 
+# ==============================================================================
+# CrossFit Daily Workouts
+# ==============================================================================
+# 260613
+# For time:
+# 100 overhead squats
+#
+# Every minute, starting at 0:00, complete 15 double-unders.
+# No racks - the bar comes from the floor.
+#
+# Female 95-lb barbell
+# Male 135-lb barbell
+crossfit_260613 = Workout.find_or_create_by(name: 'CrossFit 260613') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.notes = 'Every minute, starting at 0:00, complete 15 double-unders. '\
+                  'No racks - the bar comes from the floor. '\
+                  'Intermediate option: 100 overhead squats, every minute starting at 0:00 complete 15 double-unders, female 65-lb / male 95-lb barbell. '\
+                  'Beginner option: 50 overhead squats, every minute starting at 0:00 complete 10 single-unders, do not do more than 5 overhead squats per minute, female 35-lb / male 45-lb barbell. '\
+                  'Source: https://www.crossfit.com/260613'
+  workout.exercises.build(movement: ohs, position: 1, reps: 100,
+                          female_load: 95, male_load: 135, load_unit: :lb)
+end
+
+cfj.schedules.find_or_initialize_by(workout: crossfit_260613).update(posted_at: Date.new(2026, 6, 13))
+
 # Fight Gone Bad
 # In this workout you move from each of 5 stations after a minute.
 # This is a 5-minute round after which a 1-minute break is allowed before repeating.

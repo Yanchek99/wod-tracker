@@ -54,6 +54,22 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
     end
   end
 
+  test 'preserves max reps segment summaries after expanding and collapsing' do
+    visit edit_workout_url(workouts(:segmented_total_reps))
+
+    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]')
+    within segment do
+      assert_text '0:00-5:00: max reps in 5 minutes'
+
+      find('.segment-summary__button').click
+      assert_field 'Time seconds', with: '300'
+      click_on 'Done'
+
+      assert_text '0:00-5:00: max reps in 5 minutes'
+      assert_no_text 'As many rounds as possible in 5 minutes'
+    end
+  end
+
   test 'shows segment drag handles only while collapsed' do
     visit new_workout_url
 

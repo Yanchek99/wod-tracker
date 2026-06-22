@@ -40,6 +40,10 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal 'Skill work:', segment_objective(Segment.new(name: 'Skill work'))
   end
 
+  test 'prefixes subsequent named segments with then' do
+    assert_equal 'Then, Middle:', segment_objective(Segment.new(name: 'Middle'), then_prefix: true)
+  end
+
   test 'falls back to a generic label for empty segments' do
     assert_equal 'Segment:', segment_objective(Segment.new)
   end

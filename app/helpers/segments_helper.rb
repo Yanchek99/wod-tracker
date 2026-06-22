@@ -1,11 +1,15 @@
 module SegmentsHelper
   def segment_objective(segment, then_prefix: false)
-    msg = then_prefix && segment.name.blank? ? 'Then, ' : ''
+    msg = then_prefix && !named_max_reps_segment?(segment) ? 'Then, ' : ''
 
     "#{msg}#{segment_prescription(segment)}"
   end
 
   private
+
+  def named_max_reps_segment?(segment)
+    segment.name.present? && segment.max_reps?
+  end
 
   def segment_prescription(segment)
     return "#{segment.interval_scheme} of" if segment.interval?

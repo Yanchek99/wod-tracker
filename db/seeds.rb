@@ -797,9 +797,10 @@ cfj.schedules.find_or_initialize_by(workout: tabata).update(posted_at: '26-12-20
 # ♀ 95-lb. barbell and 95-lb. sled / ♂ 135-lb. barbell and 135-lb. sled
 #
 # The sled attaches at the waist. Take strategic breaks to hold a steady pace
-# rather than dragging until forced to stop. Bent-over rows are a penalty for
-# stopping, so the number performed depends on how often the athlete breaks;
-# they are logged as the total reps actually completed.
+# rather than dragging until forced to stop. The bent-over rows are a penalty
+# triggered by stopping, so they live in a conditional segment; the number
+# performed depends on how often the athlete breaks and is logged as the total
+# reps actually completed.
 sled_drag_carry = Workout.find_or_create_by!(name: 'CFJ-260620') do |workout|
   workout.rounds = 1
   workout.score_type = :time
@@ -812,10 +813,10 @@ sled_drag_carry = Workout.find_or_create_by!(name: 'CFJ-260620') do |workout|
                           female_load: 95, male_load: 135, load_unit: :lb,
                           notes: 'Carry a barbell in the front rack while dragging the waist sled;'\
                                  ' barbell and sled loaded the same.')
-  workout.exercises.build(movement: bent_over_row, position: 2, reps: 15,
+  penalty = workout.segments.build(position: 2, condition: 'Every time you stop')
+  workout.exercises.build(movement: bent_over_row, segment: penalty, position: 1, reps: 15,
                           female_load: 95, male_load: 135, load_unit: :lb,
-                          notes: 'Penalty: 15 reps with the barbell every time you stop before'\
-                                 ' resuming. Log the total reps actually completed.')
+                          notes: 'Performed with the barbell. Log the total reps actually completed.')
 end
 
 cfj.schedules.find_or_initialize_by(workout: sled_drag_carry).update(posted_at: '20-06-2026')

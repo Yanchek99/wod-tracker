@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "summary", "summaryText", "summaryDetails", "expandButton", "editor",
-    "nameInput", "roundsInput", "timeInput", "intervalInput", "restInput", "notesInput"
+    "nameInput", "roundsInput", "timeInput", "intervalInput", "conditionInput", "restInput", "notesInput"
   ]
 
   static values = {
@@ -56,6 +56,9 @@ export default class extends Controller {
   }
 
   summaryText() {
+    const condition = this.conditionInputTarget.value.trim()
+    if (condition) return `${condition}:`
+
     const interval = this.intervalInputTarget.value.trim()
     if (interval) return `${interval} of`
 
@@ -100,6 +103,7 @@ export default class extends Controller {
       this.roundsInputTarget,
       this.timeInputTarget,
       this.intervalInputTarget,
+      this.conditionInputTarget,
       this.restInputTarget,
       this.notesInputTarget
     ]

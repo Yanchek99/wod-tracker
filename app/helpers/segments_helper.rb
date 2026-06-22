@@ -1,5 +1,9 @@
 module SegmentsHelper
   def segment_objective(segment, then_prefix: false)
+    # A conditional segment is triggered by an event rather than sequenced after the prior work, so
+    # it renders as its trigger phrase and never takes the "Then," prefix.
+    return "#{segment.condition}:" if segment.conditional?
+
     msg = then_prefix ? 'Then, ' : ''
 
     "#{msg}#{segment_prescription(segment)}"

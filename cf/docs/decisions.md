@@ -1,5 +1,28 @@
 # Decisions
 
+## 2026-06-21: Model Event-Triggered Penalties as Conditional Segments
+
+Some workouts attach work that is triggered by an event rather than sequenced
+into the round — for example crossfit.com/260620, a 1,600-meter loaded carry
+where "every time you stop, complete 15 bent-over rows before resuming." The
+number of penalty reps is not known when the workout is programmed; it depends on
+how the athlete performs.
+
+A `Segment` may carry a `condition` string (e.g. "Every time you stop") that marks
+it conditional. A conditional segment has no fixed rounds, time, or interval — the
+two are mutually exclusive — and holds the penalty movement(s) as ordinary
+exercises whose `reps` are the per-occurrence quantum (15). It renders as the
+condition phrase followed by its movements and, being event-triggered rather than
+sequential, never takes the "Then," prefix. The athlete records the total reps
+actually completed on the movement log when logging, so the open-ended volume is
+captured per performance.
+
+Rationale: the penalty is genuinely a grouped, repeated unit of work, which is
+what `Segment` already represents, so a conditional mode reuses segment rendering
+and ordering rather than introducing a parallel "penalty" concept on `Exercise`.
+The condition stays free text so it covers related triggers (e.g. "Every time the
+bar is dropped") without an enumerated list.
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time

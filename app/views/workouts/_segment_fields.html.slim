@@ -25,8 +25,9 @@
           .col-6.col-md-3.col-lg-2 = f.input :time_seconds, as: :string, placeholder: '20:00 or 1200', input_html: { data: { 'segment-card-target': 'timeInput' } }
           .col-12.col-md-6.col-lg-4 = f.input :interval_scheme, placeholder: '21-15-9...', input_html: { data: { 'segment-card-target': 'intervalInput' } }
         .row.g-2
+          .col-12.col-md-4 = f.input :condition, placeholder: 'Every time you stop...', input_html: { data: { 'segment-card-target': 'conditionInput' } }
           .col-12.col-md-4 = f.input :rest_seconds, input_html: { data: { 'segment-card-target': 'restInput' } }
-          .col-12.col-md-8 = f.input :notes, input_html: { data: { 'segment-card-target': 'notesInput' } }
+          .col-12.col-md-4 = f.input :notes, input_html: { data: { 'segment-card-target': 'notesInput' } }
         .row
           .col#segmented_exercises data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-placeholder-value="CHILD_EXERCISE" data-nested-form-position-exercises-value="true" data-sortable-list-draggable-selector-value=".segment-exercise:not([hidden])"
             .fields data-nested-form-target="container" data-sortable-list-target="container"

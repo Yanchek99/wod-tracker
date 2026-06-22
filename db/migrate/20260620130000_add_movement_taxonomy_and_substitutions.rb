@@ -7,6 +7,9 @@ class AddMovementTaxonomyAndSubstitutions < ActiveRecord::Migration[8.1]
     add_column :movements, :load_bearing, :boolean, null: false, default: false
 
     add_index :movements, :family
+    add_index :movements, :pattern
+    add_index :movements, :equipment
+    add_index :movements, :skill_level
 
     create_table :movement_substitutions do |t|
       t.references :movement, null: false, foreign_key: true

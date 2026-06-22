@@ -132,8 +132,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.integer "pattern"
     t.integer "skill_level"
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["equipment"], name: "index_movements_on_equipment"
     t.index ["family"], name: "index_movements_on_family"
     t.index ["name"], name: "index_movements_on_name", unique: true
+    t.index ["pattern"], name: "index_movements_on_pattern"
+    t.index ["skill_level"], name: "index_movements_on_skill_level"
   end
 
   create_table "programs", force: :cascade do |t|

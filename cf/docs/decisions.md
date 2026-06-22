@@ -61,9 +61,14 @@ workout on a date — so repeating a workout means adding schedules, not workout
 and an athlete's logs across those schedules form the benchmark's progress
 history.
 
-This entry records the modeling rule so importer and seed work can rely on it. It
-does not specify the deduplication mechanism (how identical content is detected);
-that is left to the implementing issue.
+Deduplication mechanism: each `Workout` carries a `content_key`, a fingerprint of
+its scoring scheme and ordered parts (with a unique index). On save, a workout whose
+content matches an existing one keeps a nil key, and `Workout#absorb_duplicate!`
+folds its schedules (deduped on program + `posted_at`) and logs into the existing
+canonical workout, then deletes the duplicate. So editing or importing a workout
+into an existing one's content yields a single workout, with the edit redirected to
+the survivor. Free-text notes are excluded from the fingerprint; canonical load
+identity (lb/kg/pood) is the remaining gap (see #1684).
 
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 

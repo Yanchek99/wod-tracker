@@ -20,6 +20,10 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'As many rounds and reps as possible in 10 minutes', workout_objective(workouts(:amrap_couplet))
   end
 
+  test 'renders segmented rep-scored clocks as total reps' do
+    assert_equal 'On a 20-minute clock for total reps', workout_objective(workouts(:segmented_total_reps))
+  end
+
   test 'renders timed rep-scored rounds as round amraps' do
     workout = workouts(:back_squat_5x5)
     workout.update!(time: 3, score_type: :rep)

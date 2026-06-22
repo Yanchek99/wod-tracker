@@ -2,6 +2,7 @@ module WorkoutsHelper
   def workout_objective(workout)
     return "#{pluralize workout.rounds, 'set'} for load" if workout.set_based_lifting?
     return for_time_objective(workout) if workout.rounds_for_time?
+    return total_reps_clock_objective(workout) if workout.segmented_total_reps?
     return amrap_objective(workout) if workout.amrap?
     return "EMOM #{workout.time}" if workout.emom?
     return timed_rounds_objective(workout) if workout.timed_rounds?
@@ -23,6 +24,10 @@ module WorkoutsHelper
     score = workout.fixed_rep_amrap? ? 'rounds and reps' : 'rounds'
 
     "As many #{score} as possible in #{pluralize workout.time, 'minute'}"
+  end
+
+  def total_reps_clock_objective(workout)
+    "On a #{workout.time}-minute clock for total reps"
   end
 
   def timed_rounds_objective(workout)

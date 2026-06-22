@@ -35,6 +35,14 @@ class Workout < ApplicationRecord
     time.present? && rounds.blank? && interval.blank?
   end
 
+  def segmented_total_reps?
+    amrap? &&
+      score_measurement == 'rep' &&
+      segments.any? &&
+      exercises.any? &&
+      exercises.none? { |exercise| exercise.segment.blank? }
+  end
+
   def emom?
     time.present? && rounds.present? && (time % rounds).zero?
   end

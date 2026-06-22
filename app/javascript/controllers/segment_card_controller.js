@@ -63,6 +63,7 @@ export default class extends Controller {
     if (rounds) return `${rounds} ${rounds === "1" ? "round" : "rounds"} of`
 
     const seconds = this.timeInSeconds()
+    if (seconds > 0 && this.hasMaxRepExercise) return this.maxRepsSummaryText(seconds)
     if (seconds > 0) return `As many rounds as possible in ${this.durationText(seconds)}`
 
     const name = this.nameInputTarget.value.trim()
@@ -82,6 +83,10 @@ export default class extends Controller {
     if (seconds % 60 === 0) return `${seconds / 60} ${seconds === 60 ? "minute" : "minutes"}`
 
     return `${seconds} ${seconds === 1 ? "second" : "seconds"}`
+  }
+
+  maxRepsSummaryText(seconds) {
+    return [this.nameInputTarget.value.trim(), `max reps in ${this.durationText(seconds)}`].filter(Boolean).join(": ")
   }
 
   renderExerciseSummaryDetails() {
@@ -112,5 +117,15 @@ export default class extends Controller {
 
   get exerciseSummaryTexts() {
     return this.exerciseSummaryElements.map((element) => element.textContent.trim()).filter(Boolean)
+  }
+
+  get hasMaxRepExercise() {
+    return this.visibleSegmentExercises.some((element) => (
+      element.querySelector("[data-exercise-card-target~='repsInput']")?.value.trim() === "0"
+    ))
+  }
+
+  get visibleSegmentExercises() {
+    return Array.from(this.editorTarget.querySelectorAll(".segment-exercise")).filter((element) => !element.hidden)
   }
 }

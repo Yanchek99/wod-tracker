@@ -60,6 +60,7 @@ Movement.find_or_create_by(name: 'Dumbbell Thruster')
 Movement.find_or_create_by(name: 'Dumbbell Turkish Get-up')
 Movement.find_or_create_by(name: 'Forward Roll From Support')
 Movement.find_or_create_by(name: 'Freestanding Handstand Push-up')
+freestanding_shoulder_tap = Movement.find_or_create_by(name: 'Freestanding Shoulder Tap')
 Movement.find_or_create_by(name: 'Front Scale')
 Movement.find_or_create_by(name: 'Front Squat')
 Movement.find_or_create_by(name: 'GHD Back Extension')
@@ -85,7 +86,7 @@ jumping_lunge = Movement.find_or_create_by(name: 'Jumping Lunge')
 Movement.find_or_create_by(name: 'Kettlebell Snatch')
 Movement.find_or_create_by(name: 'Kettlebell Sumo Hi Pull')
 kbswing = Movement.find_or_create_by(name: 'Kettlebell Swing')
-Movement.find_or_create_by(name: 'L Pull-up')
+l_pullup = Movement.find_or_create_by(name: 'L Pull-up')
 Movement.find_or_create_by(name: 'L Sit Hold on Matador')
 Movement.find_or_create_by(name: 'L-sit')
 Movement.find_or_create_by(name: 'L-sit on Rings')
@@ -111,6 +112,7 @@ pullup = Movement.find_or_create_by(name: 'Pull-up')
 Movement.find_or_create_by(name: 'Push Jerk')
 push_press = Movement.find_or_create_by(name: 'Push Press')
 pushup = Movement.find_or_create_by(name: 'Push-up')
+deficit_pushup = Movement.find_or_create_by(name: 'Deficit Push-up')
 Movement.find_or_create_by(name: 'Renegade Row')
 rest = Movement.find_or_create_by(name: 'Rest')
 ringdip = Movement.find_or_create_by(name: 'Ring Dip')
@@ -126,7 +128,7 @@ Movement.find_or_create_by(name: 'Shoulder to Overhead')
 pistol = Movement.find_or_create_by(name: 'Single-leg Squat (Pistol)')
 Movement.find_or_create_by(name: 'Single-under')
 situp = Movement.find_or_create_by(name: 'Sit-up')
-Movement.find_or_create_by(name: 'Skin the Cat')
+skin_the_cat = Movement.find_or_create_by(name: 'Skin the Cat')
 Movement.find_or_create_by(name: 'Slam Ball')
 Movement.find_or_create_by(name: 'Sled Pull')
 snatch = Movement.find_or_create_by(name: 'Snatch')
@@ -162,6 +164,60 @@ Movement.find_or_create_by(name: 'Zercher Squat')
 
 # Programs
 cfj = Program.find_or_create_by(name: 'Crossfit Journal')
+
+# 260622
+# On a 20-minute clock for total reps:
+# 0:00-5:00:
+# 200-meter run
+# Max freestanding shoulder taps
+#
+# 5:00-10:00:
+# 200-meter run
+# Max skin-the-cats
+#
+# 10:00-15:00:
+# 200-meter run
+# Max L pull-ups
+#
+# 15:00-20:00:
+# 200-meter run
+# Max deficit push-ups
+#
+# Female 2-inch deficit
+# Male 4-inch deficit
+crossfit_260622 = Workout.find_or_create_by(name: 'CF-260622') do |workout|
+  workout.time = 20
+  workout.score_type = :rep
+  workout.notes = 'Each 5-minute window begins with a 200-meter run, followed by max reps of the gymnastics movement. '\
+                  'Post total reps to comments. '\
+                  'Intermediate option: use wall-facing handstand shoulder taps, skin-the-cats, strict pull-ups, and push-ups. '\
+                  'Beginner option: use 100-meter runs with plank shoulder taps, ring hanging leg raises, foot-assisted pull-ups, and hand-elevated push-ups. '\
+                  'Source: https://www.crossfit.com/260622'
+
+  first_window = workout.segments.build(name: '0:00-5:00', time_seconds: 300, position: 1)
+  workout.exercises.build(movement: run, segment: first_window, position: 1,
+                          reps: 1, distance: 200, distance_unit: :meter)
+  workout.exercises.build(movement: freestanding_shoulder_tap, segment: first_window,
+                          position: 2, reps: 0)
+
+  second_window = workout.segments.build(name: '5:00-10:00', time_seconds: 300, position: 2)
+  workout.exercises.build(movement: run, segment: second_window, position: 1,
+                          reps: 1, distance: 200, distance_unit: :meter)
+  workout.exercises.build(movement: skin_the_cat, segment: second_window, position: 2, reps: 0)
+
+  third_window = workout.segments.build(name: '10:00-15:00', time_seconds: 300, position: 3)
+  workout.exercises.build(movement: run, segment: third_window, position: 1,
+                          reps: 1, distance: 200, distance_unit: :meter)
+  workout.exercises.build(movement: l_pullup, segment: third_window, position: 2, reps: 0)
+
+  fourth_window = workout.segments.build(name: '15:00-20:00', time_seconds: 300, position: 4)
+  workout.exercises.build(movement: run, segment: fourth_window, position: 1,
+                          reps: 1, distance: 200, distance_unit: :meter)
+  workout.exercises.build(movement: deficit_pushup, segment: fourth_window, position: 2,
+                          reps: 0, female_distance: 2, male_distance: 4, distance_unit: :inch)
+end
+
+cfj.schedules.find_or_initialize_by(workout: crossfit_260622).update(posted_at: Date.new(2026, 6, 22))
 
 # Fight Gone Bad
 # In this workout you move from each of 5 stations after a minute.

@@ -39,6 +39,7 @@ class Workout < ApplicationRecord
     amrap? &&
       score_measurement == 'rep' &&
       segments.any? &&
+      exercises.any? &&
       exercises.none? { |exercise| exercise.segment.blank? }
   end
 

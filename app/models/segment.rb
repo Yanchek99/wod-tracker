@@ -22,6 +22,7 @@ class Segment < ApplicationRecord
   end
 
   def max_reps?
+    # A prescribed rep count of 0 is the app's "max reps" sentinel.
     amrap? && exercises.any? { |exercise| exercise.reps&.zero? }
   end
 

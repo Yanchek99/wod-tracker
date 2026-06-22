@@ -12,11 +12,6 @@ module WorkoutFingerprint
   # it is scheduled. Free-text notes are intentionally excluded: they are not a stable
   # prescription field, and bodyweight/percentage loads currently parked in notes are
   # tracked for proper modeling separately (see cf/docs/decisions.md, #1684).
-  #
-  # Records marked for destruction are excluded so a nested destroy fingerprints the
-  # resulting content, not the rows about to be removed. Returns nil for a workout
-  # with no parts: an empty workout has no content to deduplicate, and a nil key
-  # stays distinct under the unique index.
   def content_fingerprint
     parts = ordered_parts.reject(&:marked_for_destruction?)
     return if parts.empty?
@@ -32,10 +27,54 @@ module WorkoutFingerprint
   def refresh_content_key!
     exercises.reset
     segments.reset
-    update_columns(content_key: content_fingerprint) # rubocop:disable Rails/SkipsModelValidations
+    update_columns(content_key: assignable_content_key) # rubocop:disable Rails/SkipsModelValidations
+  end
+
+  # Content identifies a workout, so editing (or creating) one with the same content as
+  # an existing workout makes them the same workout. Fold this one's schedules and logs
+  # into that canonical workout and delete this one, returning the survivor. Returns
+  # self when the content is unique.
+  def absorb_duplicate!
+    canonical = duplicate_workout
+    return self unless canonical
+
+    merge_into!(canonical)
+    canonical
   end
 
   private
+
+  # The fingerprint to persist, or nil when another workout already owns this content.
+  # Leaving a duplicate's key nil keeps the save from hitting the unique index; the
+  # duplicate is resolved by absorb_duplicate! rather than a constraint error.
+  def assignable_content_key
+    key = content_fingerprint
+    return if key.nil?
+    return if Workout.where.not(id: id).exists?(content_key: key)
+
+    key
+  end
+
+  def duplicate_workout
+    key = content_fingerprint
+    return if key.nil?
+
+    Workout.where.not(id: id).find_by(content_key: key)
+  end
+
+  def merge_into!(canonical)
+    transaction do
+      schedules.find_each do |schedule|
+        if canonical.schedules.exists?(program_id: schedule.program_id, posted_at: schedule.posted_at)
+          schedule.destroy!
+        else
+          schedule.update!(workout: canonical)
+        end
+      end
+      logs.update_all(workout_id: canonical.id) # rubocop:disable Rails/SkipsModelValidations
+      reload.destroy!
+    end
+  end
 
   def canonical_content(parts)
     {
@@ -85,6 +124,6 @@ module WorkoutFingerprint
   end
 
   def assign_content_key
-    self.content_key = content_fingerprint
+    self.content_key = assignable_content_key
   end
 end

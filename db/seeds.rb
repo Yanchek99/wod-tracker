@@ -165,9 +165,6 @@ Movement.find_or_create_by(name: 'Zercher Squat')
 # Programs
 cfj = Program.find_or_create_by(name: 'Crossfit Journal')
 
-# ==============================================================================
-# CrossFit Daily Workouts
-# ==============================================================================
 # 260622
 # On a 20-minute clock for total reps:
 # 0:00-5:00:
@@ -188,7 +185,7 @@ cfj = Program.find_or_create_by(name: 'Crossfit Journal')
 #
 # Female 2-inch deficit
 # Male 4-inch deficit
-crossfit_260622 = Workout.find_or_create_by(name: 'CrossFit 260622') do |workout|
+crossfit_260622 = Workout.find_or_create_by(name: 'CF-260622') do |workout|
   workout.time = 20
   workout.score_type = :rep
   workout.notes = 'Each 5-minute window begins with a 200-meter run, followed by max reps of the gymnastics movement. '\

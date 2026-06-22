@@ -33,3 +33,8 @@ back_squat_5x5:
   name: Back Squat 5x5
   rounds: 5
   score_type: weight
+
+segmented_total_reps:
+  name: Segmented Total Reps
+  time: 20
+  score_type: rep

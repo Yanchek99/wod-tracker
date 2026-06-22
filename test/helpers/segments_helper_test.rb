@@ -17,6 +17,13 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal 'As many rounds as possible in 90 seconds', segment_objective(Segment.new(time_seconds: 90))
   end
 
+  test 'renders named max-rep segments with their time window' do
+    segment = Segment.new(name: '0:00-5:00', time_seconds: 300)
+    segment.exercises.build(reps: 0)
+
+    assert_equal '0:00-5:00: max reps in 5 minutes', segment_objective(segment, then_prefix: true)
+  end
+
   test 'renders emom segments with their duration in minutes' do
     assert_equal 'EMOM 10', segment_objective(Segment.new(time_seconds: 600, rounds: 10))
   end

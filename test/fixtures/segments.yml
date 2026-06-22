@@ -4,3 +4,9 @@ test:
   workout: segmented
   rounds: 10
   position: 2
+
+segmented_total_reps_first:
+  workout: segmented_total_reps
+  name: 0:00-5:00
+  time_seconds: 300
+  position: 1

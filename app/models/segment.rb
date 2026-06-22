@@ -21,6 +21,10 @@ class Segment < ApplicationRecord
     time_seconds.present? && rounds.blank? && interval_scheme.blank?
   end
 
+  def max_reps?
+    amrap? && exercises.any? { |exercise| exercise.reps&.zero? }
+  end
+
   def emom?
     time_seconds.present? && rounds.present? && (time_seconds % (60 * rounds)).zero?
   end

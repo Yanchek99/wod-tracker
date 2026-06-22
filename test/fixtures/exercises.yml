@@ -133,3 +133,19 @@ back_squat_5x5_back_squat:
   position: 1
   reps: 5
   load_unit: lb
+
+segmented_total_reps_run:
+  workout: segmented_total_reps
+  segment: segmented_total_reps_first
+  movement: run
+  position: 1
+  reps: 1
+  distance: 200
+  distance_unit: meter
+
+segmented_total_reps_pushup:
+  workout: segmented_total_reps
+  segment: segmented_total_reps_first
+  movement: pushup
+  position: 2
+  reps: 0

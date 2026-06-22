@@ -14,12 +14,16 @@ module SegmentsHelper
   def segment_prescription(segment)
     return "#{segment.interval_scheme} of" if segment.interval?
     return "#{pluralize segment.rounds, 'round'} of" if segment.rounds?
+
+    timed_segment_prescription(segment) || "#{segment.name.presence || 'Segment'}:"
+  end
+
+  def timed_segment_prescription(segment)
     return max_reps_segment_prescription(segment) if segment.max_reps?
     return "As many rounds as possible in #{segment_duration(segment)}" if segment.amrap?
     return "EMOM #{segment.time_seconds / 60}" if segment.emom?
-    return "#{segment.rounds} #{segment.time_seconds / 60}-minute rounds" if segment.timed_rounds?
 
-    "#{segment.name.presence || 'Segment'}:"
+    "#{segment.rounds} #{segment.time_seconds / 60}-minute rounds" if segment.timed_rounds?
   end
 
   def max_reps_segment_prescription(segment)

@@ -1,5 +1,24 @@
 # Decisions
 
+## 2026-06-21: Model Event-Triggered Penalties as a Named Segment
+
+Some workouts attach work that is triggered by an event rather than sequenced
+into the round — for example crossfit.com/260620, a 1,600-meter loaded carry
+where "every time you stop, complete 15 bent-over rows before resuming." The
+number of penalty reps is not known when the workout is programmed; it depends on
+how the athlete performs.
+
+This reuses the existing `Segment`, with no schema change. The penalty movement(s)
+live in a segment whose `name` is the trigger phrase (e.g. "Every time you stop");
+the exercises carry the per-occurrence quantum as `reps` (15). The segment renders
+through the existing name fallback as the trigger phrase followed by its movements.
+When logging, the athlete records the total reps actually completed on the movement
+log, so the open-ended volume is captured per performance.
+
+Rationale: the penalty is genuinely a grouped unit of work, which is what
+`Segment` already represents, and a named segment already renders and orders
+correctly — so no new column or "penalty"/"condition" concept is needed.
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time

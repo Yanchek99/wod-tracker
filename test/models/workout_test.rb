@@ -28,6 +28,17 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_nil workouts(:amrap_unknown_distance).amrap_reps_per_round
   end
 
+  test 'identifies segmented total-rep clocks' do
+    assert_predicate workouts(:segmented_total_reps), :segmented_total_reps?
+  end
+
+  test 'does not identify empty segmented clocks as total-rep clocks' do
+    workout = Workout.new(name: 'Empty Segments', time: 20, score_type: :rep)
+    workout.segments.build(time_seconds: 300, position: 1)
+
+    assert_not_predicate workout, :segmented_total_reps?
+  end
+
   test 'distance scoring takes precedence over legacy rep marker' do
     component = exercises(:amrap_mixed_row).score_component
 

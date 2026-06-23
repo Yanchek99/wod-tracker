@@ -49,6 +49,13 @@ class SegmentTest < ActiveSupport::TestCase
     assert_not_predicate Segment.new(rounds: 4), :timed_rounds?
   end
 
+  test 'identifies max-rep segments by zero-rep exercises' do
+    segment = Segment.new(time_seconds: 300)
+    segment.exercises.build(reps: 0)
+
+    assert_predicate segment, :max_reps?
+  end
+
   test 'identifies interval segments by their scheme' do
     assert_predicate Segment.new(interval_scheme: '21-15-9'), :interval?
     assert_not_predicate Segment.new, :interval?

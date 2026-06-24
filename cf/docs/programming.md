@@ -136,6 +136,71 @@ percentages and athlete maxes, coach notes) are the inputs and labels that futur
 individualized scaling will depend on, which is why the intended stimulus is
 modeled as the fixed target rather than as one of several authored scale levels.
 
+## Benchmark Workouts
+
+A benchmark workout is a named, fixed-prescription workout used as a standard,
+repeatable test of fitness — "the Girls" (Fran, Cindy, Grace, Diane, Elizabeth),
+the Hero workouts (such as Murph), and others. The L1 guide treats Fran as "a
+specific benchmark workout" and Fran's own seed text calls it "classic benchmark
+that allows coaches and athletes to assess progress" (L1 guide).
+
+Benchmarks exist to be measured against. Because the work is held constant, the
+benchmark is the measurement instrument: "every time you do Fran or a specific
+benchmark workout, the work is constant," so comparing a first time (T1) to a
+later time (T2) cancels the work and "the difference in time is the difference in
+power produced" (L1 guide). The guide concludes that "by tracking the difference
+in time between workout attempts, we are looking at changes in power," and that an
+athlete's collected workout data points represent "work capacity across broad time
+and modal domains. This is your fitness" (L1 guide). This ties benchmarks directly
+to the documented concepts of intensity-as-power and work capacity (see
+`terminology.md`).
+
+The L2 guide uses benchmarks the same way at the program level: the standard for
+evaluating programming is "measurable improvement in performance markers" such as
+"faster Fran times, more rounds of Cindy," and a trainer may "select specific
+benchmarks to follow" (e.g. Grace, Fran, Tabata squats, JT, Fight Gone Bad, Cindy)
+as recurring fitness tests (L2 guide).
+
+### Benchmarks And "Constantly Varied"
+
+Constantly varied is the everyday training stimulus; the L2 guide states "Routine
+is the enemy" and that variance across workouts "determines how well one is
+prepared for any conceivable test of fitness" (L2 guide). Benchmarks are the
+deliberate exception: they are repeated precisely because they are the measurement
+instrument, not the daily stimulus. The L2 guide pairs the two explicitly —
+effective long-term programming "requires reviewing what has been completed
+recently in an attempt to provide new variance" and "must also allow for routine
+assessment to ensure progress is occurring" (L2 guide). So a coach varies daily
+training while periodically re-running fixed benchmarks to assess that the
+variance is producing adaptation. The guides do not present benchmark repetition
+as a violation of constantly varied; the framing here that benchmarks are the
+"measurement instrument, not the everyday stimulus" is an inference drawn from the
+guides' separate treatment of variance and routine assessment, and should be read
+as inference rather than a direct quotation.
+
+## Repeat Workouts (App Modeling)
+
+Benchmarks are meant to recur, and repeating a workout is a first-class feature
+because it is what enables score-over-time comparison. A workout's identity is its
+content — its movements, loads, rep scheme, structure, and intended stimulus — and
+is independent of when it is scheduled. The L1 guide's measurement argument depends
+on the work being identical across attempts, so two attempts of "the same" workout
+must refer to the same workout definition.
+
+In this app's data model, a recurring benchmark is one canonical `Workout` placed
+on multiple dates via multiple `Schedule` records (`posted_at`). It is not a new
+duplicate `Workout` per date. The same workout scheduled five times is one
+`Workout` and five `Schedule`s. The system must never create duplicate `Workout`
+rows for identical content; importer and seed work can rely on this rule when
+placing a benchmark on several dates. (This documents the modeling rule only; it
+does not specify the deduplication mechanism — see `decisions.md`.)
+
+This is the natural extension of the `Program`/`Schedule`/`Subscription` model
+(see `terminology.md`): a `Schedule` already places one workout on a `posted_at`
+date, so repeating a workout means adding `Schedule` rows for the existing
+`Workout`, and an athlete's scores across those schedules form the benchmark's
+progress history.
+
 ## Programming Concepts To Model First
 
 The app already models individual workouts and places them on a calendar through

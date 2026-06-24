@@ -31,7 +31,7 @@
           .col
             = ml_form.input :load, label: "Load (#{ml.load_unit || 'lb'})", input_html: { class: 'recording-value' }
             = ml_form.hidden_field :load_unit, value: ml.load_unit || 'lb'
-          .col = ml_form.input :implement_count, label: 'Implements', input_html: { class: 'recording-value' }
+          .col = ml_form.input :implement_count, label: 'Implements'
           .col
             = ml_form.input :distance, label: "Distance (#{ml.distance_unit || 'meter'})", input_html: { class: 'recording-value' }
             = ml_form.hidden_field :distance_unit, value: ml.distance_unit || 'meter'

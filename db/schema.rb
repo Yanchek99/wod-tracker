@@ -62,7 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.integer "female_calories"
     t.integer "female_distance"
     t.integer "female_load"
-    t.integer "implement_count"
+    t.integer "implement_count", default: 1
     t.integer "load"
     t.integer "load_unit"
     t.integer "male_calories"
@@ -100,7 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.integer "distance"
     t.integer "distance_unit"
     t.integer "duration_seconds"
-    t.integer "implement_count"
+    t.integer "implement_count", default: 1
     t.integer "load"
     t.integer "load_unit"
     t.bigint "log_id"

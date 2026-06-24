@@ -34,6 +34,6 @@ double (two-dumbbell) 50lb thruster. The prescribed load is **per implement**, s
 both share the same `lb` value and differ only in how many implements are held.
 
 Model this with the `implement_count` column on `exercises` and `movement_logs`
-(blank/`1` = single). It renders as a `2×` prefix on the load, so a double 50lb
-dumbbell thruster shows as `2×♀35lb / ♂50lb`. An `implement_count` is only
-meaningful alongside a load.
+(defaults to `1` = single). It renders as a `2×` prefix on the load, so a double
+50lb dumbbell thruster shows as `2×♀35lb / ♂50lb`. A count above `1` requires a
+load; the single-implement default needs none.

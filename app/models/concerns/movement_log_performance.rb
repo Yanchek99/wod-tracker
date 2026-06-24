@@ -29,7 +29,7 @@ module MovementLogPerformance
   def clear_blank_performance_units
     if load.blank?
       self.load_unit = nil
-      self.implement_count = nil
+      self.implement_count = 1 # reset the load qualifier to its single-implement default
     end
     self.distance_unit = nil if distance.blank?
   end

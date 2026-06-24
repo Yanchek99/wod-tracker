@@ -91,7 +91,7 @@ class Exercise < ApplicationRecord
   end
 
   def implement_count_requires_load
-    return if implement_count.blank?
+    return if implement_count.to_i <= 1 # a single implement is the default and needs no load
 
     errors.add(:implement_count, 'requires a load') unless load_bearing?
   end

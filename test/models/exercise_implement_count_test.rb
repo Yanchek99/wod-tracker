@@ -9,14 +9,14 @@ class ExerciseImplementCountTest < ActiveSupport::TestCase
     assert exercise.errors[:implement_count].present?
   end
 
-  test 'defaults a new exercise to a single implement' do
-    assert_equal 1, Exercise.new.implement_count
+  test 'leaves the implement count unset by default' do
+    assert_nil Exercise.new.implement_count
   end
 
-  test 'allows the default single implement without a load' do
+  test 'allows a movement without an implement count or load' do
     exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, reps: 21)
 
-    assert_equal 1, exercise.implement_count
+    assert_nil exercise.implement_count
     assert_predicate exercise, :valid?
   end
 

@@ -33,7 +33,7 @@ and the difference matters: a single 50lb dumbbell thruster is easier than a
 double (two-dumbbell) 50lb thruster. The prescribed load is **per implement**, so
 both share the same `lb` value and differ only in how many implements are held.
 
-Model this with the `implement_count` column on `exercises` and `movement_logs`
-(defaults to `1` = single). It renders as a `2×` prefix on the load, so a double
-50lb dumbbell thruster shows as `2×♀35lb / ♂50lb`. A count above `1` requires a
-load; the single-implement default needs none.
+Model this with the `implement_count` column on `exercises` and `movement_logs`.
+It has no default: a blank count means a single implement, so only multi-implement
+prescriptions set it. It renders as a `2×` prefix on the load, so a double 50lb
+dumbbell thruster shows as `2×♀35lb / ♂50lb`. A count above `1` requires a load.

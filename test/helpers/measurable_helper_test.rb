@@ -14,6 +14,15 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal 'Pull Up (♀65lb / ♂95lb)', measurable_message(exercise)
   end
 
+  test 'renders multi-implement dumbbell load with a count prefix' do
+    thruster = Movement.create!(name: 'Dumbbell Thruster')
+    exercise = workouts(:fran).exercises.create!(movement: thruster, position: 3, reps: 10,
+                                                 load_unit: :lb, female_load: 35, male_load: 50,
+                                                 implement_count: 2)
+
+    assert_equal '10 Dumbbell Thrusters (2×♀35lb / ♂50lb)', measurable_message(exercise)
+  end
+
   test 'groups multiple sex-specific additional exercise metrics by sex' do
     wall_ball = Movement.create!(name: 'Wall-ball Shot')
     exercise = workouts(:fran).exercises.create!(movement: wall_ball, position: 3,

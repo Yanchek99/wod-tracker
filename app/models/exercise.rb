@@ -18,8 +18,12 @@ class Exercise < ApplicationRecord
   validates :distance_units_per_rep,
             numericality: { only_integer: true, greater_than: 0 },
             allow_nil: true
+  validates :implement_count,
+            numericality: { only_integer: true, greater_than: 0 },
+            allow_nil: true
   validate :prescription_values_are_unambiguous
   validate :distance_units_per_rep_matches_prescribed_distance
+  validate :implement_count_requires_load
 
   def score_component
     return distance_score_component if distance_units_per_rep.present?
@@ -84,6 +88,12 @@ class Exercise < ApplicationRecord
         errors.add(:base, "#{dimension} requires both female and male values")
       end
     end
+  end
+
+  def implement_count_requires_load
+    return if implement_count.blank?
+
+    errors.add(:implement_count, 'requires a load') unless load_bearing?
   end
 
   def distance_units_per_rep_matches_prescribed_distance

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_18_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_120000) do
     t.integer "female_calories"
     t.integer "female_distance"
     t.integer "female_load"
+    t.integer "implement_count"
     t.integer "load"
     t.integer "load_unit"
     t.integer "male_calories"
@@ -99,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_120000) do
     t.integer "distance"
     t.integer "distance_unit"
     t.integer "duration_seconds"
+    t.integer "implement_count"
     t.integer "load"
     t.integer "load_unit"
     t.bigint "log_id"
@@ -305,6 +307,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_120000) do
   end
 
   create_table "workouts", force: :cascade do |t|
+    t.string "content_key"
     t.datetime "created_at", precision: nil, null: false
     t.string "interval"
     t.string "name"
@@ -313,6 +316,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_18_120000) do
     t.integer "time"
     t.integer "time_cap_seconds"
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["content_key"], name: "index_workouts_on_content_key", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

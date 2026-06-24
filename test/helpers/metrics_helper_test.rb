@@ -24,6 +24,24 @@ class MetricsHelperTest < ActionView::TestCase
     assert_equal '♀65lb / ♂95lb', metric_unit_msg(metric)
   end
 
+  test 'prefixes multi-implement load with the implement count' do
+    metric = Metric.new(measurement: :lb, value: 50, implement_count: 2)
+
+    assert_equal '2×50 lbs', metric_unit_msg(metric)
+  end
+
+  test 'prefixes multi-implement sex-specific load with the implement count' do
+    metric = Metric.new(measurement: :lb, female_value: 35, male_value: 50, implement_count: 2)
+
+    assert_equal '2×♀35lb / ♂50lb', metric_unit_msg(metric)
+  end
+
+  test 'does not prefix single-implement load' do
+    metric = Metric.new(measurement: :lb, value: 50, implement_count: 1)
+
+    assert_equal '50 lbs', metric_unit_msg(metric)
+  end
+
   test 'renders paired female and male height values' do
     metric = Metric.new(measurement: :inch, female_value: 20, male_value: 24)
 

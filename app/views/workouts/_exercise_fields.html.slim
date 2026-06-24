@@ -31,6 +31,7 @@
             .col-6.col-md-3 = f.input :female_load, input_html: { data: { 'exercise-card-target': 'femaleLoadInput' } }
             .col-6.col-md-3 = f.input :male_load, input_html: { data: { 'exercise-card-target': 'maleLoadInput' } }
             .col-6.col-md-3 = f.input :load_unit, collection: Exercise.load_units.keys, prompt: 'Load unit', input_html: { data: { 'exercise-card-target': 'loadUnitSelect' } }
+            .col-6.col-md-3 = f.input :implement_count, label: 'Implements', hint: 'e.g. 2 = double dumbbell'
           .row.g-2
             .col-6.col-md-3 = f.input :distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'distanceInput' } }
             .col-6.col-md-3 = f.input :female_distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'femaleDistanceInput' } }

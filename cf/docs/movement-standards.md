@@ -25,3 +25,15 @@ should use one `lb` metric and one `foot` metric.
 loads can be sex-specific. Relative loads such as `body weight` or
 `1 1/2 body weight` should remain as `weight` values unless the source gives a
 specific female/male numeric pair.
+
+## Implement Count
+
+Dumbbell and kettlebell movements can be prescribed with one or two implements,
+and the difference matters: a single 50lb dumbbell thruster is easier than a
+double (two-dumbbell) 50lb thruster. The prescribed load is **per implement**, so
+both share the same `lb` value and differ only in how many implements are held.
+
+Model this with the `implement_count` column on `exercises` and `movement_logs`
+(blank/`1` = single). It renders as a `2×` prefix on the load, so a double 50lb
+dumbbell thruster shows as `2×♀35lb / ♂50lb`. An `implement_count` is only
+meaningful alongside a load.

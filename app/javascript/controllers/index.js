@@ -16,6 +16,9 @@ application.register("exercise-form", ExerciseFormController)
 import ExerciseCardController from "./exercise_card_controller.js"
 application.register("exercise-card", ExerciseCardController)
 
+import ImplementCountController from "./implement_count_controller.js"
+application.register("implement-count", ImplementCountController)
+
 import SegmentCardController from "./segment_card_controller.js"
 application.register("segment-card", SegmentCardController)
 

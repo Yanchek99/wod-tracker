@@ -37,3 +37,8 @@ Model this with the `implement_count` column on `exercises` and `movement_logs`.
 It has no default: a blank count means a single implement, so only multi-implement
 prescriptions set it. It renders as a `2×` prefix on the load, so a double 50lb
 dumbbell thruster shows as `2×♀35lb / ♂50lb`. A count above `1` requires a load.
+
+The field only applies to handheld implements, so the workout and log forms surface
+it only for movements where `Movement#supports_implement_count?` is true. That check
+is name-based (dumbbell/kettlebell) until the equipment taxonomy (#1629) lands, at
+which point it should key off equipment instead.

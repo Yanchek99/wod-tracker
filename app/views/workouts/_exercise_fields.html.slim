@@ -4,7 +4,7 @@
 - summary = f.object.persisted? ? measurable_message(f.object) : 'New exercise'
 - workout_part = local_assigns.fetch(:workout_part, false)
 
-.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError" data-exercise-card-expanded-value=expanded
+.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card implement-count" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle" data-exercise-card-expanded-value=expanded data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
   = f.hidden_field :_destroy
   = f.hidden_field :position
   .workout-sortable-item
@@ -20,7 +20,7 @@
         .card-body
           .exercise-editor__movement-row
             .exercise-editor__movement
-              = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect' } }
+              = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect', 'implement-count-target': 'movementSelect' } }
             = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
               i.fas.fa-trash-alt aria-hidden="true"
           .row.g-2
@@ -31,7 +31,8 @@
             .col-6.col-md-3 = f.input :female_load, input_html: { data: { 'exercise-card-target': 'femaleLoadInput' } }
             .col-6.col-md-3 = f.input :male_load, input_html: { data: { 'exercise-card-target': 'maleLoadInput' } }
             .col-6.col-md-3 = f.input :load_unit, collection: Exercise.load_units.keys, prompt: 'Load unit', input_html: { data: { 'exercise-card-target': 'loadUnitSelect' } }
-            .col-6.col-md-3 = f.input :implement_count, label: 'Implements', hint: 'e.g. 2 = double dumbbell'
+            .col-6.col-md-3 data-implement-count-target="field" hidden=(!f.object.movement&.supports_implement_count?)
+              = f.input :implement_count, label: 'Implements', hint: 'e.g. 2 = double dumbbell'
           .row.g-2
             .col-6.col-md-3 = f.input :distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'distanceInput' } }
             .col-6.col-md-3 = f.input :female_distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'femaleDistanceInput' } }

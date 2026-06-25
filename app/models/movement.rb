@@ -7,8 +7,7 @@ class Movement < ApplicationRecord
     monostructural: 0,
     gymnastics: 1,
     weightlifting: 2,
-    rest: 3,
-    mixed: 4
+    rest: 3
   }.freeze
 
   PATTERNS = {

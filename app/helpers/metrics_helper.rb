@@ -2,6 +2,18 @@ module MetricsHelper
   HEIGHT_MEASUREMENTS = %w[foot inch].freeze
 
   def metric_unit_msg(metric)
+    "#{implement_count_prefix(metric)}#{metric_value_msg(metric)}"
+  end
+
+  # `2×` qualifier for load held in multiple implements (e.g. double-dumbbell). Renders before the
+  # load so `♀35lb / ♂50lb` dumbbells become `2×♀35lb / ♂50lb`.
+  def implement_count_prefix(metric)
+    return '' unless metric.respond_to?(:multiple_implements?) && metric.multiple_implements?
+
+    "#{metric.implement_count}×"
+  end
+
+  def metric_value_msg(metric)
     return sex_specific_metric_unit_msg(metric) if metric.sex_specific?
     return "#{metric.value.to_i} ft" if metric.foot? # Rails has no foot -> feet inflection
     return pluralize(1, metric.measurement) if metric.value.nil?

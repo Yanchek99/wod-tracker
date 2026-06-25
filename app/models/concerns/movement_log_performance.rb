@@ -27,13 +27,20 @@ module MovementLogPerformance
   # The recording form always submits a unit (defaulting to lb/meter) for every movement log, so a
   # dimension the athlete left blank would otherwise persist an orphan unit and build a stray metric.
   def clear_blank_performance_units
-    self.load_unit = nil if load.blank?
+    if load.blank?
+      self.load_unit = nil
+      self.implement_count = nil
+    end
     self.distance_unit = nil if distance.blank?
   end
 
   def rep_metric = (Metric.new(measurement: :rep, value: reps) if records_reps?)
   def duration_metric = (Metric.new(measurement: :seconds, value: duration_seconds) if records_duration?)
-  def load_metric = (Metric.new(measurement: load_unit || :lb, value: load) if records_load?)
+
+  def load_metric
+    Metric.new(measurement: load_unit || :lb, value: load, implement_count: implement_count) if records_load?
+  end
+
   def calorie_metric = (Metric.new(measurement: :calorie, value: calories) if records_calories?)
 
   def distance_metric

@@ -36,7 +36,8 @@ module ExercisePrescription
   def load_prescription_metric
     return unless load_unit.present? || load.present? || female_load.present? || male_load.present?
 
-    Metric.new(measurement: load_unit || :lb, value: load, female_value: female_load, male_value: male_load)
+    Metric.new(measurement: load_unit || :lb, value: load, female_value: female_load, male_value: male_load,
+               implement_count: implement_count)
   end
 
   def distance_prescription_metric

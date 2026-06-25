@@ -26,10 +26,12 @@ bench_press = Movement.find_or_create_by(name: 'Bench Press')
 bent_over_row = Movement.find_or_create_by(name: 'Bent-over Row')
 body_blaster = Movement.find_or_create_by(name: 'Body Blaster')
 box_jump = Movement.find_or_create_by(name: 'Box Jump')
+box_jump_over = Movement.find_or_create_by(name: 'Box Jump-over')
 box_step_up = Movement.find_or_create_by(name: 'Box Step-up')
 burpee = Movement.find_or_create_by(name: 'Burpee')
 burpee_box_jump = Movement.find_or_create_by(name: 'Burpee Box Jump')
 burpee_box_jump_over = Movement.find_or_create_by(name: 'Burpee Box Jump-over')
+burpee_pull_up = Movement.find_or_create_by(name: 'Burpee Pull-up')
 butterfly_pull_up = Movement.find_or_create_by(name: 'Butterfly Pull-up')
 chest_to_bar_pull_up = Movement.find_or_create_by(name: 'Chest-to-bar Pull-up')
 chest_to_wall_handstand_push_up = Movement.find_or_create_by(name: 'Chest-to-wall Handstand Push-up')
@@ -70,6 +72,7 @@ ghd_hip_extension = Movement.find_or_create_by(name: 'GHD Hip Extension')
 ghd_sit_up = Movement.find_or_create_by(name: 'GHD Sit-up')
 glide_kip = Movement.find_or_create_by(name: 'Glide Kip')
 good_morning = Movement.find_or_create_by(name: 'Good Morning')
+ground_to_overhead = Movement.find_or_create_by(name: 'Ground to Overhead')
 handstand = Movement.find_or_create_by(name: 'Handstand')
 handstand_pirouette = Movement.find_or_create_by(name: 'Handstand Pirouette')
 handstand_push_up = Movement.find_or_create_by(name: 'Handstand Push-up')
@@ -126,6 +129,7 @@ run = Movement.find_or_create_by(name: 'Run')
 shoot_through = Movement.find_or_create_by(name: 'Shoot-through')
 shoulder_press = Movement.find_or_create_by(name: 'Shoulder Press')
 shoulder_to_overhead = Movement.find_or_create_by(name: 'Shoulder to Overhead')
+shuttle_run = Movement.find_or_create_by(name: 'Shuttle Run')
 single_leg_squat_pistol = Movement.find_or_create_by(name: 'Single-leg Squat (Pistol)')
 single_under = Movement.find_or_create_by(name: 'Single-under')
 sit_up = Movement.find_or_create_by(name: 'Sit-up')
@@ -173,6 +177,7 @@ end
 %w[
   benchmark_workouts
   hero_workouts
+  open_workouts
   cf_workouts
 ].each do |seed_file|
   seed_path = Rails.root.join('db/seeds', "#{seed_file}.rb")

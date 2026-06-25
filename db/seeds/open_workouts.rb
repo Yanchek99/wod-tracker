@@ -1102,17 +1102,17 @@ Workout.find_or_create_by(name: 'Open 24.1') do |workout|
                   'on arm 1, that many lateral burpees over the dumbbell, that many dumbbell snatches on arm 2, ' \
                   'that many lateral burpees over the dumbbell. Post total time.'
   workout.exercises.build(movement: dumbbell_power_snatch, position: 1, reps: 21, female_load: 35, male_load: 50, load_unit: :lb, notes: 'Arm 1.')
-  workout.exercises.build(movement: lateral_over_barbell_burpee, position: 2, reps: 21, notes: 'Over the dumbbell.')
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 2, reps: 21)
   workout.exercises.build(movement: dumbbell_power_snatch, position: 3, reps: 21, female_load: 35, male_load: 50, load_unit: :lb, notes: 'Arm 2.')
-  workout.exercises.build(movement: lateral_over_barbell_burpee, position: 4, reps: 21, notes: 'Over the dumbbell.')
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 4, reps: 21)
   workout.exercises.build(movement: dumbbell_power_snatch, position: 5, reps: 15, female_load: 35, male_load: 50, load_unit: :lb, notes: 'Arm 1.')
-  workout.exercises.build(movement: lateral_over_barbell_burpee, position: 6, reps: 15, notes: 'Over the dumbbell.')
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 6, reps: 15)
   workout.exercises.build(movement: dumbbell_power_snatch, position: 7, reps: 15, female_load: 35, male_load: 50, load_unit: :lb, notes: 'Arm 2.')
-  workout.exercises.build(movement: lateral_over_barbell_burpee, position: 8, reps: 15, notes: 'Over the dumbbell.')
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 8, reps: 15)
   workout.exercises.build(movement: dumbbell_power_snatch, position: 9, reps: 9, female_load: 35, male_load: 50, load_unit: :lb, notes: 'Arm 1.')
-  workout.exercises.build(movement: lateral_over_barbell_burpee, position: 10, reps: 9, notes: 'Over the dumbbell.')
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 10, reps: 9)
   workout.exercises.build(movement: dumbbell_power_snatch, position: 11, reps: 9, female_load: 35, male_load: 50, load_unit: :lb, notes: 'Arm 2.')
-  workout.exercises.build(movement: lateral_over_barbell_burpee, position: 12, reps: 9, notes: 'Over the dumbbell.')
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 12, reps: 9)
 end
 
 # 24.2
@@ -1162,7 +1162,7 @@ Workout.find_or_create_by(name: 'Open 25.1') do |workout|
   workout.notes = 'Begin with 3 lateral burpees over the dumbbell and 3 dumbbell hang clean-to-overheads, then ' \
                   'a 30-ft walking lunge (15 ft out, 15 ft back). Add 3 reps to the burpees and hang ' \
                   'clean-to-overheads each round; the lunge stays at 30 ft. Two 50/35-lb dumbbells. Post total reps.'
-  workout.exercises.build(movement: lateral_over_barbell_burpee, position: 1, reps: 0, notes: 'Over the dumbbell; start at 3, +3 each round.')
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 1, reps: 0, notes: 'Start at 3, +3 each round.')
   workout.exercises.build(movement: dumbbell_hang_clean_and_jerk, position: 2, reps: 0,
                           female_load: 35, male_load: 50, load_unit: :lb, notes: 'Hang clean-to-overhead; start at 3, +3 each round.')
   workout.exercises.build(movement: walking_lunge, position: 3, reps: 1, distance: 30, distance_unit: :foot)

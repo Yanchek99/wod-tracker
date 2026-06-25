@@ -127,7 +127,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
     t.datetime "created_at", precision: nil, null: false
     t.integer "equipment"
     t.integer "family"
-    t.boolean "load_bearing", default: false, null: false
     t.string "name"
     t.integer "pattern"
     t.integer "skill_level"

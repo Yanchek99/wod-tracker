@@ -4,7 +4,6 @@ class AddMovementTaxonomyAndSubstitutions < ActiveRecord::Migration[8.1]
     add_column :movements, :pattern, :integer
     add_column :movements, :equipment, :integer
     add_column :movements, :skill_level, :integer
-    add_column :movements, :load_bearing, :boolean, null: false, default: false
 
     add_index :movements, :family
     add_index :movements, :pattern

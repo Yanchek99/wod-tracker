@@ -5,7 +5,6 @@ hspu:
   pattern: 8
   equipment: 0
   skill_level: 2
-  load_bearing: false
 
 pistol:
   name: Pistol
@@ -13,7 +12,6 @@ pistol:
   pattern: 0
   equipment: 0
   skill_level: 2
-  load_bearing: false
 
 pullup:
   name: Pull Up
@@ -21,7 +19,6 @@ pullup:
   pattern: 3
   equipment: 6
   skill_level: 1
-  load_bearing: false
 
 pushup:
   name: Push Up
@@ -29,7 +26,6 @@ pushup:
   pattern: 2
   equipment: 0
   skill_level: 0
-  load_bearing: false
 
 run:
   name: Run
@@ -37,7 +33,6 @@ run:
   pattern: 7
   equipment: 12
   skill_level: 0
-  load_bearing: false
 
 row:
   name: Row
@@ -45,7 +40,6 @@ row:
   pattern: 3
   equipment: 9
   skill_level: 0
-  load_bearing: false
 
 squat:
   name: Air Squat
@@ -53,7 +47,6 @@ squat:
   pattern: 0
   equipment: 0
   skill_level: 0
-  load_bearing: false
 
 thruster:
   name: Thruster
@@ -61,7 +54,6 @@ thruster:
   pattern: 11
   equipment: 1
   skill_level: 1
-  load_bearing: true
 
 back_squat:
   name: Back Squat
@@ -69,4 +61,3 @@ back_squat:
   pattern: 0
   equipment: 1
   skill_level: 0
-  load_bearing: true

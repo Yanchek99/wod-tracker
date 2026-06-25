@@ -34,7 +34,6 @@ class MovementTest < ActiveSupport::TestCase
     assert thruster.pattern_mixed?
     assert thruster.equipment_barbell?
     assert thruster.skill_level_intermediate?
-    assert thruster.load_bearing?
   end
 
   test 'finds movements in the same family' do

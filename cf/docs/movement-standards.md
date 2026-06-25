@@ -55,8 +55,8 @@ history and future scaling can query movement similarity without parsing names.
 - Equipment tracks the primary implement or station when one is required.
 - Skill level is a coarse basic/intermediate/advanced scale for substitution
   decisions.
-- Load-bearing marks movements whose intended stimulus commonly depends on
-  external load.
+External load is inferred from the weightlifting family and prescription data
+rather than stored as a separate movement flag.
 
 Substitutions are directed from an original movement to a substitute and marked
 as easier, harder, or lateral. Substitutions should preserve similar movement

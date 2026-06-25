@@ -527,9 +527,11 @@ Workout.find_or_create_by(name: 'Open 17.2') do |workout|
                   'Continue alternating toes-to-bar and bar muscle-ups every 2 rounds. Two 50/35-lb dumbbells ' \
                   'held at the shoulders. Post total reps.'
   workout.exercises.build(movement: dumbbell_front_rack_lunge, position: 1, reps: 1, distance: 50, distance_unit: :foot,
-                          female_load: 35, male_load: 50, load_unit: :lb, notes: 'Two dumbbells at the shoulders.')
+                          female_load: 35, male_load: 50, load_unit: :lb, implement_count: 2,
+                          notes: 'Two dumbbells at the shoulders.')
   workout.exercises.build(movement: toes_to_bar, position: 2, reps: 16)
-  workout.exercises.build(movement: dumbbell_power_clean, position: 3, reps: 8, female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: dumbbell_power_clean, position: 3, reps: 8,
+                          female_load: 35, male_load: 50, load_unit: :lb, implement_count: 2)
   workout.exercises.build(movement: bar_muscle_up, position: 4, reps: 16)
 end
 
@@ -617,7 +619,8 @@ Workout.find_or_create_by(name: 'Open 18.2') do |workout|
   workout.time_cap_seconds = 720
   workout.notes = 'Dumbbell squats hold two dumbbells at the shoulders. Bar-facing burpees jump over the barbell. ' \
                   '12-minute cap shared with 18.2a. Post total time.'
-  workout.exercises.build(movement: dumbbell_front_squat, position: 1, reps: 1, female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: dumbbell_front_squat, position: 1, reps: 1,
+                          female_load: 35, male_load: 50, load_unit: :lb, implement_count: 2)
   workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 1)
 end
 
@@ -808,7 +811,8 @@ end
 Workout.find_or_create_by(name: 'Open 20.2') do |workout|
   workout.time = 20
   workout.score_type = :rep
-  workout.exercises.build(movement: dumbbell_thruster, position: 1, reps: 4, female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: dumbbell_thruster, position: 1, reps: 4,
+                          female_load: 35, male_load: 50, load_unit: :lb, implement_count: 2)
   workout.exercises.build(movement: toes_to_bar, position: 2, reps: 6)
   workout.exercises.build(movement: double_under, position: 3, reps: 24)
 end
@@ -1161,7 +1165,7 @@ Workout.find_or_create_by(name: 'Open 25.1') do |workout|
   workout.score_type = :rep
   workout.notes = 'Begin with 3 lateral burpees over the dumbbell and 3 dumbbell hang clean-to-overheads, then ' \
                   'a 30-ft walking lunge (15 ft out, 15 ft back). Add 3 reps to the burpees and hang ' \
-                  'clean-to-overheads each round; the lunge stays at 30 ft. Two 50/35-lb dumbbells. Post total reps.'
+                  'clean-to-overheads each round; the lunge stays at 30 ft. A single 50/35-lb dumbbell. Post total reps.'
   workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 1, reps: 0, notes: 'Start at 3, +3 each round.')
   workout.exercises.build(movement: dumbbell_hang_clean_and_jerk, position: 2, reps: 0,
                           female_load: 35, male_load: 50, load_unit: :lb, notes: 'Hang clean-to-overhead; start at 3, +3 each round.')

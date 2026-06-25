@@ -53,7 +53,8 @@ history and future scaling can query movement similarity without parsing names.
   movements.
 - Pattern tracks the dominant movement function: squat, hinge, press, pull,
   lunge, carry, rotation, locomotion, inversion, jump, rest, or mixed.
-- Equipment tracks the primary implement or station when one is required.
+- Equipment tracks the primary implement or station when one is required; it is
+  blank when no equipment or station applies.
 - Skill level is a coarse basic/intermediate/advanced scale for substitution
   decisions.
 External load is inferred from the weightlifting family and prescription data

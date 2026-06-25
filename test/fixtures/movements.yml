@@ -3,61 +3,56 @@ hspu:
   name: Handstand Push Up
   family: 1
   pattern: 8
-  equipment: 0
   skill_level: 2
 
 pistol:
   name: Pistol
   family: 1
   pattern: 0
-  equipment: 0
   skill_level: 2
 
 pullup:
   name: Pull Up
   family: 1
   pattern: 3
-  equipment: 6
+  equipment: 5
   skill_level: 1
 
 pushup:
   name: Push Up
   family: 1
   pattern: 2
-  equipment: 0
   skill_level: 0
 
 run:
   name: Run
   family: 0
   pattern: 7
-  equipment: 12
   skill_level: 0
 
 row:
   name: Row
   family: 0
   pattern: 3
-  equipment: 9
+  equipment: 8
   skill_level: 0
 
 squat:
   name: Air Squat
   family: 1
   pattern: 0
-  equipment: 0
   skill_level: 0
 
 thruster:
   name: Thruster
   family: 2
   pattern: 11
-  equipment: 1
+  equipment: 0
   skill_level: 1
 
 back_squat:
   name: Back Squat
   family: 2
   pattern: 0
-  equipment: 1
+  equipment: 0
   skill_level: 0

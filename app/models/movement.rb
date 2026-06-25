@@ -26,20 +26,18 @@ class Movement < ApplicationRecord
   }.freeze
 
   EQUIPMENT = {
-    bodyweight: 0,
-    barbell: 1,
-    dumbbell: 2,
-    kettlebell: 3,
-    medicine_ball: 4,
-    box: 5,
-    pull_up_bar: 6,
-    rings: 7,
-    rope: 8,
-    machine: 9,
-    jump_rope: 10,
-    sled: 11,
-    no_equipment: 12,
-    mixed: 13
+    barbell: 0,
+    dumbbell: 1,
+    kettlebell: 2,
+    medicine_ball: 3,
+    box: 4,
+    pull_up_bar: 5,
+    rings: 6,
+    rope: 7,
+    machine: 8,
+    jump_rope: 9,
+    sled: 10,
+    mixed: 11
   }.freeze
 
   SKILL_LEVELS = {

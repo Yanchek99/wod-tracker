@@ -1,4 +1,4 @@
-# CrossFit Open Workouts (2011-2025)
+# CrossFit Open Workouts (2011-2026)
 #
 # Source: https://games.crossfit.com/workouts/open
 # Loads are the standard Men's Rx'd / Women's Rx'd prescriptions (female_load / male_load).
@@ -963,7 +963,7 @@ Workout.find_or_create_by(name: 'Open 21.4') do |workout|
   workout.exercises.build(movement: deadlift, position: 1, reps: 1)
   workout.exercises.build(movement: clean, position: 2, reps: 1)
   workout.exercises.build(movement: hang_clean, position: 3, reps: 1)
-  workout.exercises.build(movement: shoulder_to_overhead, position: 4, reps: 1, notes: 'Jerk.')
+  workout.exercises.build(movement: jerk, position: 4, reps: 1)
 end
 
 # ==============================================================================
@@ -1210,4 +1210,106 @@ Workout.find_or_create_by(name: 'Open 25.3') do |workout|
   workout.exercises.build(movement: snatch, position: 8, reps: 25, female_load: 65, male_load: 95, load_unit: :lb)
   workout.exercises.build(movement: wall_walk, position: 9, reps: 5)
   workout.exercises.build(movement: row, position: 10, reps: 1, calories: 50)
+end
+
+# ==============================================================================
+# 2026
+# ==============================================================================
+
+# 26.1
+# For time (12-minute cap)
+# 20 wall-ball shots, 18 box jump-overs
+# 30 wall-ball shots, 18 box jump-overs
+# 40 wall-ball shots, 18 medicine-ball box step-overs
+# 66 wall-ball shots, 18 medicine-ball box step-overs
+# 40 wall-ball shots, 18 box jump-overs
+# 30 wall-ball shots, 18 box jump-overs
+# 20 wall-ball shots
+# Medicine ball 20 / 14 lb to 10 / 9 ft target, box 24 / 20 in
+Workout.find_or_create_by(name: 'Open 26.1') do |workout|
+  workout.score_type = :time
+  workout.time_cap_seconds = 720
+  workout.notes = 'For time, 12-minute cap. Post total time.'
+  workout.exercises.build(movement: wall_ball_shot, position: 1, reps: 20,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 9, male_distance: 10, distance_unit: :foot)
+  workout.exercises.build(movement: box_jump_over, position: 2, reps: 18, female_distance: 20, male_distance: 24, distance_unit: :inch)
+  workout.exercises.build(movement: wall_ball_shot, position: 3, reps: 30,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 9, male_distance: 10, distance_unit: :foot)
+  workout.exercises.build(movement: box_jump_over, position: 4, reps: 18, female_distance: 20, male_distance: 24, distance_unit: :inch)
+  workout.exercises.build(movement: wall_ball_shot, position: 5, reps: 40,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 9, male_distance: 10, distance_unit: :foot)
+  workout.exercises.build(movement: medicine_ball_box_step_over, position: 6, reps: 18,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 20, male_distance: 24, distance_unit: :inch)
+  workout.exercises.build(movement: wall_ball_shot, position: 7, reps: 66,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 9, male_distance: 10, distance_unit: :foot)
+  workout.exercises.build(movement: medicine_ball_box_step_over, position: 8, reps: 18,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 20, male_distance: 24, distance_unit: :inch)
+  workout.exercises.build(movement: wall_ball_shot, position: 9, reps: 40,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 9, male_distance: 10, distance_unit: :foot)
+  workout.exercises.build(movement: box_jump_over, position: 10, reps: 18, female_distance: 20, male_distance: 24, distance_unit: :inch)
+  workout.exercises.build(movement: wall_ball_shot, position: 11, reps: 30,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 9, male_distance: 10, distance_unit: :foot)
+  workout.exercises.build(movement: box_jump_over, position: 12, reps: 18, female_distance: 20, male_distance: 24, distance_unit: :inch)
+  workout.exercises.build(movement: wall_ball_shot, position: 13, reps: 20,
+                          female_load: 14, male_load: 20, load_unit: :lb,
+                          female_distance: 9, male_distance: 10, distance_unit: :foot)
+end
+
+# 26.2
+# For time (15-minute cap)
+# 80-ft dumbbell overhead walking lunge, 20 alternating dumbbell snatches, 20 pull-ups
+# 80-ft dumbbell overhead walking lunge, 20 alternating dumbbell snatches, 20 chest-to-bar pull-ups
+# 80-ft dumbbell overhead walking lunge, 20 alternating dumbbell snatches, 20 muscle-ups
+# Dumbbell 50 / 35 lb
+Workout.find_or_create_by(name: 'Open 26.2') do |workout|
+  workout.score_type = :time
+  workout.time_cap_seconds = 900
+  workout.notes = 'For time, 15-minute cap. The dumbbell is held overhead for the lunge; the snatches ' \
+                  'alternate arms. Post total time.'
+  workout.exercises.build(movement: dumbbell_overhead_walking_lunge, position: 1, reps: 1, distance: 80, distance_unit: :foot,
+                          female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: dumbbell_power_snatch, position: 2, reps: 20, female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: pull_up, position: 3, reps: 20)
+  workout.exercises.build(movement: dumbbell_overhead_walking_lunge, position: 4, reps: 1, distance: 80, distance_unit: :foot,
+                          female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: dumbbell_power_snatch, position: 5, reps: 20, female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: chest_to_bar_pull_up, position: 6, reps: 20)
+  workout.exercises.build(movement: dumbbell_overhead_walking_lunge, position: 7, reps: 1, distance: 80, distance_unit: :foot,
+                          female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: dumbbell_power_snatch, position: 8, reps: 20, female_load: 35, male_load: 50, load_unit: :lb)
+  workout.exercises.build(movement: muscle_up, position: 9, reps: 20)
+end
+
+# 26.3
+# For time (16-minute cap)
+# 2 rounds of: 12 burpees over the bar, 12 cleans, 12 burpees over the bar, 12 thrusters (95 / 65 lb)
+# 2 rounds of the same at 115 / 75 lb
+# 2 rounds of the same at 135 / 85 lb
+Workout.find_or_create_by(name: 'Open 26.3') do |workout|
+  workout.score_type = :time
+  workout.time_cap_seconds = 960
+  workout.notes = 'For time, 16-minute cap. Burpees over the bar jump over the barbell. Post total time.'
+  block1 = workout.segments.build(rounds: 2, position: 1)
+  workout.exercises.build(movement: over_the_bar_burpee, segment: block1, position: 1, reps: 12)
+  workout.exercises.build(movement: clean, segment: block1, position: 2, reps: 12, female_load: 65, male_load: 95, load_unit: :lb)
+  workout.exercises.build(movement: over_the_bar_burpee, segment: block1, position: 3, reps: 12)
+  workout.exercises.build(movement: thruster, segment: block1, position: 4, reps: 12, female_load: 65, male_load: 95, load_unit: :lb)
+  block2 = workout.segments.build(rounds: 2, position: 2)
+  workout.exercises.build(movement: over_the_bar_burpee, segment: block2, position: 1, reps: 12)
+  workout.exercises.build(movement: clean, segment: block2, position: 2, reps: 12, female_load: 75, male_load: 115, load_unit: :lb)
+  workout.exercises.build(movement: over_the_bar_burpee, segment: block2, position: 3, reps: 12)
+  workout.exercises.build(movement: thruster, segment: block2, position: 4, reps: 12, female_load: 75, male_load: 115, load_unit: :lb)
+  block3 = workout.segments.build(rounds: 2, position: 3)
+  workout.exercises.build(movement: over_the_bar_burpee, segment: block3, position: 1, reps: 12)
+  workout.exercises.build(movement: clean, segment: block3, position: 2, reps: 12, female_load: 85, male_load: 135, load_unit: :lb)
+  workout.exercises.build(movement: over_the_bar_burpee, segment: block3, position: 3, reps: 12)
+  workout.exercises.build(movement: thruster, segment: block3, position: 4, reps: 12, female_load: 85, male_load: 135, load_unit: :lb)
 end

@@ -4,7 +4,7 @@
 
 WOD Tracker is a Ruby on Rails app for tracking CrossFit workouts, logs, movements, metrics, programs, and schedules.
 
-- Ruby 3.4.9
+- Ruby 4.0.5
 - Rails 8.1
 - PostgreSQL
 - Node 24.x
@@ -19,7 +19,7 @@ Use the project binaries and Bundler where possible.
 
 Local shells may default to another Ruby. When running Ruby, Rails, Bundler, or test commands from an agent shell, use the project RVM gemset explicitly:
 
-- `rvm 3.4.9@wod-tracker do bundle exec rails test`
+- `rvm 4.0.5@wod-tracker do bundle exec rails test`
 
 - Install Ruby gems: `bundle install`
 - Install JavaScript packages: `yarn install`

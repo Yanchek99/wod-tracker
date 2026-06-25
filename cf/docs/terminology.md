@@ -157,3 +157,29 @@ consume it and log their performances.
 A coach note is programming guidance authored by a coach, such as stimulus,
 scaling, or strategy advice. It is distinct from an athlete's log note, which
 records the athlete's own performance and experience.
+
+## Benchmark Workout
+
+A benchmark workout is a named, fixed-prescription workout used as a standard,
+repeatable test of fitness. The L1 guide calls Fran "a specific benchmark
+workout" and describes a benchmark as a workout whose work "is constant" every
+time it is performed (L1 guide). Examples include "the Girls" (Fran, Cindy,
+Grace, Diane, Elizabeth) and the Hero workouts (such as Murph). The L2 guide
+lists "Classic CrossFit benchmark workouts such as Fran, Helen, Diane, Elizabeth,
+and Fight Gone Bad" (L2 guide).
+
+The purpose of a benchmark is measurement. Because the prescribed work is held
+constant, repeating the identical workout and comparing scores isolates the
+change in the athlete: "By tracking the difference in time between workout
+attempts, we are looking at changes in power" (L1 guide). The L1 guide works a
+two-attempt Fran example (Table 1) where the work cancels and the ratio of times
+reports the change in power output — i.e. the change in the athlete's work
+capacity, which the guide equates with fitness. The L2 guide frames benchmarks as
+fitness tests: "Faster Fran times, more rounds of Cindy, and heavier
+1-repetition-maximum clean and jerks" are markers of effective programming, and a
+trainer may "select specific benchmarks to follow" to assess progress over time
+(L2 guide).
+
+A benchmark's identity is its fixed content (movements, loads, rep scheme, and
+structure), not the date it is performed. See `programming.md` for how benchmarks
+relate to "constantly varied" and for the app's repeat-workout modeling rule.

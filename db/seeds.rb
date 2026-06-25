@@ -5,7 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
+admin = User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
   u.first_name = 'ADMIN'
   u.last_name = 'ADMIN'
   u.sex = :male
@@ -165,7 +165,10 @@ windshield_wiper = Movement.find_or_create_by(name: 'Windshield Wiper')
 zercher_squat = Movement.find_or_create_by(name: 'Zercher Squat')
 
 # Programs
-CF_PROGRAM = Program.find_or_create_by(name: 'Crossfit Journal')
+CF_PROGRAM = Program.find_or_create_by(name: 'Crossfit.com')
+CF_PROGRAM.subscriptions.find_or_create_by(user: admin) do |subscription|
+  subscription.role = :owner
+end
 
 %w[
   benchmark_workouts

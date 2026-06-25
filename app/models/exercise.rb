@@ -1,6 +1,7 @@
 class Exercise < ApplicationRecord
   include ExercisePositionValidation
   include ExercisePrescription
+  include RefreshesWorkoutContentKey
 
   SEX_PAIRED_DIMENSIONS = %i[load distance calories].freeze
 

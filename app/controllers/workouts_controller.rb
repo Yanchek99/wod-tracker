@@ -25,6 +25,7 @@ class WorkoutsController < ApplicationController
     @workout = Workout.new(workout_params)
     respond_to do |format|
       if @workout.save
+        @workout = @workout.absorb_duplicate!
         format.html { redirect_to @workout, notice: t('.notice') }
         format.json { render :show, status: :created, location: @workout }
       else
@@ -45,6 +46,8 @@ class WorkoutsController < ApplicationController
       @workout.reload
       updated = @workout.update(attributes)
       raise ActiveRecord::Rollback unless updated
+
+      @workout = @workout.absorb_duplicate!
     end
 
     respond_to do |format|

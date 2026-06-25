@@ -19,6 +19,76 @@ Rationale: the penalty is genuinely a grouped unit of work, which is what
 `Segment` already represents, and a named segment already renders and orders
 correctly — so no new column or "penalty"/"condition" concept is needed.
 
+## 2026-06-18: Prescribed Load Identity Is A Canonical Magnitude, Not (Value, Unit)
+
+Decision recorded for a follow-up issue; not yet implemented.
+
+CrossFit expresses a single prescribed load in whichever unit suits the audience —
+pounds, kilograms, or pood — and these are display conventions for the same
+prescription, not different prescriptions. The current model stores load as a
+value plus a `load_unit` enum on the exercise, which folds the display unit into
+the load's identity. That is the wrong layer: the prescribed *magnitude* is the
+identity, and lb/kg/pood are presentations derived from it.
+
+The equivalences are rounded conventions tied to standard implements, not exact
+arithmetic. CrossFit kettlebell prescriptions are the standard 16/24/32 kg
+implements, labeled 1/1.5/2 pood and (approximately) 35/53/70 lb; 2 pood is
+exactly ~72 lb but is published as 70 lb. Barbell Rx similarly publishes pairs
+such as 95 lb / 43 kg even though 43 kg is ~94.8 lb. So load cannot be canonicalized
+by physics (converting everything to grams would split 95 lb from 43 kg, which is
+backwards) — canonicalization must follow CrossFit's published standard-equivalence
+table.
+
+Direction (to be confirmed in the implementing issue): store load as one canonical
+magnitude and treat lb/kg/pood as input/display formats normalized through a
+source-confirmed CrossFit standard-equivalence table; display unit becomes a
+presentation/user-preference concern rather than part of load identity. A heavier
+alternative is a first-class `StandardLoad` concept that exercises reference for Rx
+loads, with arbitrary/user loads keeping a raw magnitude.
+
+The exact equivalence table (pood and lb/kg Rx pairs) must be source-confirmed
+from the L1/L2 guides and CrossFit prescriptions before encoding, per
+`OVERVIEW.md`; the specific values above are stated as illustration and are not yet
+source-verified.
+
+Rationale: this is a prerequisite for content-based workout deduplication (see the
+repeat/benchmark decision below). A content fingerprint can only guarantee
+uniqueness up to its canonical form, so if the same prescription can be stored as
+both 95 lb and 43 kg the fingerprint will create duplicate `Workout` rows. Fixing
+load identity first makes the fingerprint reliable. Scoped to its own issue to keep
+the idempotency schema/seed change (#1673) small.
+
+## 2026-06-18: Repeat/Benchmark Workouts Are One Workout On Many Schedules
+
+A repeated or benchmark workout (Fran, Cindy, Grace, Murph, etc.) is modeled as a
+single canonical `Workout` placed on multiple dates through multiple `Schedule`
+records (`posted_at`). It is not a new duplicate `Workout` per date. The same
+workout scheduled five times is one `Workout` and five `Schedule`s, and the
+system must not create duplicate `Workout` rows for identical content. Workout
+identity is content-based — defined by its movements, loads, rep scheme,
+structure, and intended stimulus — and is independent of when it is scheduled.
+
+Rationale: a benchmark is a measurement instrument. The L1 guide's argument that
+comparing two attempts of a workout reports the change in an athlete's power and
+work capacity ("This is your fitness") only holds when the work is constant across
+attempts, so both attempts must reference the same workout definition. Treating
+each scheduled occurrence as a distinct `Workout` would fragment a benchmark's
+history and break score-over-time comparison. One `Workout` reused across many
+`Schedule` (`posted_at`) rows is the direct extension of the existing
+`Program`/`Schedule`/`Subscription` model — a `Schedule` already places one
+workout on a date — so repeating a workout means adding schedules, not workouts,
+and an athlete's logs across those schedules form the benchmark's progress
+history.
+
+Deduplication mechanism: each `Workout` carries a `content_key`, a fingerprint of
+its scoring scheme and ordered parts (with a unique index). On save, a workout whose
+content matches an existing one keeps a nil key, and `Workout#absorb_duplicate!`
+folds its schedules (deduped on program + `posted_at`) and logs into the existing
+canonical workout, then deletes the duplicate. So editing or importing a workout
+into an existing one's content yields a single workout, with the edit redirected to
+the survivor. Free-text notes are excluded from the fingerprint; canonical load
+identity (lb/kg/pood) is the remaining gap (see #1684).
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time

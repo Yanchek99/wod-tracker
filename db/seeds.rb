@@ -15,154 +15,307 @@ admin = User.find_or_create_by(email: 'admin@wod-tracker.com') do |u|
 end
 
 # Movements
-abmat_sit_up = Movement.find_or_create_by(name: 'AbMat Sit-up')
-air_squat = Movement.find_or_create_by(name: 'Air Squat')
-back_extensions = Movement.find_or_create_by(name: 'Back Extensions')
-back_scale = Movement.find_or_create_by(name: 'Back Scale')
-back_squat = Movement.find_or_create_by(name: 'Back Squat')
-bar_muscle_up = Movement.find_or_create_by(name: 'Bar Muscle-up')
-barbell_front_rack_lunge = Movement.find_or_create_by(name: 'Barbell Front-rack Lunge')
-bench_press = Movement.find_or_create_by(name: 'Bench Press')
-bent_over_row = Movement.find_or_create_by(name: 'Bent-over Row')
-body_blaster = Movement.find_or_create_by(name: 'Body Blaster')
-box_jump = Movement.find_or_create_by(name: 'Box Jump')
-box_step_up = Movement.find_or_create_by(name: 'Box Step-up')
-burpee = Movement.find_or_create_by(name: 'Burpee')
-burpee_box_jump = Movement.find_or_create_by(name: 'Burpee Box Jump')
-burpee_box_jump_over = Movement.find_or_create_by(name: 'Burpee Box Jump-over')
-butterfly_pull_up = Movement.find_or_create_by(name: 'Butterfly Pull-up')
-chest_to_bar_pull_up = Movement.find_or_create_by(name: 'Chest-to-bar Pull-up')
-chest_to_wall_handstand_push_up = Movement.find_or_create_by(name: 'Chest-to-wall Handstand Push-up')
-clean = Movement.find_or_create_by(name: 'Clean')
-clean_and_jerk = Movement.find_or_create_by(name: 'Clean and Jerk')
-clean_and_push_jerk = Movement.find_or_create_by(name: 'Clean and Push Jerk')
-clean_squat = Movement.find_or_create_by(name: 'Clean Squat')
-deadlift = Movement.find_or_create_by(name: 'Deadlift')
-dip = Movement.find_or_create_by(name: 'Dip')
-double_under = Movement.find_or_create_by(name: 'Double-under')
-dumbbell_bench_press = Movement.find_or_create_by(name: 'Dumbbell Bench Press')
-dumbbell_box_step_up = Movement.find_or_create_by(name: 'Dumbbell Box Step-up')
-dumbbell_clean = Movement.find_or_create_by(name: 'Dumbbell Clean')
-dumbbell_deadlift = Movement.find_or_create_by(name: 'Dumbbell Deadlift')
-dumbbell_farmers_carry = Movement.find_or_create_by(name: 'Dumbbell Farmers Carry')
-dumbbell_front_squat = Movement.find_or_create_by(name: 'Dumbbell Front Squat')
-dumbbell_front_rack_lunge = Movement.find_or_create_by(name: 'Dumbbell Front-rack Lunge')
-dumbbell_hang_clean = Movement.find_or_create_by(name: 'Dumbbell Hang Clean')
-dumbbell_hang_clean_and_jerk = Movement.find_or_create_by(name: 'Dumbbell Hang Clean and Jerk')
-dumbbell_hang_power_clean = Movement.find_or_create_by(name: 'Dumbbell Hang Power Clean')
-dumbbell_overhead_squat = Movement.find_or_create_by(name: 'Dumbbell Overhead Squat')
-dumbbell_overhead_walking_lunge = Movement.find_or_create_by(name: 'Dumbbell Overhead Walking Lunge')
-dumbbell_power_clean = Movement.find_or_create_by(name: 'Dumbbell Power Clean')
-dumbbell_power_snatch = Movement.find_or_create_by(name: 'Dumbbell Power Snatch')
-dumbbell_push_jerk = Movement.find_or_create_by(name: 'Dumbbell Push Jerk')
-dumbbell_push_press = Movement.find_or_create_by(name: 'Dumbbell Push Press')
-dumbbell_squat_snatch = Movement.find_or_create_by(name: 'Dumbbell Squat Snatch')
-dumbbell_thruster = Movement.find_or_create_by(name: 'Dumbbell Thruster')
-dumbbell_turkish_get_up = Movement.find_or_create_by(name: 'Dumbbell Turkish Get-up')
-forward_roll_from_support = Movement.find_or_create_by(name: 'Forward Roll From Support')
-freestanding_handstand_push_up = Movement.find_or_create_by(name: 'Freestanding Handstand Push-up')
-freestanding_shoulder_tap = Movement.find_or_create_by(name: 'Freestanding Shoulder Tap')
-front_scale = Movement.find_or_create_by(name: 'Front Scale')
-front_squat = Movement.find_or_create_by(name: 'Front Squat')
-ghd_back_extension = Movement.find_or_create_by(name: 'GHD Back Extension')
-ghd_hip_and_back_extension = Movement.find_or_create_by(name: 'GHD Hip and Back Extension')
-ghd_hip_extension = Movement.find_or_create_by(name: 'GHD Hip Extension')
-ghd_sit_up = Movement.find_or_create_by(name: 'GHD Sit-up')
-glide_kip = Movement.find_or_create_by(name: 'Glide Kip')
-good_morning = Movement.find_or_create_by(name: 'Good Morning')
-handstand = Movement.find_or_create_by(name: 'Handstand')
-handstand_pirouette = Movement.find_or_create_by(name: 'Handstand Pirouette')
-handstand_push_up = Movement.find_or_create_by(name: 'Handstand Push-up')
-handstand_walk = Movement.find_or_create_by(name: 'Handstand Walk')
-hang_clean = Movement.find_or_create_by(name: 'Hang Clean')
-hang_clean_and_push_jerk = Movement.find_or_create_by(name: 'Hang Clean and Push Jerk')
-hang_power_clean = Movement.find_or_create_by(name: 'Hang Power Clean')
-hang_power_snatch = Movement.find_or_create_by(name: 'Hang Power Snatch')
-hang_snatch = Movement.find_or_create_by(name: 'Hang Snatch')
-hanging_l_sit = Movement.find_or_create_by(name: 'Hanging L-sit')
-hip_extensions = Movement.find_or_create_by(name: 'Hip Extensions')
-inverted_burpee = Movement.find_or_create_by(name: 'Inverted Burpee')
-jumping_jack = Movement.find_or_create_by(name: 'Jumping Jack')
-jumping_lunge = Movement.find_or_create_by(name: 'Jumping Lunge')
-kettlebell_snatch = Movement.find_or_create_by(name: 'Kettlebell Snatch')
-kettlebell_sumo_hi_pull = Movement.find_or_create_by(name: 'Kettlebell Sumo Hi Pull')
-kettlebell_swing = Movement.find_or_create_by(name: 'Kettlebell Swing')
-l_pull_up = Movement.find_or_create_by(name: 'L Pull-up')
-l_sit_hold_on_matador = Movement.find_or_create_by(name: 'L Sit Hold on Matador')
-l_sit = Movement.find_or_create_by(name: 'L-sit')
-l_sit_on_rings = Movement.find_or_create_by(name: 'L-sit on Rings')
-l_sit_rope_climb = Movement.find_or_create_by(name: 'L-sit Rope Climb')
-l_sit_to_shoulder_stand = Movement.find_or_create_by(name: 'L-sit to Shoulder Stand')
-lateral_over_barbell_burpee = Movement.find_or_create_by(name: 'Lateral Over Barbell Burpee')
-legless_rope_climb = Movement.find_or_create_by(name: 'Legless Rope Climb')
-lunge = Movement.find_or_create_by(name: 'Lunge')
-lunge_with_plate_overhead = Movement.find_or_create_by(name: 'Lunge with plate overhead')
-medicine_ball_clean = Movement.find_or_create_by(name: 'Medicine-ball Clean')
-modified_rope_climb = Movement.find_or_create_by(name: 'Modified Rope Climb')
-muscle_snatch = Movement.find_or_create_by(name: 'Muscle Snatch')
-muscle_up = Movement.find_or_create_by(name: 'Muscle-up')
-over_the_bar_burpee = Movement.find_or_create_by(name: 'Over the bar Burpee')
-over_the_medball_burpee = Movement.find_or_create_by(name: 'Over the medball Burpee')
-overhead_dumbbell_lunge = Movement.find_or_create_by(name: 'Overhead Dumbbell Lunge')
-overhead_squat = Movement.find_or_create_by(name: 'Overhead Squat')
-power_clean = Movement.find_or_create_by(name: 'Power Clean')
-power_clean_and_split_jerk = Movement.find_or_create_by(name: 'Power Clean and Split Jerk')
-power_snatch = Movement.find_or_create_by(name: 'Power Snatch')
-pull_over = Movement.find_or_create_by(name: 'Pull-over')
-pull_up = Movement.find_or_create_by(name: 'Pull-up')
-push_jerk = Movement.find_or_create_by(name: 'Push Jerk')
-push_press = Movement.find_or_create_by(name: 'Push Press')
-push_up = Movement.find_or_create_by(name: 'Push-up')
-deficit_push_up = Movement.find_or_create_by(name: 'Deficit Push-up')
-renegade_row = Movement.find_or_create_by(name: 'Renegade Row')
-rest = Movement.find_or_create_by(name: 'Rest')
-ring_dip = Movement.find_or_create_by(name: 'Ring Dip')
-ring_muscle_up = Movement.find_or_create_by(name: 'Ring Muscle-up')
-ring_push_up = Movement.find_or_create_by(name: 'Ring Push-up')
-ring_row = Movement.find_or_create_by(name: 'Ring Row')
-rope_climb = Movement.find_or_create_by(name: 'Rope Climb')
-row = Movement.find_or_create_by(name: 'Row')
-run = Movement.find_or_create_by(name: 'Run')
-shoot_through = Movement.find_or_create_by(name: 'Shoot-through')
-shoulder_press = Movement.find_or_create_by(name: 'Shoulder Press')
-shoulder_to_overhead = Movement.find_or_create_by(name: 'Shoulder to Overhead')
-single_leg_squat_pistol = Movement.find_or_create_by(name: 'Single-leg Squat (Pistol)')
-single_under = Movement.find_or_create_by(name: 'Single-under')
-sit_up = Movement.find_or_create_by(name: 'Sit-up')
-skin_the_cat = Movement.find_or_create_by(name: 'Skin the Cat')
-slam_ball = Movement.find_or_create_by(name: 'Slam Ball')
-sled_drag = Movement.find_or_create_by(name: 'Sled Drag')
-sled_pull = Movement.find_or_create_by(name: 'Sled Pull')
-snatch = Movement.find_or_create_by(name: 'Snatch')
-snatch_balance = Movement.find_or_create_by(name: 'Snatch Balance')
-sots_press = Movement.find_or_create_by(name: 'Sots Press')
-split_clean = Movement.find_or_create_by(name: 'Split Clean')
-split_jerk = Movement.find_or_create_by(name: 'Split Jerk')
-split_snatch = Movement.find_or_create_by(name: 'Split Snatch')
-straddle_press_to_handstand = Movement.find_or_create_by(name: 'Straddle Press to Handstand')
-strict_bar_muscle_up = Movement.find_or_create_by(name: 'Strict Bar Muscle-up')
-strict_chest_to_bar_pull_up = Movement.find_or_create_by(name: 'Strict Chest-to-bar Pull-up')
-strict_handstand_push_up = Movement.find_or_create_by(name: 'Strict Handstand Push-up')
-strict_knees_to_elbows = Movement.find_or_create_by(name: 'Strict Knees-to-elbows')
-strict_muscle_up = Movement.find_or_create_by(name: 'Strict Muscle-up')
-strict_pull_up = Movement.find_or_create_by(name: 'Strict Pull-up')
-strict_toes_to_bar = Movement.find_or_create_by(name: 'Strict Toes-to-bar')
-strict_toes_to_rings = Movement.find_or_create_by(name: 'Strict Toes-to-rings')
-sumo_deadlift = Movement.find_or_create_by(name: 'Sumo Deadlift')
-sumo_deadlift_high_pull = Movement.find_or_create_by(name: 'Sumo Deadlift High Pull')
-swim = Movement.find_or_create_by(name: 'Swim')
-swing_to_backward_roll_to_support = Movement.find_or_create_by(name: 'Swing to Backward Roll to Support')
-tempo_jerk = Movement.find_or_create_by(name: 'Tempo Jerk')
-thruster = Movement.find_or_create_by(name: 'Thruster')
-toes_to_bar = Movement.find_or_create_by(name: 'Toes to Bar')
-toes_to_bar_pull_up = Movement.find_or_create_by(name: 'Toes to Bar + Pull-up')
-tuck_up = Movement.find_or_create_by(name: 'Tuck-up')
-v_up = Movement.find_or_create_by(name: 'V-up')
-walking_lunge = Movement.find_or_create_by(name: 'Walking Lunge')
-wall_walk = Movement.find_or_create_by(name: 'Wall Walk')
-wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
-windshield_wiper = Movement.find_or_create_by(name: 'Windshield Wiper')
-zercher_squat = Movement.find_or_create_by(name: 'Zercher Squat')
+def seed_movement(name, **taxonomy)
+  Movement.find_or_initialize_by(name:).tap do |movement|
+    movement.assign_attributes(taxonomy)
+    movement.save!
+  end
+end
+
+abmat_sit_up = seed_movement('AbMat Sit-up', family: :gymnastics, pattern: :rotation, skill_level: :basic)
+air_squat = seed_movement('Air Squat', family: :gymnastics, pattern: :squat, skill_level: :basic)
+back_extensions = seed_movement('Back Extensions', family: :gymnastics, pattern: :hinge, skill_level: :basic)
+back_scale = seed_movement('Back Scale', family: :gymnastics, pattern: :hinge, skill_level: :intermediate)
+back_squat = seed_movement('Back Squat', family: :weightlifting, pattern: :squat, equipment: :barbell,
+                                         skill_level: :basic)
+bar_muscle_up = seed_movement('Bar Muscle-up', family: :gymnastics, pattern: :pull, equipment: :pull_up_bar,
+                                               skill_level: :advanced)
+barbell_front_rack_lunge = seed_movement('Barbell Front-rack Lunge', family: :weightlifting, pattern: :lunge,
+                                                                     equipment: :barbell, skill_level: :intermediate)
+bench_press = seed_movement('Bench Press', family: :weightlifting, pattern: :press, equipment: :barbell,
+                                           skill_level: :basic)
+bent_over_row = seed_movement('Bent-over Row', family: :weightlifting, pattern: :pull, equipment: :barbell,
+                                               skill_level: :basic)
+body_blaster = seed_movement('Body Blaster', family: :gymnastics, pattern: :mixed, skill_level: :intermediate)
+box_jump = seed_movement('Box Jump', family: :gymnastics, pattern: :jump, equipment: :box, skill_level: :basic)
+box_step_up = seed_movement('Box Step-up', family: :gymnastics, pattern: :lunge, equipment: :box,
+                                           skill_level: :basic)
+burpee = seed_movement('Burpee', family: :gymnastics, pattern: :mixed, skill_level: :basic)
+burpee_box_jump = seed_movement('Burpee Box Jump', family: :gymnastics, pattern: :mixed, equipment: :box,
+                                                   skill_level: :intermediate)
+burpee_box_jump_over = seed_movement('Burpee Box Jump-over', family: :gymnastics, pattern: :mixed,
+                                                             equipment: :box, skill_level: :intermediate)
+butterfly_pull_up = seed_movement('Butterfly Pull-up', family: :gymnastics, pattern: :pull,
+                                                       equipment: :pull_up_bar, skill_level: :advanced)
+chest_to_bar_pull_up = seed_movement('Chest-to-bar Pull-up', family: :gymnastics, pattern: :pull,
+                                                             equipment: :pull_up_bar, skill_level: :intermediate)
+chest_to_wall_handstand_push_up = seed_movement('Chest-to-wall Handstand Push-up', family: :gymnastics,
+                                                                                   pattern: :inversion,
+                                                                                   skill_level: :advanced)
+clean = seed_movement('Clean', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                               skill_level: :intermediate)
+clean_and_jerk = seed_movement('Clean and Jerk', family: :weightlifting, pattern: :mixed, equipment: :barbell,
+                                                 skill_level: :advanced)
+clean_and_push_jerk = seed_movement('Clean and Push Jerk', family: :weightlifting, pattern: :mixed,
+                                                           equipment: :barbell, skill_level: :advanced)
+clean_squat = seed_movement('Clean Squat', family: :weightlifting, pattern: :squat, equipment: :barbell,
+                                           skill_level: :intermediate)
+deadlift = seed_movement('Deadlift', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                     skill_level: :basic)
+dip = seed_movement('Dip', family: :gymnastics, pattern: :press, skill_level: :basic)
+double_under = seed_movement('Double-under', family: :monostructural, pattern: :jump, equipment: :jump_rope,
+                                             skill_level: :intermediate)
+dumbbell_bench_press = seed_movement('Dumbbell Bench Press', family: :weightlifting, pattern: :press,
+                                                             equipment: :dumbbell, skill_level: :basic)
+dumbbell_box_step_up = seed_movement('Dumbbell Box Step-up', family: :weightlifting, pattern: :lunge,
+                                                             equipment: :dumbbell, skill_level: :intermediate)
+dumbbell_clean = seed_movement('Dumbbell Clean', family: :weightlifting, pattern: :hinge, equipment: :dumbbell,
+                                                 skill_level: :intermediate)
+dumbbell_deadlift = seed_movement('Dumbbell Deadlift', family: :weightlifting, pattern: :hinge,
+                                                       equipment: :dumbbell, skill_level: :basic)
+dumbbell_farmers_carry = seed_movement('Dumbbell Farmers Carry', family: :weightlifting, pattern: :carry,
+                                                                 equipment: :dumbbell, skill_level: :basic)
+dumbbell_front_squat = seed_movement('Dumbbell Front Squat', family: :weightlifting, pattern: :squat,
+                                                             equipment: :dumbbell, skill_level: :basic)
+dumbbell_front_rack_lunge = seed_movement('Dumbbell Front-rack Lunge', family: :weightlifting, pattern: :lunge,
+                                                                       equipment: :dumbbell, skill_level: :intermediate)
+dumbbell_hang_clean = seed_movement('Dumbbell Hang Clean', family: :weightlifting, pattern: :hinge,
+                                                           equipment: :dumbbell, skill_level: :intermediate)
+dumbbell_hang_clean_and_jerk = seed_movement('Dumbbell Hang Clean and Jerk', family: :weightlifting,
+                                                                             pattern: :mixed,
+                                                                             equipment: :dumbbell,
+                                                                             skill_level: :advanced)
+dumbbell_hang_power_clean = seed_movement('Dumbbell Hang Power Clean', family: :weightlifting, pattern: :hinge,
+                                                                       equipment: :dumbbell,
+                                                                       skill_level: :intermediate)
+dumbbell_overhead_squat = seed_movement('Dumbbell Overhead Squat', family: :weightlifting, pattern: :squat,
+                                                                   equipment: :dumbbell, skill_level: :advanced)
+dumbbell_overhead_walking_lunge = seed_movement('Dumbbell Overhead Walking Lunge', family: :weightlifting,
+                                                                                   pattern: :lunge,
+                                                                                   equipment: :dumbbell,
+                                                                                   skill_level: :advanced)
+dumbbell_power_clean = seed_movement('Dumbbell Power Clean', family: :weightlifting, pattern: :hinge,
+                                                             equipment: :dumbbell, skill_level: :intermediate)
+dumbbell_power_snatch = seed_movement('Dumbbell Power Snatch', family: :weightlifting, pattern: :hinge,
+                                                               equipment: :dumbbell, skill_level: :advanced)
+dumbbell_push_jerk = seed_movement('Dumbbell Push Jerk', family: :weightlifting, pattern: :press,
+                                                         equipment: :dumbbell, skill_level: :intermediate)
+dumbbell_push_press = seed_movement('Dumbbell Push Press', family: :weightlifting, pattern: :press,
+                                                           equipment: :dumbbell, skill_level: :basic)
+dumbbell_squat_snatch = seed_movement('Dumbbell Squat Snatch', family: :weightlifting, pattern: :squat,
+                                                               equipment: :dumbbell, skill_level: :advanced)
+dumbbell_thruster = seed_movement('Dumbbell Thruster', family: :weightlifting, pattern: :mixed,
+                                                       equipment: :dumbbell, skill_level: :intermediate)
+dumbbell_turkish_get_up = seed_movement('Dumbbell Turkish Get-up', family: :weightlifting, pattern: :mixed,
+                                                                   equipment: :dumbbell,
+                                                                   skill_level: :advanced)
+forward_roll_from_support = seed_movement('Forward Roll From Support', family: :gymnastics, pattern: :rotation,
+                                                                       skill_level: :advanced)
+freestanding_handstand_push_up = seed_movement('Freestanding Handstand Push-up', family: :gymnastics,
+                                                                                 pattern: :inversion,
+                                                                                 skill_level: :advanced)
+freestanding_shoulder_tap = seed_movement('Freestanding Shoulder Tap', family: :gymnastics,
+                                                                       pattern: :inversion,
+                                                                       skill_level: :advanced)
+front_scale = seed_movement('Front Scale', family: :gymnastics, pattern: :hinge, skill_level: :intermediate)
+front_squat = seed_movement('Front Squat', family: :weightlifting, pattern: :squat, equipment: :barbell,
+                                           skill_level: :basic)
+ghd_back_extension = seed_movement('GHD Back Extension', family: :gymnastics, pattern: :hinge,
+                                                         skill_level: :intermediate)
+ghd_hip_and_back_extension = seed_movement('GHD Hip and Back Extension', family: :gymnastics, pattern: :hinge,
+                                                                         skill_level: :intermediate)
+ghd_hip_extension = seed_movement('GHD Hip Extension', family: :gymnastics, pattern: :hinge,
+                                                       skill_level: :intermediate)
+ghd_sit_up = seed_movement('GHD Sit-up', family: :gymnastics, pattern: :rotation, skill_level: :intermediate)
+glide_kip = seed_movement('Glide Kip', family: :gymnastics, pattern: :pull, skill_level: :advanced)
+good_morning = seed_movement('Good Morning', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                             skill_level: :basic)
+handstand = seed_movement('Handstand', family: :gymnastics, pattern: :inversion, skill_level: :intermediate)
+handstand_pirouette = seed_movement('Handstand Pirouette', family: :gymnastics, pattern: :inversion,
+                                                           skill_level: :advanced)
+handstand_push_up = seed_movement('Handstand Push-up', family: :gymnastics, pattern: :inversion,
+                                                       skill_level: :advanced)
+handstand_walk = seed_movement('Handstand Walk', family: :gymnastics, pattern: :inversion,
+                                                 skill_level: :advanced)
+hang_clean = seed_movement('Hang Clean', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                         skill_level: :intermediate)
+hang_clean_and_push_jerk = seed_movement('Hang Clean and Push Jerk', family: :weightlifting, pattern: :mixed,
+                                                                     equipment: :barbell, skill_level: :advanced)
+hang_power_clean = seed_movement('Hang Power Clean', family: :weightlifting, pattern: :hinge,
+                                                     equipment: :barbell, skill_level: :intermediate)
+hang_power_snatch = seed_movement('Hang Power Snatch', family: :weightlifting, pattern: :hinge,
+                                                       equipment: :barbell, skill_level: :advanced)
+hang_snatch = seed_movement('Hang Snatch', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                           skill_level: :advanced)
+hanging_l_sit = seed_movement('Hanging L-sit', family: :gymnastics, pattern: :rotation,
+                                               equipment: :pull_up_bar, skill_level: :intermediate)
+hip_extensions = seed_movement('Hip Extensions', family: :gymnastics, pattern: :hinge,
+                                                 skill_level: :basic)
+inverted_burpee = seed_movement('Inverted Burpee', family: :gymnastics, pattern: :inversion,
+                                                   skill_level: :advanced)
+jumping_jack = seed_movement('Jumping Jack', family: :monostructural, pattern: :jump, skill_level: :basic)
+jumping_lunge = seed_movement('Jumping Lunge', family: :gymnastics, pattern: :lunge, skill_level: :basic)
+kettlebell_snatch = seed_movement('Kettlebell Snatch', family: :weightlifting, pattern: :hinge,
+                                                       equipment: :kettlebell, skill_level: :advanced)
+kettlebell_sumo_hi_pull = seed_movement('Kettlebell Sumo Hi Pull', family: :weightlifting, pattern: :pull,
+                                                                   equipment: :kettlebell,
+                                                                   skill_level: :intermediate)
+kettlebell_swing = seed_movement('Kettlebell Swing', family: :weightlifting, pattern: :hinge,
+                                                     equipment: :kettlebell, skill_level: :basic)
+l_pull_up = seed_movement('L Pull-up', family: :gymnastics, pattern: :pull, equipment: :pull_up_bar,
+                                       skill_level: :advanced)
+l_sit_hold_on_matador = seed_movement('L Sit Hold on Matador', family: :gymnastics, pattern: :rotation,
+                                                               skill_level: :intermediate)
+l_sit = seed_movement('L-sit', family: :gymnastics, pattern: :rotation, skill_level: :intermediate)
+l_sit_on_rings = seed_movement('L-sit on Rings', family: :gymnastics, pattern: :rotation, equipment: :rings,
+                                                 skill_level: :intermediate)
+l_sit_rope_climb = seed_movement('L-sit Rope Climb', family: :gymnastics, pattern: :pull, equipment: :rope,
+                                                     skill_level: :advanced)
+l_sit_to_shoulder_stand = seed_movement('L-sit to Shoulder Stand', family: :gymnastics,
+                                                                   pattern: :inversion,
+                                                                   equipment: :rings,
+                                                                   skill_level: :advanced)
+lateral_over_barbell_burpee = seed_movement('Lateral Over Barbell Burpee', family: :gymnastics,
+                                                                           pattern: :mixed,
+                                                                           equipment: :barbell,
+                                                                           skill_level: :intermediate)
+legless_rope_climb = seed_movement('Legless Rope Climb', family: :gymnastics, pattern: :pull,
+                                                         equipment: :rope, skill_level: :advanced)
+lunge = seed_movement('Lunge', family: :gymnastics, pattern: :lunge, skill_level: :basic)
+lunge_with_plate_overhead = seed_movement('Lunge with plate overhead', family: :weightlifting,
+                                                                       pattern: :lunge,
+                                                                       skill_level: :intermediate)
+medicine_ball_clean = seed_movement('Medicine-ball Clean', family: :weightlifting, pattern: :hinge,
+                                                           equipment: :medicine_ball, skill_level: :basic)
+modified_rope_climb = seed_movement('Modified Rope Climb', family: :gymnastics, pattern: :pull,
+                                                           equipment: :rope, skill_level: :intermediate)
+muscle_snatch = seed_movement('Muscle Snatch', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                               skill_level: :advanced)
+muscle_up = seed_movement('Muscle-up', family: :gymnastics, pattern: :pull, skill_level: :advanced)
+over_the_bar_burpee = seed_movement('Over the bar Burpee', family: :gymnastics, pattern: :mixed,
+                                                           equipment: :barbell, skill_level: :intermediate)
+over_the_medball_burpee = seed_movement('Over the medball Burpee', family: :gymnastics, pattern: :mixed,
+                                                                   equipment: :medicine_ball,
+                                                                   skill_level: :intermediate)
+overhead_dumbbell_lunge = seed_movement('Overhead Dumbbell Lunge', family: :weightlifting, pattern: :lunge,
+                                                                   equipment: :dumbbell,
+                                                                   skill_level: :intermediate)
+overhead_squat = seed_movement('Overhead Squat', family: :weightlifting, pattern: :squat,
+                                                 equipment: :barbell, skill_level: :advanced)
+power_clean = seed_movement('Power Clean', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                           skill_level: :intermediate)
+power_clean_and_split_jerk = seed_movement('Power Clean and Split Jerk', family: :weightlifting,
+                                                                         pattern: :mixed, equipment: :barbell,
+                                                                         skill_level: :advanced)
+power_snatch = seed_movement('Power Snatch', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                             skill_level: :advanced)
+pull_over = seed_movement('Pull-over', family: :gymnastics, pattern: :pull, equipment: :pull_up_bar,
+                                       skill_level: :advanced)
+pull_up = seed_movement('Pull-up', family: :gymnastics, pattern: :pull, equipment: :pull_up_bar,
+                                   skill_level: :intermediate)
+push_jerk = seed_movement('Push Jerk', family: :weightlifting, pattern: :press, equipment: :barbell,
+                                       skill_level: :intermediate)
+push_press = seed_movement('Push Press', family: :weightlifting, pattern: :press, equipment: :barbell,
+                                         skill_level: :basic)
+push_up = seed_movement('Push-up', family: :gymnastics, pattern: :press, skill_level: :basic)
+deficit_push_up = seed_movement('Deficit Push-up', family: :gymnastics, pattern: :press,
+                                                   skill_level: :intermediate)
+renegade_row = seed_movement('Renegade Row', family: :weightlifting, pattern: :pull, equipment: :dumbbell,
+                                             skill_level: :intermediate)
+rest = seed_movement('Rest', family: :rest, pattern: :rest, skill_level: :basic)
+ring_dip = seed_movement('Ring Dip', family: :gymnastics, pattern: :press, equipment: :rings,
+                                     skill_level: :intermediate)
+ring_muscle_up = seed_movement('Ring Muscle-up', family: :gymnastics, pattern: :pull, equipment: :rings,
+                                                 skill_level: :advanced)
+ring_push_up = seed_movement('Ring Push-up', family: :gymnastics, pattern: :press, equipment: :rings,
+                                             skill_level: :intermediate)
+ring_row = seed_movement('Ring Row', family: :gymnastics, pattern: :pull, equipment: :rings,
+                                     skill_level: :basic)
+rope_climb = seed_movement('Rope Climb', family: :gymnastics, pattern: :pull, equipment: :rope,
+                                         skill_level: :intermediate)
+row = seed_movement('Row', family: :monostructural, pattern: :pull, equipment: :machine, skill_level: :basic)
+run = seed_movement('Run', family: :monostructural, pattern: :locomotion, skill_level: :basic)
+shoot_through = seed_movement('Shoot-through', family: :gymnastics, pattern: :mixed, skill_level: :intermediate)
+shoulder_press = seed_movement('Shoulder Press', family: :weightlifting, pattern: :press, equipment: :barbell,
+                                                 skill_level: :basic)
+shoulder_to_overhead = seed_movement('Shoulder to Overhead', family: :weightlifting, pattern: :press,
+                                                             equipment: :barbell, skill_level: :intermediate)
+single_leg_squat_pistol = seed_movement('Single-leg Squat (Pistol)', family: :gymnastics, pattern: :squat,
+                                                                     skill_level: :advanced)
+single_under = seed_movement('Single-under', family: :monostructural, pattern: :jump, equipment: :jump_rope,
+                                             skill_level: :basic)
+sit_up = seed_movement('Sit-up', family: :gymnastics, pattern: :rotation, skill_level: :basic)
+skin_the_cat = seed_movement('Skin the Cat', family: :gymnastics, pattern: :rotation, equipment: :rings,
+                                             skill_level: :advanced)
+slam_ball = seed_movement('Slam Ball', family: :weightlifting, pattern: :mixed, equipment: :medicine_ball,
+                                       skill_level: :basic)
+sled_drag = seed_movement('Sled Drag', family: :weightlifting, pattern: :locomotion, equipment: :sled,
+                                       skill_level: :basic)
+sled_pull = seed_movement('Sled Pull', family: :weightlifting, pattern: :pull, equipment: :sled,
+                                       skill_level: :basic)
+snatch = seed_movement('Snatch', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                 skill_level: :advanced)
+snatch_balance = seed_movement('Snatch Balance', family: :weightlifting, pattern: :squat,
+                                                 equipment: :barbell, skill_level: :advanced)
+sots_press = seed_movement('Sots Press', family: :weightlifting, pattern: :press, equipment: :barbell,
+                                         skill_level: :advanced)
+split_clean = seed_movement('Split Clean', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                           skill_level: :advanced)
+split_jerk = seed_movement('Split Jerk', family: :weightlifting, pattern: :press, equipment: :barbell,
+                                         skill_level: :advanced)
+split_snatch = seed_movement('Split Snatch', family: :weightlifting, pattern: :hinge, equipment: :barbell,
+                                             skill_level: :advanced)
+straddle_press_to_handstand = seed_movement('Straddle Press to Handstand', family: :gymnastics,
+                                                                           pattern: :inversion,
+                                                                           skill_level: :advanced)
+strict_bar_muscle_up = seed_movement('Strict Bar Muscle-up', family: :gymnastics, pattern: :pull,
+                                                             equipment: :pull_up_bar, skill_level: :advanced)
+strict_chest_to_bar_pull_up = seed_movement('Strict Chest-to-bar Pull-up', family: :gymnastics,
+                                                                           pattern: :pull,
+                                                                           equipment: :pull_up_bar,
+                                                                           skill_level: :advanced)
+strict_handstand_push_up = seed_movement('Strict Handstand Push-up', family: :gymnastics,
+                                                                     pattern: :inversion,
+                                                                     skill_level: :advanced)
+strict_knees_to_elbows = seed_movement('Strict Knees-to-elbows', family: :gymnastics, pattern: :rotation,
+                                                                 equipment: :pull_up_bar,
+                                                                 skill_level: :intermediate)
+strict_muscle_up = seed_movement('Strict Muscle-up', family: :gymnastics, pattern: :pull,
+                                                     skill_level: :advanced)
+strict_pull_up = seed_movement('Strict Pull-up', family: :gymnastics, pattern: :pull,
+                                                 equipment: :pull_up_bar, skill_level: :intermediate)
+strict_toes_to_bar = seed_movement('Strict Toes-to-bar', family: :gymnastics, pattern: :rotation,
+                                                         equipment: :pull_up_bar, skill_level: :intermediate)
+strict_toes_to_rings = seed_movement('Strict Toes-to-rings', family: :gymnastics, pattern: :rotation,
+                                                             equipment: :rings, skill_level: :intermediate)
+sumo_deadlift = seed_movement('Sumo Deadlift', family: :weightlifting, pattern: :hinge,
+                                               equipment: :barbell, skill_level: :basic)
+sumo_deadlift_high_pull = seed_movement('Sumo Deadlift High Pull', family: :weightlifting, pattern: :pull,
+                                                                   equipment: :barbell,
+                                                                   skill_level: :intermediate)
+swim = seed_movement('Swim', family: :monostructural, pattern: :locomotion, skill_level: :basic)
+swing_to_backward_roll_to_support = seed_movement('Swing to Backward Roll to Support', family: :gymnastics,
+                                                                                       pattern: :rotation,
+                                                                                       equipment: :rings,
+                                                                                       skill_level: :advanced)
+tempo_jerk = seed_movement('Tempo Jerk', family: :weightlifting, pattern: :press, equipment: :barbell,
+                                         skill_level: :intermediate)
+thruster = seed_movement('Thruster', family: :weightlifting, pattern: :mixed, equipment: :barbell,
+                                     skill_level: :intermediate)
+toes_to_bar = seed_movement('Toes to Bar', family: :gymnastics, pattern: :rotation, equipment: :pull_up_bar,
+                                           skill_level: :intermediate)
+toes_to_bar_pull_up = seed_movement('Toes to Bar + Pull-up', family: :gymnastics, pattern: :mixed,
+                                                             equipment: :pull_up_bar, skill_level: :advanced)
+tuck_up = seed_movement('Tuck-up', family: :gymnastics, pattern: :rotation, skill_level: :basic)
+v_up = seed_movement('V-up', family: :gymnastics, pattern: :rotation, skill_level: :basic)
+walking_lunge = seed_movement('Walking Lunge', family: :gymnastics, pattern: :lunge, skill_level: :basic)
+wall_walk = seed_movement('Wall Walk', family: :gymnastics, pattern: :inversion, skill_level: :intermediate)
+wall_ball_shot = seed_movement('Wall-ball Shot', family: :weightlifting, pattern: :squat,
+                                                 equipment: :medicine_ball, skill_level: :basic)
+windshield_wiper = seed_movement('Windshield Wiper', family: :gymnastics, pattern: :rotation,
+                                                     skill_level: :advanced)
+zercher_squat = seed_movement('Zercher Squat', family: :weightlifting, pattern: :squat, equipment: :barbell,
+                                               skill_level: :intermediate)
 
 # Programs
 CF_PROGRAM = Program.find_or_create_by(name: 'Crossfit.com')

@@ -7,4 +7,10 @@ module ApplicationHelper
   def nav_item_class(name)
     "nav-item nav-link #{'active' if controller_name.to_sym.eql? name}"
   end
+
+  # Ids of movements whose forms should show the implement-count field. Memoized per request so
+  # the workout builder's many exercise rows share one query.
+  def implement_count_movement_ids
+    @implement_count_movement_ids ||= Movement.supporting_implement_count.ids
+  end
 end

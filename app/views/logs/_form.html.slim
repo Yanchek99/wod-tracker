@@ -20,9 +20,9 @@
   h2.mt-3 Exercise Recordings
   = f.simple_fields_for :movement_logs do |ml_form|
     - ml = ml_form.object
-    .card.mb-3
+    .card.mb-3 data-controller="implement-count" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
       .card-body
-        = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select' } }, label: false
+        = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'implement-count-target': 'movementSelect' } }, label: false
         / Always render every recording dimension so a scaled movement (e.g. rowing calories in
         / place of a prescribed run) can be logged, not only the prescribed dimensions.
         .row.g-2
@@ -31,6 +31,8 @@
           .col
             = ml_form.input :load, label: "Load (#{ml.load_unit || 'lb'})", input_html: { class: 'recording-value' }
             = ml_form.hidden_field :load_unit, value: ml.load_unit || 'lb'
+          .col data-implement-count-target="field" hidden=(!ml.movement&.supports_implement_count?)
+            = ml_form.input :implement_count, label: 'Implements'
           .col
             = ml_form.input :distance, label: "Distance (#{ml.distance_unit || 'meter'})", input_html: { class: 'recording-value' }
             = ml_form.hidden_field :distance_unit, value: ml.distance_unit || 'meter'

@@ -17,7 +17,7 @@ class Metric
   ].freeze
 
   attr_accessor :value, :female_value, :male_value
-  attr_reader :measurement
+  attr_reader :measurement, :implement_count
 
   def self.measurements
     @measurements ||= MEASUREMENTS.stringify_keys.freeze
@@ -31,12 +31,18 @@ class Metric
     RECORDING_MEASUREMENT_ORDER.index(measurement.to_s) || RECORDING_MEASUREMENT_ORDER.length
   end
 
-  def initialize(measurement:, value: nil, female_value: nil, male_value: nil)
+  def initialize(measurement:, value: nil, female_value: nil, male_value: nil, implement_count: nil)
     @measurement = measurement.to_s
     @value = value
     @female_value = female_value
     @male_value = male_value
+    @implement_count = implement_count || 1
   end
+
+  # Number of implements (e.g. dumbbells, kettlebells) the prescribed load is held in. The load
+  # value is per-implement, so a single 50lb dumbbell and a double 50lb dumbbell share the same
+  # value but differ in count.
+  def multiple_implements? = implement_count > 1
 
   MEASUREMENTS.each_key do |name|
     define_method(:"#{name}?") { measurement == name.to_s }

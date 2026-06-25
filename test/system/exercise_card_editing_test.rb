@@ -77,6 +77,25 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
     end
   end
 
+  test 'shows the implements field only for dumbbell and kettlebell movements' do
+    Movement.create!(name: 'Dumbbell Thruster')
+    visit new_workout_url
+
+    click_on 'Add Exercise'
+
+    within first('.exercise') do
+      assert_no_field 'Implements'
+
+      find('.ts-control input').set('Pull')
+      find('.ts-dropdown .option', text: 'Pull Up').click
+      assert_no_field 'Implements'
+
+      find('.ts-control input').set('Dumbbell')
+      find('.ts-dropdown .option', text: 'Dumbbell Thruster').click
+      assert_field 'Implements'
+    end
+  end
+
   test 'opening another card is blocked when the current exercise cannot be saved' do
     visit new_workout_url
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,11 +112,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.index ["movement_id"], name: "index_movement_logs_on_movement_id"
   end
 
+  create_table "movement_substitutions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "direction", null: false
+    t.bigint "movement_id", null: false
+    t.bigint "substitute_movement_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["movement_id", "substitute_movement_id"], name: "idx_movement_substitutions_unique_pair", unique: true
+    t.index ["movement_id"], name: "index_movement_substitutions_on_movement_id"
+    t.index ["substitute_movement_id"], name: "index_movement_substitutions_on_substitute_movement_id"
+  end
+
   create_table "movements", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
+    t.integer "equipment"
+    t.integer "family"
     t.string "name"
+    t.integer "pattern"
+    t.integer "skill_level"
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["equipment"], name: "index_movements_on_equipment"
+    t.index ["family"], name: "index_movements_on_family"
     t.index ["name"], name: "index_movements_on_name", unique: true
+    t.index ["pattern"], name: "index_movements_on_pattern"
+    t.index ["skill_level"], name: "index_movements_on_skill_level"
   end
 
   create_table "programs", force: :cascade do |t|
@@ -326,6 +345,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
   add_foreign_key "exercises", "workouts"
   add_foreign_key "movement_logs", "logs"
   add_foreign_key "movement_logs", "movements"
+  add_foreign_key "movement_substitutions", "movements"
+  add_foreign_key "movement_substitutions", "movements", column: "substitute_movement_id"
   add_foreign_key "schedules", "programs"
   add_foreign_key "schedules", "workouts"
   add_foreign_key "segments", "workouts"

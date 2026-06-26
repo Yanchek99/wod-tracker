@@ -3,9 +3,9 @@
 # Source: https://games.crossfit.com/workouts/open
 # Loads are the standard Men's Rx'd / Women's Rx'd prescriptions (female_load / male_load).
 # Open-ended ladders and "max reps" movements use reps: 0 with the scheme described in the
-# workout notes, matching the existing benchmark/cf seed conventions. Workouts whose content
-# exactly repeats an earlier Open (e.g. 12.5 = 11.6) are intentionally kept as distinct named
-# records; the content fingerprint leaves their content_key nil (see WorkoutFingerprint).
+# workout notes, matching the existing benchmark/cf seed conventions. The Open frequently
+# repeats an earlier workout; rather than seed a duplicate, each repeat is left as a code
+# comment pointing at the original (e.g. "# 12.5 is a repeat of 11.6").
 
 # ==============================================================================
 # 2011
@@ -147,18 +147,7 @@ Workout.find_or_create_by(name: 'Open 12.4') do |workout|
   workout.exercises.build(movement: muscle_up, position: 3, reps: 30)
 end
 
-# 12.5 (repeat of 11.6)
-# AMRAP 7 minutes, ascending ladder (3, 6, 9, ... add 3 reps each round)
-# Thrusters (100 / 65 lb)
-# Chest-to-bar pull-ups
-Workout.find_or_create_by(name: 'Open 12.5') do |workout|
-  workout.time = 7
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 11.6. Ascending ladder: begin with 3 reps of each movement and add 3 reps ' \
-                  'each round (3, 6, 9, 12, ...). Post total reps.'
-  workout.exercises.build(movement: thruster, position: 1, reps: 0, female_load: 65, male_load: 100, load_unit: :lb)
-  workout.exercises.build(movement: chest_to_bar_pull_up, position: 2, reps: 0)
-end
+# 12.5 is a repeat of 11.6
 
 # ==============================================================================
 # 2013
@@ -202,21 +191,7 @@ Workout.find_or_create_by(name: 'Open 13.2') do |workout|
   workout.exercises.build(movement: box_jump, position: 3, reps: 15, female_distance: 20, male_distance: 24, distance_unit: :inch)
 end
 
-# 13.3 (repeat of 12.4)
-# AMRAP 12 minutes
-# 150 wall-ball shots (20 lb to 10 ft / 14 lb to 9 ft)
-# 90 double-unders
-# 30 muscle-ups
-Workout.find_or_create_by(name: 'Open 13.3') do |workout|
-  workout.time = 12
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 12.4. Post total reps.'
-  workout.exercises.build(movement: wall_ball_shot, position: 1, reps: 150,
-                          female_load: 14, male_load: 20, load_unit: :lb,
-                          female_distance: 9, male_distance: 10, distance_unit: :foot)
-  workout.exercises.build(movement: double_under, position: 2, reps: 90)
-  workout.exercises.build(movement: muscle_up, position: 3, reps: 30)
-end
+# 13.3 is a repeat of 12.4
 
 # 13.4
 # AMRAP 7 minutes, ascending ladder (3, 6, 9, ... add 3 reps each round)
@@ -248,17 +223,7 @@ end
 # 2014
 # ==============================================================================
 
-# 14.1 (repeat of 11.1)
-# AMRAP 10 minutes
-# 30 double-unders
-# 15 power snatches (75 / 55 lb)
-Workout.find_or_create_by(name: 'Open 14.1') do |workout|
-  workout.time = 10
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 11.1. Post total reps.'
-  workout.exercises.build(movement: double_under, position: 1, reps: 30)
-  workout.exercises.build(movement: power_snatch, position: 2, reps: 15, female_load: 55, male_load: 75, load_unit: :lb)
-end
+# 14.1 is a repeat of 11.1
 
 # 14.2
 # Every 3 minutes for as long as possible
@@ -357,17 +322,7 @@ Workout.find_or_create_by(name: 'Open 15.1a') do |workout|
   workout.exercises.build(movement: clean_and_jerk, position: 1, reps: 1)
 end
 
-# 15.2 (repeat of 14.2)
-# Every 3 minutes for as long as possible
-# 2 rounds of: 10 overhead squats (95 / 65 lb) + 10 chest-to-bar pull-ups, adding 2 reps each window
-Workout.find_or_create_by(name: 'Open 15.2') do |workout|
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 14.2. Every 3 minutes for as long as possible: complete 2 rounds of the couplet. ' \
-                  'Start at 10 reps of each movement; add 2 reps each 3-minute window (10, 12, 14, ...). ' \
-                  'Continue until you fail to finish both rounds inside a window. Post total reps.'
-  workout.exercises.build(movement: overhead_squat, position: 1, reps: 0, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: chest_to_bar_pull_up, position: 2, reps: 0)
-end
+# 15.2 is a repeat of 14.2
 
 # 15.3
 # AMRAP 14 minutes
@@ -479,17 +434,7 @@ Workout.find_or_create_by(name: 'Open 16.4') do |workout|
   workout.exercises.build(movement: handstand_push_up, position: 4, reps: 55)
 end
 
-# 16.5 (repeat of 14.5)
-# For time: 21-18-15-12-9-6-3 reps of
-# Thrusters (95 / 65 lb)
-# Bar-facing burpees
-Workout.find_or_create_by(name: 'Open 16.5') do |workout|
-  workout.interval = '21-18-15-12-9-6-3'
-  workout.score_type = :time
-  workout.notes = 'Repeat of 14.5. Bar-facing burpees jump over the barbell. No time cap. Post total time.'
-  workout.exercises.build(movement: thruster, position: 1, reps: 1, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 1)
-end
+# 16.5 is a repeat of 14.5
 
 # ==============================================================================
 # 2017
@@ -560,23 +505,7 @@ Workout.find_or_create_by(name: 'Open 17.3') do |workout|
   workout.exercises.build(movement: snatch, position: 12, reps: 1, female_load: 185, male_load: 265, load_unit: :lb)
 end
 
-# 17.4 (repeat of 16.4)
-# AMRAP 13 minutes
-# 55 deadlifts (225 / 155 lb)
-# 55 wall-ball shots (20 lb to 10 ft / 14 lb to 9 ft)
-# 55-calorie row
-# 55 handstand push-ups
-Workout.find_or_create_by(name: 'Open 17.4') do |workout|
-  workout.time = 13
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 16.4. Post total reps.'
-  workout.exercises.build(movement: deadlift, position: 1, reps: 55, female_load: 155, male_load: 225, load_unit: :lb)
-  workout.exercises.build(movement: wall_ball_shot, position: 2, reps: 55,
-                          female_load: 14, male_load: 20, load_unit: :lb,
-                          female_distance: 9, male_distance: 10, distance_unit: :foot)
-  workout.exercises.build(movement: row, position: 3, reps: 1, calories: 55)
-  workout.exercises.build(movement: handstand_push_up, position: 4, reps: 55)
-end
+# 17.4 is a repeat of 16.4
 
 # 17.5
 # 10 rounds for time (40-minute cap)
@@ -682,18 +611,7 @@ Workout.find_or_create_by(name: 'Open 18.4') do |workout|
   workout.exercises.build(movement: handstand_walk, position: 12, reps: 1, distance: 50, distance_unit: :foot)
 end
 
-# 18.5 (repeat of 11.6 / 12.5)
-# AMRAP 7 minutes, ascending ladder (3, 6, 9, ... add 3 reps each round)
-# Thrusters (100 / 65 lb)
-# Chest-to-bar pull-ups
-Workout.find_or_create_by(name: 'Open 18.5') do |workout|
-  workout.time = 7
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 12.5 / 11.6. Ascending ladder: begin with 3 reps of each movement and add 3 reps ' \
-                  'each round (3, 6, 9, 12, ...). Post total reps.'
-  workout.exercises.build(movement: thruster, position: 1, reps: 0, female_load: 65, male_load: 100, load_unit: :lb)
-  workout.exercises.build(movement: chest_to_bar_pull_up, position: 2, reps: 0)
-end
+# 18.5 is a repeat of 11.6 (also run as 12.5)
 
 # ==============================================================================
 # 2019
@@ -712,25 +630,7 @@ Workout.find_or_create_by(name: 'Open 19.1') do |workout|
   workout.exercises.build(movement: row, position: 2, reps: 1, calories: 19)
 end
 
-# 19.2 (repeat of 16.2)
-# Ascending ladder in 4-minute windows, 20-minute cap
-# Each window: 25 toes-to-bar, 50 double-unders, then the round's squat cleans
-# Cleans by round: 15 (135/85), 13 (185/115), 11 (225/145), 9 (275/175), 7 (315/205) lb
-Workout.find_or_create_by(name: 'Open 19.2') do |workout|
-  workout.time = 20
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 16.2. Ascending ladder in 4-minute windows (20-minute cap). Each window repeats ' \
-                  '25 toes-to-bar and 50 double-unders, then the round\'s squat cleans; advance only if you ' \
-                  'finish within the window. Squat cleans by round: 15 @ 135/85, 13 @ 185/115, 11 @ 225/145, ' \
-                  '9 @ 275/175, 7 @ 315/205 lb. Post total reps.'
-  workout.exercises.build(movement: toes_to_bar, position: 1, reps: 25)
-  workout.exercises.build(movement: double_under, position: 2, reps: 50)
-  workout.exercises.build(movement: clean, position: 3, reps: 15, female_load: 85, male_load: 135, load_unit: :lb)
-  workout.exercises.build(movement: clean, position: 4, reps: 13, female_load: 115, male_load: 185, load_unit: :lb)
-  workout.exercises.build(movement: clean, position: 5, reps: 11, female_load: 145, male_load: 225, load_unit: :lb)
-  workout.exercises.build(movement: clean, position: 6, reps: 9, female_load: 175, male_load: 275, load_unit: :lb)
-  workout.exercises.build(movement: clean, position: 7, reps: 7, female_load: 205, male_load: 315, load_unit: :lb)
-end
+# 19.2 is a repeat of 16.2
 
 # 19.3
 # For time (10-minute cap)
@@ -817,29 +717,7 @@ Workout.find_or_create_by(name: 'Open 20.2') do |workout|
   workout.exercises.build(movement: double_under, position: 3, reps: 24)
 end
 
-# 20.3 (repeat of 18.4)
-# For time (9-minute cap)
-# 21-15-9 reps of deadlifts (225 / 155 lb) and handstand push-ups
-# Then 21-15-9 reps of deadlifts (315 / 205 lb), each set followed by a 50-ft handstand walk
-Workout.find_or_create_by(name: 'Open 20.3') do |workout|
-  workout.score_type = :time
-  workout.time_cap_seconds = 540
-  workout.notes = 'Repeat of 18.4. For time, 9-minute cap. 21-15-9 of deadlift + handstand push-up at the ' \
-                  'lighter load, then 21-15-9 of the heavier deadlift with a 50-ft handstand walk after each set. ' \
-                  'Post total time.'
-  workout.exercises.build(movement: deadlift, position: 1, reps: 21, female_load: 155, male_load: 225, load_unit: :lb)
-  workout.exercises.build(movement: handstand_push_up, position: 2, reps: 21)
-  workout.exercises.build(movement: deadlift, position: 3, reps: 15, female_load: 155, male_load: 225, load_unit: :lb)
-  workout.exercises.build(movement: handstand_push_up, position: 4, reps: 15)
-  workout.exercises.build(movement: deadlift, position: 5, reps: 9, female_load: 155, male_load: 225, load_unit: :lb)
-  workout.exercises.build(movement: handstand_push_up, position: 6, reps: 9)
-  workout.exercises.build(movement: deadlift, position: 7, reps: 21, female_load: 205, male_load: 315, load_unit: :lb)
-  workout.exercises.build(movement: handstand_walk, position: 8, reps: 1, distance: 50, distance_unit: :foot)
-  workout.exercises.build(movement: deadlift, position: 9, reps: 15, female_load: 205, male_load: 315, load_unit: :lb)
-  workout.exercises.build(movement: handstand_walk, position: 10, reps: 1, distance: 50, distance_unit: :foot)
-  workout.exercises.build(movement: deadlift, position: 11, reps: 9, female_load: 205, male_load: 315, load_unit: :lb)
-  workout.exercises.build(movement: handstand_walk, position: 12, reps: 1, distance: 50, distance_unit: :foot)
-end
+# 20.3 is a repeat of 18.4
 
 # 20.4
 # For time (20-minute cap)
@@ -913,26 +791,7 @@ Workout.find_or_create_by(name: 'Open 21.1') do |workout|
   workout.exercises.build(movement: double_under, position: 12, reps: 210)
 end
 
-# 21.2 (repeat of 17.1)
-# For time (20-minute cap)
-# 10 / 20 / 30 / 40 / 50 dumbbell snatches, with 15 burpee box jump-overs between each set
-# Dumbbell 50 / 35 lb, box 24 / 20 in
-Workout.find_or_create_by(name: 'Open 21.2') do |workout|
-  workout.score_type = :time
-  workout.time_cap_seconds = 1200
-  workout.notes = 'Repeat of 17.1. Single-arm dumbbell snatches, alternating arms. Sets of 10, 20, 30, 40, 50 ' \
-                  'dumbbell snatches, each followed by 15 burpee box jump-overs. 20-minute cap. Post total time.'
-  workout.exercises.build(movement: dumbbell_power_snatch, position: 1, reps: 10, female_load: 35, male_load: 50, load_unit: :lb)
-  workout.exercises.build(movement: burpee_box_jump_over, position: 2, reps: 15, female_distance: 20, male_distance: 24, distance_unit: :inch)
-  workout.exercises.build(movement: dumbbell_power_snatch, position: 3, reps: 20, female_load: 35, male_load: 50, load_unit: :lb)
-  workout.exercises.build(movement: burpee_box_jump_over, position: 4, reps: 15, female_distance: 20, male_distance: 24, distance_unit: :inch)
-  workout.exercises.build(movement: dumbbell_power_snatch, position: 5, reps: 30, female_load: 35, male_load: 50, load_unit: :lb)
-  workout.exercises.build(movement: burpee_box_jump_over, position: 6, reps: 15, female_distance: 20, male_distance: 24, distance_unit: :inch)
-  workout.exercises.build(movement: dumbbell_power_snatch, position: 7, reps: 40, female_load: 35, male_load: 50, load_unit: :lb)
-  workout.exercises.build(movement: burpee_box_jump_over, position: 8, reps: 15, female_distance: 20, male_distance: 24, distance_unit: :inch)
-  workout.exercises.build(movement: dumbbell_power_snatch, position: 9, reps: 50, female_load: 35, male_load: 50, load_unit: :lb)
-  workout.exercises.build(movement: burpee_box_jump_over, position: 10, reps: 15, female_distance: 20, male_distance: 24, distance_unit: :inch)
-end
+# 21.2 is a repeat of 17.1
 
 # 21.3
 # For total time (15-minute cap); 21.4 begins immediately after
@@ -1025,25 +884,7 @@ end
 # 2023
 # ==============================================================================
 
-# 23.1 (repeat of 14.4)
-# AMRAP 14 minutes (chipper)
-# 60-calorie row
-# 50 toes-to-bar
-# 40 wall-ball shots (20 lb to 10 ft / 14 lb to 9 ft)
-# 30 cleans (135 / 95 lb)
-# 20 muscle-ups
-Workout.find_or_create_by(name: 'Open 23.1') do |workout|
-  workout.time = 14
-  workout.score_type = :rep
-  workout.notes = 'Repeat of 14.4. Post total reps.'
-  workout.exercises.build(movement: row, position: 1, reps: 1, calories: 60)
-  workout.exercises.build(movement: toes_to_bar, position: 2, reps: 50)
-  workout.exercises.build(movement: wall_ball_shot, position: 3, reps: 40,
-                          female_load: 14, male_load: 20, load_unit: :lb,
-                          female_distance: 9, male_distance: 10, distance_unit: :foot)
-  workout.exercises.build(movement: clean, position: 4, reps: 30, female_load: 95, male_load: 135, load_unit: :lb)
-  workout.exercises.build(movement: muscle_up, position: 5, reps: 20)
-end
+# 23.1 is a repeat of 14.4
 
 # 23.2A
 # AMRAP 15 minutes
@@ -1172,25 +1013,7 @@ Workout.find_or_create_by(name: 'Open 25.1') do |workout|
   workout.exercises.build(movement: walking_lunge, position: 3, reps: 1, distance: 30, distance_unit: :foot)
 end
 
-# 25.2 (repeat of 22.3)
-# For time (12-minute cap)
-# 21 pull-ups, 42 double-unders, 21 thrusters (95 / 65 lb)
-# 18 chest-to-bar pull-ups, 36 double-unders, 18 thrusters (115 / 75 lb)
-# 15 bar muscle-ups, 30 double-unders, 15 thrusters (135 / 85 lb)
-Workout.find_or_create_by(name: 'Open 25.2') do |workout|
-  workout.score_type = :time
-  workout.time_cap_seconds = 720
-  workout.notes = 'Repeat of 22.3. For time, 12-minute cap. Post total time.'
-  workout.exercises.build(movement: pull_up, position: 1, reps: 21)
-  workout.exercises.build(movement: double_under, position: 2, reps: 42)
-  workout.exercises.build(movement: thruster, position: 3, reps: 21, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: chest_to_bar_pull_up, position: 4, reps: 18)
-  workout.exercises.build(movement: double_under, position: 5, reps: 36)
-  workout.exercises.build(movement: thruster, position: 6, reps: 18, female_load: 75, male_load: 115, load_unit: :lb)
-  workout.exercises.build(movement: bar_muscle_up, position: 7, reps: 15)
-  workout.exercises.build(movement: double_under, position: 8, reps: 30)
-  workout.exercises.build(movement: thruster, position: 9, reps: 15, female_load: 85, male_load: 135, load_unit: :lb)
-end
+# 25.2 is a repeat of 22.3
 
 # 25.3
 # For time (20-minute cap)

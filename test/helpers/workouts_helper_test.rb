@@ -32,15 +32,15 @@ class WorkoutsHelperTest < ActionView::TestCase
   end
 
   test 'renders time-capped ascending ladders' do
-    workout = Workout.new(score_type: :rep, time: 7, ladder_start: 3, ladder_step: 3)
+    workout = Workout.new(score_type: :rep, time: 7, ladder_step: 3)
 
-    assert_equal 'As many reps as possible in 7 minutes, ascending ladder (3, 6, 9, …; +3 reps each round)',
+    assert_equal 'As many reps as possible in 7 minutes, ascending ladder, +3 reps each round',
                  workout_objective(workout)
   end
 
   test 'renders cap-less ascending ladders' do
-    workout = Workout.new(score_type: :rep, ladder_start: 10, ladder_step: 2)
+    workout = Workout.new(score_type: :rep, ladder_step: 2)
 
-    assert_equal 'Ascending ladder (10, 12, 14, …; +2 reps each round)', workout_objective(workout)
+    assert_equal 'Ascending ladder, +2 reps each round', workout_objective(workout)
   end
 end

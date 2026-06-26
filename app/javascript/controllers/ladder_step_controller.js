@@ -1,22 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Shows the per-exercise ladder cadence ("step every N rounds") only when the workout is an
-// ascending ladder AND this exercise rides it (no fixed rep count of its own). Reacts both to its
-// own reps input and to the workout-level ladder toggle broadcast on the document.
+// Reveals an exercise's ladder controls only when the workout is an ascending ladder. The "constant"
+// (ladder-exempt) checkbox shows whenever a ladder is active; the cadence ("step every N rounds")
+// shows only when this exercise actually rides the ladder, i.e. it is not marked constant. Reacts to
+// the workout-level ladder toggle broadcast on the document and to its own constant checkbox.
 export default class extends Controller {
-  static targets = ["field", "reps"]
+  static targets = ["exemptField", "stepEveryField", "exempt"]
 
   connect() {
     this.toggle()
   }
 
-  toggle(event) {
-    if (!this.hasFieldTarget || !this.hasRepsTarget) return
+  toggle() {
+    const active = this.ladderActive
 
-    const visible = this.ladderActive && this.repsTarget.value.trim() === ""
-    this.fieldTarget.hidden = !visible
-
-    if (!visible && event) this.clearInput()
+    if (this.hasExemptFieldTarget) this.exemptFieldTarget.hidden = !active
+    if (this.hasStepEveryFieldTarget) this.stepEveryFieldTarget.hidden = !(active && !this.exemptChecked)
   }
 
   get ladderActive() {
@@ -24,8 +23,7 @@ export default class extends Controller {
     return Boolean(form) && form.dataset.ladderActive === "true"
   }
 
-  clearInput() {
-    const input = this.fieldTarget.querySelector("input")
-    if (input) input.value = ""
+  get exemptChecked() {
+    return this.hasExemptTarget && this.exemptTarget.checked
   }
 }

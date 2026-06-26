@@ -33,16 +33,10 @@ module WorkoutsHelper
   end
 
   def ascending_ladder_objective(workout)
-    ladder = "ascending ladder (#{ladder_preview(workout)}; +#{workout.ladder_step} reps each round)"
+    ladder = "ascending ladder, +#{workout.ladder_step} reps each round"
     return ladder.upcase_first if workout.time.blank?
 
     "As many reps as possible in #{pluralize workout.time, 'minute'}, #{ladder}"
-  end
-
-  def ladder_preview(workout)
-    start = workout.ladder_start
-    step = workout.ladder_step
-    "#{start}, #{start + step}, #{start + (2 * step)}, …"
   end
 
   def total_reps_clock_objective(workout)

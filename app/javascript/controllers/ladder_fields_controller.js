@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Shows the ascending-ladder start/step fields only when the workout is shaped like an AMRAP
-// (a time cap, no fixed rounds, no interval) — the only shape an open-ended ladder applies to.
-// Records whether a ladder is active on the form so each exercise can reveal its cadence field.
+// Shows the ascending-ladder step field only when the workout is shaped like an AMRAP (a time cap,
+// no fixed rounds, no interval) — the only shape an open-ended ladder applies to. Records whether a
+// ladder is active on the form so each exercise can reveal its ladder controls.
 export default class extends Controller {
-  static targets = ["row", "rounds", "time", "interval", "start", "input"]
+  static targets = ["row", "rounds", "time", "interval", "step", "input"]
 
   connect() {
     this.toggle()
@@ -19,7 +19,7 @@ export default class extends Controller {
   }
 
   broadcast() {
-    const active = !this.rowTarget.hidden && this.filled(this.hasStartTarget && this.startTarget)
+    const active = !this.rowTarget.hidden && this.filled(this.hasStepTarget && this.stepTarget)
     const form = this.element.closest("form")
     if (form) form.dataset.ladderActive = active ? "true" : "false"
     this.dispatch("change", { target: document, detail: { active } })

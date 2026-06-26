@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_26_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,6 +63,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.integer "female_distance"
     t.integer "female_load"
     t.integer "implement_count"
+    t.integer "ladder_step_every"
     t.integer "load"
     t.integer "load_unit"
     t.integer "male_calories"
@@ -310,6 +311,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.string "content_key"
     t.datetime "created_at", precision: nil, null: false
     t.string "interval"
+    t.integer "ladder_start"
+    t.integer "ladder_step"
     t.string "name"
     t.integer "rounds"
     t.integer "score_type", null: false

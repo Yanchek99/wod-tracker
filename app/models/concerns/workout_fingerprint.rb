@@ -83,6 +83,8 @@ module WorkoutFingerprint
       time:,
       interval:,
       time_cap_seconds:,
+      ladder_start:,
+      ladder_step:,
       parts: parts.map { |part| canonical_part(part) }
     }
   end
@@ -107,6 +109,7 @@ module WorkoutFingerprint
     {
       movement_id: exercise.movement_id,
       reps: exercise.reps,
+      ladder_step_every: exercise.ladder_step_every,
       duration_seconds: exercise.duration_seconds,
       load: exercise.load,
       female_load: exercise.female_load,

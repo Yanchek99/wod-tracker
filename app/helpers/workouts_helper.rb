@@ -1,7 +1,13 @@
 module WorkoutsHelper
   def workout_objective(workout)
+    return ascending_ladder_objective(workout) if workout.ascending_ladder?
     return "#{pluralize workout.rounds, 'set'} for load" if workout.set_based_lifting?
     return for_time_objective(workout) if workout.rounds_for_time?
+
+    clock_objective(workout)
+  end
+
+  def clock_objective(workout)
     return total_reps_clock_objective(workout) if workout.segmented_total_reps?
     return amrap_objective(workout) if workout.amrap?
     return "EMOM #{workout.time}" if workout.emom?
@@ -24,6 +30,19 @@ module WorkoutsHelper
     score = workout.fixed_rep_amrap? ? 'rounds and reps' : 'rounds'
 
     "As many #{score} as possible in #{pluralize workout.time, 'minute'}"
+  end
+
+  def ascending_ladder_objective(workout)
+    ladder = "ascending ladder (#{ladder_preview(workout)}; +#{workout.ladder_step} reps each round)"
+    return ladder.upcase_first if workout.time.blank?
+
+    "As many reps as possible in #{pluralize workout.time, 'minute'}, #{ladder}"
+  end
+
+  def ladder_preview(workout)
+    start = workout.ladder_start
+    step = workout.ladder_step
+    "#{start}, #{start + step}, #{start + (2 * step)}, …"
   end
 
   def total_reps_clock_objective(workout)

@@ -22,6 +22,9 @@ class Exercise < ApplicationRecord
   validates :implement_count,
             numericality: { only_integer: true, greater_than: 0 },
             allow_nil: true
+  validates :ladder_step_every,
+            numericality: { only_integer: true, greater_than: 0 },
+            allow_nil: true
   validate :prescription_values_are_unambiguous
   validate :distance_units_per_rep_matches_prescribed_distance
   validate :implement_count_requires_load
@@ -42,7 +45,23 @@ class Exercise < ApplicationRecord
     prescription_metrics.any? { |metric| Metric::LOAD_MEASUREMENTS.include?(metric.measurement) }
   end
 
-  private
+  # Rides the workout's ascending ladder: no fixed reps/duration of its own, so its rep count for
+  # each round is driven by the ladder. Exercises that keep a fixed prescription (e.g. a constant
+  # walking lunge or shuttle run) stay off the ladder.
+  def ladder_participant?
+    workout&.ascending_ladder? && reps.blank? && duration_seconds.blank?
+  end
+
+  # Reps performed in the given 1-indexed round when riding the ladder. ladder_step_every is the
+  # number of rounds between increments (1 = grow every round; 3 = hold for three rounds, as in 15.4).
+  def ladder_reps(round)
+    return unless ladder_participant?
+
+    every = ladder_step_every.to_i
+    every = 1 if every < 1
+    rung = (round - 1) / every
+    workout.ladder_start + (rung * workout.ladder_step)
+  end
 
   def distance_score_component
     distance = distance_metric

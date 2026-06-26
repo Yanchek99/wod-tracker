@@ -24,8 +24,9 @@
             = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
               i.fas.fa-trash-alt aria-hidden="true"
           .row.g-2
-            .col-6.col-md-3 = f.input :reps, hint: '0 = max reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
+            .col-6.col-md-3 = f.input :reps, hint: '0 = max reps; blank rides the ladder', input_html: { data: { 'exercise-card-target': 'repsInput' } }
             .col-6.col-md-3 = f.input :duration_seconds, label: 'Duration (s)', input_html: { data: { 'exercise-card-target': 'durationInput' } }
+            .col-6.col-md-3 = f.input :ladder_step_every, label: 'Ladder step every', hint: 'rounds between increments (blank = each round)'
           .row.g-2
             .col-6.col-md-3 = f.input :load, input_html: { data: { 'exercise-card-target': 'loadInput' } }
             .col-6.col-md-3 = f.input :female_load, input_html: { data: { 'exercise-card-target': 'femaleLoadInput' } }

@@ -2,10 +2,12 @@
 #
 # Source: https://games.crossfit.com/workouts/open
 # Loads are the standard Men's Rx'd / Women's Rx'd prescriptions (female_load / male_load).
-# Open-ended ladders and "max reps" movements use reps: 0 with the scheme described in the
-# workout notes, matching the existing benchmark/cf seed conventions. The Open frequently
-# repeats an earlier workout; rather than seed a duplicate, each repeat is left as a code
-# comment pointing at the original (e.g. "# 12.5 is a repeat of 11.6").
+# Single "max reps" movements use reps: 0 (the app's max-reps sentinel). Open-ended ascending
+# ladders (11.6-style) set workout.ladder_start / ladder_step; participating exercises leave reps
+# blank to ride the ladder, while a constant movement keeps an explicit reps value, and an exercise
+# that increments on a slower cadence sets ladder_step_every. The Open frequently repeats an earlier
+# workout; rather than seed a duplicate, each repeat is left as a code comment pointing at the
+# original (e.g. "# 12.5 is a repeat of 11.6").
 
 # ==============================================================================
 # 2011
@@ -81,10 +83,11 @@ end
 Workout.find_or_create_by(name: 'Open 11.6') do |workout|
   workout.time = 7
   workout.score_type = :rep
-  workout.notes = 'Ascending ladder: begin with 3 reps of each movement and add 3 reps each round ' \
-                  '(3, 6, 9, 12, ...). Post total reps.'
-  workout.exercises.build(movement: thruster, position: 1, reps: 0, female_load: 65, male_load: 100, load_unit: :lb)
-  workout.exercises.build(movement: chest_to_bar_pull_up, position: 2, reps: 0)
+  workout.ladder_start = 3
+  workout.ladder_step = 3
+  workout.notes = 'Post total reps.'
+  workout.exercises.build(movement: thruster, position: 1, female_load: 65, male_load: 100, load_unit: :lb)
+  workout.exercises.build(movement: chest_to_bar_pull_up, position: 2)
 end
 
 # ==============================================================================
@@ -200,10 +203,11 @@ end
 Workout.find_or_create_by(name: 'Open 13.4') do |workout|
   workout.time = 7
   workout.score_type = :rep
-  workout.notes = 'Ascending ladder: begin with 3 reps of each movement and add 3 reps each round ' \
-                  '(3, 6, 9, ...). Post total reps.'
-  workout.exercises.build(movement: clean_and_jerk, position: 1, reps: 0, female_load: 95, male_load: 135, load_unit: :lb)
-  workout.exercises.build(movement: toes_to_bar, position: 2, reps: 0)
+  workout.ladder_start = 3
+  workout.ladder_step = 3
+  workout.notes = 'Post total reps.'
+  workout.exercises.build(movement: clean_and_jerk, position: 1, female_load: 95, male_load: 135, load_unit: :lb)
+  workout.exercises.build(movement: toes_to_bar, position: 2)
 end
 
 # 13.5
@@ -231,11 +235,14 @@ end
 # adding 2 reps to each movement every 3-minute window (10, 12, 14, ...)
 Workout.find_or_create_by(name: 'Open 14.2') do |workout|
   workout.score_type = :rep
-  workout.notes = 'Every 3 minutes for as long as possible: complete 2 rounds of the couplet. ' \
-                  'Start at 10 reps of each movement; add 2 reps each 3-minute window (10, 12, 14, ...). ' \
+  workout.ladder_start = 10
+  workout.ladder_step = 2
+  workout.notes = 'Every 3 minutes for as long as possible: complete 2 rounds of the couplet. The reps ' \
+                  'hold for both rounds of a window, then grow by 2 in the next window (10, 12, 14, ...). ' \
                   'Continue until you fail to finish both rounds inside a window. Post total reps.'
-  workout.exercises.build(movement: overhead_squat, position: 1, reps: 0, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: chest_to_bar_pull_up, position: 2, reps: 0)
+  workout.exercises.build(movement: overhead_squat, position: 1, ladder_step_every: 2,
+                          female_load: 65, male_load: 95, load_unit: :lb)
+  workout.exercises.build(movement: chest_to_bar_pull_up, position: 2, ladder_step_every: 2)
 end
 
 # 14.3
@@ -346,10 +353,13 @@ end
 Workout.find_or_create_by(name: 'Open 15.4') do |workout|
   workout.time = 8
   workout.score_type = :rep
-  workout.notes = 'Ascending ladder: handstand push-ups increase by 3 each round (3, 6, 9, 12, ...); ' \
-                  'cleans increase by 3 every three rounds (3, 3, 3, 6, 6, 6, 9, ...). Post total reps.'
-  workout.exercises.build(movement: handstand_push_up, position: 1, reps: 0)
-  workout.exercises.build(movement: clean, position: 2, reps: 0, female_load: 125, male_load: 185, load_unit: :lb)
+  workout.ladder_start = 3
+  workout.ladder_step = 3
+  workout.notes = 'Handstand push-ups increase by 3 each round (3, 6, 9, ...); cleans increase by 3 every ' \
+                  'three rounds (3, 3, 3, 6, 6, 6, 9, ...). Post total reps.'
+  workout.exercises.build(movement: handstand_push_up, position: 1)
+  workout.exercises.build(movement: clean, position: 2, ladder_step_every: 3,
+                          female_load: 125, male_load: 185, load_unit: :lb)
 end
 
 # 15.5
@@ -892,9 +902,11 @@ end
 Workout.find_or_create_by(name: 'Open 23.2A') do |workout|
   workout.time = 15
   workout.score_type = :rep
-  workout.notes = 'Start with 5 burpee pull-ups, then 10 shuttle runs; add 5 burpee pull-ups each round ' \
-                  '(5, 10, 15, ...). One shuttle-run rep is 25 ft out and 25 ft back. Post total reps.'
-  workout.exercises.build(movement: burpee_pull_up, position: 1, reps: 0)
+  workout.ladder_start = 5
+  workout.ladder_step = 5
+  workout.notes = 'The burpee pull-ups ascend (5, 10, 15, ...); the shuttle runs stay at 10 each round. ' \
+                  'One shuttle-run rep is 25 ft out and 25 ft back. Post total reps.'
+  workout.exercises.build(movement: burpee_pull_up, position: 1)
   workout.exercises.build(movement: shuttle_run, position: 2, reps: 10, notes: '1 rep = 25 ft out and 25 ft back.')
 end
 
@@ -1004,12 +1016,14 @@ end
 Workout.find_or_create_by(name: 'Open 25.1') do |workout|
   workout.time = 15
   workout.score_type = :rep
-  workout.notes = 'Begin with 3 lateral burpees over the dumbbell and 3 dumbbell hang clean-to-overheads, then ' \
-                  'a 30-ft walking lunge (15 ft out, 15 ft back). Add 3 reps to the burpees and hang ' \
-                  'clean-to-overheads each round; the lunge stays at 30 ft. A single 50/35-lb dumbbell. Post total reps.'
-  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 1, reps: 0, notes: 'Start at 3, +3 each round.')
-  workout.exercises.build(movement: dumbbell_hang_clean_and_jerk, position: 2, reps: 0,
-                          female_load: 35, male_load: 50, load_unit: :lb, notes: 'Hang clean-to-overhead; start at 3, +3 each round.')
+  workout.ladder_start = 3
+  workout.ladder_step = 3
+  workout.notes = 'The lateral burpees over the dumbbell and dumbbell hang clean-to-overheads ascend ' \
+                  '(3, 6, 9, ...); the 30-ft walking lunge (15 ft out, 15 ft back) stays constant each round. ' \
+                  'A single 50/35-lb dumbbell. Post total reps.'
+  workout.exercises.build(movement: lateral_burpee_over_dumbbell, position: 1)
+  workout.exercises.build(movement: dumbbell_hang_clean_and_jerk, position: 2,
+                          female_load: 35, male_load: 50, load_unit: :lb, notes: 'Hang clean-to-overhead.')
   workout.exercises.build(movement: walking_lunge, position: 3, reps: 1, distance: 30, distance_unit: :foot)
 end
 

@@ -7,6 +7,8 @@
     .col-sm-4 = f.input :rounds
     .col-sm-4 = f.input :time, as: :group, append: 'minutes'
     .col-sm-4 = f.input :interval, placeholder: '21-15-9...'
+    .col-sm-6 = f.input :ladder_start, label: 'Ascending ladder start', hint: 'e.g. 3 for an 11.6-style ladder'
+    .col-sm-6 = f.input :ladder_step, label: 'Ascending ladder step', hint: 'reps added each round'
     .col-12 = f.input :score_type, collection: Metric.workout_measurements, label: 'For'
     .col-12 = f.input :time_cap
     .col-12

@@ -4,6 +4,9 @@ module MeasurableHelper
   end
 
   def measurable_movement_msg(measurable)
+    movement_name = measurable.movement.name
+    return movement_name.pluralize if measurable.try(:ladder_participant?)
+
     rep_metric = measurable.prescription_metrics.find(&:rep?)
     duration_metric = duration_metric(measurable)
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
@@ -11,9 +14,7 @@ module MeasurableHelper
     lead_metric = leading_work_metric(measurable)
     return leading_work_movement_msg(measurable, lead_metric) if lead_metric
 
-    return measurable.movement.name unless rep_metric
-
-    movement_name = measurable.movement.name
+    return movement_name unless rep_metric
     return "max reps #{movement_name}" if max_rep_metric?(rep_metric)
 
     [metric_unit_msg(rep_metric), movement_name_for_rep_metric(movement_name, rep_metric)].compact_blank.join(' ')

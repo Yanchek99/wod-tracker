@@ -2,13 +2,15 @@
 
 = simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form' } do |f|
   = f.error_notification
-  .form-inputs.row.g-2
+  - ladder_hidden = f.object.time.blank? || f.object.rounds.present? || f.object.interval.present?
+  .form-inputs.row.g-2 data-controller="ladder-fields"
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
-    .col-sm-4 = f.input :rounds
-    .col-sm-4 = f.input :time, as: :group, append: 'minutes'
-    .col-sm-4 = f.input :interval, placeholder: '21-15-9...'
-    .col-sm-6 = f.input :ladder_start, label: 'Ascending ladder start', hint: 'e.g. 3 for an 11.6-style ladder'
-    .col-sm-6 = f.input :ladder_step, label: 'Ascending ladder step', hint: 'reps added each round'
+    .col-sm-4 = f.input :rounds, input_html: { data: { 'ladder-fields-target': 'rounds', action: 'input->ladder-fields#toggle' } }
+    .col-sm-4 = f.input :time, as: :group, append: 'minutes', input_html: { data: { 'ladder-fields-target': 'time', action: 'input->ladder-fields#toggle' } }
+    .col-sm-4 = f.input :interval, placeholder: '21-15-9...', input_html: { data: { 'ladder-fields-target': 'interval', action: 'input->ladder-fields#toggle' } }
+    .col-12.row.g-2 data-ladder-fields-target="row" hidden=ladder_hidden
+      .col-sm-6 = f.input :ladder_start, label: 'Ascending ladder start', hint: 'e.g. 3 for an 11.6-style ladder', input_html: { data: { 'ladder-fields-target': 'start input', action: 'input->ladder-fields#toggle' } }
+      .col-sm-6 = f.input :ladder_step, label: 'Ascending ladder step', hint: 'reps added each round', input_html: { data: { 'ladder-fields-target': 'input' } }
     .col-12 = f.input :score_type, collection: Metric.workout_measurements, label: 'For'
     .col-12 = f.input :time_cap
     .col-12

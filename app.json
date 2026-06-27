@@ -11,15 +11,6 @@
       "required": true
     }
   },
-  "environments": {
-    "review": {
-      "env": {
-        "REVIEW_APP": {
-          "value": "true"
-        }
-      }
-    }
-  },
   "formation": {
     "web": {
       "quantity": 1,

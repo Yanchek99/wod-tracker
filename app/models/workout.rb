@@ -18,6 +18,8 @@ class Workout < ApplicationRecord
   enum :score_type, Metric.measurements, prefix: :score
 
   validates :name, :score_type, presence: true
+  validates :ladder_step,
+            numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
 
   def self.search_by_name(name)
     return all unless name
@@ -34,6 +36,14 @@ class Workout < ApplicationRecord
 
   def amrap?
     time.present? && rounds.blank? && interval.blank?
+  end
+
+  # An open-ended ascending-rep ladder: each round's reps start at the participating exercise's own
+  # reps and grow by ladder_step (on that exercise's cadence) until the clock runs out. Scored by
+  # total reps. Independent of amrap?: most are time-capped AMRAPs, but some (e.g. the every-N-minute
+  # ascents) carry no single time and live only through this flag.
+  def ascending_ladder?
+    ladder_step.present?
   end
 
   def segmented_total_reps?

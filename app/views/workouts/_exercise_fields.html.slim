@@ -4,7 +4,7 @@
 - summary = f.object.persisted? ? measurable_message(f.object) : 'New exercise'
 - workout_part = local_assigns.fetch(:workout_part, false)
 
-.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card implement-count" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle" data-exercise-card-expanded-value=expanded data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
+.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card implement-count ladder-step" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle ladder-fields:change@document->ladder-step#toggle" data-exercise-card-expanded-value=expanded data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
   = f.hidden_field :_destroy
   = f.hidden_field :position
   .workout-sortable-item
@@ -24,8 +24,12 @@
             = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
               i.fas.fa-trash-alt aria-hidden="true"
           .row.g-2
-            .col-6.col-md-3 = f.input :reps, hint: '0 = max reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
+            .col-6.col-md-3 = f.input :reps, hint: '0 = max reps; for a ladder, the round-1 reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
             .col-6.col-md-3 = f.input :duration_seconds, label: 'Duration (s)', input_html: { data: { 'exercise-card-target': 'durationInput' } }
+            .col-6.col-md-3 data-ladder-step-target="exemptField" hidden=(!@workout&.ascending_ladder?)
+              = f.input :ladder_exempt, as: :boolean, label: 'Constant (no ladder)', input_html: { data: { 'ladder-step-target': 'exempt', action: 'change->ladder-step#toggle' } }
+            .col-6.col-md-3 data-ladder-step-target="stepEveryField" hidden=(!(@workout&.ascending_ladder? && !f.object.ladder_exempt))
+              = f.input :ladder_step_every, label: 'Ladder step every', hint: 'rounds between increments (blank = each round)'
           .row.g-2
             .col-6.col-md-3 = f.input :load, input_html: { data: { 'exercise-card-target': 'loadInput' } }
             .col-6.col-md-3 = f.input :female_load, input_html: { data: { 'exercise-card-target': 'femaleLoadInput' } }

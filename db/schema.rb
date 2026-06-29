@@ -128,13 +128,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
     t.integer "equipment"
     t.integer "family"
     t.string "name"
-    t.integer "pattern"
+    t.integer "patterns", default: [], null: false, array: true
     t.integer "skill_level"
     t.datetime "updated_at", precision: nil, null: false
     t.index ["equipment"], name: "index_movements_on_equipment"
     t.index ["family"], name: "index_movements_on_family"
     t.index ["name"], name: "index_movements_on_name", unique: true
-    t.index ["pattern"], name: "index_movements_on_pattern"
+    t.index ["patterns"], name: "index_movements_on_patterns", using: :gin
     t.index ["skill_level"], name: "index_movements_on_skill_level"
   end
 

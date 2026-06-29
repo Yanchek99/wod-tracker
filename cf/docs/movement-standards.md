@@ -51,9 +51,10 @@ history and future scaling can query movement similarity without parsing names.
 - Family tracks the movement's CrossFit modality: monostructural, gymnastics,
   weightlifting, or rest. Mixed modality belongs to workouts, not individual
   movements.
-- Pattern tracks the dominant movement function: lower-body press, hinge,
-  press, pull, lunge, carry, rotation, locomotion, inversion, jump, rest, or
-  mixed.
+- Patterns track the movement functions that make up the movement:
+  lower-body press, lower-body pull, upper-body press, upper-body pull, carry,
+  rotation, locomotion, inversion, jump, or rest. Compound movements should list
+  each meaningful component rather than using a generic mixed pattern.
 - Equipment tracks the primary implement or station when one is required; it is
   blank when no equipment or station applies.
 - Skill level is a coarse basic/intermediate/advanced scale for substitution

@@ -31,9 +31,16 @@ class MovementTest < ActiveSupport::TestCase
     thruster = movements(:thruster)
 
     assert thruster.family_weightlifting?
-    assert thruster.pattern_mixed?
+    assert thruster.pattern_lower_body_press?
+    assert thruster.pattern_upper_body_press?
     assert thruster.equipment_barbell?
     assert thruster.skill_level_intermediate?
+  end
+
+  test 'queries movements by component pattern' do
+    assert_includes Movement.with_pattern(:upper_body_press), movements(:thruster)
+    assert_includes Movement.with_pattern(:lower_body_press), movements(:thruster)
+    assert_not_includes Movement.with_pattern(:upper_body_pull), movements(:thruster)
   end
 
   test 'finds movements in the same family' do

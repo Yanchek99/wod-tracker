@@ -1,6 +1,7 @@
 module WorkoutsHelper
   def workout_objective(workout)
     return ascending_ladder_objective(workout) if workout.ascending_ladder?
+    return max_finding_objective(workout) if workout.max_finding?
     return "#{pluralize workout.rounds, 'set'} for load" if workout.set_based_lifting?
     return for_time_objective(workout) if workout.rounds_for_time?
 
@@ -37,6 +38,12 @@ module WorkoutsHelper
     return ladder.upcase_first if workout.time.blank?
 
     "As many reps as possible in #{pluralize workout.time, 'minute'}, #{ladder}"
+  end
+
+  def max_finding_objective(workout)
+    return "Find a max load in #{pluralize workout.time, 'minute'}" if workout.time.present?
+
+    'For load'
   end
 
   def total_reps_clock_objective(workout)

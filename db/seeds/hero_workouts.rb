@@ -477,6 +477,17 @@ Workout.find_or_create_by(name: 'Crain') do |workout|
 end
 
 # ==============================================================================
+# Dragon
+# For max load: 4 minutes to find a 4-rep-max deadlift, then 4 minutes to find a
+# 4-rep-max push jerk.
+Workout.find_or_create_by(name: 'Dragon') do |workout|
+  workout.score_type = :weight
+  workout.notes = 'Post loads for both lifts.'
+  workout.exercises.build(movement: deadlift, position: 1, reps: 4, duration_seconds: 240, load_unit: :lb)
+  workout.exercises.build(movement: push_jerk, position: 2, reps: 4, duration_seconds: 240, load_unit: :lb)
+end
+
+# ==============================================================================
 # Dae Han
 # 3 rounds for time: run 800m with an empty barbell, 3 rope climbs, 12 thrusters
 Workout.find_or_create_by(name: 'Dae Han') do |workout|

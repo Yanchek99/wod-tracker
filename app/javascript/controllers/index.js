@@ -19,6 +19,12 @@ application.register("exercise-card", ExerciseCardController)
 import ImplementCountController from "./implement_count_controller.js"
 application.register("implement-count", ImplementCountController)
 
+import LadderFieldsController from "./ladder_fields_controller.js"
+application.register("ladder-fields", LadderFieldsController)
+
+import LadderStepController from "./ladder_step_controller.js"
+application.register("ladder-step", LadderStepController)
+
 import SegmentCardController from "./segment_card_controller.js"
 application.register("segment-card", SegmentCardController)
 

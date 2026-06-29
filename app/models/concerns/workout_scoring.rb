@@ -32,6 +32,7 @@ module WorkoutScoring
 
   def amrap_score_components
     return [] unless rep_scored_amrap?
+    return [] if ascending_ladder? # variable reps per round; scored by raw total
 
     top_level_exercises.map.with_index do |exercise, index|
       component = exercise.score_component
@@ -63,6 +64,7 @@ module WorkoutScoring
   end
 
   def fixed_amrap_reps_per_round
+    return nil if ascending_ladder? # reps grow each round, so there is no fixed per-round total
     return nil if top_level_exercises.empty?
 
     top_level_exercises.sum do |exercise|

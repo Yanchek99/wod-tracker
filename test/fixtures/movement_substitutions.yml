@@ -1,9 +1,9 @@
-pullup_pushup:
-  movement: pullup
-  substitute_movement: pushup
+backsqt_frontsqt:
+  movement: front_squat
+  substitute_movement: back_squat
   direction: 0
 
-pullup_hspu:
-  movement: pullup
-  substitute_movement: hspu
+run_row:
+  movement: run
+  substitute_movement: row
   direction: 2

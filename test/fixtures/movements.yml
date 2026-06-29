@@ -56,3 +56,10 @@ back_squat:
   pattern: 0
   equipment: 0
   skill_level: 0
+
+front_squat:
+  name: Front Squat
+  family: 2
+  pattern: 0
+  equipment: 0
+  skill_level: 0

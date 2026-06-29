@@ -11,7 +11,7 @@ class Movement < ApplicationRecord
   }.freeze
 
   PATTERNS = {
-    squat: 0,
+    lower_body_press: 0,
     hinge: 1,
     press: 2,
     pull: 3,

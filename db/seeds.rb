@@ -20,7 +20,7 @@ abmat_sit_up = Movement.find_or_initialize_by(name: 'AbMat Sit-up').tap do |move
   movement.save!
 end
 air_squat = Movement.find_or_initialize_by(name: 'Air Squat').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, pattern: :squat, skill_level: :basic)
+  movement.assign_attributes(family: :gymnastics, pattern: :lower_body_press, skill_level: :basic)
   movement.save!
 end
 back_extensions = Movement.find_or_initialize_by(name: 'Back Extensions').tap do |movement|
@@ -32,7 +32,7 @@ back_scale = Movement.find_or_initialize_by(name: 'Back Scale').tap do |movement
   movement.save!
 end
 back_squat = Movement.find_or_initialize_by(name: 'Back Squat').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat, equipment: :barbell,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press, equipment: :barbell,
                              skill_level: :basic)
   movement.save!
 end
@@ -115,7 +115,7 @@ clean_and_push_jerk = Movement.find_or_initialize_by(name: 'Clean and Push Jerk'
   movement.save!
 end
 clean_squat = Movement.find_or_initialize_by(name: 'Clean Squat').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat, equipment: :barbell,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press, equipment: :barbell,
                              skill_level: :intermediate)
   movement.save!
 end
@@ -159,7 +159,7 @@ dumbbell_farmers_carry = Movement.find_or_initialize_by(name: 'Dumbbell Farmers 
   movement.save!
 end
 dumbbell_front_squat = Movement.find_or_initialize_by(name: 'Dumbbell Front Squat').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press,
                              equipment: :dumbbell, skill_level: :basic)
   movement.save!
 end
@@ -187,7 +187,7 @@ dumbbell_hang_power_clean = Movement.find_or_initialize_by(name: 'Dumbbell Hang 
   movement.save!
 end
 dumbbell_overhead_squat = Movement.find_or_initialize_by(name: 'Dumbbell Overhead Squat').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press,
                              equipment: :dumbbell, skill_level: :advanced)
   movement.save!
 end
@@ -219,7 +219,7 @@ dumbbell_push_press = Movement.find_or_initialize_by(name: 'Dumbbell Push Press'
   movement.save!
 end
 dumbbell_squat_snatch = Movement.find_or_initialize_by(name: 'Dumbbell Squat Snatch').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press,
                              equipment: :dumbbell, skill_level: :advanced)
   movement.save!
 end
@@ -256,7 +256,7 @@ front_scale = Movement.find_or_initialize_by(name: 'Front Scale').tap do |moveme
   movement.save!
 end
 front_squat = Movement.find_or_initialize_by(name: 'Front Squat').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat, equipment: :barbell,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press, equipment: :barbell,
                              skill_level: :basic)
   movement.save!
 end
@@ -461,7 +461,7 @@ overhead_dumbbell_lunge = Movement.find_or_initialize_by(name: 'Overhead Dumbbel
   movement.save!
 end
 overhead_squat = Movement.find_or_initialize_by(name: 'Overhead Squat').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press,
                              equipment: :barbell, skill_level: :advanced)
   movement.save!
 end
@@ -567,7 +567,7 @@ shoulder_to_overhead = Movement.find_or_initialize_by(name: 'Shoulder to Overhea
   movement.save!
 end
 single_leg_squat_pistol = Movement.find_or_initialize_by(name: 'Single-leg Squat (Pistol)').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, pattern: :squat,
+  movement.assign_attributes(family: :gymnastics, pattern: :lower_body_press,
                              skill_level: :advanced)
   movement.save!
 end
@@ -606,7 +606,7 @@ snatch = Movement.find_or_initialize_by(name: 'Snatch').tap do |movement|
   movement.save!
 end
 snatch_balance = Movement.find_or_initialize_by(name: 'Snatch Balance').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press,
                              equipment: :barbell, skill_level: :advanced)
   movement.save!
 end
@@ -739,7 +739,7 @@ wall_walk = Movement.find_or_initialize_by(name: 'Wall Walk').tap do |movement|
   movement.save!
 end
 wall_ball_shot = Movement.find_or_initialize_by(name: 'Wall-ball Shot').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press,
                              equipment: :medicine_ball, skill_level: :basic)
   movement.save!
 end
@@ -749,7 +749,7 @@ windshield_wiper = Movement.find_or_initialize_by(name: 'Windshield Wiper').tap 
   movement.save!
 end
 zercher_squat = Movement.find_or_initialize_by(name: 'Zercher Squat').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, pattern: :squat, equipment: :barbell,
+  movement.assign_attributes(family: :weightlifting, pattern: :lower_body_press, equipment: :barbell,
                              skill_level: :intermediate)
   movement.save!
 end

@@ -2028,6 +2028,21 @@ Workout.find_or_create_by(name: 'Omar') do |workout|
 end
 
 # ==============================================================================
+# Otis
+# AMRAP in 15 minutes, ascending ladder: 1 back squat, 1 shoulder press, 1 deadlift; then 2 of each;
+# then 3 of each; etc. Use 1 1/2 body weight for the squats and deadlifts and 3/4 body weight for the presses.
+Workout.find_or_create_by(name: 'Otis') do |workout|
+  workout.time = 15
+  workout.score_type = :rep
+  workout.ladder_step = 1
+  workout.notes = 'Ascending ladder: 1 rep of each movement, then 2 of each, then 3 of each, and so on ' \
+                  'for as long as 15 minutes allow. Post total reps.'
+  workout.exercises.build(movement: back_squat, position: 1, reps: 1, notes: '1 1/2 body weight')
+  workout.exercises.build(movement: shoulder_press, position: 2, reps: 1, notes: '3/4 body weight')
+  workout.exercises.build(movement: deadlift, position: 3, reps: 1, notes: '1 1/2 body weight')
+end
+
+# ==============================================================================
 # Pat
 # For time: run 800m w/ plate; 14 rounds (5 strict pull-ups, 4 burpee box jumps, 3 cleans); run 800m w/ plate
 Workout.find_or_create_by(name: 'Pat') do |workout|

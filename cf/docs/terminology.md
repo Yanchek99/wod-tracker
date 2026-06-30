@@ -1,8 +1,8 @@
 # Terminology
 
 Core CrossFit terms are defined from the Level 1 and Level 2 Training Guides (see
-`references.md`). App-specific terms describe how this app models and renders
-workouts.
+`references.md`) and CrossFit Programming Basics articles. App-specific terms
+describe how this app models and renders workouts.
 
 ## CrossFit
 
@@ -32,6 +32,9 @@ bike, row, jump rope), gymnastics (G; bodyweight movements such as air squats,
 pull-ups, push-ups), and weightlifting (W; loaded movements such as deadlift,
 clean, press, snatch). Workout structure varies by including one, two, or three
 modalities.
+
+Programming Basics also uses monostructural as the practical coaching term for
+single-mode cyclic work such as running, rowing, biking, or jumping rope.
 
 ## Metabolic Pathways
 
@@ -67,6 +70,10 @@ time-priority workout the total time is fixed, so the time domain instead reflec
 how long each round or interval should take. It is one component of the intended
 stimulus, not the whole of it.
 
+Programming Basics uses very short (less than 5 minutes and heavy days), short
+(5-10 minutes), moderate (11-20 minutes), and long (more than 20 minutes) as
+practical planning buckets.
+
 ## Task Priority And Time Priority
 
 CrossFit workouts are classified by what is fixed (L1 guide). A task-priority
@@ -75,6 +82,52 @@ workout is scored by the time to complete it (For Time workouts such as Fran and
 Grace). A time-priority workout fixes the time and scores work: the athlete is
 kept moving for a set time and scored by rotations or repetitions (AMRAPs, EMOMs,
 and interval schemes).
+
+Programming Basics notes that task-priority workouts are common in effective
+programming because a fixed task can drive high effort, but they require accurate
+scaling so athletes finish near the intended time domain.
+
+## Workout Format
+
+Workout format describes the broad structure used to deliver the stimulus:
+single-modality workout, couplet, triplet, chipper, heavy day, or multipart
+session. Programming Basics treats format as one of the goals a coach chooses
+before selecting exact movements, loads, rounds, and reps.
+
+## Movement Function
+
+Movement function is the pattern a movement contributes to the workout stimulus.
+Programming Basics gives examples such as push and pull (vertical or horizontal),
+hinge dominant, squat dominant, trunk flexion, and trunk extension. It is more
+specific than modality and is a primary variable for planning variance,
+constructing complementary pairings, and preserving the stimulus when scaling.
+
+A movement may have multiple functions. The app should eventually be able to
+represent a dominant function and secondary functions rather than forcing one
+label to carry the whole movement. Examples:
+
+- Thruster: squat plus vertical press.
+- Pull-up: vertical pull.
+- Push-up: horizontal push plus trunk support.
+- Deadlift: hinge.
+- Clean: hinge/pull plus front-rack receiving position.
+- Wall-ball shot: squat plus throw to target.
+- Farmer carry: loaded carry plus locomotion.
+- Toes-to-bar: trunk flexion plus hanging shoulder demand.
+
+## Heavy Day
+
+A heavy day is a strength-biased workout where the primary score is usually load
+or successful heavy attempts rather than fast conditioning volume. Programming
+Basics groups heavy days with very short efforts for time-domain planning because
+they are high-intensity, low-duration exposures.
+
+## Targeted Block
+
+A targeted block slightly increases the dose of one or two domains, such as a
+specific lift or skill, for a limited period while the rest of the program remains
+varied. Programming Basics describes six-to-eight-week targeted blocks bookended
+by testing and retesting as one practical option.
 
 ## Scaling
 

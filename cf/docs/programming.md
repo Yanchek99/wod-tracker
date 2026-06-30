@@ -1,8 +1,9 @@
 # Programming
 
 This file describes CrossFit programming as defined by the Level 1 and Level 2
-Training Guides (see `references.md`), followed by the app-specific modeling and
-rendering conventions built on top of that domain knowledge.
+Training Guides and CrossFit Programming Basics articles (see `references.md`),
+followed by the app-specific modeling and rendering conventions built on top of
+that domain knowledge.
 
 ## The CrossFit Prescription
 
@@ -30,6 +31,39 @@ CrossFit programming draws from three modalities (L1 guide):
 
 A workout's structure varies by including one, two, or three modalities.
 
+## Variance Variables
+
+Effective variance is planned rather than random. Any program factor can vary,
+but Programming Basics emphasizes variables that affect power:
+
+- Load: unloaded, light, moderate, or heavy. A practical coaching lens is how many
+  consecutive reps the intended athlete could complete: light around 20 or more,
+  moderate around 6-20, and heavy around 1-5.
+- Volume: total reps, distance, rounds, and time. Practical buckets include low,
+  medium, and high total reps or distance.
+- Movement functions: examples include push, pull, hinge, squat, trunk flexion,
+  and trunk extension.
+- Modality: weightlifting, gymnastics, and monostructural/metabolic conditioning.
+- Time duration: very short, short, moderate, long, and heavy-day efforts.
+
+Variance should be broad enough to develop work capacity across time and modal
+domains, but the bulk of effective CrossFit programming still supports high
+relative intensity.
+
+Movement function describes the pattern a movement contributes to a workout's
+stimulus. Programming Basics gives examples such as push and pull, which may be
+vertical or horizontal, hinge dominant, squat dominant, trunk flexion, and trunk
+extension. This is more specific than modality: two gymnastics movements can train
+different functions, and a couplet can pair complementary functions to help
+athletes preserve intensity.
+
+A movement can carry more than one function, but programming analysis should
+identify the dominant function and any meaningful secondary functions. For
+example, a thruster combines squat and vertical press; a clean combines hinge/pull
+with a receiving position; a wall-ball shot combines squat and throw. When
+scaling, preserve the intended movement function as much as possible before
+changing to a different function.
+
 ## Metabolic Pathways And Time Domains
 
 Three metabolic pathways provide the energy for all human action (L1 guide):
@@ -45,6 +79,18 @@ the duration and intensity of effort. A workout's time domain — its expected
 duration, commonly grouped as short, medium, or long — reflects which pathway it
 targets and is one component of the intended stimulus. The L2 guide describes
 short workouts such as Amanda and Elizabeth as taking about 5 minutes.
+
+The Programming Basics articles use practical time-duration buckets for workout
+planning:
+
+- Very short: less than 5 minutes, plus heavy days.
+- Short: 5-10 minutes.
+- Moderate: 11-20 minutes.
+- Long: more than 20 minutes.
+
+These buckets are general coaching guidelines, not hard validation rules. The
+total impact of the workout still depends on movement selection, loading,
+volume, priority, transitions, fatigue, and the athlete's capacity.
 
 ## The Theoretical Template
 
@@ -93,6 +139,47 @@ Intervals such as `21-15-9` define rep schemes across listed movements. A rep
 metric of `1` on a movement in an interval workout means the interval supplies
 the reps.
 
+## Intensity-Preserving Workout Traits
+
+Programming Basics frames several recurring traits of effective workouts that
+help preserve high relative intensity:
+
+- Most conditioning workouts sit near the 8-15-minute range so athletes can work
+  hard while accumulating useful volume.
+- Complementary movement pairings, such as squat-to-press with vertical pulling,
+  help athletes keep moving at high output.
+- Compound, high-power movements are favored because they move large loads long
+  distances quickly and produce strong training economy.
+- Simple couplets and triplets are common because they keep intensity high and
+  give athletes repeated exposure to each movement.
+- Task-priority workouts are common because the fixed task can motivate athletes
+  to finish quickly, but they demand accurate scaling so different athletes hit a
+  similar intended duration.
+
+These are trends, not exclusive rules. Variance requires periodic deviation:
+heavy days, longer workouts, time-priority workouts, chippers, higher-skill
+elements, and lower-power skill or accessory work can all be appropriate when
+they serve the broader program.
+
+## Programming A Single Workout
+
+Programming Basics describes a practical single-workout workflow:
+
+1. Define workout goals: intended duration, movement functions, loading
+   parameters, format (single modality, couplet, triplet, chipper), and priority
+   (task, time, or heavy day).
+2. Draft the workout: choose rounds, rep scheme, specific movements, and loads.
+3. Analyze and adjust: estimate movement times, round times, transitions,
+   fatigue, and the expected finish time or expected rounds/reps.
+4. Plan scaling: preserve loading goals, movement functions, and time-duration
+   goals as much as possible for each athlete.
+
+For task-priority workouts, estimate the time for each movement, add the time for
+one round, multiply by rounds, and then add transition and fatigue time. For
+time-priority workouts, estimate the time for one round including transition and
+fatigue, then divide the work interval by that estimate to predict rounds or
+reps. These estimates become part of the intended stimulus and guide scaling.
+
 ## Scaling: Preserve The Stimulus
 
 The main principle of scaling is "preserve the stimulus" (L1 guide). The stimulus
@@ -115,6 +202,13 @@ To scale a workout, review its intended stimulus — movement functions, loading
 time frame, and volume (L2 guide) — and adhere to as many of those variables as
 possible in light of the individual's capacity while still providing a significant
 challenge. Scaling is a "moving target" as capacities change.
+
+Programming Basics reinforces that the Rx prescription is generally written for
+higher-level athletes in a gym, not for Games-level athletes. Intermediate and
+beginner options can be useful general guidelines, but most athletes still need
+specific scaling. Preserve the movement first when possible by scaling load,
+range, reps, or distance; modify the movement only when needed, and then choose a
+substitution that replicates the original function as closely as possible.
 
 When importing canonical CrossFit workouts, scaling should be source-driven.
 Recurring patterns are useful for review, but source text wins when it conflicts
@@ -161,6 +255,11 @@ evaluating programming is "measurable improvement in performance markers" such a
 benchmarks to follow" (e.g. Grace, Fran, Tabata squats, JT, Fight Gone Bad, Cindy)
 as recurring fitness tests (L2 guide).
 
+Programming Basics gives the same practical program-evaluation rule: repeat
+benchmarks and compare results to previous scores. Improving times, heavier
+loads, and better scores indicate the program is on track; weak or stagnant
+domains identify areas that may need targeted programming.
+
 ### Benchmarks And "Constantly Varied"
 
 Constantly varied is the everyday training stimulus; the L2 guide states "Routine
@@ -177,6 +276,32 @@ as a violation of constantly varied; the framing here that benchmarks are the
 "measurement instrument, not the everyday stimulus" is an inference drawn from the
 guides' separate treatment of variance and routine assessment, and should be read
 as inference rather than a direct quotation.
+
+## Long-Term Programming
+
+Programming Basics describes two planning strategies that sit between random
+daily selection and rigid periodization:
+
+- Look back and program ahead. Review the previous one to two weeks, identify
+  neglected variables, and set a small number of goals for the upcoming week.
+  Examples of gaps include missing longer workouts, moderate loads,
+  monostructural movements, higher-skill elements, time-priority workouts, or
+  specific movement functions.
+- Template development. Use a short template, often two to six weeks, to guide
+  variance across modality, duration, scheme, and priority while still leaving
+  room to vary movements and loads. A generalist weekly target may include one
+  heavy-focused session, one short workout, one long workout, and several classic
+  couplets/triplets or single-modality sessions that support high intensity.
+
+Templates are guardrails for coverage, not fixed specialization plans. They
+should be reviewed against recent programming and adjusted to fill deficiencies.
+
+Targeted templates can slightly increase the dose of one or two domains for about
+six to eight weeks without neglecting the rest of fitness. Programming Basics
+describes bookending such blocks with testing and retesting, for example a
+back-squat focus that tests a 3-rep max, trains the back squat twice weekly while
+maintaining broader GPP work, and then retests. This is compatible with CrossFit
+when the target dose is limited and the rest of the program remains varied.
 
 ## Repeat Workouts (App Modeling)
 

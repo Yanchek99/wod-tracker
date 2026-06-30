@@ -55,8 +55,8 @@ end
 Workout.find_or_create_by(name: 'Open 11.4') do |workout|
   workout.time = 10
   workout.score_type = :rep
-  workout.exercises.build(movement: over_the_bar_burpee, position: 1, reps: 60,
-                          notes: 'Bar-facing burpees, jumping over the barbell.')
+  workout.exercises.build(movement: bar_facing_burpee, position: 1, reps: 60,
+                          notes: 'Jump over the barbell.')
   workout.exercises.build(movement: overhead_squat, position: 2, reps: 30, female_load: 90, male_load: 120, load_unit: :lb)
   workout.exercises.build(movement: muscle_up, position: 3, reps: 10)
 end
@@ -296,7 +296,7 @@ Workout.find_or_create_by(name: 'Open 14.5') do |workout|
   workout.score_type = :time
   workout.notes = 'Bar-facing burpees jump over the barbell. No time cap. Post total time.'
   workout.exercises.build(movement: thruster, position: 1, reps: 1, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 1)
+  workout.exercises.build(movement: bar_facing_burpee, position: 2, reps: 1)
 end
 
 # ==============================================================================
@@ -556,7 +556,7 @@ Workout.find_or_create_by(name: 'Open 18.2') do |workout|
                   '12-minute cap shared with 18.2a. Post total time.'
   workout.exercises.build(movement: dumbbell_front_squat, position: 1, reps: 1,
                           female_load: 35, male_load: 50, load_unit: :lb, implement_count: 2)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 1)
+  workout.exercises.build(movement: bar_facing_burpee, position: 2, reps: 1)
 end
 
 # 18.2a
@@ -671,11 +671,11 @@ Workout.find_or_create_by(name: 'Open 19.4') do |workout|
   first_block = workout.segments.build(rounds: 3, position: 1)
   workout.exercises.build(movement: snatch, segment: first_block, position: 1, reps: 10,
                           female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, segment: first_block, position: 2, reps: 12)
+  workout.exercises.build(movement: bar_facing_burpee, segment: first_block, position: 2, reps: 12)
   workout.exercises.build(movement: rest, position: 2, reps: 1, duration_seconds: 180)
   second_block = workout.segments.build(rounds: 3, position: 3)
   workout.exercises.build(movement: bar_muscle_up, segment: second_block, position: 1, reps: 10)
-  workout.exercises.build(movement: over_the_bar_burpee, segment: second_block, position: 2, reps: 12)
+  workout.exercises.build(movement: bar_facing_burpee, segment: second_block, position: 2, reps: 12)
 end
 
 # 19.5
@@ -706,7 +706,7 @@ Workout.find_or_create_by(name: 'Open 20.1') do |workout|
   workout.notes = '10 rounds for time, 15-minute cap. Ground-to-overhead by any method. Bar-facing burpees ' \
                   'jump over the barbell. Post total time.'
   workout.exercises.build(movement: ground_to_overhead, position: 1, reps: 8, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 10)
+  workout.exercises.build(movement: bar_facing_burpee, position: 2, reps: 10)
 end
 
 # 20.2
@@ -863,7 +863,7 @@ Workout.find_or_create_by(name: 'Open 22.2') do |workout|
   workout.notes = 'Pyramid rep scheme up to 10 and back down to 1. Bar-facing burpees jump over the barbell. ' \
                   '10-minute cap. Post total time.'
   workout.exercises.build(movement: deadlift, position: 1, reps: 1, female_load: 155, male_load: 225, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 1)
+  workout.exercises.build(movement: bar_facing_burpee, position: 2, reps: 1)
 end
 
 # 22.3

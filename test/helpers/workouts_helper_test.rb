@@ -51,4 +51,16 @@ class WorkoutsHelperTest < ActionView::TestCase
 
     assert_equal 'Ascending ladder, +2 reps each round', workout_objective(workout)
   end
+
+  test 'has no team descriptor for an individual workout' do
+    assert_nil team_objective(Workout.new(score_type: :time))
+  end
+
+  test 'renders a two-athlete workout as partner' do
+    assert_equal 'Partner', team_objective(Workout.new(score_type: :time, team_size: 2))
+  end
+
+  test 'renders a larger team workout as team of n' do
+    assert_equal 'Team of 4', team_objective(Workout.new(score_type: :time, team_size: 4))
+  end
 end

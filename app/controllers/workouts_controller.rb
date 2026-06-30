@@ -87,7 +87,7 @@ class WorkoutsController < ApplicationController
                        :calories, :female_calories, :male_calories, :notes]
 
     params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
-                            :score_type, :ladder_step,
+                            :score_type, :ladder_step, :team_size,
                             { segments_attributes: [[:id, :name, :rounds, :time_seconds, :interval_scheme,
                                                      :rest_seconds, :notes, :position, :_destroy,
                                                      { exercises_attributes: [exercise_params] }]] },

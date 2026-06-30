@@ -119,6 +119,13 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
     assert Workout.exists?(workout.id)
   end
 
+  test 'team size keeps a partner workout distinct from content-identical solo work' do
+    solo = build_fran('Solo')
+    partnered = build_fran('Partner').tap { |workout| workout.team_size = 2 }
+
+    assert_not_equal solo.content_fingerprint, partnered.content_fingerprint
+  end
+
   private
 
   def build_fran(name)

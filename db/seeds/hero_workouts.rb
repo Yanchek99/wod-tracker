@@ -388,6 +388,25 @@ Workout.find_or_create_by(name: 'CHAD1000x') do |workout|
 end
 
 # ==============================================================================
+# City 100
+# For time with a partner: 31 shuttle runs (7 meters down, 7 meters back); then
+# 10 rounds of 7 deadlifts, 7 hang power cleans, 7-meter overhead walking lunge
+# (105/155 lb). One partner holds the barbell in the front rack while the other
+# completes a full round, then they switch stations.
+Workout.find_or_create_by(name: 'City 100') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner. One partner holds the barbell in the front rack while the other ' \
+                  'completes a full round of the complex, then switch stations.'
+  workout.exercises.build(movement: shuttle_run, position: 1, reps: 31, notes: '7 meters down, 7 meters back.')
+  complex = workout.segments.build(rounds: 10, position: 2)
+  workout.exercises.build(movement: deadlift, segment: complex, position: 1, reps: 7, female_load: 105, male_load: 155, load_unit: :lb)
+  workout.exercises.build(movement: hang_power_clean, segment: complex, position: 2, reps: 7, female_load: 105, male_load: 155, load_unit: :lb)
+  workout.exercises.build(movement: overhead_walking_lunge, segment: complex, position: 3, reps: 1, distance: 7, distance_unit: :meter, female_load: 105, male_load: 155, load_unit: :lb)
+end
+
+# ==============================================================================
 # Clovis
 # For time: run 10 miles, 150 burpee pull-ups. Partition as needed.
 Workout.find_or_create_by(name: 'Clovis') do |workout|
@@ -761,6 +780,21 @@ Workout.find_or_create_by(name: 'Estrada') do |workout|
 end
 
 # ==============================================================================
+# Eva Strong
+# 5 rounds for time with a partner: 24 double-unders (each), 19 toes-to-bar (total),
+# 2 clean and jerks (135/205 lb, total), 400-meter run (together)
+Workout.find_or_create_by(name: 'Eva Strong') do |workout|
+  workout.rounds = 5
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner. Reps are marked “each” or “total” per movement.'
+  workout.exercises.build(movement: double_under, position: 1, reps: 24, notes: 'Each partner.')
+  workout.exercises.build(movement: toes_to_bar, position: 2, reps: 19, notes: 'Total, split between partners.')
+  workout.exercises.build(movement: clean_and_jerk, position: 3, reps: 2, female_load: 135, male_load: 205, load_unit: :lb, notes: 'Total, split between partners.')
+  workout.exercises.build(movement: run, position: 4, reps: 1, distance: 400, distance_unit: :meter, notes: 'Run together.')
+end
+
+# ==============================================================================
 # Falkel
 # AMRAP in 25 minutes: 8 handstand push-ups, 8 box jumps, 1 rope climb to 15 feet
 Workout.find_or_create_by(name: 'Falkel') do |workout|
@@ -960,6 +994,24 @@ Workout.find_or_create_by(name: 'Glen') do |workout|
   workout.exercises.build(movement: rope_climb, position: 3, reps: 10, distance: 15, distance_unit: :foot)
   workout.exercises.build(movement: run, position: 4, reps: 1, distance: 1600, distance_unit: :meter)
   workout.exercises.build(movement: burpee, position: 5, reps: 100)
+end
+
+# ==============================================================================
+# Goose
+# For time with a partner: 106 deadlifts (95/135 lb); then 7 rounds of 3 rope climbs,
+# 15 thrusters (95/135 lb), 15 kettlebell swings (53/70 lb); then a 400-meter run
+# carrying a plate (25/45 lb)
+Workout.find_or_create_by(name: 'Goose') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner.'
+  workout.exercises.build(movement: deadlift, position: 1, reps: 106, female_load: 95, male_load: 135, load_unit: :lb)
+  triplet = workout.segments.build(rounds: 7, position: 2)
+  workout.exercises.build(movement: rope_climb, segment: triplet, position: 1, reps: 3)
+  workout.exercises.build(movement: thruster, segment: triplet, position: 2, reps: 15, female_load: 95, male_load: 135, load_unit: :lb)
+  workout.exercises.build(movement: kettlebell_swing, segment: triplet, position: 3, reps: 15, female_load: 53, male_load: 70, load_unit: :lb)
+  workout.exercises.build(movement: run, position: 3, reps: 1, distance: 400, distance_unit: :meter, female_load: 25, male_load: 45, load_unit: :lb, notes: 'Carry a plate; both partners carry.')
 end
 
 # ==============================================================================
@@ -1180,6 +1232,20 @@ Workout.find_or_create_by(name: 'Hortman') do |workout|
 end
 
 # ==============================================================================
+# Horton
+# 9 rounds for time with a partner: 9 bar muscle-ups, 11 clean-and-jerks (115/155 lb),
+# 50-yard buddy carry
+Workout.find_or_create_by(name: 'Horton') do |workout|
+  workout.rounds = 9
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner.'
+  workout.exercises.build(movement: bar_muscle_up, position: 1, reps: 9)
+  workout.exercises.build(movement: clean_and_jerk, position: 2, reps: 11, female_load: 115, male_load: 155, load_unit: :lb)
+  workout.exercises.build(movement: buddy_carry, position: 3, reps: 1, distance: 150, distance_unit: :foot, notes: '50-yard buddy carry.')
+end
+
+# ==============================================================================
 # Hotshots 19
 # 6 rounds for time: 30 squats, 19 power cleans, 7 strict pull-ups, 400m run
 Workout.find_or_create_by(name: 'Hotshots 19') do |workout|
@@ -1381,6 +1447,30 @@ Workout.find_or_create_by(name: 'Josh') do |workout|
 end
 
 # ==============================================================================
+# Josh-O
+# For time with a partner: 400-meter run; 2 rounds of 44 dumbbell front squats,
+# 44 dumbbell floor presses, 44 dumbbell hang clean and jerks; 1,979-meter row;
+# 2 rounds of 44 dumbbell deadlifts, 44 dumbbell bent-over rows, 44 dumbbell lunges;
+# 400-meter run. Run together and split all other work as needed. Use two dumbbells.
+Workout.find_or_create_by(name: 'Josh-O') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner. Run together and split all other work as needed. Use two dumbbells.'
+  workout.exercises.build(movement: run, position: 1, reps: 1, distance: 400, distance_unit: :meter, notes: 'Run together.')
+  first_couplet = workout.segments.build(rounds: 2, position: 2)
+  workout.exercises.build(movement: dumbbell_front_squat, segment: first_couplet, position: 1, reps: 44)
+  workout.exercises.build(movement: dumbbell_floor_press, segment: first_couplet, position: 2, reps: 44)
+  workout.exercises.build(movement: dumbbell_hang_clean_and_jerk, segment: first_couplet, position: 3, reps: 44)
+  workout.exercises.build(movement: row, position: 3, reps: 1, distance: 1979, distance_unit: :meter)
+  second_couplet = workout.segments.build(rounds: 2, position: 4)
+  workout.exercises.build(movement: dumbbell_deadlift, segment: second_couplet, position: 1, reps: 44)
+  workout.exercises.build(movement: dumbbell_bent_over_row, segment: second_couplet, position: 2, reps: 44)
+  workout.exercises.build(movement: dumbbell_lunge, segment: second_couplet, position: 3, reps: 44)
+  workout.exercises.build(movement: run, position: 5, reps: 1, distance: 400, distance_unit: :meter, notes: 'Run together.')
+end
+
+# ==============================================================================
 # Joshie
 # 3 rounds for time: 21 dumbbell snatches (R), 21 L pull-ups, 21 dumbbell snatches (L), 21 L pull-ups
 Workout.find_or_create_by(name: 'Joshie') do |workout|
@@ -1466,6 +1556,22 @@ Workout.find_or_create_by(name: 'Kerrie') do |workout|
 end
 
 # ==============================================================================
+# Kev
+# AMRAP in 26 minutes with a partner: 6 deadlifts (205/315 lb, each), 9 bar-facing
+# burpees (synchronized), 9 bar muscle-ups (each), 55-foot partner barbell carry
+# (205/315 lb)
+Workout.find_or_create_by(name: 'Kev') do |workout|
+  workout.time = 26
+  workout.score_type = :rep
+  workout.team_size = 2
+  workout.notes = 'With a partner.'
+  workout.exercises.build(movement: deadlift, position: 1, reps: 6, female_load: 205, male_load: 315, load_unit: :lb, notes: 'Each partner.')
+  workout.exercises.build(movement: bar_facing_burpee, position: 2, reps: 9, notes: 'Synchronized.')
+  workout.exercises.build(movement: bar_muscle_up, position: 3, reps: 9, notes: 'Each partner.')
+  workout.exercises.build(movement: barbell_carry, position: 4, reps: 1, distance: 55, distance_unit: :foot, female_load: 205, male_load: 315, load_unit: :lb, notes: 'Partner barbell carry.')
+end
+
+# ==============================================================================
 # Kevin
 # 3 rounds for time: 32 deadlifts, 32 hanging hip touches (alternating), 800m running farmers carry
 Workout.find_or_create_by(name: 'Kevin') do |workout|
@@ -1505,7 +1611,21 @@ Workout.find_or_create_by(name: 'Larry') do |workout|
   workout.score_type = :time
   workout.notes = 'Use a 50-lb (♀) / 80-lb (♂) sandbag.'
   workout.exercises.build(movement: front_squat, position: 1, reps: 1, female_load: 75, male_load: 115, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 1)
+  workout.exercises.build(movement: bar_facing_burpee, position: 2, reps: 1)
+end
+
+# ==============================================================================
+# Laura
+# AMRAP in 21 minutes with a partner: 30-calorie row, 20 burpees over the rower,
+# 10 power cleans (105/155 lb). One partner works while the other rests.
+Workout.find_or_create_by(name: 'Laura') do |workout|
+  workout.time = 21
+  workout.score_type = :rep
+  workout.team_size = 2
+  workout.notes = 'With a partner; one works while the other rests.'
+  workout.exercises.build(movement: row, position: 1, reps: 1, calories: 30)
+  workout.exercises.build(movement: burpee_over_rower, position: 2, reps: 20)
+  workout.exercises.build(movement: power_clean, position: 3, reps: 10, female_load: 105, male_load: 155, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -1710,7 +1830,28 @@ Workout.find_or_create_by(name: 'Marston') do |workout|
   workout.score_type = :rep
   workout.exercises.build(movement: deadlift, position: 1, reps: 1, female_load: 275, male_load: 405, load_unit: :lb)
   workout.exercises.build(movement: toes_to_bar, position: 2, reps: 10)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 3, reps: 15)
+  workout.exercises.build(movement: bar_facing_burpee, position: 3, reps: 15)
+end
+
+# ==============================================================================
+# Martin
+# For time with a partner: 2,000-meter row, 100 deadlifts (bodyweight), 50 thrusters
+# (30/43 kg), 1,000-meter row, 100 hand-release push-ups, 50 pull-ups, 500-meter row,
+# 100 AbMat sit-ups, 100 wall-ball shots (14/20 lb)
+Workout.find_or_create_by(name: 'Martin') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner. Deadlifts at bodyweight.'
+  workout.exercises.build(movement: row, position: 1, reps: 1, distance: 2000, distance_unit: :meter)
+  workout.exercises.build(movement: deadlift, position: 2, reps: 100, notes: 'Bodyweight.')
+  workout.exercises.build(movement: thruster, position: 3, reps: 50, female_load: 30, male_load: 43, load_unit: :kg)
+  workout.exercises.build(movement: row, position: 4, reps: 1, distance: 1000, distance_unit: :meter)
+  workout.exercises.build(movement: hand_release_push_up, position: 5, reps: 100)
+  workout.exercises.build(movement: pull_up, position: 6, reps: 50)
+  workout.exercises.build(movement: row, position: 7, reps: 1, distance: 500, distance_unit: :meter)
+  workout.exercises.build(movement: abmat_sit_up, position: 8, reps: 100)
+  workout.exercises.build(movement: wall_ball_shot, position: 9, reps: 100, female_load: 14, male_load: 20, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -1745,6 +1886,27 @@ Workout.find_or_create_by(name: 'Maupin') do |workout|
 end
 
 # ==============================================================================
+# Maxim 56
+# For time with a partner. Buy-in: each partner holds a 56-second handstand hold or
+# wall sit. Then each athlete: 56 burpees, 56 flutter kicks, 56 walking lunges,
+# 56 hand-release push-ups, 56 air squats. Cash-out: 5,600-meter run.
+Workout.find_or_create_by(name: 'Maxim 56') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner.'
+  buy_in = workout.segments.build(position: 1, name: 'Buy-in')
+  workout.exercises.build(movement: handstand_hold, segment: buy_in, position: 1, reps: 1, duration_seconds: 56, notes: 'Each partner; or a 56-second wall sit.')
+  workout.exercises.build(movement: burpee, position: 2, reps: 56, notes: 'Each partner.')
+  workout.exercises.build(movement: flutter_kick, position: 3, reps: 56, notes: 'Each partner; 4-count.')
+  workout.exercises.build(movement: walking_lunge, position: 4, reps: 56, notes: 'Each partner.')
+  workout.exercises.build(movement: hand_release_push_up, position: 5, reps: 56, notes: 'Each partner.')
+  workout.exercises.build(movement: air_squat, position: 6, reps: 56, notes: 'Each partner.')
+  cash_out = workout.segments.build(position: 7, name: 'Cash-out')
+  workout.exercises.build(movement: run, segment: cash_out, position: 1, reps: 1, distance: 5600, distance_unit: :meter, notes: 'Run together.')
+end
+
+# ==============================================================================
 # Maxton
 # 13 rounds for time: 8 strict pull-ups, 26 box step-ups, 21 burpees
 Workout.find_or_create_by(name: 'Maxton') do |workout|
@@ -1754,6 +1916,25 @@ Workout.find_or_create_by(name: 'Maxton') do |workout|
   workout.exercises.build(movement: strict_pull_up, position: 1, reps: 8)
   workout.exercises.build(movement: box_step_up, position: 2, reps: 26, female_distance: 20, male_distance: 24, distance_unit: :inch)
   workout.exercises.build(movement: burpee, position: 3, reps: 21)
+end
+
+# ==============================================================================
+# McCartney
+# For time in teams of 3: 2,000-meter row, 14 dumbbell thrusters (35/50 lb),
+# 34 kettlebell swings (53/70 lb), 484 double-unders, 108 burpees, 2,000-meter row,
+# 18 deadlifts (155/225 lb)
+Workout.find_or_create_by(name: 'McCartney') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 3
+  workout.notes = 'As a 3-person team.'
+  workout.exercises.build(movement: row, position: 1, reps: 1, distance: 2000, distance_unit: :meter)
+  workout.exercises.build(movement: dumbbell_thruster, position: 2, reps: 14, female_load: 35, male_load: 50, load_unit: :lb, implement_count: 2)
+  workout.exercises.build(movement: kettlebell_swing, position: 3, reps: 34, female_load: 53, male_load: 70, load_unit: :lb)
+  workout.exercises.build(movement: double_under, position: 4, reps: 484)
+  workout.exercises.build(movement: burpee, position: 5, reps: 108)
+  workout.exercises.build(movement: row, position: 6, reps: 1, distance: 2000, distance_unit: :meter)
+  workout.exercises.build(movement: deadlift, position: 7, reps: 18, female_load: 155, male_load: 225, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -2031,11 +2212,11 @@ Workout.find_or_create_by(name: 'Omar') do |workout|
   workout.rounds = 1
   workout.score_type = :time
   workout.exercises.build(movement: thruster, position: 1, reps: 10, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 15)
+  workout.exercises.build(movement: bar_facing_burpee, position: 2, reps: 15)
   workout.exercises.build(movement: thruster, position: 3, reps: 20, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 4, reps: 25)
+  workout.exercises.build(movement: bar_facing_burpee, position: 4, reps: 25)
   workout.exercises.build(movement: thruster, position: 5, reps: 30, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 6, reps: 35)
+  workout.exercises.build(movement: bar_facing_burpee, position: 6, reps: 35)
 end
 
 # ==============================================================================
@@ -2051,6 +2232,22 @@ Workout.find_or_create_by(name: 'Otis') do |workout|
   workout.exercises.build(movement: back_squat, position: 1, reps: 1, notes: '1 1/2 body weight')
   workout.exercises.build(movement: shoulder_press, position: 2, reps: 1, notes: '3/4 body weight')
   workout.exercises.build(movement: deadlift, position: 3, reps: 1, notes: '1 1/2 body weight')
+end
+
+# ==============================================================================
+# Partner Weston
+# 5 rounds for time with a partner: 1,000-meter row, 200-meter dumbbell farmers carry,
+# 50-meter single-dumbbell waiters walk (right arm), 50-meter single-dumbbell waiters
+# walk (left arm). One partner works at a time. (35/45 lb)
+Workout.find_or_create_by(name: 'Partner Weston') do |workout|
+  workout.rounds = 5
+  workout.score_type = :time
+  workout.team_size = 2
+  workout.notes = 'With a partner; one partner works at a time.'
+  workout.exercises.build(movement: row, position: 1, reps: 1, distance: 1000, distance_unit: :meter)
+  workout.exercises.build(movement: dumbbell_farmers_carry, position: 2, reps: 1, distance: 200, distance_unit: :meter, female_load: 35, male_load: 45, load_unit: :lb, implement_count: 2)
+  workout.exercises.build(movement: dumbbell_waiters_walk, position: 3, reps: 1, distance: 50, distance_unit: :meter, female_load: 35, male_load: 45, load_unit: :lb, notes: 'Right arm.')
+  workout.exercises.build(movement: dumbbell_waiters_walk, position: 4, reps: 1, distance: 50, distance_unit: :meter, female_load: 35, male_load: 45, load_unit: :lb, notes: 'Left arm.')
 end
 
 # ==============================================================================
@@ -2169,7 +2366,7 @@ Workout.find_or_create_by(name: 'Rahoi') do |workout|
   workout.score_type = :rep
   workout.exercises.build(movement: box_jump, position: 1, reps: 12, female_distance: 20, male_distance: 24, distance_unit: :inch)
   workout.exercises.build(movement: thruster, position: 2, reps: 6, female_load: 65, male_load: 95, load_unit: :lb)
-  workout.exercises.build(movement: over_the_bar_burpee, position: 3, reps: 6)
+  workout.exercises.build(movement: bar_facing_burpee, position: 3, reps: 6)
 end
 
 # ==============================================================================
@@ -2335,6 +2532,26 @@ Workout.find_or_create_by(name: 'Ryan') do |workout|
 end
 
 # ==============================================================================
+# Ryan Comas
+# For time as a 3-person team: 1,065-foot versa climb (or 1,065-meter row or ski);
+# then 10 rounds of 13 deadlifts, 13 pull-ups, 13-calorie row, 13 back squats,
+# 13 burpees; then 1,065-foot versa climb (or 1,065-meter row or ski). (165/225 lb)
+Workout.find_or_create_by(name: 'Ryan Comas') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 3
+  workout.notes = 'As a 3-person team.'
+  workout.exercises.build(movement: row, position: 1, reps: 1, distance: 1065, distance_unit: :meter, notes: '1,065-foot versa climb, 1,065-meter row, or ski.')
+  rounds = workout.segments.build(rounds: 10, position: 2)
+  workout.exercises.build(movement: deadlift, segment: rounds, position: 1, reps: 13, female_load: 165, male_load: 225, load_unit: :lb)
+  workout.exercises.build(movement: pull_up, segment: rounds, position: 2, reps: 13)
+  workout.exercises.build(movement: row, segment: rounds, position: 3, reps: 1, calories: 13)
+  workout.exercises.build(movement: back_squat, segment: rounds, position: 4, reps: 13, female_load: 165, male_load: 225, load_unit: :lb)
+  workout.exercises.build(movement: burpee, segment: rounds, position: 5, reps: 13)
+  workout.exercises.build(movement: row, position: 3, reps: 1, distance: 1065, distance_unit: :meter, notes: '1,065-foot versa climb, 1,065-meter row, or ski.')
+end
+
+# ==============================================================================
 # Ryan SO
 # For time: 1,600m run; 4 rounds (9 power cleans, 2 strict pull-ups, 14 burpees);
 # 3 rounds (13 box jumps, 13 push-ups, 50 double-unders); 1,600m run
@@ -2393,6 +2610,25 @@ Workout.find_or_create_by(name: 'Schmalls') do |workout|
   workout.exercises.build(movement: kettlebell_swing, segment: rounds, position: 4, reps: 20, female_load: 35, male_load: 53, load_unit: :lb)
   workout.exercises.build(movement: handstand_push_up, segment: rounds, position: 5, reps: 10)
   workout.exercises.build(movement: run, position: 3, reps: 1, distance: 800, distance_unit: :meter)
+end
+
+# ==============================================================================
+# Scooter
+# On a 35-minute clock with a partner: AMRAP in 30 minutes of 30 double-unders,
+# 15 pull-ups, 15 push-ups, 100-meter sprint; then 5 minutes to find a 1-rep-max
+# partner deadlift. One partner works while the other rests, switching each round.
+Workout.find_or_create_by(name: 'Scooter') do |workout|
+  workout.score_type = :weight
+  workout.team_size = 2
+  workout.notes = 'With a partner; one works while the other rests, switching after each full round. ' \
+                  'Score the 1-rep-max partner deadlift.'
+  amrap = workout.segments.build(position: 1, name: '0:00-30:00 AMRAP', time_seconds: 1800)
+  workout.exercises.build(movement: double_under, segment: amrap, position: 1, reps: 30)
+  workout.exercises.build(movement: pull_up, segment: amrap, position: 2, reps: 15)
+  workout.exercises.build(movement: push_up, segment: amrap, position: 3, reps: 15)
+  workout.exercises.build(movement: run, segment: amrap, position: 4, reps: 1, distance: 100, distance_unit: :meter, notes: 'Sprint.')
+  max = workout.segments.build(position: 2, name: '30:00-35:00 find a 1-rep-max partner deadlift', time_seconds: 300)
+  workout.exercises.build(movement: deadlift, segment: max, position: 1, reps: 1, duration_seconds: 300, load_unit: :lb, notes: 'Partner deadlift; record the max load found.')
 end
 
 # ==============================================================================
@@ -2698,6 +2934,28 @@ Workout.find_or_create_by(name: 'Tiff') do |workout|
   workout.exercises.build(movement: chest_to_bar_pull_up, position: 2, reps: 11)
   workout.exercises.build(movement: hang_squat_clean, position: 3, reps: 7, female_load: 105, male_load: 155, load_unit: :lb)
   workout.exercises.build(movement: push_press, position: 4, reps: 7, female_load: 105, male_load: 155, load_unit: :lb)
+end
+
+# ==============================================================================
+# Timothy Helton
+# For time as a 3-person team: 2,364-meter row; then 10 rounds of 49 wall-ball shots,
+# 26 pull-ups, 200-meter run, 8 ring muscle-ups, 40 deadlifts; then build to a heavy
+# single back squat for each team member.
+# (♀ 14-lb ball to 9 ft, 105-lb deadlift; ♂ 20-lb ball to 10 ft, 155-lb deadlift)
+Workout.find_or_create_by(name: 'Timothy Helton') do |workout|
+  workout.rounds = 1
+  workout.score_type = :time
+  workout.team_size = 3
+  workout.notes = 'As a 3-person team. Finish by building to a heavy single back squat for each team member.'
+  workout.exercises.build(movement: row, position: 1, reps: 1, distance: 2364, distance_unit: :meter)
+  rounds = workout.segments.build(rounds: 10, position: 2)
+  workout.exercises.build(movement: wall_ball_shot, segment: rounds, position: 1, reps: 49, female_load: 14, male_load: 20, load_unit: :lb, female_distance: 9, male_distance: 10, distance_unit: :foot)
+  workout.exercises.build(movement: pull_up, segment: rounds, position: 2, reps: 26)
+  workout.exercises.build(movement: run, segment: rounds, position: 3, reps: 1, distance: 200, distance_unit: :meter)
+  workout.exercises.build(movement: ring_muscle_up, segment: rounds, position: 4, reps: 8)
+  workout.exercises.build(movement: deadlift, segment: rounds, position: 5, reps: 40, female_load: 105, male_load: 155, load_unit: :lb)
+  finisher = workout.segments.build(position: 3, name: 'Build to a heavy single back squat (each team member)')
+  workout.exercises.build(movement: back_squat, segment: finisher, position: 1, reps: 1, load_unit: :lb, notes: 'Each team member builds to a heavy single; record the load.')
 end
 
 # ==============================================================================

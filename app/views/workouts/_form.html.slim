@@ -11,6 +11,7 @@
     .col-sm-4 data-ladder-fields-target="row" hidden=ladder_hidden
       = f.input :ladder_step, label: 'Ascending ladder step', hint: "reps added each round (start is each exercise's reps)", input_html: { data: { 'ladder-fields-target': 'step input', action: 'input->ladder-fields#toggle' } }
     .col-12 = f.input :score_type, collection: Metric.workout_measurements, label: 'For'
+    .col-sm-4 = f.input :team_size, label: 'Athletes (team size)', hint: 'leave blank for an individual workout'
     .col-12 = f.input :time_cap
     .col-12
       = f.label :notes, class: 'form-label'

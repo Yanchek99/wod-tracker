@@ -84,6 +84,7 @@ module WorkoutFingerprint
       interval:,
       time_cap_seconds:,
       ladder_step:,
+      team_size:,
       parts: parts.map { |part| canonical_part(part) }
     }
   end

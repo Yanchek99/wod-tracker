@@ -3,7 +3,7 @@ hspu:
   name: Handstand Push Up
   family: 1
   functions:
-    - 7
+    - 2
   skill_level: 2
 
 pistol:
@@ -25,21 +25,20 @@ pushup:
   name: Push Up
   family: 1
   functions:
-    - 10
+    - 4
   skill_level: 0
 
 run:
   name: Run
   family: 0
-  functions:
-    - 6
+  functions: []
   skill_level: 0
 
 row:
   name: Row
   family: 0
   functions:
-    - 11
+    - 5
   equipment: 8
   skill_level: 0
 

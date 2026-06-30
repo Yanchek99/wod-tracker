@@ -54,9 +54,9 @@ history and future scaling can query movement similarity without parsing names.
 - Functions track the movement functions that make up the movement, following
   CrossFit's programming guidance to consider movement functions and modality:
   squat, hinge, vertical push, vertical pull, horizontal push, horizontal pull,
-  trunk flexion, trunk extension, trunk rotation, carry, locomotion, inversion,
-  jump, or rest. Compound movements should list each meaningful component rather
-  than using a generic mixed function.
+  trunk flexion, or trunk extension. Compound movements should list each
+  meaningful component rather than using a generic mixed function. Leave
+  functions blank when the sourced function vocabulary does not apply cleanly.
   Source: https://www.crossfit.com/pro-coach/programming-basics-part-1
 - Equipment tracks the primary implement or station when one is required; it is
   blank when no equipment or station applies.

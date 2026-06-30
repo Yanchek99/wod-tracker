@@ -89,6 +89,26 @@ into an existing one's content yields a single workout, with the edit redirected
 the survivor. Free-text notes are excluded from the fingerprint; canonical load
 identity (lb/kg/pood) is the remaining gap (see #1684).
 
+## 2026-06-29: Find-A-Max Prescriptions Are Weight-Scored Load Tests
+
+A workout part that asks the athlete to find an N-rep max or build to a heavy
+single is modeled as a weight-scored exercise with prescribed reps,
+`duration_seconds`, a load unit, and no fixed prescribed load. The reps define
+the successful attempt requirement; the duration defines the window; the empty
+load with a unit means the athlete must record the load found during that window.
+
+Single-movement max-finding workouts can derive the workout score from the logged
+load once the prescribed reps are completed. Multi-movement max-finding workouts
+preserve each movement's logged load and keep the workout-level score explicit,
+because the published scoring rule may combine loads differently by workout.
+
+Rationale: this reuses the existing direct prescription columns and weight score
+type instead of adding a parallel prescription model. The duration belongs on the
+exercise because the ML-relevant logged fact is that the athlete completed the
+prescribed reps at a recorded load within that exercise's time window. It also
+keeps workouts such as Dragon seedable before the app has a richer multi-component
+score model.
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time

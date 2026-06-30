@@ -51,6 +51,26 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_not workouts(:amrap_couplet).set_based_lifting?
   end
 
+  test 'identifies timed max-finding workouts' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+
+    assert_predicate workout, :max_finding?
+    assert_predicate workout, :calculated_lifting_score?
+  end
+
+  test 'identifies multi-exercise max-finding workouts without auto-combining scores' do
+    workout = Workout.new(name: 'Dragon', score_type: :weight)
+    workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+    workout.exercises.build(movement: movements(:thruster), position: 2, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+
+    assert_predicate workout, :max_finding?
+    assert_not_predicate workout, :calculated_lifting_score?
+  end
+
   test 'does not identify rep-scored rounds with load-bearing exercises as set-based lifting' do
     workout = workouts(:back_squat_5x5)
     workout.update!(score_type: :rep)

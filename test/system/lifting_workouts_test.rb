@@ -17,7 +17,7 @@ class LiftingWorkoutsTest < ApplicationSystemTestCase
     click_on 'Log'
 
     assert_no_selector '#log_score_value'
-    assert_text 'Score will be calculated from the heaviest successful set.'
+    assert_text 'Score will be calculated from the heaviest successful load.'
     assert_selector '.card.mb-3', count: 5
     movement_logs = all('.card.mb-3')
     movement_logs.each do |movement_log|

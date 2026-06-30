@@ -71,4 +71,35 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 'lb', log.score_type
     assert_equal 145, log.score_value
   end
+
+  test 'calculates single max-finding score from a successful logged load' do
+    workout = Workout.create!(name: 'Back Squat Max', score_type: :weight)
+    workout.exercises.create!(movement: movements(:back_squat), position: 1, reps: 4,
+                              duration_seconds: 240, load_unit: :lb)
+    log = workout.logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    assert_equal 1, log.movement_logs.size
+    assert_equal 4, log.movement_logs.first.reps
+    assert_nil log.movement_logs.first.duration_seconds
+    assert_equal 'lb', log.movement_logs.first.load_unit
+
+    log.movement_logs.first.load = 405
+
+    assert log.valid?
+    assert_equal 'lb', log.score_type
+    assert_equal 405, log.score_value
+  end
+
+  test 'does not calculate single max-finding score without completed prescribed reps' do
+    workout = Workout.create!(name: 'Back Squat Max', score_type: :weight)
+    workout.exercises.create!(movement: movements(:back_squat), position: 1, reps: 4,
+                              duration_seconds: 240, load_unit: :lb)
+    log = workout.logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+    log.movement_logs.first.assign_attributes(reps: 3, load: 405)
+
+    assert log.valid?
+    assert_nil log.score_value
+  end
 end

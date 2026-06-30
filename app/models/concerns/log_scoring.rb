@@ -33,7 +33,7 @@ module LogScoring
   end
 
   def calculate_set_based_lifting_score
-    return unless workout&.set_based_lifting? && score_measurement == 'weight'
+    return unless workout&.calculated_lifting_score? && score_measurement == 'weight'
 
     score = workout.lifting_score(movement_logs)
     return unless score

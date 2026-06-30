@@ -77,7 +77,7 @@ class Log < ApplicationRecord
   end
 
   def metrics_for_movement_log(exercise)
-    metrics = exercise.prescription_metrics
+    metrics = recording_metrics_for(exercise)
     return ordered_recording_metrics(metrics) unless workout.rep_scored_amrap?
 
     component = exercise.score_component
@@ -90,5 +90,11 @@ class Log < ApplicationRecord
 
   def ordered_recording_metrics(metrics)
     metrics.sort_by { |metric| Metric.recording_order(metric.measurement) }
+  end
+
+  def recording_metrics_for(exercise)
+    return exercise.prescription_metrics unless exercise.max_load_test?
+
+    exercise.prescription_metrics.reject { |metric| metric.seconds? || metric.time? }
   end
 end

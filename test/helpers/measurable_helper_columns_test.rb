@@ -38,6 +38,14 @@ class MeasurableHelperColumnsTest < ActionView::TestCase
     assert_equal 'max reps Toes to Bar', measurable_message(exercise)
   end
 
+  test 'renders a max-load test from columns' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    exercise = workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                                       duration_seconds: 240, load_unit: :lb)
+
+    assert_equal '4:00 to find a 4-rep max Back Squat', measurable_message(exercise)
+  end
+
   test 'prefers direct columns over legacy metrics when both are present' do
     exercise = exercises(:fran_pullup) # carries a rep metric in fixtures
     exercise.assign_attributes(reps: 5)

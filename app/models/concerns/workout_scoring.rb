@@ -14,6 +14,14 @@ module WorkoutScoring
       score_measurement == 'weight'
   end
 
+  def max_finding?
+    score_measurement == 'weight' && top_level_max_finding?
+  end
+
+  def calculated_lifting_score?
+    set_based_lifting? || single_max_finding?
+  end
+
   def exercises_for_log_recording
     return exercises unless set_based_lifting?
 
@@ -61,6 +69,22 @@ module WorkoutScoring
       rounds.positive? &&
       time.blank? &&
       interval.blank?
+  end
+
+  def top_level_max_finding?
+    max_finding_exercises?(top_level_exercises)
+  end
+
+  def single_max_finding?
+    max_finding? && max_finding_exercises.one?
+  end
+
+  def max_finding_exercises
+    exercises.select(&:max_load_prescription?)
+  end
+
+  def max_finding_exercises?(exercises)
+    exercises.any? && exercises.all?(&:max_load_prescription?)
   end
 
   def fixed_amrap_reps_per_round

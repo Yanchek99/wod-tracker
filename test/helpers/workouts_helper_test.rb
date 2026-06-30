@@ -16,6 +16,14 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal '5 sets for load', workout_objective(workout.reload)
   end
 
+  test 'renders timed max-finding workouts as max load clocks' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+
+    assert_equal 'For load', workout_objective(workout)
+  end
+
   test 'renders fixed-rep amraps as rounds and reps' do
     assert_equal 'As many rounds and reps as possible in 10 minutes', workout_objective(workouts(:amrap_couplet))
   end

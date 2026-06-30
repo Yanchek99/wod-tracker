@@ -6,11 +6,16 @@ module MeasurableHelper
   def measurable_movement_msg(measurable)
     rep_metric = measurable.prescription_metrics.find(&:rep?)
     duration_metric = duration_metric(measurable)
+    return max_load_test_msg(measurable, rep_metric, duration_metric) if measurable.respond_to?(:max_load_test?) && measurable.max_load_test?
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
     lead_metric = leading_work_metric(measurable)
     return leading_work_movement_msg(measurable, lead_metric) if lead_metric
 
+    rep_movement_msg(measurable, rep_metric)
+  end
+
+  def rep_movement_msg(measurable, rep_metric)
     return measurable.movement.name unless rep_metric
 
     movement_name = measurable.movement.name
@@ -48,9 +53,11 @@ module MeasurableHelper
 
   def visible_metric?(metric) = metric.value.present? || metric.sex_specific?
 
-  def duration_metric(measurable)
-    measurable.prescription_metrics.find { |metric| duration_metric?(metric) && metric.value.present? }
+  def max_load_test_msg(measurable, rep_metric, duration_metric)
+    "#{duration_metric_msg(duration_metric)} to find a #{rep_metric.value}-rep max #{measurable.movement.name}"
   end
+
+  def duration_metric(measurable) = measurable.prescription_metrics.find { |metric| duration_metric?(metric) && metric.value.present? }
 
   def duration_metric?(metric) = metric.seconds? || metric.time?
 
@@ -73,11 +80,7 @@ module MeasurableHelper
     "#{value}#{separator}#{unit}"
   end
 
-  def grouped_metric_unit(metric)
-    return 'ft' if metric.foot?
-
-    metric.measurement.singularize
-  end
+  def grouped_metric_unit(metric) = metric.foot? ? 'ft' : metric.measurement.singularize
 
   def pluralize_movement?(metric)
     return metric.value > 1 if metric.value.present?

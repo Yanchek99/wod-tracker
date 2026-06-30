@@ -91,17 +91,18 @@ identity (lb/kg/pood) is the remaining gap (see #1684).
 
 ## 2026-06-20: Store Movement Taxonomy On Movements
 
-Movement metadata is stored directly on `Movement` using one primary family,
-one equipment class, one skill level, and a set of component movement functions.
+Movement metadata is stored on `Movement` using one primary family, one
+equipment class, one skill level, and role-based movement function assignments.
 Substitutions live in a directed join table with an easier/harder/lateral
 direction.
 
 Rationale: future scaling needs queryable movement similarity and directed
 substitution options before it can choose individualized variations. Family,
-equipment, and skill level stay scalar, while functions are multi-valued so
+equipment, and skill level stay scalar, while functions are role assignments so
 compound movements can expose each meaningful component without a generic mixed
-function. External load is inferred from the weightlifting family and
-equipment/prescription data rather than duplicated as a movement-level boolean.
+function or hard-to-maintain contribution weights. External load is inferred from
+the weightlifting family and equipment/prescription data rather than duplicated
+as a movement-level boolean.
 
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 

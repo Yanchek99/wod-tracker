@@ -51,12 +51,14 @@ history and future scaling can query movement similarity without parsing names.
 - Family tracks the movement's CrossFit modality: monostructural, gymnastics,
   weightlifting, or rest. Mixed modality belongs to workouts, not individual
   movements.
-- Functions track the movement functions that make up the movement, following
-  CrossFit's programming guidance to consider movement functions and modality:
-  squat, hinge, vertical push, vertical pull, horizontal push, horizontal pull,
-  trunk flexion, or trunk extension. Compound movements should list each
-  meaningful component rather than using a generic mixed function. Leave
-  functions blank when the sourced function vocabulary does not apply cleanly.
+- Function assignments track the movement functions that make up the movement,
+  following CrossFit's programming guidance to consider movement functions and
+  modality: squat, hinge, vertical push, vertical pull, horizontal push,
+  horizontal pull, trunk flexion, or trunk extension. Each assignment has a
+  primary, secondary, or tertiary role so compound movements can preserve
+  distinct phases without pretending the contribution is mathematically precise.
+  Leave functions blank when the sourced function vocabulary does not apply
+  cleanly.
   Source: https://www.crossfit.com/pro-coach/programming-basics-part-1
 - Equipment tracks the primary implement or station when one is required; it is
   blank when no equipment or station applies.
@@ -66,6 +68,7 @@ External load is inferred from the weightlifting family and prescription data
 rather than stored as a separate movement flag.
 
 Substitutions are directed from an original movement to a substitute and marked
-as easier, harder, or lateral. Substitutions should preserve similar movement
-function and range of motion when possible; movement substitution comes after
+as easier, harder, or lateral. Substitutions should preserve similar primary
+movement functions and range of motion when possible, while secondary functions
+can help distinguish closer substitutions; movement substitution comes after
 load, distance, and rep adjustments when preserving a workout stimulus.

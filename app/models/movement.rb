@@ -42,6 +42,14 @@ class Movement < ApplicationRecord
     advanced: 2
   }.freeze
 
+  FUNCTION_ROLES = {
+    primary: 0,
+    secondary: 1,
+    tertiary: 2
+  }.freeze
+
+  include MovementFunctionAssignable
+
   has_many :exercises, dependent: :destroy
   has_many :movement_logs, dependent: :destroy
   has_many :movement_substitutions, dependent: :destroy
@@ -60,22 +68,30 @@ class Movement < ApplicationRecord
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   scope :supporting_implement_count, -> { where('name ~* ?', IMPLEMENT_COUNT_NAME_PATTERN.source) }
-  scope :with_function, ->(function) { where('? = ANY(functions)', FUNCTIONS.fetch(function.to_sym)) }
-
-  FUNCTIONS.each_key do |function_name|
-    define_method(:"function_#{function_name}?") { function?(function_name) }
-  end
-
-  def functions=(values)
-    super(Array(values).filter_map { |value| self.class.function_value(value) })
-  end
-
-  def function?(function)
-    functions.include?(self.class.function_value(function))
-  end
 
   def self.function_value(function)
     function.is_a?(Symbol) || function.is_a?(String) ? FUNCTIONS.fetch(function.to_sym) : function
+  end
+
+  def self.function_name(function)
+    function.is_a?(Symbol) || function.is_a?(String) ? function.to_s : FUNCTIONS.key(function).to_s
+  end
+
+  def self.role_value(role)
+    role.is_a?(Symbol) || role.is_a?(String) ? FUNCTION_ROLES.fetch(role.to_sym) : role
+  end
+
+  def self.normalize_function_roles(role_map)
+    role_map.flat_map do |role, functions|
+      Array(functions).filter_map do |function|
+        next if function.blank?
+
+        {
+          movement_function: function_value(function),
+          role: role_value(role)
+        }
+      end
+    end
   end
 
   def supports_implement_count?

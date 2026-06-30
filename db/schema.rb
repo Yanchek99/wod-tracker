@@ -94,6 +94,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
     t.index ["workout_id"], name: "index_logs_on_workout_id"
   end
 
+  create_table "movement_function_assignments", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "movement_id", null: false
+    t.integer "movement_function", null: false
+    t.integer "role", null: false
+    t.datetime "updated_at", null: false
+    t.index ["movement_function"], name: "index_movement_function_assignments_on_movement_function"
+    t.index ["movement_id", "movement_function"], name: "idx_movement_function_assignments_unique", unique: true
+    t.index ["movement_id"], name: "index_movement_function_assignments_on_movement_id"
+    t.index ["role"], name: "index_movement_function_assignments_on_role"
+  end
+
   create_table "movement_logs", force: :cascade do |t|
     t.integer "calories"
     t.datetime "created_at", precision: nil, null: false
@@ -128,13 +140,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
     t.integer "equipment"
     t.integer "family"
     t.string "name"
-    t.integer "functions", default: [], null: false, array: true
     t.integer "skill_level"
     t.datetime "updated_at", precision: nil, null: false
     t.index ["equipment"], name: "index_movements_on_equipment"
     t.index ["family"], name: "index_movements_on_family"
     t.index ["name"], name: "index_movements_on_name", unique: true
-    t.index ["functions"], name: "index_movements_on_functions", using: :gin
     t.index ["skill_level"], name: "index_movements_on_skill_level"
   end
 
@@ -343,6 +353,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
   add_foreign_key "exercises", "movements"
   add_foreign_key "exercises", "segments"
   add_foreign_key "exercises", "workouts"
+  add_foreign_key "movement_function_assignments", "movements"
   add_foreign_key "movement_logs", "logs"
   add_foreign_key "movement_logs", "movements"
   add_foreign_key "movement_substitutions", "movements"

@@ -33,6 +33,8 @@ class MovementTest < ActiveSupport::TestCase
     assert thruster.family_weightlifting?
     assert thruster.function_squat?
     assert thruster.function_vertical_push?
+    assert_equal 'primary', thruster.function_role(:squat)
+    assert_equal 'secondary', thruster.function_role(:vertical_push)
     assert thruster.equipment_barbell?
     assert thruster.skill_level_intermediate?
   end
@@ -41,6 +43,12 @@ class MovementTest < ActiveSupport::TestCase
     assert_includes Movement.with_function(:vertical_push), movements(:thruster)
     assert_includes Movement.with_function(:squat), movements(:thruster)
     assert_not_includes Movement.with_function(:vertical_pull), movements(:thruster)
+  end
+
+  test 'queries movements by component function role' do
+    assert_includes Movement.with_function_role(:squat, :primary), movements(:thruster)
+    assert_includes Movement.with_function_role(:vertical_push, :secondary), movements(:thruster)
+    assert_not_includes Movement.with_function_role(:vertical_push, :primary), movements(:thruster)
   end
 
   test 'finds movements in the same family' do

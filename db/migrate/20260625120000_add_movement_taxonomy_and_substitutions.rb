@@ -1,12 +1,12 @@
 class AddMovementTaxonomyAndSubstitutions < ActiveRecord::Migration[8.1]
   def change
     add_column :movements, :family, :integer
-    add_column :movements, :patterns, :integer, array: true, default: [], null: false
+    add_column :movements, :functions, :integer, array: true, default: [], null: false
     add_column :movements, :equipment, :integer
     add_column :movements, :skill_level, :integer
 
     add_index :movements, :family
-    add_index :movements, :patterns, using: :gin
+    add_index :movements, :functions, using: :gin
     add_index :movements, :equipment
     add_index :movements, :skill_level
 

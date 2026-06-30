@@ -10,7 +10,7 @@ class Movement < ApplicationRecord
     rest: 3
   }.freeze
 
-  PATTERNS = {
+  FUNCTIONS = {
     squat: 0,
     hinge: 1,
     vertical_push: 2,
@@ -66,22 +66,22 @@ class Movement < ApplicationRecord
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   scope :supporting_implement_count, -> { where('name ~* ?', IMPLEMENT_COUNT_NAME_PATTERN.source) }
-  scope :with_pattern, ->(pattern) { where('? = ANY(patterns)', PATTERNS.fetch(pattern.to_sym)) }
+  scope :with_function, ->(function) { where('? = ANY(functions)', FUNCTIONS.fetch(function.to_sym)) }
 
-  PATTERNS.each_key do |pattern_name|
-    define_method(:"pattern_#{pattern_name}?") { pattern?(pattern_name) }
+  FUNCTIONS.each_key do |function_name|
+    define_method(:"function_#{function_name}?") { function?(function_name) }
   end
 
-  def patterns=(values)
-    super(Array(values).filter_map { |value| self.class.pattern_value(value) })
+  def functions=(values)
+    super(Array(values).filter_map { |value| self.class.function_value(value) })
   end
 
-  def pattern?(pattern)
-    patterns.include?(self.class.pattern_value(pattern))
+  def function?(function)
+    functions.include?(self.class.function_value(function))
   end
 
-  def self.pattern_value(pattern)
-    pattern.is_a?(Symbol) || pattern.is_a?(String) ? PATTERNS.fetch(pattern.to_sym) : pattern
+  def self.function_value(function)
+    function.is_a?(Symbol) || function.is_a?(String) ? FUNCTIONS.fetch(function.to_sym) : function
   end
 
   def supports_implement_count?

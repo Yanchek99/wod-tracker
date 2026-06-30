@@ -98,9 +98,9 @@ direction.
 
 Rationale: future scaling needs queryable movement similarity and directed
 substitution options before it can choose individualized variations. Family,
-equipment, and skill level stay scalar, while patterns are multi-valued movement functions so
+equipment, and skill level stay scalar, while functions are multi-valued so
 compound movements can expose each meaningful component without a generic mixed
-pattern. External load is inferred from the weightlifting family and
+function. External load is inferred from the weightlifting family and
 equipment/prescription data rather than duplicated as a movement-level boolean.
 
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
@@ -139,7 +139,7 @@ Fixed multi-week blocks run counter to CrossFit's constantly-varied prescription
 and individualized scaling is intended to remove the need for separate tracks.
 
 Rationale: documenting the concepts and their preferred mapping to existing models
-first keeps later implementation aligned with current patterns (metrics,
+first keeps later implementation aligned with current functions (metrics,
 exercises, schedules, subscriptions) and avoids parallel structures.
 
 ## 2026-06-05: Scope Exercise Positions to Their Workout Part

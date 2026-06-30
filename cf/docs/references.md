@@ -12,6 +12,17 @@ Use this document as the authoritative reference.
 Source:
 https://library.crossfit.com/free/pdf/CFJ_English_L2_TrainingGuide.pdf
 
+## CrossFit Programming Basics Articles
+
+Sources:
+
+- https://www.crossfit.com/pro-coach/programming-basics-part-1
+- https://www.crossfit.com/pro-coach/programming-basics-part-2
+
+Use these as practical coaching references for workout-level programming,
+variance variables, intensity-preserving workout traits, look-back planning,
+template development, targeted blocks, and benchmark-based evaluation.
+
 ## CrossFit Hero Workouts
 
 Source:

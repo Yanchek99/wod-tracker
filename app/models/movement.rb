@@ -11,16 +11,20 @@ class Movement < ApplicationRecord
   }.freeze
 
   PATTERNS = {
-    lower_body_press: 0,
-    lower_body_pull: 1,
-    upper_body_press: 2,
-    upper_body_pull: 3,
+    squat: 0,
+    hinge: 1,
+    vertical_push: 2,
+    vertical_pull: 3,
     carry: 4,
-    rotation: 5,
+    trunk_flexion: 5,
     locomotion: 6,
     inversion: 7,
     jump: 8,
-    rest: 9
+    rest: 9,
+    horizontal_push: 10,
+    horizontal_pull: 11,
+    trunk_extension: 12,
+    trunk_rotation: 13
   }.freeze
 
   EQUIPMENT = {

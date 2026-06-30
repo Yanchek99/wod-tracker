@@ -25,7 +25,7 @@ pushup:
   name: Push Up
   family: 1
   patterns:
-    - 2
+    - 10
   skill_level: 0
 
 run:
@@ -39,7 +39,7 @@ row:
   name: Row
   family: 0
   patterns:
-    - 3
+    - 11
   equipment: 8
   skill_level: 0
 

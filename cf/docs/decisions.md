@@ -1,5 +1,41 @@
 # Decisions
 
+## 2026-06-30: Partner/Team Workouts Are A team_size Count Plus Notes
+
+Some workouts define their work as shared across multiple athletes — a partner or
+team splits a total, performs synchronized reps, alternates "one works while one
+rests", or carries a buddy. The 14 such Hero workouts (City 100, Eva Strong,
+Goose, Horton, Josh-O, Kev, Laura, Martin, Maxim 56, McCartney, Partner Weston,
+Ryan Comas, Scooter, Timothy Helton) could not be seeded faithfully without a way
+to say "this is shared work" (#1697).
+
+The only structural addition is `workouts.team_size` (integer, nullable): `nil` is
+an ordinary individual workout, `2` is a partner workout, `3+` a team of N. It
+participates in the content fingerprint, so a partner version is a distinct
+workout from a content-identical solo one rather than being deduped into it.
+
+The choreography itself — total-vs-per-athlete reps, synchronized movements,
+alternating/"one works one rests" stations, buddy carries — is **not** modeled as
+new structured columns. It lives in `Segment#name`/`Segment#notes` and
+`Exercise#notes` and renders through the existing name/notes fallbacks, mirroring
+the event-triggered-penalty decision below. Seeded rep counts transcribe the
+published Hero-WOD numbers as written; `team_size` plus notes convey whether a
+count is shared, per-athlete, or synchronized.
+
+Logging is unchanged: a partner/team workout is logged once as the team's combined
+result (its time or total reps) through the existing `Log`/`MovementLog`, with no
+per-athlete schema. `team_size` is the feature that makes that score
+interpretable.
+
+Rationale: precise prescription structure is deliberately low-stakes here. The
+app's individualized scaling is intended to come from machine learning over logged
+history (see `programming.md`), not from a richly-structured partner prescription.
+ML can normalize a combined team result by `team_size` (e.g. score-per-athlete) or
+learn the team-size effect directly, so a single team log plus a `team_size`
+feature is a usable training signal without splitting work per athlete. Adding one
+count and reusing `Segment`/`Exercise` notes keeps these workouts seedable and
+loggable today without a parallel multi-athlete model.
+
 ## 2026-06-21: Model Event-Triggered Penalties as a Named Segment
 
 Some workouts attach work that is triggered by an event rather than sequenced

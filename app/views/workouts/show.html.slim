@@ -12,7 +12,10 @@
         b Edited:&nbsp;
         i #{local_time_ago(@workout.updated_at)}
   .row
-    p.col #{workout_objective @workout}
+    p.col
+      - if @workout.team?
+        span.badge.bg-secondary.me-2 = team_objective @workout
+      span = workout_objective @workout
     .col.text-end
       = link_to edit_workout_path(@workout)
         i.fas.fa-edit

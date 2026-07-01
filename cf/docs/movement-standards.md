@@ -19,6 +19,21 @@ When a movement has multiple measurable properties, model each one separately.
 For example, a wall-ball shot rendered as `Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)`
 should use one `lb` metric and one `foot` metric.
 
+## Burpee Over-Bar Standards
+
+Burpees that go over a barbell come in two source standards, modeled as distinct
+movements:
+
+- `Bar-facing Burpee` — the prescription names a *bar-facing* burpee, requiring the
+  athlete to face the bar and jump over it forward (e.g. Omar, Open 14.5).
+- `Over the bar Burpee` — the prescription says *burpees over the bar* without
+  specifying orientation. The athlete may go over however they choose, bar-facing
+  or lateral (e.g. Buriak, Open 26.3), so this is the permissive/generic movement.
+
+Select the movement from the source wording: only use `Bar-facing Burpee` when the
+prescription explicitly says bar-facing; an unqualified "over the bar" keeps the
+generic `Over the bar Burpee`.
+
 ## Load-Like Measurements
 
 `lb`, `kg`, and `weight` are load-bearing measurements. Numeric `lb` and `kg`

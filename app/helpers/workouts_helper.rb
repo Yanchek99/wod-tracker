@@ -17,6 +17,14 @@ module WorkoutsHelper
     "#{workout.interval} for #{workout.score_measurement}"
   end
 
+  # Short descriptor for a shared-work workout: "Partner" for two athletes,
+  # "Team of N" for more. nil for an ordinary individual workout.
+  def team_objective(workout)
+    return unless workout.team?
+
+    workout.partner? ? 'Partner' : "Team of #{workout.team_size}"
+  end
+
   def generate_workout_name
     "#{Current.user.email.first(2).upcase}-#{Time.current.strftime('%m%d%g-%H%M')}"
   end

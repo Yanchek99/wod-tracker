@@ -20,6 +20,8 @@ class Workout < ApplicationRecord
   validates :name, :score_type, presence: true
   validates :ladder_step,
             numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :team_size,
+            numericality: { only_integer: true, greater_than: 1 }, allow_nil: true
 
   def self.search_by_name(name)
     return all unless name
@@ -64,6 +66,16 @@ class Workout < ApplicationRecord
 
   def interval?
     interval&.present?
+  end
+
+  # Work is shared across multiple athletes (a partner or team workout). team_size
+  # is the number of athletes; nil is an ordinary individual workout.
+  def team?
+    team_size.present?
+  end
+
+  def partner?
+    team_size == 2
   end
 
   def logged?(user)

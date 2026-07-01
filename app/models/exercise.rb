@@ -41,10 +41,6 @@ class Exercise < ApplicationRecord
     nil
   end
 
-  def load_bearing?
-    prescription_metrics.any? { |metric| Metric::LOAD_MEASUREMENTS.include?(metric.measurement) }
-  end
-
   # Rides the workout's ascending ladder. Every exercise in a ladder workout participates unless it
   # is flagged constant (ladder_exempt), e.g. a fixed walking lunge or shuttle run.
   def ladder_participant?

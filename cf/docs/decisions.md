@@ -57,7 +57,19 @@ correctly — so no new column or "penalty"/"condition" concept is needed.
 
 ## 2026-06-18: Prescribed Load Identity Is A Canonical Magnitude, Not (Value, Unit)
 
-Decision recorded for a follow-up issue; not yet implemented.
+Implemented 2026-07-01 (#1684). Loads are stored canonically in **pounds**; lb/kg/pood
+are input/display conventions normalized through the source-confirmed table in
+`load-and-distance-equivalence.md`. The per-record `load_unit` column and enum were
+removed; a `load_bearing` boolean carries the "this prescription bears a load" role
+(including a find-a-max with no fixed value), and the content fingerprint hashes the
+canonical pounds value plus `load_bearing` rather than a (value, unit) pair, so the same
+prescription entered/imported as lb, kg, or pood resolves to one `content_key`. A
+transient `load_unit=` writer on `Exercise`/`MovementLog` is the write/import seam that
+normalizes an input unit to pounds. Display unit is a `User#unit_system` preference
+(imperial → lb, metric → kg); the stored magnitude and workout identity never depend on it.
+Travel distance is likewise canonical **meters**, with mile/km normalized on import
+(`DistanceEquivalence`); `foot`/`inch` distances and all height cases are left unchanged, and
+a metric distance display toggle is deferred.
 
 CrossFit expresses a single prescribed load in whichever unit suits the audience —
 pounds, kilograms, or pood — and these are display conventions for the same

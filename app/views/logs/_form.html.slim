@@ -29,8 +29,8 @@
           .col = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }
           .col = ml_form.input :duration_seconds, label: 'Duration (s)', input_html: { class: 'recording-value' }
           .col
-            = ml_form.input :load, label: "Load (#{ml.load_unit || 'lb'})", input_html: { class: 'recording-value' }
-            = ml_form.hidden_field :load_unit, value: ml.load_unit || 'lb'
+            = ml_form.input :load, label: "Load (#{load_display_unit})", input_html: { class: 'recording-value', value: load_input_value(ml.load) }
+            = ml_form.hidden_field :load_bearing, value: ml.load_bearing
           .col data-implement-count-target="field" hidden=(!ml.movement&.supports_implement_count?)
             = ml_form.input :implement_count, label: 'Implements'
           .col

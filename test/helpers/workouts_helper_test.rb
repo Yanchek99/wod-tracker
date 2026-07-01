@@ -16,6 +16,14 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal '5 sets for load', workout_objective(workout.reload)
   end
 
+  test 'renders timed max-finding workouts as max load clocks' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+
+    assert_equal 'For load', workout_objective(workout)
+  end
+
   test 'renders fixed-rep amraps as rounds and reps' do
     assert_equal 'As many rounds and reps as possible in 10 minutes', workout_objective(workouts(:amrap_couplet))
   end
@@ -29,5 +37,30 @@ class WorkoutsHelperTest < ActionView::TestCase
     workout.update!(time: 3, score_type: :rep)
 
     assert_equal '5 rounds, complete as many reps as possible in 3 minutes of', workout_objective(workout)
+  end
+
+  test 'renders time-capped ascending ladders' do
+    workout = Workout.new(score_type: :rep, time: 7, ladder_step: 3)
+
+    assert_equal 'As many reps as possible in 7 minutes, ascending ladder, +3 reps each round',
+                 workout_objective(workout)
+  end
+
+  test 'renders cap-less ascending ladders' do
+    workout = Workout.new(score_type: :rep, ladder_step: 2)
+
+    assert_equal 'Ascending ladder, +2 reps each round', workout_objective(workout)
+  end
+
+  test 'has no team descriptor for an individual workout' do
+    assert_nil team_objective(Workout.new(score_type: :time))
+  end
+
+  test 'renders a two-athlete workout as partner' do
+    assert_equal 'Partner', team_objective(Workout.new(score_type: :time, team_size: 2))
+  end
+
+  test 'renders a larger team workout as team of n' do
+    assert_equal 'Team of 4', team_objective(Workout.new(score_type: :time, team_size: 4))
   end
 end

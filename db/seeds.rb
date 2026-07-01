@@ -795,6 +795,96 @@ zercher_squat = Movement.find_or_initialize_by(name: 'Zercher Squat').tap do |mo
   movement.save!
 end
 
+# Movements first introduced by the Open workouts
+bar_facing_burpee = Movement.find_or_initialize_by(name: 'Bar-facing Burpee').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] },
+                             equipment: :barbell, skill_level: :intermediate)
+  movement.save!
+end
+box_jump_over = Movement.find_or_initialize_by(name: 'Box Jump-over').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :box,
+                             skill_level: :basic)
+  movement.save!
+end
+ground_to_overhead = Movement.find_or_initialize_by(name: 'Ground to Overhead').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :vertical_push],
+                                               secondary: [:squat, :vertical_pull] },
+                             equipment: :barbell, skill_level: :intermediate)
+  movement.save!
+end
+medicine_ball_box_step_over = Movement.find_or_initialize_by(name: 'Medicine-ball Box Step-over').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] },
+                             equipment: :medicine_ball, skill_level: :intermediate)
+  movement.save!
+end
+lateral_burpee_over_dumbbell = Movement.find_or_initialize_by(name: 'Lateral Burpee Over Dumbbell').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] },
+                             equipment: :dumbbell, skill_level: :intermediate)
+  movement.save!
+end
+
+# Movements first introduced by the Hero workouts
+bear_crawl = Movement.find_or_create_by(name: 'Bear Crawl')
+bike = Movement.find_or_create_by(name: 'Bike')
+broad_jump = Movement.find_or_create_by(name: 'Broad Jump')
+barbell_back_rack_step_up = Movement.find_or_create_by(name: 'Barbell Back-rack Step-up')
+barbell_step_up = Movement.find_or_create_by(name: 'Barbell Step-up')
+bar_hang = Movement.find_or_create_by(name: 'Bar Hang')
+burpee_bar_muscle_up = Movement.find_or_create_by(name: 'Burpee Bar Muscle-up')
+burpee_chest_to_bar_pull_up = Movement.find_or_create_by(name: 'Burpee Chest-to-bar Pull-up')
+burpee_muscle_up = Movement.find_or_create_by(name: 'Burpee Muscle-up')
+burpee_pull_up = Movement.find_or_create_by(name: 'Burpee Pull-up')
+burpee_to_target = Movement.find_or_create_by(name: 'Burpee to Target')
+box_step_over = Movement.find_or_create_by(name: 'Box Step-over')
+deficit_handstand_push_up = Movement.find_or_create_by(name: 'Deficit Handstand Push-up')
+dumbbell_burpee_deadlift = Movement.find_or_create_by(name: 'Dumbbell Burpee Deadlift')
+dumbbell_hang_split_snatch = Movement.find_or_create_by(name: 'Dumbbell Hang Split Snatch')
+dumbbell_hang_squat_clean = Movement.find_or_create_by(name: 'Dumbbell Hang Squat Clean')
+dumbbell_split_clean = Movement.find_or_create_by(name: 'Dumbbell Split Clean')
+dumbbell_squat_clean = Movement.find_or_create_by(name: 'Dumbbell Squat Clean')
+dumbbell_squat_clean_thruster = Movement.find_or_create_by(name: 'Dumbbell Squat Clean Thruster')
+dumbbell_waiters_walk = Movement.find_or_create_by(name: 'Dumbbell Waiters Walk')
+farmers_carry = Movement.find_or_create_by(name: 'Farmers Carry')
+forward_roll = Movement.find_or_create_by(name: 'Forward Roll')
+hand_release_push_up = Movement.find_or_create_by(name: 'Hand-release Push-up')
+hang_squat_clean = Movement.find_or_create_by(name: 'Hang Squat Clean')
+hanging_hip_touch = Movement.find_or_create_by(name: 'Hanging Hip Touch')
+inverted_ring_lower = Movement.find_or_create_by(name: 'Inverted Ring Lower')
+jerk = Movement.find_or_create_by(name: 'Jerk')
+kettlebell_clean_and_jerk = Movement.find_or_create_by(name: 'Kettlebell Clean and Jerk')
+kettlebell_goblet_squat = Movement.find_or_create_by(name: 'Kettlebell Goblet Squat')
+kettlebell_thruster = Movement.find_or_create_by(name: 'Kettlebell Thruster')
+knees_to_elbows = Movement.find_or_create_by(name: 'Knees-to-elbows')
+overhead_walk = Movement.find_or_create_by(name: 'Overhead Walk')
+overhead_walking_lunge = Movement.find_or_create_by(name: 'Overhead Walking Lunge')
+parallette_handstand_push_up = Movement.find_or_create_by(name: 'Parallette Handstand Push-up')
+plate_carry = Movement.find_or_create_by(name: 'Plate Carry')
+ring_handstand_push_up = Movement.find_or_create_by(name: 'Ring Handstand Push-up')
+sandbag_carry = Movement.find_or_create_by(name: 'Sandbag Carry')
+sandbag_clean = Movement.find_or_create_by(name: 'Sandbag Clean')
+shuttle_run = Movement.find_or_create_by(name: 'Shuttle Run')
+sled_push = Movement.find_or_create_by(name: 'Sled Push')
+squat_clean_thruster = Movement.find_or_create_by(name: 'Squat Clean Thruster')
+squat_snatch = Movement.find_or_create_by(name: 'Squat Snatch')
+stiff_legged_deadlift = Movement.find_or_create_by(name: 'Stiff-legged Deadlift')
+strict_burpee_pull_up = Movement.find_or_create_by(name: 'Strict Burpee Pull-up')
+toes_to_rings = Movement.find_or_create_by(name: 'Toes-to-rings')
+triple_under = Movement.find_or_create_by(name: 'Triple-under')
+turkish_get_up = Movement.find_or_create_by(name: 'Turkish Get-up')
+wall_ball_two_for_one = Movement.find_or_create_by(name: 'Wall-ball Two-for-one')
+weighted_pull_up = Movement.find_or_create_by(name: 'Weighted Pull-up')
+
+# Movements first introduced by the partner/team Hero workouts
+barbell_carry = Movement.find_or_create_by(name: 'Barbell Carry')
+buddy_carry = Movement.find_or_create_by(name: 'Buddy Carry')
+burpee_over_rower = Movement.find_or_create_by(name: 'Burpee Over Rower')
+dumbbell_bent_over_row = Movement.find_or_create_by(name: 'Dumbbell Bent-over Row')
+dumbbell_floor_press = Movement.find_or_create_by(name: 'Dumbbell Floor Press')
+dumbbell_lunge = Movement.find_or_create_by(name: 'Dumbbell Lunge')
+flutter_kick = Movement.find_or_create_by(name: 'Flutter Kick')
+handstand_hold = Movement.find_or_create_by(name: 'Handstand Hold')
+
 # Programs
 CF_PROGRAM = Program.find_or_create_by(name: 'Crossfit.com')
 CF_PROGRAM.subscriptions.find_or_create_by(user: admin) do |subscription|
@@ -804,6 +894,7 @@ end
 %w[
   benchmark_workouts
   hero_workouts
+  open_workouts
   cf_workouts
 ].each do |seed_file|
   seed_path = Rails.root.join('db/seeds', "#{seed_file}.rb")

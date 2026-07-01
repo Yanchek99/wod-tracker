@@ -51,6 +51,26 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_not workouts(:amrap_couplet).set_based_lifting?
   end
 
+  test 'identifies timed max-finding workouts' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+
+    assert_predicate workout, :max_finding?
+    assert_predicate workout, :calculated_lifting_score?
+  end
+
+  test 'identifies multi-exercise max-finding workouts without auto-combining scores' do
+    workout = Workout.new(name: 'Dragon', score_type: :weight)
+    workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+    workout.exercises.build(movement: movements(:thruster), position: 2, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+
+    assert_predicate workout, :max_finding?
+    assert_not_predicate workout, :calculated_lifting_score?
+  end
+
   test 'does not identify rep-scored rounds with load-bearing exercises as set-based lifting' do
     workout = workouts(:back_squat_5x5)
     workout.update!(score_type: :rep)
@@ -63,5 +83,36 @@ class WorkoutTest < ActiveSupport::TestCase
     workout.exercises.each { |exercise| exercise.update!(load: nil, load_unit: nil, female_load: nil, male_load: nil) }
 
     assert workout.reload.set_based_lifting?
+  end
+
+  test 'a workout without a team size is an individual workout' do
+    workout = Workout.new(name: 'Solo', score_type: :time)
+
+    assert_not_predicate workout, :team?
+    assert_not_predicate workout, :partner?
+  end
+
+  test 'identifies partner and team workouts from team size' do
+    partner = Workout.new(name: 'Partner', score_type: :time, team_size: 2)
+    team = Workout.new(name: 'Team', score_type: :time, team_size: 4)
+
+    assert_predicate partner, :team?
+    assert_predicate partner, :partner?
+    assert_predicate team, :team?
+    assert_not_predicate team, :partner?
+  end
+
+  test 'rejects a team size below two' do
+    workout = Workout.new(name: 'Bad Team', score_type: :time, team_size: 1)
+
+    assert_not_predicate workout, :valid?
+    assert_includes workout.errors.attribute_names, :team_size
+  end
+
+  test 'allows a nil team size' do
+    workout = Workout.new(name: 'Solo', score_type: :time, team_size: nil)
+    workout.exercises.build(movement: movements(:run), position: 1, reps: 1)
+
+    assert_predicate workout, :valid?
   end
 end

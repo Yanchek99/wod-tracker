@@ -19,6 +19,19 @@ module ExercisePrescription
     ].compact
   end
 
+  def max_load_prescription?
+    reps.to_i.positive? &&
+      duration_seconds.present? &&
+      load_unit.present? &&
+      load.blank? &&
+      female_load.blank? &&
+      male_load.blank?
+  end
+
+  def max_load_test?
+    max_load_prescription? && workout&.max_finding?
+  end
+
   private
 
   def rep_prescription_metric

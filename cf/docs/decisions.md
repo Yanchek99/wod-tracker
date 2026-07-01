@@ -1,5 +1,41 @@
 # Decisions
 
+## 2026-06-30: Partner/Team Workouts Are A team_size Count Plus Notes
+
+Some workouts define their work as shared across multiple athletes — a partner or
+team splits a total, performs synchronized reps, alternates "one works while one
+rests", or carries a buddy. The 14 such Hero workouts (City 100, Eva Strong,
+Goose, Horton, Josh-O, Kev, Laura, Martin, Maxim 56, McCartney, Partner Weston,
+Ryan Comas, Scooter, Timothy Helton) could not be seeded faithfully without a way
+to say "this is shared work" (#1697).
+
+The only structural addition is `workouts.team_size` (integer, nullable): `nil` is
+an ordinary individual workout, `2` is a partner workout, `3+` a team of N. It
+participates in the content fingerprint, so a partner version is a distinct
+workout from a content-identical solo one rather than being deduped into it.
+
+The choreography itself — total-vs-per-athlete reps, synchronized movements,
+alternating/"one works one rests" stations, buddy carries — is **not** modeled as
+new structured columns. It lives in `Segment#name`/`Segment#notes` and
+`Exercise#notes` and renders through the existing name/notes fallbacks, mirroring
+the event-triggered-penalty decision below. Seeded rep counts transcribe the
+published Hero-WOD numbers as written; `team_size` plus notes convey whether a
+count is shared, per-athlete, or synchronized.
+
+Logging is unchanged: a partner/team workout is logged once as the team's combined
+result (its time or total reps) through the existing `Log`/`MovementLog`, with no
+per-athlete schema. `team_size` is the feature that makes that score
+interpretable.
+
+Rationale: precise prescription structure is deliberately low-stakes here. The
+app's individualized scaling is intended to come from machine learning over logged
+history (see `programming.md`), not from a richly-structured partner prescription.
+ML can normalize a combined team result by `team_size` (e.g. score-per-athlete) or
+learn the team-size effect directly, so a single team log plus a `team_size`
+feature is a usable training signal without splitting work per athlete. Adding one
+count and reusing `Segment`/`Exercise` notes keeps these workouts seedable and
+loggable today without a parallel multi-athlete model.
+
 ## 2026-06-21: Model Event-Triggered Penalties as a Named Segment
 
 Some workouts attach work that is triggered by an event rather than sequenced
@@ -88,6 +124,26 @@ canonical workout, then deletes the duplicate. So editing or importing a workout
 into an existing one's content yields a single workout, with the edit redirected to
 the survivor. Free-text notes are excluded from the fingerprint; canonical load
 identity (lb/kg/pood) is the remaining gap (see #1684).
+
+## 2026-06-29: Find-A-Max Prescriptions Are Weight-Scored Load Tests
+
+A workout part that asks the athlete to find an N-rep max or build to a heavy
+single is modeled as a weight-scored exercise with prescribed reps,
+`duration_seconds`, a load unit, and no fixed prescribed load. The reps define
+the successful attempt requirement; the duration defines the window; the empty
+load with a unit means the athlete must record the load found during that window.
+
+Single-movement max-finding workouts can derive the workout score from the logged
+load once the prescribed reps are completed. Multi-movement max-finding workouts
+preserve each movement's logged load and keep the workout-level score explicit,
+because the published scoring rule may combine loads differently by workout.
+
+Rationale: this reuses the existing direct prescription columns and weight score
+type instead of adding a parallel prescription model. The duration belongs on the
+exercise because the ML-relevant logged fact is that the athlete completed the
+prescribed reps at a recorded load within that exercise's time window. It also
+keeps workouts such as Dragon seedable before the app has a richer multi-component
+score model.
 
 ## 2026-06-20: Store Movement Taxonomy On Movements
 

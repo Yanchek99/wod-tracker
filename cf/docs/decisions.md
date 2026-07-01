@@ -145,6 +145,21 @@ prescribed reps at a recorded load within that exercise's time window. It also
 keeps workouts such as Dragon seedable before the app has a richer multi-component
 score model.
 
+## 2026-06-20: Store Movement Taxonomy On Movements
+
+Movement metadata is stored on `Movement` using one primary family, one
+equipment class, one skill level, and role-based movement function assignments.
+Substitutions live in a directed join table with an easier/harder/lateral
+direction.
+
+Rationale: future scaling needs queryable movement similarity and directed
+substitution options before it can choose individualized variations. Family,
+equipment, and skill level stay scalar, while functions are role assignments so
+compound movements can expose each meaningful component without a generic mixed
+function or hard-to-maintain contribution weights. External load is inferred from
+the weightlifting family and equipment/prescription data rather than duplicated
+as a movement-level boolean.
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time
@@ -181,7 +196,7 @@ Fixed multi-week blocks run counter to CrossFit's constantly-varied prescription
 and individualized scaling is intended to remove the need for separate tracks.
 
 Rationale: documenting the concepts and their preferred mapping to existing models
-first keeps later implementation aligned with current patterns (metrics,
+first keeps later implementation aligned with current functions (metrics,
 exercises, schedules, subscriptions) and avoids parallel structures.
 
 ## 2026-06-05: Scope Exercise Positions to Their Workout Part

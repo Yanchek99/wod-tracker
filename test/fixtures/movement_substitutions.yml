@@ -1,0 +1,9 @@
+backsqt_frontsqt:
+  movement: front_squat
+  substitute_movement: back_squat
+  direction: 0
+
+run_row:
+  movement: run
+  substitute_movement: row
+  direction: 2

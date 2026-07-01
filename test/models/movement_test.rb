@@ -6,6 +6,11 @@ class MovementTest < ActiveSupport::TestCase
     assert_predicate Movement.new(name: 'kettlebell swing'), :supports_implement_count?
   end
 
+  test 'supports implement count from equipment taxonomy' do
+    assert_predicate Movement.new(name: 'Thruster', equipment: :dumbbell), :supports_implement_count?
+    assert_predicate Movement.new(name: 'Swing', equipment: :kettlebell), :supports_implement_count?
+  end
+
   test 'does not support implement count for other movements' do
     assert_not Movement.new(name: 'Back Squat').supports_implement_count?
     assert_not Movement.new(name: 'Pull Up').supports_implement_count?
@@ -20,5 +25,38 @@ class MovementTest < ActiveSupport::TestCase
     assert_includes supported, dumbbell
     assert_includes supported, kettlebell
     assert_not_includes supported, movements(:back_squat)
+  end
+
+  test 'stores structured movement taxonomy' do
+    thruster = movements(:thruster)
+
+    assert thruster.family_weightlifting?
+    assert thruster.function_squat?
+    assert thruster.function_vertical_push?
+    assert_equal 'primary', thruster.function_role(:squat)
+    assert_equal 'secondary', thruster.function_role(:vertical_push)
+    assert thruster.equipment_barbell?
+    assert thruster.skill_level_intermediate?
+  end
+
+  test 'queries movements by component function' do
+    assert_includes Movement.with_function(:vertical_push), movements(:thruster)
+    assert_includes Movement.with_function(:squat), movements(:thruster)
+    assert_not_includes Movement.with_function(:vertical_pull), movements(:thruster)
+  end
+
+  test 'queries movements by component function role' do
+    assert_includes Movement.with_function_role(:squat, :primary), movements(:thruster)
+    assert_includes Movement.with_function_role(:vertical_push, :secondary), movements(:thruster)
+    assert_not_includes Movement.with_function_role(:vertical_push, :primary), movements(:thruster)
+  end
+
+  test 'does not rewrite function roles when other attributes change' do
+    movement = movements(:thruster)
+    assignment_ids = movement.movement_function_assignments.ids
+
+    movement.update!(name: 'Barbell Thruster')
+
+    assert_equal assignment_ids, movement.movement_function_assignments.reload.ids
   end
 end

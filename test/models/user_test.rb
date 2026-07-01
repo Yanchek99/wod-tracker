@@ -23,6 +23,14 @@ class UserTest < ActiveSupport::TestCase
   test 'queries user movement history by exact movement and family' do
     mathew = users(:mathew)
     pullup_log = logs(:matt_murph).movement_logs.create!(movement: movements(:pullup), reps: 100)
+    strict_pullup = Movement.create!(
+      name: 'Strict Pull-up',
+      family: :gymnastics,
+      equipment: :pull_up_bar,
+      skill_level: :intermediate,
+      function_roles: { primary: [:vertical_pull] }
+    )
+    strict_pullup_log = logs(:matt_murph).movement_logs.create!(movement: strict_pullup, reps: 50)
     pushup_log = logs(:matt_murph).movement_logs.create!(movement: movements(:pushup), reps: 200)
     brooke_pullup_log = movement_logs(:brooke_fran_pullup)
 
@@ -31,7 +39,8 @@ class UserTest < ActiveSupport::TestCase
 
     family_history = mathew.movement_family_history_for(movements(:pullup))
     assert_includes family_history, pullup_log
-    assert_includes family_history, pushup_log
+    assert_includes family_history, strict_pullup_log
+    assert_not_includes family_history, pushup_log
     assert_not_includes family_history, brooke_pullup_log
   end
 end

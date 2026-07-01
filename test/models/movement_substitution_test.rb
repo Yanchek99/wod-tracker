@@ -30,4 +30,15 @@ class MovementSubstitutionTest < ActiveSupport::TestCase
     assert_not substitution.valid?
     assert_includes substitution.errors[:substitute_movement_id], 'has already been taken'
   end
+
+  test 'rejects contradictory inverse directions' do
+    substitution = MovementSubstitution.new(
+      movement: movements(:back_squat),
+      substitute_movement: movements(:front_squat),
+      direction: :easier
+    )
+
+    assert_not substitution.valid?
+    assert_includes substitution.errors[:direction], 'contradicts inverse substitution'
+  end
 end

@@ -51,10 +51,12 @@ class MovementTest < ActiveSupport::TestCase
     assert_not_includes Movement.with_function_role(:vertical_push, :primary), movements(:thruster)
   end
 
-  test 'finds movements in the same family' do
-    pullup = movements(:pullup)
+  test 'does not rewrite function roles when other attributes change' do
+    movement = movements(:thruster)
+    assignment_ids = movement.movement_function_assignments.ids
 
-    assert_includes pullup.family_movements, movements(:pushup)
-    assert_not_includes pullup.family_movements, movements(:run)
+    movement.update!(name: 'Barbell Thruster')
+
+    assert_equal assignment_ids, movement.movement_function_assignments.reload.ids
   end
 end

@@ -69,31 +69,6 @@ class Movement < ApplicationRecord
 
   scope :supporting_implement_count, -> { where('name ~* ?', IMPLEMENT_COUNT_NAME_PATTERN.source) }
 
-  def self.function_value(function)
-    function.is_a?(Symbol) || function.is_a?(String) ? FUNCTIONS.fetch(function.to_sym) : function
-  end
-
-  def self.function_name(function)
-    function.is_a?(Symbol) || function.is_a?(String) ? function.to_s : FUNCTIONS.key(function).to_s
-  end
-
-  def self.role_value(role)
-    role.is_a?(Symbol) || role.is_a?(String) ? FUNCTION_ROLES.fetch(role.to_sym) : role
-  end
-
-  def self.normalize_function_roles(role_map)
-    role_map.flat_map do |role, functions|
-      Array(functions).filter_map do |function|
-        next if function.blank?
-
-        {
-          movement_function: function_value(function),
-          role: role_value(role)
-        }
-      end
-    end
-  end
-
   def supports_implement_count?
     equipment_dumbbell? || equipment_kettlebell? || name.to_s.match?(IMPLEMENT_COUNT_NAME_PATTERN)
   end
@@ -105,12 +80,5 @@ class Movement < ApplicationRecord
       q.nil? ? arel_table[:name].matches("%#{word}%") : q.and(arel_table[:name].matches("%#{word}%"))
     end
     where(query)
-  end
-
-  def family_movements
-    return self.class.none if family.blank?
-
-    # Includes self so family fallback history contains exact movement history too.
-    self.class.where(family:)
   end
 end

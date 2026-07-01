@@ -42,6 +42,18 @@ module MovementFunctionAssignable
   end
 
   class_methods do
+    def function_value(function)
+      function.is_a?(Symbol) || function.is_a?(String) ? self::FUNCTIONS.fetch(function.to_sym) : function
+    end
+
+    def function_name(function)
+      function.is_a?(Symbol) || function.is_a?(String) ? function.to_s : self::FUNCTIONS.key(function).to_s
+    end
+
+    def role_value(role)
+      role.is_a?(Symbol) || role.is_a?(String) ? self::FUNCTION_ROLES.fetch(role.to_sym) : role
+    end
+
     def normalize_function_roles(role_map)
       role_map.flat_map do |role, functions|
         Array(functions).filter_map do |function|
@@ -65,5 +77,6 @@ module MovementFunctionAssignable
   def sync_function_roles
     movement_function_assignments.delete_all
     movement_function_assignments.create!(@function_role_assignments) if @function_role_assignments.any?
+    remove_instance_variable(:@function_role_assignments)
   end
 end

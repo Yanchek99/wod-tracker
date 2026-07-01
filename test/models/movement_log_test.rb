@@ -28,13 +28,32 @@ class MovementLogTest < ActiveSupport::TestCase
     assert_not_includes results, movement_logs(:brooke_fran_thruster)
   end
 
-  test 'queries history by movement family' do
+  test 'queries history by movement family when given a family' do
+    pushup_log = logs(:matt_murph).movement_logs.create!(movement: movements(:pushup), reps: 200)
+
+    results = MovementLog.for_movement_family(:gymnastics)
+
+    assert_includes results, movement_logs(:brooke_fran_pullup)
+    assert_includes results, pushup_log
+    assert_not_includes results, movement_logs(:brooke_fran_thruster)
+  end
+
+  test 'queries movement fallback history by family equipment and primary functions' do
+    strict_pullup = Movement.create!(
+      name: 'Strict Pull-up',
+      family: :gymnastics,
+      equipment: :pull_up_bar,
+      skill_level: :intermediate,
+      function_roles: { primary: [:vertical_pull] }
+    )
+    strict_pullup_log = logs(:matt_murph).movement_logs.create!(movement: strict_pullup, reps: 50)
     pushup_log = logs(:matt_murph).movement_logs.create!(movement: movements(:pushup), reps: 200)
 
     results = MovementLog.for_movement_family(movements(:pullup))
 
     assert_includes results, movement_logs(:brooke_fran_pullup)
-    assert_includes results, pushup_log
+    assert_includes results, strict_pullup_log
+    assert_not_includes results, pushup_log
     assert_not_includes results, movement_logs(:brooke_fran_thruster)
   end
 end

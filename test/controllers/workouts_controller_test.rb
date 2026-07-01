@@ -64,7 +64,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
             movement_id: movements(:thruster).id,
             position: 1,
             reps: 1,
-            female_load: 65, male_load: 95, load_unit: :lb
+            female_load: 65, male_load: 95
           }
         }
       } }
@@ -74,7 +74,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_nil exercise.load
     assert_equal 65, exercise.female_load
     assert_equal 95, exercise.male_load
-    assert_equal 'lb', exercise.load_unit
+    assert_predicate exercise, :load_bearing?
   end
 
   test 'should show workout' do

@@ -74,13 +74,11 @@ module MeasurableHelper
   end
 
   def sex_specific_metric_value_msg(metric, value)
-    unit = grouped_metric_unit(metric)
-    separator = Metric::LOAD_MEASUREMENTS.include?(unit) || unit == 'ft' ? '' : '-'
+    return "#{load_input_value(value)}#{load_display_unit}" if load_metric?(metric)
+    return "#{value}ft" if metric.foot? # Rails has no foot -> feet inflection
 
-    "#{value}#{separator}#{unit}"
+    "#{value}-#{metric.measurement.singularize}"
   end
-
-  def grouped_metric_unit(metric) = metric.foot? ? 'ft' : metric.measurement.singularize
 
   def pluralize_movement?(metric)
     return metric.value > 1 if metric.value.present?

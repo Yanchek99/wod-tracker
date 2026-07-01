@@ -1,6 +1,19 @@
 module MetricsHelper
   HEIGHT_MEASUREMENTS = %w[foot inch].freeze
 
+  # The unit an athlete sees loads in, from their display preference. Loads are stored canonically in
+  # pounds; metric athletes see kilograms.
+  def load_display_unit
+    (Current.user&.load_display_unit || :lb).to_s
+  end
+
+  # A canonical pounds load rendered in the viewer's display unit, for pre-filling form inputs.
+  def load_input_value(pounds)
+    return if pounds.nil?
+
+    Current.user&.unit_system_metric? ? LoadEquivalence.lb_to_kg(pounds) : pounds
+  end
+
   def metric_unit_msg(metric)
     "#{implement_count_prefix(metric)}#{metric_value_msg(metric)}"
   end
@@ -15,12 +28,27 @@ module MetricsHelper
 
   def metric_value_msg(metric)
     return sex_specific_metric_unit_msg(metric) if metric.sex_specific?
+    return load_value_msg(metric) if load_metric?(metric)
+
+    unitless_metric_value_msg(metric)
+  end
+
+  def unitless_metric_value_msg(metric)
     return "#{metric.value.to_i} ft" if metric.foot? # Rails has no foot -> feet inflection
     return pluralize(1, metric.measurement) if metric.value.nil?
     return rep_count_msg(metric) if metric.rep?
     return seconds_to_duration_string(metric.value) if metric.seconds? || metric.time?
 
     pluralize(metric.value.to_i, metric.measurement)
+  end
+
+  # Loads are stored canonically in pounds; render them in the viewer's display unit (lb or kg).
+  def load_metric?(metric) = Metric::LOAD_MEASUREMENTS.include?(metric.measurement)
+
+  def load_value_msg(metric)
+    return pluralize(1, load_display_unit) if metric.value.nil?
+
+    pluralize(load_input_value(metric.value).to_i, load_display_unit)
   end
 
   def rep_count_msg(metric) = metric.value == 1 ? '' : metric.value
@@ -58,6 +86,11 @@ module MetricsHelper
   end
 
   def sex_specific_metric_unit_msg(metric)
+    if load_metric?(metric)
+      return "♀#{load_input_value(metric.female_value)}#{load_display_unit} / " \
+             "♂#{load_input_value(metric.male_value)}#{load_display_unit}"
+    end
+
     unit = metric.measurement.singularize
     separator = Metric::LOAD_MEASUREMENTS.include?(unit) ? '' : '-'
 

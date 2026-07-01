@@ -11,7 +11,7 @@ fran_thruster:
   position: 1
   reps: 1
   load: 95
-  load_unit: lb
+  load_bearing: true
 
 fran_pullup:
   workout: fran
@@ -132,7 +132,7 @@ back_squat_5x5_back_squat:
   movement: back_squat
   position: 1
   reps: 5
-  load_unit: lb
+  load_bearing: true
 
 segmented_total_reps_run:
   workout: segmented_total_reps

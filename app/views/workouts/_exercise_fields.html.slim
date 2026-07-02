@@ -4,7 +4,7 @@
 - summary = f.object.persisted? ? measurable_message(f.object) : 'New exercise'
 - workout_part = local_assigns.fetch(:workout_part, false)
 
-.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card implement-count ladder-step" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle ladder-fields:change@document->ladder-step#toggle" data-exercise-card-expanded-value=expanded data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
+.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card implement-count ladder-step" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle ladder-fields:change@document->ladder-step#toggle" data-exercise-card-expanded-value=expanded data-exercise-card-load-unit-value=load_display_unit data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
   = f.hidden_field :_destroy
   = f.hidden_field :position
   .workout-sortable-item

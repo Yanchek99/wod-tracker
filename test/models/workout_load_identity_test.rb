@@ -19,6 +19,34 @@ class WorkoutLoadIdentityTest < ActiveSupport::TestCase
     assert_equal lb.content_fingerprint, build_loaded(load: 2, unit: :pood).content_fingerprint
   end
 
+  # The load-identity migration recomputes every workout's content_key now that load_unit no longer
+  # participates in the fingerprint, which can make two previously-distinct workouts (e.g. one
+  # stored 95 lb, one stored 43 kg) collide on the same key. Recomputing with a raw write would trip
+  # the unique index; the migration instead saves through the model (leaving a duplicate's key nil,
+  # per WorkoutFingerprint#assignable_content_key) and merges via absorb_duplicate!. This proves that
+  # sequence consolidates two persisted rows whose stale keys predate the fingerprint format change,
+  # instead of raising.
+  test 'recomputing stale content keys for two workouts that now match merges them' do
+    first = build_loaded(load: 95, unit: :lb)
+    first.save!
+    # rubocop:disable Rails/SkipsModelValidations -- simulates a key computed under the old format
+    first.update_column(:content_key, 'stale-key-a')
+
+    second = build_loaded(load: 95, unit: :lb)
+    second.save!(validate: false)
+    second.update_column(:content_key, 'stale-key-b')
+    # rubocop:enable Rails/SkipsModelValidations
+
+    assert_difference('Workout.count', -1) do
+      Workout.where(id: [first.id, second.id]).find_each do |workout|
+        workout.save!(validate: false)
+        workout.absorb_duplicate!
+      end
+    end
+
+    assert Workout.exists?(content_key: first.content_fingerprint)
+  end
+
   private
 
   # Builds and validates a one-exercise workout so the load input is canonicalized to pounds.

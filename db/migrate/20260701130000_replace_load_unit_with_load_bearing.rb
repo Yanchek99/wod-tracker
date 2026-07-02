@@ -20,11 +20,19 @@ class ReplaceLoadUnitWithLoadBearing < ActiveRecord::Migration[8.1]
     remove_column :exercises, :load_unit
     remove_column :movement_logs, :load_unit
 
-    # load_unit no longer participates in the content fingerprint, so existing keys are stale.
-    # Recompute through the model so the fingerprint stays the single source of truth.
+    # load_unit no longer participates in the content fingerprint, so existing keys are stale and
+    # recomputing them can collide: two workouts that previously differed only by load_unit (e.g.
+    # 95 lb vs 43 kg) now normalize to the same fingerprint, which is exactly the duplicate class
+    # this migration is meant to resolve. Recompute and merge through the model (the same
+    # save + absorb_duplicate! path the app already uses for user-facing saves) instead of writing
+    # the raw key, so a genuine duplicate is folded into its canonical workout rather than tripping
+    # the unique index.
     Workout.reset_column_information
     Exercise.reset_column_information
-    Workout.find_each { |workout| workout.update_column(:content_key, workout.content_fingerprint) } # rubocop:disable Rails/SkipsModelValidations
+    Workout.find_each do |workout|
+      workout.save!(validate: false)
+      workout.absorb_duplicate!
+    end
   end
 
   # read_attribute avoids the model's transient load_unit writer and reads the real column.

@@ -4,13 +4,14 @@ export default class extends Controller {
   static targets = [
     "summaryButton", "summaryText", "expandButton", "editor", "movementSelect",
     "repsInput", "durationInput",
-    "loadInput", "femaleLoadInput", "maleLoadInput", "loadUnitSelect",
+    "loadInput", "femaleLoadInput", "maleLoadInput",
     "distanceInput", "femaleDistanceInput", "maleDistanceInput", "distanceUnitSelect",
     "caloriesInput", "femaleCaloriesInput", "maleCaloriesInput"
   ]
 
   static values = {
-    expanded: Boolean
+    expanded: Boolean,
+    loadUnit: { type: String, default: "lb" }
   }
 
   connect() {
@@ -353,7 +354,7 @@ export default class extends Controller {
   }
 
   loadUnit() {
-    return this.hasLoadUnitSelectTarget && this.loadUnitSelectTarget.value ? this.loadUnitSelectTarget.value : "lb"
+    return this.loadUnitValue
   }
 
   distanceUnit() {

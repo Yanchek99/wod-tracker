@@ -74,6 +74,21 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
     end
   end
 
+  test 'renders the local summary in kilograms for a metric athlete' do
+    users(:mathew).update!(unit_system: :metric)
+    visit new_workout_url
+    click_on 'Add Exercise'
+
+    within '.exercise' do
+      select_movement 'Thruster'
+      fill_in 'Reps', with: '21'
+      fill_in 'Load (kg)', with: '43'
+      click_on 'Done'
+
+      assert_text '21 Thrusters (43 kgs)'
+    end
+  end
+
   private
 
   def select_movement(name)

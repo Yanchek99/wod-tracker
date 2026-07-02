@@ -53,10 +53,10 @@ class MovementTest < ActiveSupport::TestCase
 
   test 'does not rewrite function roles when other attributes change' do
     movement = movements(:thruster)
-    assignment_ids = movement.movement_function_assignments.ids
+    function_role_ids = movement.movement_function_roles.ids
 
     movement.update!(name: 'Barbell Thruster')
 
-    assert_equal assignment_ids, movement.movement_function_assignments.reload.ids
+    assert_equal function_role_ids, movement.movement_function_roles.reload.ids
   end
 end

@@ -1,17 +1,17 @@
-module MovementFunctionAssignable
+module MovementFunctionRoles
   extend ActiveSupport::Concern
 
   included do
-    has_many :movement_function_assignments, dependent: :destroy
+    has_many :movement_function_roles, dependent: :destroy
 
     scope :with_function, lambda { |function|
-      joins(:movement_function_assignments)
-        .where(movement_function_assignments: { movement_function: function_value(function) })
+      joins(:movement_function_roles)
+        .where(movement_function_roles: { movement_function: function_value(function) })
         .distinct
     }
     scope :with_function_role, lambda { |function, role|
-      joins(:movement_function_assignments)
-        .where(movement_function_assignments: {
+      joins(:movement_function_roles)
+        .where(movement_function_roles: {
                  movement_function: function_value(function),
                  role: role_value(role)
                })
@@ -30,14 +30,14 @@ module MovementFunctionAssignable
   end
 
   def function?(function)
-    movement_function_assignments.any? do |assignment|
-      assignment.movement_function == self.class.function_name(function)
+    movement_function_roles.any? do |function_role|
+      function_role.movement_function == self.class.function_name(function)
     end
   end
 
   def function_role(function)
-    movement_function_assignments.find do |assignment|
-      assignment.movement_function == self.class.function_name(function)
+    movement_function_roles.find do |function_role|
+      function_role.movement_function == self.class.function_name(function)
     end&.role
   end
 
@@ -75,8 +75,8 @@ module MovementFunctionAssignable
   end
 
   def sync_function_roles
-    movement_function_assignments.delete_all
-    movement_function_assignments.create!(@function_role_assignments) if @function_role_assignments.any?
+    movement_function_roles.delete_all
+    movement_function_roles.create!(@function_role_assignments) if @function_role_assignments.any?
     remove_instance_variable(:@function_role_assignments)
   end
 end

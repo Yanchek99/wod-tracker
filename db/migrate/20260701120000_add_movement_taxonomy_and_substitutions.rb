@@ -8,7 +8,7 @@ class AddMovementTaxonomyAndSubstitutions < ActiveRecord::Migration[8.1]
     add_index :movements, :equipment
     add_index :movements, :skill_level
 
-    create_table :movement_function_assignments do |t|
+    create_table :movement_function_roles do |t|
       t.references :movement, null: false, foreign_key: true
       t.integer :movement_function, null: false
       t.integer :role, null: false
@@ -16,12 +16,12 @@ class AddMovementTaxonomyAndSubstitutions < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :movement_function_assignments, :movement_function
-    add_index :movement_function_assignments, :role
-    add_index :movement_function_assignments,
+    add_index :movement_function_roles, :movement_function
+    add_index :movement_function_roles, :role
+    add_index :movement_function_roles,
               %i[movement_id movement_function],
               unique: true,
-              name: 'idx_movement_function_assignments_unique'
+              name: 'idx_movement_function_roles_unique'
 
     create_table :movement_substitutions do |t|
       t.references :movement, null: false, foreign_key: true

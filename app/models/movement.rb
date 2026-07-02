@@ -48,7 +48,7 @@ class Movement < ApplicationRecord
     tertiary: 2
   }.freeze
 
-  include MovementFunctionAssignable
+  include MovementFunctionRoles
 
   has_many :exercises, dependent: :destroy
   has_many :movement_logs, dependent: :destroy

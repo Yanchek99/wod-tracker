@@ -1,4 +1,4 @@
-class MovementFunctionAssignment < ApplicationRecord
+class MovementFunctionRole < ApplicationRecord
   belongs_to :movement
 
   enum :movement_function, Movement::FUNCTIONS, prefix: :function

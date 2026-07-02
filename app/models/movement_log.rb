@@ -18,12 +18,12 @@ class MovementLog < ApplicationRecord
     return none if family.blank?
 
     query = joins(:movement).where(movements: { family:, equipment: movement.equipment })
-    primary_functions = movement.movement_function_assignments.role_primary.pluck(:movement_function)
+    primary_functions = movement.movement_function_roles.role_primary.pluck(:movement_function)
     return query if primary_functions.empty?
 
     query
-      .joins(movement: :movement_function_assignments)
-      .where(movement_function_assignments: { movement_function: primary_functions, role: Movement.role_value(:primary) })
+      .joins(movement: :movement_function_roles)
+      .where(movement_function_roles: { movement_function: primary_functions, role: Movement.role_value(:primary) })
       .distinct
   }
 end

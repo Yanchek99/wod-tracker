@@ -1,21 +1,19 @@
-class ReplaceLoadUnitWithLoadBearing < ActiveRecord::Migration[8.1]
+class DropLoadUnit < ActiveRecord::Migration[8.1]
   # Loads are now stored canonically in pounds, so the per-record load_unit no longer carries
-  # identity or display meaning. Its one remaining job was to mark a load-bearing prescription
-  # (including a find-a-max with no fixed load), which moves to an explicit load_bearing flag.
+  # identity or display meaning. A find-a-max prescription (a load-bearing exercise with no fixed
+  # value) is now expressed as the load: 0 sentinel, the same "unspecified" convention reps and
+  # calories already use for their own max variants -- no replacement column is needed.
   def up
-    add_column :exercises, :load_bearing, :boolean, default: false, null: false
-    add_column :movement_logs, :load_bearing, :boolean, default: false, null: false
-
-    execute 'UPDATE exercises SET load_bearing = TRUE WHERE load_unit IS NOT NULL'
-    execute 'UPDATE movement_logs SET load_bearing = TRUE WHERE load_unit IS NOT NULL'
-
     # Loads stored in kilograms (load_unit = 1) are now interpreted as pounds, so convert their
     # magnitudes to the canonical pounds value through the source-confirmed equivalence table before
     # the unit column is gone. lb-stored loads are already canonical.
-    Exercise.reset_column_information
-    MovementLog.reset_column_information
     convert_kilogram_loads(Exercise, %i[load female_load male_load])
     convert_kilogram_loads(MovementLog, %i[load])
+
+    # A unit with no fixed value is a find-a-max prescription; store the sentinel before load_unit,
+    # its only remaining signal, is gone.
+    execute 'UPDATE exercises SET load = 0 ' \
+            'WHERE load_unit IS NOT NULL AND load IS NULL AND female_load IS NULL AND male_load IS NULL'
 
     remove_column :exercises, :load_unit
     remove_column :movement_logs, :load_unit
@@ -47,12 +45,13 @@ class ReplaceLoadUnitWithLoadBearing < ActiveRecord::Migration[8.1]
     add_column :exercises, :load_unit, :integer
     add_column :movement_logs, :load_unit, :integer
 
-    # Restore lb (0) as the unit for load-bearing records; kg was never stored canonically.
-    execute 'UPDATE exercises SET load_unit = 0 WHERE load_bearing = TRUE'
-    execute 'UPDATE movement_logs SET load_unit = 0 WHERE load_bearing = TRUE'
-
-    remove_column :exercises, :load_bearing
-    remove_column :movement_logs, :load_bearing
+    # Restore lb (0) wherever a load dimension exists; kg was never stored canonically. A load: 0
+    # sentinel represented a find-a-max with no fixed value, so restore that shape (unit present,
+    # load nil) rather than leaving a literal 0 the pre-#1684 code doesn't recognize.
+    execute 'UPDATE exercises SET load_unit = 0, load = NULL WHERE load = 0'
+    execute 'UPDATE exercises SET load_unit = 0 ' \
+            'WHERE load IS NOT NULL OR female_load IS NOT NULL OR male_load IS NOT NULL'
+    execute 'UPDATE movement_logs SET load_unit = 0 WHERE load IS NOT NULL'
     # Content keys are intentionally left stale on rollback; the pre-#1684 code recomputes them from
     # load_unit on its next save, and recomputing here would run this code against the reverted schema.
   end

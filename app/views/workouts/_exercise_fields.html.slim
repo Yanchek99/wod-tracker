@@ -31,10 +31,9 @@
             .col-6.col-md-3 data-ladder-step-target="stepEveryField" hidden=(!(@workout&.ascending_ladder? && !f.object.ladder_exempt))
               = f.input :ladder_step_every, label: 'Ladder step every', hint: 'rounds between increments (blank = each round)'
           .row.g-2
-            .col-6.col-md-3 = f.input :load, label: "Load (#{load_display_unit})", input_html: { value: load_input_value(f.object.load), data: { 'exercise-card-target': 'loadInput' } }
+            .col-6.col-md-3 = f.input :load, label: "Load (#{load_display_unit})", hint: '0 = find-a-max (no fixed load)', input_html: { value: load_input_value(f.object.load), data: { 'exercise-card-target': 'loadInput' } }
             .col-6.col-md-3 = f.input :female_load, label: "Female load (#{load_display_unit})", input_html: { value: load_input_value(f.object.female_load), data: { 'exercise-card-target': 'femaleLoadInput' } }
             .col-6.col-md-3 = f.input :male_load, label: "Male load (#{load_display_unit})", input_html: { value: load_input_value(f.object.male_load), data: { 'exercise-card-target': 'maleLoadInput' } }
-            .col-6.col-md-3 = f.input :load_bearing, as: :boolean, label: 'Load-bearing', hint: 'check for a find-a-max with no fixed load'
             .col-6.col-md-3 data-implement-count-target="field" hidden=(!f.object.movement&.supports_implement_count?)
               = f.input :implement_count, label: 'Implements', hint: 'e.g. 2 = double dumbbell'
           .row.g-2

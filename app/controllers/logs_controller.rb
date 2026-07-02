@@ -84,7 +84,7 @@ class LogsController < ApplicationController
                                  {
                                    movement_logs_attributes: [[
                                      :id, :movement_id,
-                                     :reps, :duration_seconds, :load, :load_bearing, :implement_count,
+                                     :reps, :duration_seconds, :load, :implement_count,
                                      :distance, :distance_unit, :calories, :notes
                                    ]]
                                  }

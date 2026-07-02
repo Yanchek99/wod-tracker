@@ -11,9 +11,9 @@ class Exercise < ApplicationRecord
 
   default_scope { order(:position) }
 
-  validates :reps, :calories,
+  validates :reps, :calories, :load,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
-  validates :duration_seconds, :load, :female_load, :male_load,
+  validates :duration_seconds, :female_load, :male_load,
             :distance, :female_distance, :male_distance, :female_calories, :male_calories,
             numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :distance_units_per_rep,

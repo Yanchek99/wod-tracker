@@ -8,15 +8,11 @@ module MovementLogPerformance
     before_validation :clear_blank_performance_units
   end
 
-  # Transient input unit (lb/kg/pood) for a recorded load. Loads are stored canonically in pounds, so
-  # this is normalized away on save; assigning it marks the recording load-bearing so its input keeps
-  # rendering even before a value is entered (see cf/docs/load-and-distance-equivalence.md).
-  def load_unit = @load_unit
+  # Transient input unit (lb/kg/pood) for a recorded load. Loads are stored canonically in pounds
+  # (see cf/docs/load-and-distance-equivalence.md), so this is normalized away on save.
+  attr_writer :load_unit
 
-  def load_unit=(unit)
-    @load_unit = unit
-    self.load_bearing = true if unit.present?
-  end
+  def load_unit = @load_unit
 
   # Recorded performance built from the movement log's columns as in-memory Metric objects. Shares
   # the `prescription_metrics` name with Exercise so rendering and scoring read both through one
@@ -28,7 +24,7 @@ module MovementLogPerformance
   # Which dimensions this recording captures — drives the recording form inputs.
   def records_reps? = reps.present?
   def records_duration? = duration_seconds.present?
-  def records_load? = load_bearing? || load.present?
+  def records_load? = load.present?
   def records_distance? = distance_unit.present? || distance.present?
   def records_calories? = calories.present?
 
@@ -37,18 +33,14 @@ module MovementLogPerformance
   def canonicalize_load_input
     return if @load_unit.blank?
 
-    self.load_bearing = true
     self.load = LoadEquivalence.to_lb(load, @load_unit) if load.present? && @load_unit.to_s != 'lb'
     @load_unit = 'lb'
   end
 
-  # The recording form always submits a unit (defaulting to lb/meter) for every movement log, so a
-  # dimension the athlete left blank would otherwise persist an orphan marker and build a stray metric.
+  # The recording form always submits a unit for distance, so a dimension the athlete left blank
+  # would otherwise persist an orphan marker and build a stray metric.
   def clear_blank_performance_units
-    if load.blank?
-      self.load_bearing = false
-      self.implement_count = nil
-    end
+    self.implement_count = nil if load.blank?
     self.distance_unit = nil if distance.blank?
   end
 

@@ -60,13 +60,15 @@ correctly — so no new column or "penalty"/"condition" concept is needed.
 Implemented 2026-07-01 (#1684). Loads are stored canonically in **pounds**; lb/kg/pood
 are input/display conventions normalized through the source-confirmed table in
 `load-and-distance-equivalence.md`. The per-record `load_unit` column and enum were
-removed; a `load_bearing` boolean carries the "this prescription bears a load" role
-(including a find-a-max with no fixed value), and the content fingerprint hashes the
-canonical pounds value plus `load_bearing` rather than a (value, unit) pair, so the same
-prescription entered/imported as lb, kg, or pood resolves to one `content_key`. A
-transient `load_unit=` writer on `Exercise`/`MovementLog` is the write/import seam that
-normalizes an input unit to pounds. Display unit is a `User#unit_system` preference
-(imperial → lb, metric → kg); the stored magnitude and workout identity never depend on it.
+removed with no replacement column: a find-a-max prescription (load-bearing, no fixed
+value) is expressed as the `load: 0` sentinel, the same "unspecified" convention `reps`
+and `calories` already use for their own max variants, so `Exercise#load_bearing?` and
+`MovementLog#records_load?` are plain presence checks. The content fingerprint hashes the
+canonical pounds value directly (no unit or marker alongside it), so the same prescription
+entered/imported as lb, kg, or pood resolves to one `content_key`. A transient `load_unit=`
+writer on `Exercise`/`MovementLog` is the write/import seam that normalizes an input unit
+to pounds. Display unit is a `User#unit_system` preference (imperial → lb, metric → kg);
+the stored magnitude and workout identity never depend on it.
 Travel distance is likewise canonical **meters**, with mile/km normalized on import
 (`DistanceEquivalence`); `foot`/`inch` distances and all height cases are left unchanged, and
 a metric distance display toggle is deferred.

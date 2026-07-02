@@ -86,9 +86,11 @@ class ExerciseTest < ActiveSupport::TestCase
 
   # --- direct-column prescriptions (the #1651 read path) ---
 
-  test 'load_bearing? reads the load unit column' do
+  test 'a load unit with no fixed value sets the find-a-max sentinel' do
     exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, load_unit: :lb)
+    exercise.valid?
 
+    assert_equal 0, exercise.load
     assert_predicate exercise, :load_bearing?
   end
 

@@ -66,7 +66,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_130000) do
     t.boolean "ladder_exempt", default: false, null: false
     t.integer "ladder_step_every"
     t.integer "load"
-    t.boolean "load_bearing", default: false, null: false
     t.integer "male_calories"
     t.integer "male_distance"
     t.integer "male_load"
@@ -104,7 +103,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_130000) do
     t.integer "duration_seconds"
     t.integer "implement_count"
     t.integer "load"
-    t.boolean "load_bearing", default: false, null: false
     t.bigint "log_id"
     t.bigint "movement_id"
     t.string "notes"

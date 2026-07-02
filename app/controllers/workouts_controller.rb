@@ -84,7 +84,7 @@ class WorkoutsController < ApplicationController
   def workout_params
     exercise_params = [:id, :movement_id, :position, :distance_units_per_rep, :_destroy,
                        :reps, :duration_seconds, :ladder_step_every, :ladder_exempt,
-                       :load, :female_load, :male_load, :load_bearing, :implement_count,
+                       :load, :female_load, :male_load, :implement_count,
                        :distance, :female_distance, :male_distance, :distance_unit,
                        :calories, :female_calories, :male_calories, :notes]
 

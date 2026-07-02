@@ -42,6 +42,7 @@ class MeasurableHelperColumnsTest < ActionView::TestCase
     workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
     exercise = workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
                                        duration_seconds: 240, load_unit: :lb)
+    exercise.valid? # canonicalizes load_unit into the load: 0 find-a-max sentinel
 
     assert_equal '4:00 to find a 4-rep max Back Squat', measurable_message(exercise)
   end

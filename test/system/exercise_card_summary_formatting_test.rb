@@ -20,8 +20,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Reps', with: '1'
       fill_in 'Distance', with: '10', exact: true
       select 'meter', from: 'Distance unit'
-      fill_in 'Load', with: '95'
-      select 'lb', from: 'Load unit'
+      fill_in 'Load (lb)', with: '95'
       click_on 'Done'
 
       assert_text 'Run (10 meters / 95 lbs)'
@@ -35,9 +34,8 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
     within '.exercise' do
       select_movement 'Run'
       fill_in 'Reps', with: '1'
-      fill_in 'Female load', with: '65'
-      fill_in 'Male load', with: '95'
-      select 'lb', from: 'Load unit'
+      fill_in 'Female load (lb)', with: '65'
+      fill_in 'Male load (lb)', with: '95'
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'

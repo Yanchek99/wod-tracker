@@ -1,9 +1,16 @@
 module CfWod
   class PageParser
+    # Matched case-insensitively against each paragraph's leading <strong> text. Some WODs
+    # (e.g. crossfit.com/260620) go straight from the description into "Intermediate option"/
+    # "Beginner option" paragraphs with no separate "Scaling" heading at all.
     SECTION_MARKERS = {
       'Stimulus and Strategy' => :description,
       'Scaling' => :scaling,
-      'Related' => :ignore
+      'Intermediate Option' => :scaling,
+      'Beginner Option' => :scaling,
+      'Related' => :ignore,
+      'Resources' => :ignore,
+      'Find a gym near you' => :ignore
     }.freeze
 
     def initialize(date, html)
@@ -47,8 +54,9 @@ module CfWod
       current = :body
 
       paragraphs.each do |paragraph|
-        heading = paragraph.at_css('strong')&.text&.strip
-        marker = SECTION_MARKERS.find { |prefix, _| heading&.start_with?(prefix) }
+        heading = paragraph.at_css('strong')&.text
+        heading = heading.strip.downcase if heading
+        marker = SECTION_MARKERS.find { |prefix, _| heading&.start_with?(prefix.downcase) }
         current = marker.last if marker
         buckets[current] << paragraph
       end
@@ -77,52 +85,13 @@ module CfWod
     end
 
     def preloaded_slug(key)
-      preloaded_state&.dig('pages', key)&.delete_prefix('/')
+      PreloadedState.parse(html)&.dig('pages', key)&.delete_prefix('/')
     end
 
     def legacy_nav_slug(direction)
       href = doc.at_css("a.#{direction}")&.[]('href')
       match = href&.match(%r{/workout/(\d{4})/(\d{2})/(\d{2})})
       Date.new(*match.captures.map(&:to_i)).strftime('%y%m%d') if match
-    end
-
-    def preloaded_state
-      start = html.index('window.__PRELOADED_STATE__=')
-      return nil unless start
-
-      JSON.parse(extract_balanced_json(html.index('{', start)))
-    rescue JSON::ParserError
-      nil
-    end
-
-    def extract_balanced_json(start)
-      depth = 0
-      in_string = false
-      escaped = false
-
-      (start...html.length).each do |index|
-        char = html[index]
-
-        if in_string
-          escaped, in_string = string_char_state(char, escaped)
-        elsif char == '"'
-          in_string = true
-        elsif char == '{'
-          depth += 1
-        elsif char == '}'
-          depth -= 1
-          return html[start..index] if depth.zero?
-        end
-      end
-
-      raise Fetcher::FetchError, 'Unterminated preloaded state JSON'
-    end
-
-    def string_char_state(char, escaped)
-      return [false, true] if escaped
-      return [false, false] if char == '"'
-
-      [char == '\\', true]
     end
   end
 end

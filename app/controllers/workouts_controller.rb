@@ -1,4 +1,6 @@
 class WorkoutsController < ApplicationController
+  LOAD_FIELDS = %i[load female_load male_load].freeze
+
   before_action :set_workout, only: [:show, :edit, :update, :destroy]
 
   # GET /workouts
@@ -82,15 +84,39 @@ class WorkoutsController < ApplicationController
   def workout_params
     exercise_params = [:id, :movement_id, :position, :distance_units_per_rep, :_destroy,
                        :reps, :duration_seconds, :ladder_step_every, :ladder_exempt,
-                       :load, :female_load, :male_load, :load_unit, :implement_count,
+                       :load, :female_load, :male_load, :implement_count,
                        :distance, :female_distance, :male_distance, :distance_unit,
                        :calories, :female_calories, :male_calories, :notes]
 
-    params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
-                            :score_type, :ladder_step, :team_size,
-                            { segments_attributes: [[:id, :name, :rounds, :time_seconds, :interval_scheme,
-                                                     :rest_seconds, :notes, :position, :_destroy,
-                                                     { exercises_attributes: [exercise_params] }]] },
-                            { exercises_attributes: [exercise_params] }])
+    attributes = params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
+                                         :score_type, :ladder_step, :team_size,
+                                         { segments_attributes: [[:id, :name, :rounds, :time_seconds, :interval_scheme,
+                                                                  :rest_seconds, :notes, :position, :_destroy,
+                                                                  { exercises_attributes: [exercise_params] }]] },
+                                         { exercises_attributes: [exercise_params] }])
+    canonicalize_submitted_loads(attributes)
+    attributes
+  end
+
+  # Loads are stored canonically in pounds. A metric athlete enters kilograms, so normalize the
+  # submitted load values before they reach the model; imperial input is already canonical.
+  def canonicalize_submitted_loads(attributes)
+    unit = Current.user.load_display_unit
+    return if unit == :lb
+
+    submitted_exercise_attributes(attributes).each do |exercise|
+      LOAD_FIELDS.each do |field|
+        value = exercise[field]
+        exercise[field] = LoadEquivalence.to_lb(value.to_i, unit) if value.present?
+      end
+    end
+  end
+
+  def submitted_exercise_attributes(attributes)
+    exercises = Array(attributes[:exercises_attributes])
+    Array(attributes[:segments_attributes]).each do |segment|
+      exercises.concat(Array(segment[:exercises_attributes]))
+    end
+    exercises
   end
 end

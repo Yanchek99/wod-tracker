@@ -21,8 +21,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Reps', with: '1'
       fill_in 'Distance', with: '10', exact: true
       select 'meter', from: 'Distance unit'
-      fill_in 'Load', with: '95'
-      select 'lb', from: 'Load unit'
+      fill_in 'Load (lb)', with: '95'
       click_on 'Done'
 
       assert_text '10 meter Run (95 lbs)'
@@ -36,9 +35,8 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
     within '.exercise' do
       select_movement 'Run'
       fill_in 'Reps', with: '1'
-      fill_in 'Female load', with: '65'
-      fill_in 'Male load', with: '95'
-      select 'lb', from: 'Load unit'
+      fill_in 'Female load (lb)', with: '65'
+      fill_in 'Male load (lb)', with: '95'
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
@@ -73,9 +71,8 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Reps', with: '1'
       fill_in 'Distance', with: '80', exact: true
       select 'foot', from: 'Distance unit'
-      fill_in 'Female load', with: '35'
-      fill_in 'Male load', with: '50'
-      select 'lb', from: 'Load unit'
+      fill_in 'Female load (lb)', with: '35'
+      fill_in 'Male load (lb)', with: '50'
       click_on 'Done'
 
       assert_text '80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
@@ -92,9 +89,8 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '30'
       fill_in 'Male distance', with: '40'
       select 'foot', from: 'Distance unit'
-      fill_in 'Female load', with: '35'
-      fill_in 'Male load', with: '50'
-      select 'lb', from: 'Load unit'
+      fill_in 'Female load (lb)', with: '35'
+      fill_in 'Male load (lb)', with: '50'
       click_on 'Done'
 
       assert_text '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'

@@ -42,7 +42,8 @@ class Log < ApplicationRecord
 
   # Copies a selected prescription dimension onto the movement log's performance columns. reps and
   # calories have no unit, so a recorded-but-unprescribed (max-effort) dimension is stored as 0 to
-  # keep the recording form input rendered; load and distance use their unit as the active marker.
+  # keep the recording form input rendered; distance keeps its unit for the same reason. The
+  # recording form always renders a load input regardless, so load needs no such marker.
   def assign_performance(movement_log, metric, value)
     case metric.measurement
     when 'rep' then movement_log.reps = value || 0
@@ -54,15 +55,10 @@ class Log < ApplicationRecord
 
   def assign_load_or_distance(movement_log, measurement, value)
     if Metric::LOAD_MEASUREMENTS.include?(measurement)
-      assign_load(movement_log, measurement, value)
+      movement_log.load = value
     elsif Metric::DISTANCE_MEASUREMENTS.include?(measurement)
       assign_distance(movement_log, measurement, value)
     end
-  end
-
-  def assign_load(movement_log, measurement, value)
-    movement_log.load_unit = measurement == 'kg' ? :kg : :lb
-    movement_log.load = value
   end
 
   def assign_distance(movement_log, measurement, value)

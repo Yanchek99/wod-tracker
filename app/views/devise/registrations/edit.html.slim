@@ -11,6 +11,7 @@
         = f.input :last_name, required: true
         = f.input :weight, required: true
         = f.input :sex, collection: User.sexes.keys.map { |sex| [sex.titleize, sex] }, required: true, prompt: 'Select sex'
+        = f.input :unit_system, label: 'Units', collection: User.unit_systems.keys.map { |system| [system.titleize, system] }, required: true, hint: 'How loads are displayed (kg or lb)'
         = f.input :password, hint: "leave it blank if you don't want to change it", required: false, input_html: { autocomplete: "new-password" }
         = f.input :password_confirmation, required: false, input_html: { autocomplete: "new-password" }
         = f.input :current_password, hint: 'we need your current password to confirm your changes', required: true, input_html: { autocomplete: 'current-password' }

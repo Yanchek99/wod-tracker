@@ -7,6 +7,13 @@ class User < ApplicationRecord
   enum :role, { admin: 0, user: 1 }
   attribute :sex, :integer
   enum :sex, { female: 0, male: 1 }
+  # Display preference for loads, which are stored canonically in pounds: imperial shows lb, metric
+  # shows kg. Does not affect stored magnitude or workout identity.
+  enum :unit_system, { imperial: 0, metric: 1 }, prefix: :unit_system
+
+  def load_display_unit
+    unit_system_metric? ? :kg : :lb
+  end
 
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs

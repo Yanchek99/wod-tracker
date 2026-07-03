@@ -23,9 +23,8 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
       find('.ts-dropdown .option', text: 'Thruster').click
 
       fill_in 'Reps', with: '1'
-      fill_in 'Female load', with: '65'
-      fill_in 'Male load', with: '95'
-      select 'lb', from: 'Load unit'
+      fill_in 'Female load (lb)', with: '65'
+      fill_in 'Male load (lb)', with: '95'
       click_on 'Done'
       assert_text 'Thruster (♀65lb / ♂95lb)'
       assert_no_field 'Female load'

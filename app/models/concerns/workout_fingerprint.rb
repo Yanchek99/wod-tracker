@@ -115,7 +115,6 @@ module WorkoutFingerprint
       load: exercise.load,
       female_load: exercise.female_load,
       male_load: exercise.male_load,
-      load_unit: exercise.load_unit,
       distance: exercise.distance,
       female_distance: exercise.female_distance,
       male_distance: exercise.male_distance,

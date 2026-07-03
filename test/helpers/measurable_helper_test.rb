@@ -57,6 +57,14 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal 'max reps Toes to Bar', measurable_message(exercise)
   end
 
+  test 'renders a max-load test from columns' do
+    workout = Workout.create!(name: 'Back Squat Max', score_type: :weight)
+    exercise = workout.exercises.create!(movement: movements(:back_squat), position: 1, reps: 4,
+                                         duration_seconds: 240, load_unit: :lb)
+
+    assert_equal '4:00 to find a 4-rep max Back Squat', measurable_message(exercise)
+  end
+
   test 'renders timed station movements without pluralizing fixed single-rep movements' do
     exercise = workouts(:fran).exercises.create!(movement: movements(:row), position: 3,
                                                  reps: 1, duration_seconds: 60, calories: 0)

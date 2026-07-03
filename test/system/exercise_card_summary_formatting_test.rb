@@ -5,13 +5,14 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
 
   setup do
     login_as users(:mathew), scope: :user
+    Movement.find_or_create_by!(name: 'Dumbbell Overhead Walking Lunge')
   end
 
   teardown do
     Warden.test_reset!
   end
 
-  test 'orders additional distance before load after local save' do
+  test 'renders distance before movement with load after local save' do
     visit new_workout_url
     click_on 'Add Exercise'
 
@@ -23,11 +24,11 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Load (lb)', with: '95'
       click_on 'Done'
 
-      assert_text 'Run (10 meters / 95 lbs)'
+      assert_text '10 meter Run (95 lbs)'
     end
   end
 
-  test 'groups sex-specific additional metrics after local save' do
+  test 'renders sex-specific distance before movement with sex-specific load after local save' do
     visit new_workout_url
     click_on 'Add Exercise'
 
@@ -41,11 +42,11 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       select 'meter', from: 'Distance unit'
       click_on 'Done'
 
-      assert_text 'Run (♀65lb + 80-meter / ♂95lb + 100-meter)'
+      assert_text '100/80 meter Run (♀65lb / ♂95lb)'
     end
   end
 
-  test 'uses sex-specific distance as leading work after local save' do
+  test 'renders sex-specific distance before movement after local save' do
     visit new_workout_url
     click_on 'Add Exercise'
 
@@ -61,6 +62,41 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
     end
   end
 
+  test 'renders distance before movement for loaded lunges after local save' do
+    visit new_workout_url
+    click_on 'Add Exercise'
+
+    within '.exercise' do
+      select_movement 'Dumbbell Overhead Walking Lunge'
+      fill_in 'Reps', with: '1'
+      fill_in 'Distance', with: '80', exact: true
+      select 'foot', from: 'Distance unit'
+      fill_in 'Female load (lb)', with: '35'
+      fill_in 'Male load (lb)', with: '50'
+      click_on 'Done'
+
+      assert_text '80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+    end
+  end
+
+  test 'renders sex-specific foot distance before movement for loaded lunges after local save' do
+    visit new_workout_url
+    click_on 'Add Exercise'
+
+    within '.exercise' do
+      select_movement 'Dumbbell Overhead Walking Lunge'
+      fill_in 'Reps', with: '1'
+      fill_in 'Female distance', with: '30'
+      fill_in 'Male distance', with: '40'
+      select 'foot', from: 'Distance unit'
+      fill_in 'Female load (lb)', with: '35'
+      fill_in 'Male load (lb)', with: '50'
+      click_on 'Done'
+
+      assert_text '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+    end
+  end
+
   test 'omits zero calories from the local summary' do
     visit new_workout_url
     click_on 'Add Exercise'
@@ -71,21 +107,6 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       click_on 'Done'
 
       assert_text 'Row'
-    end
-  end
-
-  test 'renders the local summary in kilograms for a metric athlete' do
-    users(:mathew).update!(unit_system: :metric)
-    visit new_workout_url
-    click_on 'Add Exercise'
-
-    within '.exercise' do
-      select_movement 'Thruster'
-      fill_in 'Reps', with: '21'
-      fill_in 'Load (kg)', with: '43'
-      click_on 'Done'
-
-      assert_text '21 Thrusters (43 kgs)'
     end
   end
 

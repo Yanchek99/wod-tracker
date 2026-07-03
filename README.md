@@ -34,3 +34,11 @@ An open source webapp to track your workout of the day capturing key points of d
 
 ## Local Server
 - run `rails s`
+
+## CrossFit.com WOD Fetcher
+- Fetch a single day's WOD from crossfit.com from a Rails console (`rails c`):
+  ```ruby
+  CfWod::Fetcher.call(Date.new(2026, 6, 20))
+  # => #<data CfWod::WodPage date=..., slug="260620", title=..., body_html=..., body_text=..., description=..., scaling=..., rest_day=false, previous_slug="260619", next_slug="260621">
+  ```
+- Raises `CfWod::Fetcher::FetchError` on network errors, unexpected HTTP responses, or a page that doesn't match either known crossfit.com template.

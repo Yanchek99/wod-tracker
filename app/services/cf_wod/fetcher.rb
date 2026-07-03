@@ -10,7 +10,7 @@ module CfWod
     MAX_EMPTY_TEMPLATE_RETRIES = 3
     OPEN_TIMEOUT = 5
     READ_TIMEOUT = 10
-    USER_AGENT = 'WodTracker/1.0 (+https://github.com/matthewyanchek/wod-tracker)'.freeze
+    USER_AGENT = 'WOD-Tracker/1.0'.freeze
 
     def self.call(date) = new(date).fetch
 

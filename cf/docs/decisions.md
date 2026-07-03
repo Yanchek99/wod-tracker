@@ -1,5 +1,48 @@
 # Decisions
 
+## 2026-07-03: CrossFit.com WOD Pages Require Cache-Busting And A Retry, Not A Headless Browser
+
+The epic's "Key findings" note (#1679) said plain HTTP GET + Nokogiri is enough to scrape
+crossfit.com — true, but two non-obvious behaviors of the live site had to be confirmed
+before `CfWod::Fetcher` (#1674) could rely on it, since a naive implementation following
+the issue text literally would intermittently fetch an empty page:
+
+- **There is really one canonical URL to request, not two.** `https://www.crossfit.com/workout/{YYYY}/{MM}/{DD}`
+  serves the pre-redesign static template directly (`200`) for old-enough dates, and
+  redirects (`301`, `Location: /{YYMMDD}`) to the modern short-slug route for newer dates.
+  The exact cutover date doesn't need to be known or hardcoded — always request the
+  `/workout/...` URL first and follow whichever response you get.
+- **The modern `/{YYMMDD}` route is flaky, and the cause is not bot detection** (a
+  dead-end initially suspected and ruled out by comparing response headers/status
+  across repeated requests — there is no WAF/anti-bot signature involved, just an
+  unreliable server-render). The same URL, requested twice, can return either a full
+  page (400-600KB, containing `<article><span class="_text-block_HASH...">` with the
+  real WOD body/description/scaling as sequential `<p>` tags) or a content-less
+  client-rendered shell (~130KB, no `<article>` at all) depending on the origin's
+  own SSR success for that request — independent of any header or User-Agent
+  difference. A fresh, unique cache-busting query parameter (plus `Cache-Control:
+  no-cache`) must be applied to *every* hop, including the request made after
+  following the redirect (not just the initial request) — verified by comparing dozens
+  of live fetches side by side. Even with cache-busting, the shell still appears
+  occasionally, so the Fetcher retries (up to 3 attempts) specifically when the
+  response can't be matched to either known template.
+- Confirmed real markup for both templates (via live fetch, not assumption): the old
+  template's body lives in `div#wodContainer div.wod.active div.content`, with inline
+  scaling after an `<hr>` as `<strong>Scaling this WOD</strong>`/`<strong>Intermediate
+  Option</strong>`/`<strong>Beginner Option</strong>` paragraphs, and next/previous
+  navigation as plain `<a class="next arrow">`/`<a class="prev arrow">` links. The
+  modern template's `previousUrl`/`nextUrl` live in the page's embedded
+  `window.__PRELOADED_STATE__` JSON instead, and its description/scaling are
+  paragraphs within the same `<article>` span, marked by a leading `<strong>Stimulus
+  and Strategy:</strong>` / `<strong>Scaling:</strong>` respectively.
+
+Rationale: without the cache-busting-on-every-hop behavior, a scheduled daily scrape
+job (#1677) fetching "today's" WOD — always the newest, most redirect-prone date —
+would intermittently import an empty workout, silently degrading the whole epic's
+data quality. Documented here rather than only in code comments because it is a
+durable fact about the external source, not an implementation detail, per this file's
+purpose.
+
 ## 2026-06-30: Partner/Team Workouts Are A team_size Count Plus Notes
 
 Some workouts define their work as shared across multiple athletes — a partner or

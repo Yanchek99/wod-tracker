@@ -416,6 +416,10 @@ metric defines the work for that movement. For example, a Murph run segment
 should render as `1600 meter Run`, not `Run (1600 meters)`. Compact
 sex-specific lead prescriptions use the CrossFit shorthand order from the
 source, such as `20/18 calorie Row` or `500/450 meter Row`.
+Loads on distance or calorie work remain additional prescription details, such
+as `400 meter Run (20 lbs)` or
+`80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)`. A single rep on those
+prescriptions is structural, not a displayed rep count.
 
 ## Metric Modeling Notes
 

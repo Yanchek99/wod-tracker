@@ -1,4 +1,6 @@
 module MeasurableHelper
+  include MeasurablePrescribedWorkHelper
+
   def measurable_message(measurable)
     [measurable_movement_msg(measurable), measurable_additional_metrics(measurable)].compact.join(' ')
   end
@@ -9,8 +11,8 @@ module MeasurableHelper
     return max_load_test_msg(measurable, rep_metric, duration_metric) if measurable.respond_to?(:max_load_test?) && measurable.max_load_test?
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
-    lead_metric = leading_work_metric(measurable)
-    return leading_work_movement_msg(measurable, lead_metric) if lead_metric
+    work_metric = prescribed_work_metric(measurable)
+    return prescribed_work_movement_msg(measurable, work_metric) if work_metric
 
     rep_movement_msg(measurable, rep_metric)
   end
@@ -38,10 +40,10 @@ module MeasurableHelper
   end
 
   def additional_metrics(measurable)
-    leading_work_metric = leading_work_metric(measurable)
+    work_metric = prescribed_work_metric(measurable)
 
     measurable.prescription_metrics.reject(&:rep?)
-              .reject { |metric| metric == leading_work_metric }
+              .reject { |metric| metric == work_metric }
               .reject { |metric| duration_metric?(metric) }
               .select { |metric| visible_metric?(metric) }
               .sort_by { |metric| additional_metric_display_order(metric) }
@@ -107,37 +109,5 @@ module MeasurableHelper
     return format('%<hours>d:%<minutes>02d:%<seconds>02d', hours: hours, minutes: minutes, seconds: seconds) if hours.positive?
 
     format('%<minutes>d:%<seconds>02d', minutes: minutes, seconds: seconds)
-  end
-
-  def leading_work_metric(measurable)
-    return unless measurable.is_a?(Exercise)
-
-    metrics = measurable.prescription_metrics
-    candidate = metrics.find { |metric| leading_work_candidate?(metric) }
-    candidate if leading_work_metric_stands_alone?(candidate, metrics)
-  end
-
-  def leading_work_candidate?(metric) = visible_metric?(metric) && leading_work_metric?(metric)
-
-  def leading_work_metric_stands_alone?(candidate, metrics)
-    candidate && metrics.all? { |metric| !visible_metric?(metric) || metric == candidate || structural_single_rep_metric?(metric) }
-  end
-
-  def leading_work_metric?(metric) = metric.calorie? || Metric::DISTANCE_MEASUREMENTS.include?(metric.measurement)
-
-  def structural_single_rep_metric?(metric) = metric.rep? && metric.value == 1
-
-  def leading_work_movement_msg(measurable, metric)
-    [leading_work_metric_msg(metric), measurable.movement.name].join(' ')
-  end
-
-  def leading_work_metric_msg(metric)
-    return sex_specific_leading_work_metric_msg(metric) if metric.sex_specific?
-
-    "#{metric.value} #{metric.measurement.singularize}"
-  end
-
-  def sex_specific_leading_work_metric_msg(metric)
-    "#{metric.male_value}/#{metric.female_value} #{metric.measurement.singularize}"
   end
 end

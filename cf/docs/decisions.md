@@ -26,15 +26,21 @@ parser can't safely disambiguate without guessing which movements the load
 applies to).
 
 A related, narrower finding: movement-name matching (`CfWod::MovementMatcher`)
-normalizes prose (singularize, Title Case) and matches against the existing
-`Movement` catalog before creating a new record, per the issue's "only when
-genuinely missing" instruction. Bare generic terms that are substrings of many
-compound movement names (e.g. "squats" against "Air Squat"/"Back Squat"/"Squat
-Clean Thruster"/etc.) are genuinely ambiguous against this catalog and are
-flagged rather than guessed. Hyphenation conventions can also differ between
-crossfit.com prose and the seeded catalog (e.g. prose "Toes-to-bar" vs. the
-catalog's "Toes to Bar") — a real, currently-unhandled gap rather than an
-ambiguity, since exact/fuzzy matching requires the same word-separator style.
+normalizes prose (singularize, Title Case, a hyphen/space swap so e.g. prose
+"toes-to-bars" finds the catalog's "Toes to Bar") and matches only against the
+existing `Movement` catalog. It never creates a new record. The issue text's
+original "`find_or_create_by` only when genuinely missing" instruction turned
+out to be the wrong call in practice: a name lifted from unstructured prose --
+a mis-split line, a named Hero WOD's title (e.g. a body that opens with "Ned"
+before the workout details), a typo -- is not a trustworthy source for a new
+catalog entry, and a bad create silently pollutes the catalog for every future
+parse. A movement that doesn't match anything existing is reported unmatched
+(same as an ambiguous fuzzy match) and flags the parse `:partial`/`:failed`
+for a human to extend the catalog deliberately, rather than the parser doing
+it unsupervised. Bare generic terms that are substrings of many compound
+movement names (e.g. "squats" against "Air Squat"/"Back Squat"/"Squat Clean
+Thruster"/etc.) are ambiguous against the catalog for the same reason and are
+also flagged rather than guessed.
 
 ## 2026-07-03: CrossFit.com WOD Pages Require Cache-Busting And A Retry, Not A Headless Browser
 

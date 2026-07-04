@@ -64,21 +64,27 @@ module CfWod
       assert_nil result.workout.team_size
     end
 
-    test 'a genuinely uncatalogued movement is created via find_or_create_by' do
-      assert_difference('Movement.count', 1) do
+    test 'a genuinely uncatalogued movement is flagged rather than auto-created' do
+      assert_no_difference('Movement.count') do
         result = Parser.call(page_for_text("For time:\n20 gorilla crawls"))
 
-        assert result.parsed?
-        assert_equal 'Gorilla Crawl', result.workout.exercises.first.movement.name
+        assert result.failed?
+        assert_includes result.reason, 'gorilla crawls'
       end
     end
 
-    test 'a named Hero WOD with the scoring cue on a later paragraph still detects for-time and rounds' do
-      text = "Ned\n\n7 rounds for time of:\n3 forward rolls\n5 wall climbs\n9 box jumps"
-      result = Parser.call(page_for_text(text))
+    test 'a named Hero WOD with the scoring cue on a later paragraph still detects for-time and rounds, without creating a movement for the title' do
+      text = "Ned\n\n7 rounds for time of:\n3 forward rolls\n5 wall walks\n9 box jumps"
 
-      assert_equal 'time', result.workout.score_type
-      assert_equal 7, result.workout.rounds
+      assert_no_difference('Movement.count') do
+        result = Parser.call(page_for_text(text))
+
+        assert_equal 'time', result.workout.score_type
+        assert_equal 7, result.workout.rounds
+        assert_includes result.reason, 'Ned'
+        names = result.workout.exercises.map { |exercise| exercise.movement.name }
+        assert_equal ['Forward Roll', 'Wall Walk', 'Box Jump'], names
+      end
     end
   end
 end

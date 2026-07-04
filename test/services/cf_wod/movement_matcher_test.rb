@@ -47,12 +47,12 @@ module CfWod
       end
     end
 
-    test 'creates a genuinely missing movement' do
-      assert_difference('Movement.count', 1) do
+    test 'does not create a genuinely missing movement, reports it unmatched instead' do
+      assert_no_difference('Movement.count') do
         result = MovementMatcher.match('gorilla crawls')
 
         assert_not result.ambiguous
-        assert_equal 'Gorilla Crawl', result.movement.name
+        assert_nil result.movement
       end
     end
 
@@ -65,7 +65,7 @@ module CfWod
       end
     end
 
-    test 'refuses to create a movement from an implausibly long candidate' do
+    test 'a misclassified sentence never creates a movement' do
       assert_no_difference('Movement.count') do
         result = MovementMatcher.match('Add 3 reps to each movement every round')
 

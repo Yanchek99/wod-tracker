@@ -3,10 +3,6 @@ module CfWod
     Result = Data.define(:movement, :ambiguous)
 
     CONNECTOR_WORDS = %w[and to the a of].freeze
-    # Real movement names in the catalog are 1-4 words; a longer candidate is very likely a
-    # misclassified sentence (e.g. an unrecognized header), not a genuinely new movement -- refuse
-    # to create it rather than polluting the catalog with garbage.
-    MAX_NEW_MOVEMENT_WORDS = 5
 
     def self.match(raw_name) = new(raw_name).match
 
@@ -50,20 +46,18 @@ module CfWod
       Movement.where('lower(name) = ?', candidate.downcase).first
     end
 
+    # Zero fuzzy matches means the movement isn't in the catalog. Do not create it here --
+    # a name the parser lifted from prose (a mis-split line, a named WOD's title, a typo) is not
+    # a trustworthy source for a new catalog entry. Report it as unmatched so the caller can flag
+    # the parse as needing review instead.
     def fuzzy_match(candidate)
       fuzzy_matches = Movement.search_by_name(candidate).to_a
 
       case fuzzy_matches.size
-      when 0 then Result.new(movement: create_if_plausible(candidate), ambiguous: false)
       when 1 then Result.new(movement: fuzzy_matches.first, ambiguous: false)
+      when 0 then Result.new(movement: nil, ambiguous: false)
       else Result.new(movement: nil, ambiguous: true)
       end
-    end
-
-    def create_if_plausible(candidate)
-      return nil if candidate.split.size > MAX_NEW_MOVEMENT_WORDS
-
-      Movement.find_or_create_by(name: candidate)
     end
 
     def normalize(name)

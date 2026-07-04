@@ -46,13 +46,16 @@ module CfWod
 
       assert result.partial?
       assert_includes result.reason, 'Could not determine workout format from body text'
+      assert_includes result.reason, 'Could not match movement: "Echo bike"'
       workout = result.workout
       assert_nil workout.score_type
       assert_equal 4, workout.segments.size
       assert(workout.segments.all? { |segment| segment.time_seconds == 120 })
       assert_equal 'Front Squat', workout.segments.first.exercises.first.movement.name
-      assert_equal 'Echo Bike', workout.segments.first.exercises.second.movement.name
-      assert_equal 0, workout.segments.first.exercises.second.calories
+      # "Echo Bike" isn't in the Movement catalog (a brand-specific machine name), so it's
+      # unmatched and dropped rather than auto-created -- only Front Squat and Rest remain.
+      names = workout.segments.first.exercises.map { |exercise| exercise.movement.name }
+      assert_equal ['Front Squat', 'Rest'], names
     end
 
     test 'rest day fixture fails immediately without attempting to parse' do

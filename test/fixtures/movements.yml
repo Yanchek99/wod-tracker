@@ -25,3 +25,45 @@ thruster:
 
 back_squat:
   name: Back Squat
+
+power_snatch:
+  name: Power Snatch
+
+overhead_walking_lunge:
+  name: Overhead Walking Lunge
+
+rope_climb:
+  name: Rope Climb
+
+sled_drag:
+  name: Sled Drag
+
+bent_over_row:
+  name: Bent-over Row
+
+front_squat:
+  name: Front Squat
+
+push_press:
+  name: Push Press
+
+squat_clean_thruster:
+  name: Squat Clean Thruster
+
+box_jump:
+  name: Box Jump
+
+forward_roll:
+  name: Forward Roll
+
+wall_walk:
+  name: Wall Walk
+
+wall_ball_shot:
+  name: Wall-ball Shot
+
+double_under:
+  name: Double-under
+
+clean_and_jerk:
+  name: Clean and Jerk

@@ -4,6 +4,14 @@ module CfWod
   class ParserTest < ActiveSupport::TestCase
     FIXTURES = Rails.root.join('test/fixtures/cf_wod')
 
+    # Not in test/fixtures/movements.yml: their names are substrings of other fixtures ("Row",
+    # "Thruster"), which makes system tests elsewhere that select a movement by dropdown text
+    # ambiguous. Created here instead, scoped to this file's per-test transactions.
+    setup do
+      Movement.find_or_create_by!(name: 'Bent-over Row')
+      Movement.find_or_create_by!(name: 'Squat Clean Thruster')
+    end
+
     def page_for_fixture(name, date)
       PageParser.new(date, File.read(FIXTURES.join(name))).parse
     end

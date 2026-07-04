@@ -38,29 +38,17 @@ rope_climb:
 sled_drag:
   name: Sled Drag
 
-bent_over_row:
-  name: Bent-over Row
-
 front_squat:
   name: Front Squat
 
 push_press:
   name: Push Press
 
-squat_clean_thruster:
-  name: Squat Clean Thruster
-
-box_jump:
-  name: Box Jump
-
 forward_roll:
   name: Forward Roll
 
 wall_walk:
   name: Wall Walk
-
-wall_ball_shot:
-  name: Wall-ball Shot
 
 double_under:
   name: Double-under

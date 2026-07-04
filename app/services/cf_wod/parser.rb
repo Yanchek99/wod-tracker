@@ -12,6 +12,9 @@ module CfWod
     def parse
       return rest_day_result if wod_page.rest_day?
 
+      named_workout = NamedWorkoutFinder.find(wod_page.body_text)
+      return named_workout_result(named_workout) if named_workout
+
       format = FormatDetector.new(wod_page.body_text).detect
       workout = build_workout(format)
       reasons = collect_reasons(workout, format)
@@ -26,6 +29,13 @@ module CfWod
 
     def rest_day_result
       ParseResult.new(workout: nil, status: :failed, reason: 'Rest day; no workout to parse', raw_text: wod_page.body_text)
+    end
+
+    # An existing, hand-curated Workout is a fully confident result -- there is nothing to
+    # reconstruct or flag. Its notes are left untouched rather than overwritten with today's
+    # scraped body text, since the seeded record is already the trusted source.
+    def named_workout_result(workout)
+      ParseResult.new(workout: workout, status: :parsed, reason: nil, raw_text: wod_page.body_text)
     end
 
     def collect_reasons(workout, format)

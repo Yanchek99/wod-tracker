@@ -12,6 +12,19 @@ common ways, the parser returns a `CfWod::ParseResult` (`workout`, `status`,
 sections when present) regardless of status, so source text is never lost even on a
 `:failed` parse.
 
+Before attempting any structural parsing, `CfWod::NamedWorkoutFinder` checks whether
+the body's opening paragraph exactly names an already-seeded `Workout` (case-
+insensitive) -- real Hero WOD pages commonly open with the honoree's name as its own
+paragraph before the prescription (e.g. "Ned", "Adrian"; this is also what originally
+broke `for_time` detection, see below). When it matches, the parser returns that
+existing, persisted, hand-curated `Workout` directly with `status: :parsed` and does
+not touch its `notes` or attempt any line/movement parsing at all. A hand-seeded
+definition is strictly more trustworthy than anything the parser could heuristically
+reconstruct, so there is nothing to gain from re-deriving it -- and every parsing
+edge case (ascending ladders, event-triggered penalties, load attachment ambiguity)
+is sidestepped entirely for exactly the class of workouts (Hero/benchmark/Open) most
+likely to trip on them.
+
 Deliberate v1 non-goals, each surfaced as a `:partial` reason rather than a silent
 wrong guess: ascending-ladder detection (`ladder_step`), partner/team detection
 (`team_size` — flagged by a bare "partner"/"team" text match only), event-triggered

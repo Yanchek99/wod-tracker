@@ -2,9 +2,29 @@ require 'test_helper'
 
 module CfWod
   class ParserSyntheticProseTest < ActiveSupport::TestCase
+    # Not in test/fixtures/movements.yml: their names collide with helper tests elsewhere that
+    # create these same names at runtime expecting them to be new. Created here instead, scoped
+    # to this file's per-test transactions.
+    setup do
+      Movement.find_or_create_by!(name: 'Wall-ball Shot')
+      Movement.find_or_create_by!(name: 'Box Jump')
+    end
+
     def page_for_text(body_text)
       WodPage.new(date: Date.current, slug: 'x', title: 'x', body_html: body_text, body_text: body_text,
                   description: nil, scaling: nil, rest_day: false, previous_slug: nil, next_slug: nil)
+    end
+
+    test 'a body opening with an already-seeded workout name returns that workout directly, unparsed' do
+      text = "Fran\n\n21-15-9 reps for time of\nThrusters (95/65 lb)\nPull-ups"
+
+      assert_no_difference(['Movement.count', 'Workout.count']) do
+        result = Parser.call(page_for_text(text))
+
+        assert result.parsed?
+        assert_nil result.reason
+        assert_equal workouts(:fran), result.workout
+      end
     end
 
     test 'Cindy-shaped AMRAP prose parses cleanly except for an ambiguous bare movement' do

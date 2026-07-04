@@ -2,6 +2,15 @@ require 'test_helper'
 
 module CfWod
   class MovementMatcherTest < ActiveSupport::TestCase
+    # Not in test/fixtures/movements.yml: their names collide with other tests elsewhere (system
+    # tests that select a movement by dropdown text, helper tests that create these same names at
+    # runtime). Created here instead, scoped to this file's per-test transactions.
+    setup do
+      Movement.find_or_create_by!(name: 'Box Jump')
+      Movement.find_or_create_by!(name: 'Wall-ball Shot')
+      Movement.find_or_create_by!(name: 'Bent-over Row')
+    end
+
     test 'normalizes and matches existing catalog movements regardless of prose pluralization' do
       {
         'box jumps' => 'Box Jump',

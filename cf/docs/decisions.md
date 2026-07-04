@@ -1,5 +1,41 @@
 # Decisions
 
+## 2026-07-04: The WOD Parser Flags What It Can't Confidently Structure Rather Than Guessing
+
+`CfWod::Parser` (#1675) converts a fetched `CfWod::WodPage#body_text` into an unsaved
+`Workout` graph. Because free-form CrossFit prose is genuinely ambiguous in several
+common ways, the parser returns a `CfWod::ParseResult` (`workout`, `status`,
+`reason`, `raw_text`) rather than a bare `Workout` — `status` is `:parsed`,
+`:partial` (something usable was built, but a real gap is named in `reason`), or
+`:failed` (nothing usable, including rest days, checked before any parsing runs).
+`workout.notes` always holds the raw body text (plus labeled `description`/`scaling`
+sections when present) regardless of status, so source text is never lost even on a
+`:failed` parse.
+
+Deliberate v1 non-goals, each surfaced as a `:partial` reason rather than a silent
+wrong guess: ascending-ladder detection (`ladder_step`), partner/team detection
+(`team_size` — flagged by a bare "partner"/"team" text match only), event-triggered
+penalty segments (a named `Segment` is still built from the trigger phrase, e.g.
+"Any time you stop", with a best-effort embedded rep/movement extraction, but the
+per-occurrence-vs-total reps meaning is inherently ambiguous from text alone), and
+multi-movement trailing shared-load blocks (a scaled-load paragraph is only
+attached when exactly one movement line precedes it in the same paragraph —
+real WODs sometimes share one load across several preceding movements, e.g.
+crossfit.com/workout/2018/01/10's power-snatch/lunge/rope-climb block, which the
+parser can't safely disambiguate without guessing which movements the load
+applies to).
+
+A related, narrower finding: movement-name matching (`CfWod::MovementMatcher`)
+normalizes prose (singularize, Title Case) and matches against the existing
+`Movement` catalog before creating a new record, per the issue's "only when
+genuinely missing" instruction. Bare generic terms that are substrings of many
+compound movement names (e.g. "squats" against "Air Squat"/"Back Squat"/"Squat
+Clean Thruster"/etc.) are genuinely ambiguous against this catalog and are
+flagged rather than guessed. Hyphenation conventions can also differ between
+crossfit.com prose and the seeded catalog (e.g. prose "Toes-to-bar" vs. the
+catalog's "Toes to Bar") — a real, currently-unhandled gap rather than an
+ambiguity, since exact/fuzzy matching requires the same word-separator style.
+
 ## 2026-07-03: CrossFit.com WOD Pages Require Cache-Busting And A Retry, Not A Headless Browser
 
 The epic's "Key findings" note (#1679) said plain HTTP GET + Nokogiri is enough to scrape

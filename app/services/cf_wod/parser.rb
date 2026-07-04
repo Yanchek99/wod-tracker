@@ -47,7 +47,7 @@ module CfWod
 
     def build_workout(format)
       Workout.new(
-        name: wod_page.title.presence || "CrossFit.com #{wod_page.slug}",
+        name: "CF-#{wod_page.slug}",
         score_type: format.score_type,
         time: format.time,
         rounds: format.rounds,

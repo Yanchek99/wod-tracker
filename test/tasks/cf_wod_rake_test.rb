@@ -14,7 +14,7 @@ class CfWodRakeTest < ActiveSupport::TestCase
     output = capture_io { Rake::Task['cf_wod:fetch'].invoke('2018-01-10') }.join
 
     assert_includes output, 'CfWod::ParseResult'
-    assert_includes output, 'name: "Workout of the Day: Wednesday 180110"'
+    assert_includes output, 'name: "CF-180110"'
     assert_includes output, 'status=:partial'
   end
 

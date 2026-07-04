@@ -7,13 +7,15 @@ class CfWodRakeTest < ActiveSupport::TestCase
     Rake::Task['cf_wod:fetch'].reenable
   end
 
-  test 'fetches and prints a WOD for a given date' do
+  test 'fetches, parses, and prints a WOD for a given date' do
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: Rails.root.join('test/fixtures/cf_wod/legacy_with_scaling.html').read)
 
     output = capture_io { Rake::Task['cf_wod:fetch'].invoke('2018-01-10') }.join
 
-    assert_includes output, 'slug="180110"'
+    assert_includes output, 'CfWod::ParseResult'
+    assert_includes output, 'name: "Workout of the Day: Wednesday 180110"'
+    assert_includes output, 'status=:partial'
   end
 
   test 'aborts with a usage message when no date is given' do

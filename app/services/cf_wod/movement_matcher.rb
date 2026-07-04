@@ -15,18 +15,40 @@ module CfWod
     end
 
     def match
-      candidate = normalize(raw_name)
-      return Result.new(movement: nil, ambiguous: false) if candidate.blank?
+      singular = normalize(raw_name)
+      return Result.new(movement: nil, ambiguous: false) if singular.blank?
 
-      exact = Movement.where('lower(name) = ?', candidate.downcase).first
+      exact = exact_match
       return Result.new(movement: exact, ambiguous: false) if exact
 
-      fuzzy_match(candidate)
+      fuzzy_match(singular)
     end
 
     private
 
     attr_reader :raw_name
+
+    # Some catalog names are inherently plural ("Knees-to-elbows") or space- rather than
+    # hyphen-separated ("Toes to Bar"), so singularizing before checking for an exact match can
+    # miss them. Try the as-written form and a hyphen/space swap before falling back to the
+    # singularized form and, failing that, fuzzy search.
+    def exact_match
+      candidates.filter_map { |candidate| find_exact(candidate) }.first
+    end
+
+    def candidates
+      words = tokenize(raw_name)
+      as_written = title_case(words)
+      singular = title_case(words.map { |word| singularize(word) })
+
+      [as_written, singular, as_written.tr('-', ' '), singular.tr('-', ' ')].uniq
+    end
+
+    def find_exact(candidate)
+      return nil if candidate.blank?
+
+      Movement.where('lower(name) = ?', candidate.downcase).first
+    end
 
     def fuzzy_match(candidate)
       fuzzy_matches = Movement.search_by_name(candidate).to_a
@@ -45,8 +67,11 @@ module CfWod
     end
 
     def normalize(name)
-      words = name.to_s.strip.split(/\s+/).map { |word| singularize(word) }
-      title_case(words)
+      title_case(tokenize(name).map { |word| singularize(word) })
+    end
+
+    def tokenize(name)
+      name.to_s.strip.split(/\s+/)
     end
 
     def singularize(word)

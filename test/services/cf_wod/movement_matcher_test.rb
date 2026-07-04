@@ -4,8 +4,6 @@ module CfWod
   class MovementMatcherTest < ActiveSupport::TestCase
     test 'normalizes and matches existing catalog movements regardless of prose pluralization' do
       {
-        'pull-ups' => 'Pull-up',
-        'push-ups' => 'Push-up',
         'box jumps' => 'Box Jump',
         'wall-ball shots' => 'Wall-ball Shot',
         'thrusters' => 'Thruster',
@@ -18,6 +16,26 @@ module CfWod
 
         assert_not result.ambiguous, "expected #{prose.inspect} to match unambiguously"
         assert_equal expected, result.movement&.name, "expected #{prose.inspect} to normalize to #{expected.inspect}"
+      end
+    end
+
+    test 'matches a space-separated catalog name from hyphenated, pluralized prose' do
+      assert_no_difference('Movement.count') do
+        result = MovementMatcher.match('pull-ups')
+
+        assert_not result.ambiguous
+        assert_equal movements(:pullup), result.movement
+      end
+    end
+
+    test 'tries the as-written form before singularizing, since some catalog names are inherently plural' do
+      Movement.create!(name: 'Knees-to-elbows')
+
+      assert_no_difference('Movement.count') do
+        result = MovementMatcher.match('knees-to-elbows')
+
+        assert_not result.ambiguous
+        assert_equal 'Knees-to-elbows', result.movement.name
       end
     end
 

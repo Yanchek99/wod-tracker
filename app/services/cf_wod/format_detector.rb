@@ -23,7 +23,7 @@ module CfWod
       /within\s*(\d+)\s*minutes?/i
     ].freeze
     FOR_TIME_PATTERN = /\bfor time\b/i
-    ROUNDS_FOR_TIME_PATTERN = /(\d+)\s*rounds?,?\s*each\s*for time/i
+    ROUNDS_FOR_TIME_PATTERN = /(\d+)\s*rounds?,?\s*(?:each\s*)?for time\b/i
 
     def initialize(body_text)
       @body_text = body_text
@@ -85,9 +85,11 @@ module CfWod
       blank_result.with(score_type: :weight, time_cap_seconds: seconds&.to_i&.*(60))
     end
 
+    # Checked anywhere in the body, not just the first line -- named Hero WODs commonly put the
+    # honoree's name first and the scoring cue ("N rounds for time of:") in a later paragraph.
+    # Safe as the last fallback: any AMRAP/EMOM/interval/lifting cue would already have matched above.
     def for_time_result
-      first_line = body_text.lines.first.to_s
-      return unless first_line.match?(FOR_TIME_PATTERN)
+      return unless body_text.match?(FOR_TIME_PATTERN)
 
       rounds = body_text[ROUNDS_FOR_TIME_PATTERN, 1]
       blank_result.with(score_type: :time, rounds: rounds&.to_i)

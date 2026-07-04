@@ -14,7 +14,7 @@ module CfWod
       assert_includes result.reason, 'squats'
       assert_equal 'rep', result.workout.score_type
       assert_equal 20, result.workout.time
-      assert_equal(%w[Pull-up Push-up], result.workout.exercises.map { |exercise| exercise.movement.name })
+      assert_equal([movements(:pullup), movements(:pushup)], result.workout.exercises.map(&:movement))
     end
 
     test 'Chelsea-shaped EMOM prose sets rounds and time from the interval and total duration' do
@@ -71,6 +71,14 @@ module CfWod
         assert result.parsed?
         assert_equal 'Gorilla Crawl', result.workout.exercises.first.movement.name
       end
+    end
+
+    test 'a named Hero WOD with the scoring cue on a later paragraph still detects for-time and rounds' do
+      text = "Ned\n\n7 rounds for time of:\n3 forward rolls\n5 wall climbs\n9 box jumps"
+      result = Parser.call(page_for_text(text))
+
+      assert_equal 'time', result.workout.score_type
+      assert_equal 7, result.workout.rounds
     end
   end
 end

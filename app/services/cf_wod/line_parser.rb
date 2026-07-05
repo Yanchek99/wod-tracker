@@ -3,8 +3,9 @@ module CfWod
     Result = Data.define(:reps, :calories, :distance, :distance_unit, :movement_name, :notes)
 
     LEADING_QUANTITY = /\A(?<reps>\d+|max)[\s,-]+(?:reps?\s+)?(?<rest>.+)\z/i
+    TRAILING_REP_SCHEME = /\A(?<movement>.+?)\s+(?<scheme>\d+(?:-\d+){2,})\s+reps?\z/i
     CALORIE_CLOCK_PHRASE = /\Amax-calorie\s+(?<movement>.+?)\s+in the remaining time\z/i
-    CALORIE_LEAD_VERB = /\A(?<movement>row|run|bike|swim)\s+for\s+(?:max\s+)?calories?\z/i
+    CALORIE_LEAD_VERB = /\A(?<movement>row|run|bike|swim)\s+(?:for\s+)?(?:max\s+)?calories?\z/i
     CALORIE_PREFIX = /\A(?<calories>\d+)-?calorie\s+(?<rest>.+)\z/i
     DISTANCE_LEAD = /\A(?<value>[\d,]+)[\s-](?:meter|foot|ft|feet|m|inch|in)s?\.?\s+(?<rest>.+)\z/i
     DISTANCE_UNIT_IN_LEAD = /\A[\d,]+[\s-](?<unit>meter|foot|ft|feet|m|inch|in)s?\b/i
@@ -21,7 +22,8 @@ module CfWod
     end
 
     def parse
-      calorie_clock_result || calorie_verb_result || distance_led_result || leading_quantity_result || bare_movement_result
+      calorie_clock_result || calorie_verb_result || distance_led_result || leading_quantity_result ||
+        trailing_rep_scheme_result || bare_movement_result
     end
 
     private
@@ -61,6 +63,19 @@ module CfWod
       else
         finalize(reps: reps, movement_name: match[:rest])
       end
+    end
+
+    # Movement name first, then a trailing dash-joined scheme, e.g. "Deadlift 5-5-5-5-5 reps".
+    # Mirrors FormatDetector's own set-based-lifting shape (all-equal numbers); only the uniform
+    # per-set rep count is captured here since workout.rounds already carries the set count.
+    def trailing_rep_scheme_result
+      match = TRAILING_REP_SCHEME.match(line)
+      return unless match
+
+      numbers = match[:scheme].split('-').map(&:to_i)
+      return unless numbers.uniq.one?
+
+      finalize(reps: numbers.first, movement_name: match[:movement])
     end
 
     def bare_movement_result

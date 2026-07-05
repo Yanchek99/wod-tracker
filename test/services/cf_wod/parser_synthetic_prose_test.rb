@@ -8,6 +8,8 @@ module CfWod
     setup do
       Movement.find_or_create_by!(name: 'Wall-ball Shot')
       Movement.find_or_create_by!(name: 'Box Jump')
+      Movement.find_or_create_by!(name: 'Deadlift')
+      Movement.find_or_create_by!(name: 'Bike')
     end
 
     def page_for_text(body_text)
@@ -105,6 +107,25 @@ module CfWod
         names = result.workout.exercises.map { |exercise| exercise.movement.name }
         assert_equal ['Forward Roll', 'Wall Walk', 'Box Jump'], names
       end
+    end
+
+    test 'a movement-name-first rep scheme line parses the movement with the per-set rep count' do
+      result = Parser.call(page_for_text('Deadlift 5-5-5-5-5 reps'))
+
+      assert result.parsed?
+      workout = result.workout
+      assert_equal 5, workout.rounds
+      deadlift = workout.exercises.find { |exercise| exercise.movement.name == 'Deadlift' }
+      assert_equal 5, deadlift.reps
+    end
+
+    test 'a bare "movement calories" line (no "for") is recognized as calorie-scored' do
+      text = "30-20-10 reps for time of:\nBike calories\nFront-rack reverse lunges\nKnees-to-elbows"
+
+      result = Parser.call(page_for_text(text))
+
+      bike = result.workout.exercises.find { |exercise| exercise.movement.name == 'Bike' }
+      assert_equal 0, bike.calories
     end
   end
 end

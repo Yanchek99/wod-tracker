@@ -11,6 +11,9 @@ module CfWod
       /\bbuild to a heavy\b/i
     ].freeze
     CLOCK_WINDOW_PATTERN = /\Aon an?\s*(?<minutes>\d+)[\s-]?minutes?\s+clock:?\z/i
+    # Window headers like "0:00-5:00:" are elapsed MM:SS on the workout's running clock, not H:MM.
+    TIME_RANGE_HEADER_PATTERN =
+      /\A(?<start_min>\d+):(?<start_sec>\d{2})-(?<end_min>\d+):(?<end_sec>\d{2}):?\z/
     PENALTY_TRIGGER_PATTERN = /\A(?:any|every) time (?:you|the athlete) stops?\b/i
     REST_PATTERN = /\Arest\s+(?<minutes>\d+)\s*minutes?/i
     META_PATTERNS = [
@@ -30,7 +33,7 @@ module CfWod
     end
 
     CLASSIFICATION_RULES = [
-      [:segment_header, ->(line) { line.match?(CLOCK_WINDOW_PATTERN) }],
+      [:segment_header, ->(line) { line.match?(CLOCK_WINDOW_PATTERN) || line.match?(TIME_RANGE_HEADER_PATTERN) }],
       [:penalty_trigger, ->(line) { line.match?(PENALTY_TRIGGER_PATTERN) }],
       [:header, ->(line) { HEADER_PATTERNS.any? { |pattern| line.match?(pattern) } }],
       [:rest, ->(line) { line.match?(REST_PATTERN) }],
@@ -44,7 +47,7 @@ module CfWod
     end
 
     def segment_header_minutes(line)
-      CLOCK_WINDOW_PATTERN.match(line)&.[](:minutes)&.to_i
+      clock_window_minutes(line) || time_range_minutes(line)
     end
 
     def rest_minutes(line)
@@ -54,5 +57,18 @@ module CfWod
     private
 
     attr_reader :body_text
+
+    def clock_window_minutes(line)
+      CLOCK_WINDOW_PATTERN.match(line)&.[](:minutes)&.to_i
+    end
+
+    def time_range_minutes(line)
+      match = TIME_RANGE_HEADER_PATTERN.match(line)
+      return unless match
+
+      start_total_seconds = (match[:start_min].to_i * 60) + match[:start_sec].to_i
+      end_total_seconds = (match[:end_min].to_i * 60) + match[:end_sec].to_i
+      (end_total_seconds - start_total_seconds).fdiv(60).round
+    end
   end
 end

@@ -24,13 +24,15 @@ module CfWod
     ].freeze
     FOR_TIME_PATTERN = /\bfor time\b/i
     ROUNDS_FOR_TIME_PATTERN = /(\d+)\s*rounds?,?\s*(?:each\s*)?for time\b/i
+    TOTAL_REPS_PATTERN = /\bfor total reps\b/i
 
     def initialize(body_text)
       @body_text = body_text
     end
 
     def detect
-      interval_result || amrap_result || emom_result || lifting_result || for_time_result || no_match_result
+      interval_result || amrap_result || emom_result || lifting_result ||
+        total_reps_result || for_time_result || no_match_result
     end
 
     private
@@ -83,6 +85,16 @@ module CfWod
 
       seconds = TIME_CAP_PATTERNS.filter_map { |pattern| body_text[pattern, 1] }.first
       blank_result.with(score_type: :weight, time_cap_seconds: seconds&.to_i&.*(60))
+    end
+
+    # A windowed-clock WOD ("On a 20-minute clock for total reps:") is scored by reps, but its
+    # timing structure lives entirely in per-window segments (see LineClassifier's time-range
+    # segment headers), not at the workout level -- leave time/rounds/interval blank here so
+    # Workout#amrap? doesn't misread this as one continuous AMRAP clock.
+    def total_reps_result
+      return unless body_text.match?(TOTAL_REPS_PATTERN)
+
+      blank_result.with(score_type: :rep)
     end
 
     # Checked anywhere in the body, not just the first line -- named Hero WODs commonly put the

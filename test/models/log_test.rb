@@ -11,7 +11,7 @@ class LogTest < ActiveSupport::TestCase
       assert_equal movements(:back_squat), movement_log.movement
       assert_equal 5, movement_log.reps
       assert_nil movement_log.load
-      assert_equal 'lb', movement_log.load_unit
+      assert_not movement_log.records_load?
     end
   end
 
@@ -55,7 +55,7 @@ class LogTest < ActiveSupport::TestCase
 
     assert_equal 21, movement_log.reps
     assert_equal 95, movement_log.load
-    assert_equal 'lb', movement_log.load_unit
+    assert_predicate movement_log, :records_load?
   end
 
   test 'calculates set-based lifting score from heaviest successful set' do
@@ -82,7 +82,6 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 1, log.movement_logs.size
     assert_equal 4, log.movement_logs.first.reps
     assert_nil log.movement_logs.first.duration_seconds
-    assert_equal 'lb', log.movement_logs.first.load_unit
 
     log.movement_logs.first.load = 405
 

@@ -78,16 +78,30 @@ class LogsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def log_params
-    params.expect(log: [
-                    :score_type,
-                    :score_value,
-                    {
-                      movement_logs_attributes: [[
-                        :id, :movement_id,
-                        :reps, :duration_seconds, :load, :load_unit, :implement_count,
-                        :distance, :distance_unit, :calories, :notes
-                      ]]
-                    }
-                  ])
+    attributes = params.expect(log: [
+                                 :score_type,
+                                 :score_value,
+                                 {
+                                   movement_logs_attributes: [[
+                                     :id, :movement_id,
+                                     :reps, :duration_seconds, :load, :implement_count,
+                                     :distance, :distance_unit, :calories, :notes
+                                   ]]
+                                 }
+                               ])
+    canonicalize_recorded_loads(attributes)
+    attributes
+  end
+
+  # Loads are stored canonically in pounds; a metric athlete records kilograms, so normalize the
+  # recorded load before it reaches the model. Imperial input is already canonical.
+  def canonicalize_recorded_loads(attributes)
+    unit = Current.user.load_display_unit
+    return if unit == :lb
+
+    Array(attributes[:movement_logs_attributes]).each do |movement_log|
+      value = movement_log[:load]
+      movement_log[:load] = LoadEquivalence.to_lb(value.to_i, unit) if value.present?
+    end
   end
 end

@@ -4,13 +4,14 @@ export default class extends Controller {
   static targets = [
     "summaryButton", "summaryText", "expandButton", "editor", "movementSelect",
     "repsInput", "durationInput",
-    "loadInput", "femaleLoadInput", "maleLoadInput", "loadUnitSelect",
+    "loadInput", "femaleLoadInput", "maleLoadInput",
     "distanceInput", "femaleDistanceInput", "maleDistanceInput", "distanceUnitSelect",
     "caloriesInput", "femaleCaloriesInput", "maleCaloriesInput"
   ]
 
   static values = {
-    expanded: Boolean
+    expanded: Boolean,
+    loadUnit: { type: String, default: "lb" }
   }
 
   connect() {
@@ -126,13 +127,12 @@ export default class extends Controller {
     if (!movementName) return "New exercise"
 
     const metrics = this.prescriptionMetrics()
-    const leading = this.leading(metrics)
-    const leadingText = leading.text
+    const prefix = this.summaryPrefix(metrics)
     const movementText = [
-      leadingText,
-      this.movementNameForLeadingMetric(movementName, leading.metric)
+      prefix.text,
+      this.movementNameForSummaryMetric(movementName, prefix.metric)
     ].filter(Boolean).join(" ")
-    const details = this.additionalMetrics(metrics, leading.metric)
+    const details = this.additionalMetrics(metrics, prefix.metric)
 
     if (details.length === 0) return movementText
 
@@ -198,13 +198,13 @@ export default class extends Controller {
     }
   }
 
-  leading(metrics) {
+  summaryPrefix(metrics) {
     const durationMetric = metrics.find((metric) => this.durationMetric(metric) && metric.value !== "")
     if (durationMetric) return { metric: durationMetric, text: this.durationText(durationMetric.value) }
 
-    const leadingWorkMetric = this.leadingWorkMetric(metrics)
-    if (leadingWorkMetric) {
-      return { metric: leadingWorkMetric, text: this.leadingWorkMetricText(leadingWorkMetric) }
+    const workMetric = this.prescribedWorkMetric(metrics)
+    if (workMetric) {
+      return { metric: workMetric, text: this.prescribedWorkMetricText(workMetric) }
     }
 
     const repMetric = metrics.find((metric) => metric.kind === "rep")
@@ -214,19 +214,24 @@ export default class extends Controller {
     return { metric: repMetric, text: this.metricUnitText(repMetric) }
   }
 
-  leadingWorkMetric(metrics) {
-    const candidate = metrics.find((metric) => this.visibleMetric(metric) && this.leadingWorkMetricKind(metric))
+  prescribedWorkMetric(metrics) {
+    const candidate = metrics.find((metric) => this.visibleMetric(metric) && this.prescribedWorkMetricKind(metric))
     if (!candidate) return null
 
-    return metrics.every((metric) => !this.visibleMetric(metric) || metric === candidate || this.structuralSingleRepMetric(metric))
+    return metrics.every((metric) => (
+      !this.visibleMetric(metric) ||
+      metric === candidate ||
+      this.structuralSingleRepMetric(metric) ||
+      this.loadDetailForPrescribedWork(candidate, metric, metrics)
+    ))
       ? candidate
       : null
   }
 
-  additionalMetrics(metrics, leadingMetric) {
+  additionalMetrics(metrics, summaryMetric) {
     return metrics
       .filter((metric) => metric.kind !== "rep")
-      .filter((metric) => metric !== leadingMetric)
+      .filter((metric) => metric !== summaryMetric)
       .filter((metric) => !this.durationMetric(metric))
       .filter((metric) => this.visibleMetric(metric))
       .sort((left, right) => this.compareOrders(this.additionalMetricDisplayOrder(left), this.additionalMetricDisplayOrder(right)))
@@ -273,13 +278,13 @@ export default class extends Controller {
     return `${value}${separator}${unit}`
   }
 
-  leadingWorkMetricText(metric) {
-    if (metric.sexSpecific) return `${metric.maleValue}/${metric.femaleValue} ${this.singularUnit(metric.measurement)}`
+  prescribedWorkMetricText(metric) {
+    if (metric.sexSpecific) return `${metric.maleValue}/${metric.femaleValue}${this.prescribedWorkUnitText(metric.measurement)}`
 
-    return this.leadingValueWithUnit(metric.value, metric.measurement)
+    return this.prescribedWorkValueWithUnit(metric.value, metric.measurement)
   }
 
-  movementNameForLeadingMetric(movementName, metric) {
+  movementNameForSummaryMetric(movementName, metric) {
     if (!metric) return movementName
     if (metric.kind === "rep" && metric.value === "" && !metric.sexSpecific) return movementName
     if (this.durationMetric(metric)) {
@@ -298,12 +303,18 @@ export default class extends Controller {
     return metric.kind === "duration"
   }
 
-  leadingWorkMetricKind(metric) {
+  prescribedWorkMetricKind(metric) {
     return metric.kind === "calorie" || metric.kind === "distance"
   }
 
   structuralSingleRepMetric(metric) {
     return metric.kind === "rep" && metric.value === "1"
+  }
+
+  loadDetailForPrescribedWork(candidate, metric, metrics) {
+    return this.prescribedWorkMetricKind(candidate) &&
+      metric.kind === "load" &&
+      (candidate.value !== "" || metrics.some((otherMetric) => this.structuralSingleRepMetric(otherMetric)))
   }
 
   additionalMetricDisplayOrder(metric) {
@@ -335,8 +346,12 @@ export default class extends Controller {
     return cleanValue === "1" ? `${cleanValue} ${cleanUnit}` : `${cleanValue} ${this.pluralizeUnit(cleanUnit)}`
   }
 
-  leadingValueWithUnit(value, unit) {
-    return `${value.trim()} ${this.singularUnit(unit)}`
+  prescribedWorkValueWithUnit(value, unit) {
+    return `${value.trim()}${this.prescribedWorkUnitText(unit)}`
+  }
+
+  prescribedWorkUnitText(unit) {
+    return unit === "foot" ? "ft" : ` ${this.singularUnit(unit)}`
   }
 
   durationText(value) {
@@ -353,7 +368,7 @@ export default class extends Controller {
   }
 
   loadUnit() {
-    return this.hasLoadUnitSelectTarget && this.loadUnitSelectTarget.value ? this.loadUnitSelectTarget.value : "lb"
+    return this.loadUnitValue
   }
 
   distanceUnit() {

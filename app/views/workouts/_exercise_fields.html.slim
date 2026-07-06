@@ -4,7 +4,7 @@
 - summary = f.object.persisted? ? measurable_message(f.object) : 'New exercise'
 - workout_part = local_assigns.fetch(:workout_part, false)
 
-.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card implement-count ladder-step" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle ladder-fields:change@document->ladder-step#toggle" data-exercise-card-expanded-value=expanded data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
+.exercise.nested-fields.mb-3 class=(workout_part ? 'workout-part' : 'segment-exercise') data-controller="exercise-form exercise-card implement-count ladder-step" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle ladder-fields:change@document->ladder-step#toggle" data-exercise-card-expanded-value=expanded data-exercise-card-load-unit-value=load_display_unit data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
   = f.hidden_field :_destroy
   = f.hidden_field :position
   .workout-sortable-item
@@ -31,10 +31,9 @@
             .col-6.col-md-3 data-ladder-step-target="stepEveryField" hidden=(!(@workout&.ascending_ladder? && !f.object.ladder_exempt))
               = f.input :ladder_step_every, label: 'Ladder step every', hint: 'rounds between increments (blank = each round)'
           .row.g-2
-            .col-6.col-md-3 = f.input :load, input_html: { data: { 'exercise-card-target': 'loadInput' } }
-            .col-6.col-md-3 = f.input :female_load, input_html: { data: { 'exercise-card-target': 'femaleLoadInput' } }
-            .col-6.col-md-3 = f.input :male_load, input_html: { data: { 'exercise-card-target': 'maleLoadInput' } }
-            .col-6.col-md-3 = f.input :load_unit, collection: Exercise.load_units.keys, prompt: 'Load unit', input_html: { data: { 'exercise-card-target': 'loadUnitSelect' } }
+            .col-6.col-md-3 = f.input :load, label: "Load (#{load_display_unit})", hint: '0 = find-a-max (no fixed load)', input_html: { value: load_input_value(f.object.load), data: { 'exercise-card-target': 'loadInput' } }
+            .col-6.col-md-3 = f.input :female_load, label: "Female load (#{load_display_unit})", input_html: { value: load_input_value(f.object.female_load), data: { 'exercise-card-target': 'femaleLoadInput' } }
+            .col-6.col-md-3 = f.input :male_load, label: "Male load (#{load_display_unit})", input_html: { value: load_input_value(f.object.male_load), data: { 'exercise-card-target': 'maleLoadInput' } }
             .col-6.col-md-3 data-implement-count-target="field" hidden=(!f.object.movement&.supports_implement_count?)
               = f.input :implement_count, label: 'Implements', hint: 'e.g. 2 = double dumbbell'
           .row.g-2

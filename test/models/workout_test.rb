@@ -55,6 +55,7 @@ class WorkoutTest < ActiveSupport::TestCase
     workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
     workout.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
                             duration_seconds: 240, load_unit: :lb)
+    workout.valid? # canonicalizes load_unit into the load: 0 find-a-max sentinel
 
     assert_predicate workout, :max_finding?
     assert_predicate workout, :calculated_lifting_score?
@@ -66,6 +67,7 @@ class WorkoutTest < ActiveSupport::TestCase
                             duration_seconds: 240, load_unit: :lb)
     workout.exercises.build(movement: movements(:thruster), position: 2, reps: 4,
                             duration_seconds: 240, load_unit: :lb)
+    workout.valid? # canonicalizes load_unit into the load: 0 find-a-max sentinel
 
     assert_predicate workout, :max_finding?
     assert_not_predicate workout, :calculated_lifting_score?

@@ -2,9 +2,19 @@ module ExercisePrescription
   extend ActiveSupport::Concern
 
   included do
-    enum :load_unit, { lb: 0, kg: 1 }, prefix: :load_unit
     enum :distance_unit, { meter: 0, foot: 1, inch: 2 }, prefix: :distance_unit
+
+    before_validation :canonicalize_load_input
   end
+
+  # Transient input unit (lb/kg/pood) for a load being written from a form, import, or seed. Loads
+  # are stored canonically in pounds (see cf/docs/load-and-distance-equivalence.md), so this is
+  # normalized away on save and never persisted. A unit given with no fixed value marks a
+  # find-a-max prescription, stored as load: 0 -- the same "unspecified" sentinel reps and calories
+  # already use for their own max variants.
+  attr_writer :load_unit
+
+  def load_unit = @load_unit
 
   # Canonical prescription, built from the exercise's columns as in-memory Metric value objects.
   # Rendering, scoring, and log recording all read this. Memoized so the helper's object-identity
@@ -19,11 +29,14 @@ module ExercisePrescription
     ].compact
   end
 
+  def load_bearing?
+    load.present? || female_load.present? || male_load.present?
+  end
+
   def max_load_prescription?
     reps.to_i.positive? &&
       duration_seconds.present? &&
-      load_unit.present? &&
-      load.blank? &&
+      load&.zero? &&
       female_load.blank? &&
       male_load.blank?
   end
@@ -33,6 +46,28 @@ module ExercisePrescription
   end
 
   private
+
+  # Normalizes any lb/kg/pood load input to the canonical pounds magnitude. A unit with no fixed
+  # value is a find-a-max: store the 0 sentinel so the prescription still reads as load-bearing.
+  def canonicalize_load_input
+    return if @load_unit.blank?
+
+    if load.blank? && female_load.blank? && male_load.blank?
+      self.load = 0
+    else
+      convert_load_attributes_to_lb
+    end
+    @load_unit = 'lb' # normalized; re-running is a no-op
+  end
+
+  def convert_load_attributes_to_lb
+    return if @load_unit.to_s == 'lb'
+
+    %i[load female_load male_load].each do |attribute|
+      value = self[attribute]
+      self[attribute] = LoadEquivalence.to_lb(value, @load_unit) if value.present?
+    end
+  end
 
   def rep_prescription_metric
     return if reps.nil?
@@ -47,9 +82,9 @@ module ExercisePrescription
   end
 
   def load_prescription_metric
-    return unless load_unit.present? || load.present? || female_load.present? || male_load.present?
+    return unless load_bearing?
 
-    Metric.new(measurement: load_unit || :lb, value: load, female_value: female_load, male_value: male_load,
+    Metric.new(measurement: :lb, value: (load&.zero? ? nil : load), female_value: female_load, male_value: male_load,
                implement_count: implement_count)
   end
 

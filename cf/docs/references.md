@@ -46,6 +46,21 @@ Use daily workout pages to verify current Rx, intermediate, beginner, and
 female/male prescription patterns. CrossFit commonly uses compact slash notation
 for paired values, such as `800/1,000-meter row` or `105/155-lb push press`.
 
+## CrossFit Games Open Workouts
+
+Source pattern:
+https://games.crossfit.com/workouts/open/YYYY/N
+
+Examples:
+
+- `https://games.crossfit.com/workouts/open/2020/4`
+- `https://games.crossfit.com/workouts/open/2024/3`
+
+Use these for source-confirmed lb/kg prescription pairs. Open workout weights are
+published in the form `♀ 65, 95 lb (29, 43 kg)`, and the equipment notes state the
+pound is the official unit with the kilogram as a convenience conversion. These
+back the equivalences in `load-and-distance-equivalence.md`.
+
 ## CrossFit Movement List
 
 Source:

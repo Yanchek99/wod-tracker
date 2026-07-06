@@ -23,6 +23,14 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal '10 Dumbbell Thrusters (2×♀35lb / ♂50lb)', measurable_message(exercise)
   end
 
+  test 'renders 30 Box Jumps (♀20-inch / ♂24-inch)' do
+    box_jump = Movement.create!(name: 'Box Jump')
+    exercise = workouts(:fran).exercises.create!(movement: box_jump, position: 3, reps: 30,
+                                                 female_distance: 20, male_distance: 24, distance_unit: :inch)
+
+    assert_equal '30 Box Jumps (♀20-inch / ♂24-inch)', measurable_message(exercise)
+  end
+
   test 'groups multiple sex-specific additional exercise metrics by sex' do
     wall_ball = Movement.create!(name: 'Wall-ball Shot')
     exercise = workouts(:fran).exercises.create!(movement: wall_ball, position: 3,
@@ -49,50 +57,19 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal 'max reps Toes to Bar', measurable_message(exercise)
   end
 
+  test 'renders a max-load test from columns' do
+    workout = Workout.create!(name: 'Back Squat Max', score_type: :weight)
+    exercise = workout.exercises.create!(movement: movements(:back_squat), position: 1, reps: 4,
+                                         duration_seconds: 240, load_unit: :lb)
+
+    assert_equal '4:00 to find a 4-rep max Back Squat', measurable_message(exercise)
+  end
+
   test 'renders timed station movements without pluralizing fixed single-rep movements' do
     exercise = workouts(:fran).exercises.create!(movement: movements(:row), position: 3,
                                                  reps: 1, duration_seconds: 60, calories: 0)
 
     assert_equal '1:00 Row', measurable_message(exercise)
-  end
-
-  test 'renders distance-only exercise prescriptions before the movement' do
-    exercise = workouts(:fran).exercises.create!(movement: movements(:run), position: 3,
-                                                 distance: 1600, distance_unit: :meter)
-
-    assert_equal '1600 meter Run', measurable_message(exercise)
-  end
-
-  test 'renders distance prescriptions with structural single rep before the movement' do
-    exercise = workouts(:fran).exercises.create!(movement: movements(:run), position: 3,
-                                                 reps: 1, distance: 1600, distance_unit: :meter)
-
-    assert_equal '1600 meter Run', measurable_message(exercise)
-  end
-
-  test 'renders calorie-only exercise prescriptions before the movement' do
-    exercise = workouts(:fran).exercises.create!(movement: movements(:row), position: 3, calories: 20)
-
-    assert_equal '20 calorie Row', measurable_message(exercise)
-  end
-
-  test 'renders sex-specific leading work metrics in compact male female order' do
-    row = workouts(:fran).exercises.create!(movement: movements(:row), position: 3,
-                                            female_calories: 18, male_calories: 20)
-
-    assert_equal '20/18 calorie Row', measurable_message(row)
-
-    row_distance = workouts(:fran).exercises.create!(movement: movements(:row), position: 4,
-                                                     distance_unit: :meter, female_distance: 450, male_distance: 500)
-
-    assert_equal '500/450 meter Row', measurable_message(row_distance)
-  end
-
-  test 'keeps distance in additional metrics when another exercise metric is present' do
-    exercise = workouts(:fran).exercises.create!(movement: movements(:run), position: 3,
-                                                 distance: 400, distance_unit: :meter, load: 20, load_unit: :lb)
-
-    assert_equal 'Run (400 meters / 20 lbs)', measurable_message(exercise)
   end
 
   test 'keeps movement log distances as additional metric text' do

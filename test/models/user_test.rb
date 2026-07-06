@@ -6,6 +6,18 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "#{brooke.first_name} #{brooke.last_name}", brooke.name
   end
 
+  test 'defaults to imperial units and shows loads in pounds' do
+    assert_predicate users(:brooke), :unit_system_imperial?
+    assert_equal :lb, users(:brooke).load_display_unit
+  end
+
+  test 'a metric athlete shows loads in kilograms' do
+    brooke = users(:brooke)
+    brooke.update!(unit_system: :metric)
+
+    assert_equal :kg, brooke.load_display_unit
+  end
+
   test 'requires sex on user profiles' do
     user = User.new(
       email: 'test@example.com',

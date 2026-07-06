@@ -77,15 +77,24 @@ module CfWod
         case kinds[index]
         when :movement
           position = counter_for(local_position).next!
-          exercise = exercise_builder.build(owner, position, line)
+          exercise = build_exercise(owner, position, line)
           built << exercise if exercise
         when :rest
           position = counter_for(local_position).next!
-          exercise_builder.build_rest(owner, position, classifier.rest_minutes(line))
+          owner.exercises.build(exercise_builder.build_rest_attributes(position, classifier.rest_minutes(line)))
         end
       end
 
       built
+    end
+
+    def build_exercise(owner, position, line)
+      attributes, inline_load = exercise_builder.build_attributes(position, line)
+      return unless attributes
+
+      exercise = owner.exercises.build(attributes)
+      ExerciseLoadAssigner.assign(exercise, inline_load) if inline_load
+      exercise
     end
 
     def counter_for(local_position)

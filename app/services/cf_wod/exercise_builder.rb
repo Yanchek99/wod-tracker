@@ -7,19 +7,20 @@ module CfWod
 
     attr_reader :reasons
 
-    def build(owner, position_value, line)
+    # Returns [attributes, inline_load] for owner.exercises.build(attributes), or nil if the
+    # movement couldn't be matched. Doesn't touch any association itself -- the caller already
+    # knows whether it's building onto the workout or a segment.
+    def build_attributes(position_value, line)
       stripped_line, inline_load = InlineLoadExtractor.extract(line)
       parsed = LineParser.parse(stripped_line)
       match = MovementMatcher.match(parsed.movement_name)
       return unmatched_movement(parsed.movement_name) unless match.movement
 
-      exercise = owner.exercises.build(exercise_attributes(match.movement, position_value, parsed))
-      ExerciseLoadAssigner.assign(exercise, inline_load) if inline_load
-      exercise
+      [exercise_attributes(match.movement, position_value, parsed), inline_load]
     end
 
-    def build_rest(owner, position_value, minutes)
-      owner.exercises.build(movement: rest_movement, position: position_value, duration_seconds: minutes && (minutes * 60))
+    def build_rest_attributes(position_value, minutes)
+      { movement: rest_movement, position: position_value, duration_seconds: minutes && (minutes * 60) }
     end
 
     private

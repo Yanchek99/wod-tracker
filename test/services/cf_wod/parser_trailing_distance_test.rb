@@ -19,7 +19,7 @@ module CfWod
       result = Parser.call(page_for_text(text))
 
       assert result.partial?
-      assert_includes result.reason, 'Scaled load could not be confidently attached'
+      assert_includes result.reason, 'Male/female load could not be confidently attached'
       names = result.workout.exercises.map { |exercise| exercise.movement.name }
       assert_equal ['Hang Squat Clean', 'Rope Climb', 'Hang Squat Clean', 'Rope Climb', 'Hang Squat Clean', 'Rope Climb'], names
       first_rope_climb = result.workout.exercises.find { |exercise| exercise.movement.name == 'Rope Climb' }

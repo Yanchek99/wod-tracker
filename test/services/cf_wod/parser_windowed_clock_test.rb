@@ -31,11 +31,11 @@ module CfWod
       result = Parser.call(page_for_text(windowed_clock_total_reps_text))
       workout = result.workout
 
-      # The trailing scaled-load block can't attach to a single exercise once it follows a
+      # The trailing gendered-load block can't attach to a single exercise once it follows a
       # segment (BodyBuilder resets last_single_exercise after each segment) -- expected and
       # out of scope for this fix, so the result stays partial for that reason alone.
       assert result.partial?
-      assert_includes result.reason, 'Scaled load could not be confidently attached'
+      assert_includes result.reason, 'Male/female load could not be confidently attached'
       assert_equal 'rep', workout.score_type
       assert_nil workout.time
       assert_nil workout.rounds

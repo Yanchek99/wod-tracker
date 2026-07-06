@@ -1,5 +1,5 @@
 module CfWod
-  class ScaledLoadParser
+  class GenderedLoadParser
     Result = Data.define(:female_value, :male_value, :unit, :dimension)
 
     SYMBOL_FEMALE = /♀\s*(?<value>[\d,]+)[\s-]?(?<unit>lb|kg|in|ft)\b/i

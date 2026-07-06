@@ -22,7 +22,7 @@ module CfWod
       /\Ascroll for scaling options\.?\z/i,
       /\Acompare to \d+\.?\z/i
     ].freeze
-    SCALED_LOAD_LINE_PATTERNS = [/[♀♂]/, /\A(?:men|women):/i].freeze
+    GENDERED_LOAD_LINE_PATTERNS = [/[♀♂]/, /\A(?:men|women):/i].freeze
 
     def initialize(body_text)
       @body_text = body_text
@@ -38,7 +38,7 @@ module CfWod
       [:header, ->(line) { HEADER_PATTERNS.any? { |pattern| line.match?(pattern) } }],
       [:rest, ->(line) { line.match?(REST_PATTERN) }],
       [:meta, ->(line) { META_PATTERNS.any? { |pattern| line.match?(pattern) } }],
-      [:scaled_load, ->(line) { SCALED_LOAD_LINE_PATTERNS.any? { |pattern| line.match?(pattern) } }]
+      [:gendered_load, ->(line) { GENDERED_LOAD_LINE_PATTERNS.any? { |pattern| line.match?(pattern) } }]
     ].freeze
 
     def classify(line)

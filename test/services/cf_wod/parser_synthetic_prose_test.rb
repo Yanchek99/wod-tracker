@@ -48,7 +48,7 @@ module CfWod
       assert_equal 30, result.workout.rounds
     end
 
-    test 'Fran-shaped interval prose sets both interval and score_type, with a same-line scaled load' do
+    test 'Fran-shaped interval prose sets both interval and score_type, with a same-line gendered load' do
       result = Parser.call(page_for_text("21-15-9 reps for time of\nThrusters (95/65 lb)\nPull-ups"))
 
       assert result.parsed?

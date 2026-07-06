@@ -14,7 +14,7 @@ module CfWod
     # since "to" here is a distance marker, not a descriptive aside.
     TRAILING_DISTANCE = /\A(?<movement>.+?)\s+to\s+(?<value>[\d,]+)[\s-](?<unit>meter|foot|ft|feet|m|inch|in)s?\z/i
     TRAILING_CLAUSE = /,\s*.*\z|\s+(?:with|while|carrying)\b.*\z/i
-    # A non-scaled-load trailing annotation, e.g. "(each)"/"(total)"/"(together)" on partner/team lines.
+    # A non-gendered-load trailing annotation, e.g. "(each)"/"(total)"/"(together)" on partner/team lines.
     # Digit-bearing parentheticals (loads/distances) are already stripped by ExerciseLoadAttacher
     # before a line reaches here, so anything left is descriptive, not a prescription.
     TRAILING_ANNOTATION = /\s*\(([^)]+)\)\z/

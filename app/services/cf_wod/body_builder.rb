@@ -26,7 +26,7 @@ module CfWod
       case paragraph_kind(kinds)
       when :segment then process_segment_block(lines, kinds)
       when :penalty then process_penalty_block(lines, kinds)
-      when :scaled_load then process_scaled_load_block(paragraph)
+      when :gendered_load then process_gendered_load_block(paragraph)
       else process_plain_block(lines, kinds)
       end
     end
@@ -34,7 +34,7 @@ module CfWod
     def paragraph_kind(kinds)
       return :segment if kinds.include?(:segment_header)
       return :penalty if kinds.include?(:penalty_trigger)
-      return :scaled_load if kinds.any? && kinds.all?(:scaled_load)
+      return :gendered_load if kinds.any? && kinds.all?(:gendered_load)
 
       :plain
     end
@@ -55,13 +55,13 @@ module CfWod
       reasons << 'Event-triggered penalty segment; verify reps semantics'
     end
 
-    def process_scaled_load_block(paragraph)
+    def process_gendered_load_block(paragraph)
       unless last_single_exercise
-        reasons << 'Scaled load could not be confidently attached to a single movement'
+        reasons << 'Male/female load could not be confidently attached to a single movement'
         return
       end
 
-      result = ScaledLoadParser.parse(paragraph)
+      result = GenderedLoadParser.parse(paragraph)
       ExerciseLoadAttacher.apply(last_single_exercise, result) if result
       self.last_single_exercise = nil
     end

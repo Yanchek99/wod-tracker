@@ -21,7 +21,7 @@ module CfWod
       result = Parser.call(page)
 
       assert result.partial?
-      assert_includes result.reason, 'Scaled load could not be confidently attached'
+      assert_includes result.reason, 'Male/female load could not be confidently attached'
       workout = result.workout
       assert_equal 'round', workout.score_type
       assert_equal 10, workout.time

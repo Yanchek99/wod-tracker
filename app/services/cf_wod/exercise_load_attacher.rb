@@ -6,7 +6,7 @@ module CfWod
       match = INLINE_LOAD_CLAUSE.match(line)
       return [line, nil] unless match
 
-      result = ScaledLoadParser.parse(match[0])
+      result = GenderedLoadParser.parse(match[0])
       return [line, nil] unless result
 
       [line.sub(match[0], '').strip, result]

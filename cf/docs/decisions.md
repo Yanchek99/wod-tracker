@@ -31,7 +31,7 @@ wrong guess: ascending-ladder detection (`ladder_step`), partner/team detection
 penalty segments (a named `Segment` is still built from the trigger phrase, e.g.
 "Any time you stop", with a best-effort embedded rep/movement extraction, but the
 per-occurrence-vs-total reps meaning is inherently ambiguous from text alone), and
-multi-movement trailing shared-load blocks (a scaled-load paragraph is only
+multi-movement trailing shared-load blocks (a gendered-load paragraph is only
 attached when exactly one movement line precedes it in the same paragraph —
 real WODs sometimes share one load across several preceding movements, e.g.
 crossfit.com/workout/2018/01/10's power-snatch/lunge/rope-climb block, which the

@@ -65,6 +65,7 @@ dumbbell_turkish_get_up = Movement.find_or_create_by(name: 'Dumbbell Turkish Get
 forward_roll_from_support = Movement.find_or_create_by(name: 'Forward Roll From Support')
 freestanding_handstand_push_up = Movement.find_or_create_by(name: 'Freestanding Handstand Push-up')
 freestanding_shoulder_tap = Movement.find_or_create_by(name: 'Freestanding Shoulder Tap')
+front_rack_reverse_lunge = Movement.find_or_create_by(name: 'Front-rack Reverse Lunge')
 front_scale = Movement.find_or_create_by(name: 'Front Scale')
 front_squat = Movement.find_or_create_by(name: 'Front Squat')
 ghd_back_extension = Movement.find_or_create_by(name: 'GHD Back Extension')

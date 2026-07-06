@@ -9,6 +9,10 @@ module CfWod
     CALORIE_PREFIX = /\A(?<calories>\d+)-?calorie\s+(?<rest>.+)\z/i
     DISTANCE_LEAD = /\A(?<value>[\d,]+)[\s-](?:meter|foot|ft|feet|m|inch|in)s?\.?\s+(?<rest>.+)\z/i
     DISTANCE_UNIT_IN_LEAD = /\A[\d,]+[\s-](?<unit>meter|foot|ft|feet|m|inch|in)s?\b/i
+    # A trailing height/distance clause, e.g. "rope climbs to 15 feet". Distinct from DISTANCE_LEAD,
+    # which covers the reverse order ("15-foot rope climbs"); this is not covered by TRAILING_CLAUSE
+    # since "to" here is a distance marker, not a descriptive aside.
+    TRAILING_DISTANCE = /\A(?<movement>.+?)\s+to\s+(?<value>[\d,]+)[\s-](?<unit>meter|foot|ft|feet|m|inch|in)s?\z/i
     TRAILING_CLAUSE = /,\s*.*\z|\s+(?:with|while|carrying)\b.*\z/i
     # A non-scaled-load trailing annotation, e.g. "(each)"/"(total)"/"(together)" on partner/team lines.
     # Digit-bearing parentheticals (loads/distances) are already stripped by ExerciseLoadAttacher
@@ -85,6 +89,7 @@ module CfWod
     def finalize(movement_name:, reps: nil, calories: nil, distance: nil, distance_unit: nil)
       cleaned, clause_notes = strip_trailing_clause(movement_name)
       cleaned, annotation_notes = strip_trailing_annotation(cleaned)
+      cleaned, distance, distance_unit = strip_trailing_distance(cleaned) if distance.nil?
       notes = [clause_notes, annotation_notes].compact.join('; ').presence
       Result.new(reps: reps, calories: calories, distance: distance, distance_unit: distance_unit,
                  movement_name: cleaned, notes: notes)
@@ -102,6 +107,13 @@ module CfWod
       return [text, nil] unless match
 
       [text[0...match.begin(0)].strip, match[1].strip]
+    end
+
+    def strip_trailing_distance(text)
+      match = TRAILING_DISTANCE.match(text)
+      return [text, nil, nil] unless match
+
+      [match[:movement].strip, match[:value].delete(',').to_i, normalize_distance_unit(match[:unit])]
     end
 
     def normalize_distance_unit(unit)

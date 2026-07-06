@@ -14,7 +14,7 @@ module CfWod
       singular = normalize(raw_name)
       return Result.new(movement: nil, ambiguous: false) if singular.blank?
 
-      exact = exact_match
+      exact = exact_match(singular)
       return Result.new(movement: exact, ambiguous: false) if exact
 
       fuzzy_match(singular)
@@ -28,14 +28,12 @@ module CfWod
     # hyphen-separated ("Toes to Bar"), so singularizing before checking for an exact match can
     # miss them. Try the as-written form and a hyphen/space swap before falling back to the
     # singularized form and, failing that, fuzzy search.
-    def exact_match
-      candidates.filter_map { |candidate| find_exact(candidate) }.first
+    def exact_match(singular)
+      candidates(singular).filter_map { |candidate| find_exact(candidate) }.first
     end
 
-    def candidates
-      words = tokenize(raw_name)
-      as_written = title_case(words)
-      singular = title_case(words.map { |word| singularize(word) })
+    def candidates(singular)
+      as_written = title_case(tokenize(raw_name))
 
       [as_written, singular, as_written.tr('-', ' '), singular.tr('-', ' ')].uniq
     end
@@ -77,14 +75,8 @@ module CfWod
 
     def title_case(words)
       words.each_with_index.map do |word, index|
-        index.positive? && CONNECTOR_WORDS.include?(word.downcase) ? word.downcase : capitalize(word)
+        index.positive? && CONNECTOR_WORDS.include?(word.downcase) ? word.downcase : word.capitalize
       end.join(' ')
-    end
-
-    def capitalize(word)
-      return word if word.empty?
-
-      word[0].upcase + word[1..].downcase
     end
   end
 end

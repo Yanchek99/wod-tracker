@@ -21,6 +21,7 @@ module CfWod
 
     attr_reader :html
 
+    # Walks brace depth, skipping over characters inside JSON string literals so a quoted "{" or "}" isn't mistaken for structural nesting.
     def extract_balanced_json(start)
       depth = 0
       in_string = false
@@ -41,7 +42,7 @@ module CfWod
         end
       end
 
-      raise Fetcher::FetchError, 'Unterminated preloaded state JSON'
+      raise FetchError, 'Unterminated preloaded state JSON'
     end
 
     def string_char_state(char, escaped)

@@ -2,9 +2,9 @@
 
 ## 2026-07-04: The WOD Parser Flags What It Can't Confidently Structure Rather Than Guessing
 
-`CfWod::Parser` (#1675) converts a fetched `CfWod::WodPage#body_text` into an unsaved
+`CfWod::WorkoutParser` (#1675) converts a fetched `CfWod::WodPage#body_text` into an unsaved
 `Workout` graph. Because free-form CrossFit prose is genuinely ambiguous in several
-common ways, the parser returns a `CfWod::ParseResult` (`workout`, `status`,
+common ways, the parser returns a `CfWod::WorkoutParseResult` (`workout`, `status`,
 `reason`, `raw_text`) rather than a bare `Workout` — `status` is `:parsed`,
 `:partial` (something usable was built, but a real gap is named in `reason`), or
 `:failed` (nothing usable, including rest days, checked before any parsing runs).

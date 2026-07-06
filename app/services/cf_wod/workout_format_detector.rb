@@ -1,5 +1,5 @@
 module CfWod
-  class FormatDetector
+  class WorkoutFormatDetector
     Result = Data.define(:score_type, :time, :rounds, :interval, :time_cap_seconds)
 
     INTERVAL_PATTERN = /\b(\d+(?:-\d+){2,})\b/
@@ -32,7 +32,7 @@ module CfWod
 
     def detect
       interval_result || amrap_result || emom_result || lifting_result ||
-        total_reps_result || for_time_result || no_match_result
+        total_reps_result || for_time_result || blank_result
     end
 
     private
@@ -41,10 +41,6 @@ module CfWod
 
     def blank_result
       Result.new(score_type: nil, time: nil, rounds: nil, interval: nil, time_cap_seconds: nil)
-    end
-
-    def no_match_result
-      blank_result
     end
 
     # 3+ dash-joined numbers. Descending ("21-15-9") is a rep ladder, for-time. All-equal ("5-5-5")

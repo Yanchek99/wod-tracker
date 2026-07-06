@@ -3,9 +3,6 @@ require 'securerandom'
 
 module CfWod
   class Fetcher
-    class FetchError < StandardError; end
-    class UnrecognizedTemplateError < FetchError; end
-
     MAX_REDIRECTS = 5
     MAX_EMPTY_TEMPLATE_RETRIES = 3
     OPEN_TIMEOUT = 5

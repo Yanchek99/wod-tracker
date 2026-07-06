@@ -28,7 +28,7 @@ module CfWod
       male = SYMBOL_MALE.match(text)
       return unless female || male
 
-      build_result(female, male)
+      result_for(female&.[](:value), male&.[](:value), (female || male)[:unit])
     end
 
     def labeled_result
@@ -36,42 +36,26 @@ module CfWod
       female = LABELED_FEMALE.match(text)
       return unless male || female
 
-      build_result(female, male)
+      result_for(female&.[](:value), male&.[](:value), (female || male)[:unit])
     end
 
     def slash_result
       match = SLASH_PATTERN.match(text)
       return unless match
 
-      Result.new(
-        female_value: value_of(match[:female]),
-        male_value: value_of(match[:male]),
-        unit: normalize_unit(match[:unit]),
-        dimension: dimension_for(match[:unit])
-      )
+      result_for(match[:female], match[:male], match[:unit])
     end
 
-    def build_result(female_match, male_match)
-      unit = (female_match || male_match)[:unit]
-      Result.new(
-        female_value: value_of(female_match&.[](:value)),
-        male_value: value_of(male_match&.[](:value)),
-        unit: normalize_unit(unit),
-        dimension: dimension_for(unit)
-      )
+    def result_for(female_value, male_value, unit)
+      Result.new(female_value: value_of(female_value), male_value: value_of(male_value),
+                 unit: normalize_unit(unit), dimension: dimension_for(unit))
     end
 
     def value_of(raw)
       raw&.delete(',')&.to_i
     end
 
-    def normalize_unit(unit)
-      case unit.downcase
-      when 'ft' then 'foot'
-      when 'in' then 'inch'
-      else unit.downcase
-      end
-    end
+    def normalize_unit(unit) = UnitNormalizer.normalize(unit)
 
     def dimension_for(unit)
       %w[lb kg].include?(unit.downcase) ? :load : :distance

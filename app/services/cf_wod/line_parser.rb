@@ -2,12 +2,12 @@ module CfWod
   class LineParser
     Result = Data.define(:reps, :calories, :distance, :distance_unit, :movement_name, :notes)
 
-    LEADING_QUANTITY = /\A(?<reps>\d+|max)[\s,-]+(?:reps?\s+)?(?<rest>.+)\z/i
+    LEADING_QUANTITY = /\A(?<reps>\d+|max)[\s,-]+(?:reps?\s+)?(?<remainder>.+)\z/i
     TRAILING_REP_SCHEME = /\A(?<movement>.+?)\s+(?<scheme>\d+(?:-\d+){2,})\s+reps?\z/i
     CALORIE_CLOCK_PHRASE = /\Amax-calorie\s+(?<movement>.+?)\s+in the remaining time\z/i
     CALORIE_LEAD_VERB = /\A(?<movement>row|run|bike|swim)\s+(?:for\s+)?(?:max\s+)?calories?\z/i
-    CALORIE_PREFIX = /\A(?<calories>\d+)-?calorie\s+(?<rest>.+)\z/i
-    DISTANCE_LEAD = /\A(?<value>[\d,]+)[\s-](?:meter|foot|ft|feet|m|inch|in)s?\.?\s+(?<rest>.+)\z/i
+    CALORIE_PREFIX = /\A(?<calories>\d+)-?calorie\s+(?<remainder>.+)\z/i
+    DISTANCE_LEAD = /\A(?<value>[\d,]+)[\s-](?:meter|foot|ft|feet|m|inch|in)s?\.?\s+(?<remainder>.+)\z/i
     DISTANCE_UNIT_IN_LEAD = /\A[\d,]+[\s-](?<unit>meter|foot|ft|feet|m|inch|in)s?\b/i
     # A trailing height/distance clause, e.g. "rope climbs to 15 feet". Distinct from DISTANCE_LEAD,
     # which covers the reverse order ("15-foot rope climbs"); this is not covered by TRAILING_CLAUSE
@@ -15,7 +15,7 @@ module CfWod
     TRAILING_DISTANCE = /\A(?<movement>.+?)\s+to\s+(?<value>[\d,]+)[\s-](?<unit>meter|foot|ft|feet|m|inch|in)s?\z/i
     TRAILING_CLAUSE = /,\s*.*\z|\s+(?:with|while|carrying)\b.*\z/i
     # A non-gendered-load trailing annotation, e.g. "(each)"/"(total)"/"(together)" on partner/team lines.
-    # Digit-bearing parentheticals (loads/distances) are already stripped by ExerciseLoadAttacher
+    # Digit-bearing parentheticals (loads/distances) are already stripped by InlineLoadExtractor
     # before a line reaches here, so anything left is descriptive, not a prescription.
     TRAILING_ANNOTATION = /\s*\(([^)]+)\)\z/
 
@@ -26,7 +26,7 @@ module CfWod
     end
 
     def parse
-      calorie_clock_result || calorie_verb_result || distance_led_result || leading_quantity_result ||
+      calorie_result || distance_led_result || leading_quantity_result ||
         trailing_rep_scheme_result || bare_movement_result
     end
 
@@ -34,15 +34,8 @@ module CfWod
 
     attr_reader :line
 
-    def calorie_clock_result
-      match = CALORIE_CLOCK_PHRASE.match(line)
-      return unless match
-
-      finalize(calories: 0, movement_name: match[:movement])
-    end
-
-    def calorie_verb_result
-      match = CALORIE_LEAD_VERB.match(line)
+    def calorie_result
+      match = CALORIE_CLOCK_PHRASE.match(line) || CALORIE_LEAD_VERB.match(line)
       return unless match
 
       finalize(calories: 0, movement_name: match[:movement])
@@ -53,7 +46,7 @@ module CfWod
       return unless match
 
       unit = DISTANCE_UNIT_IN_LEAD.match(line)[:unit]
-      finalize(distance: match[:value].delete(',').to_i, distance_unit: normalize_distance_unit(unit), movement_name: match[:rest])
+      finalize(distance: match[:value].delete(',').to_i, distance_unit: normalize_distance_unit(unit), movement_name: match[:remainder])
     end
 
     def leading_quantity_result
@@ -61,16 +54,16 @@ module CfWod
       return unless match
 
       reps = match[:reps].match?(/\Amax\z/i) ? 0 : match[:reps].to_i
-      calorie_match = CALORIE_PREFIX.match(match[:rest])
+      calorie_match = CALORIE_PREFIX.match(match[:remainder])
       if calorie_match
-        finalize(reps: reps, calories: calorie_match[:calories].to_i, movement_name: calorie_match[:rest])
+        finalize(reps: reps, calories: calorie_match[:calories].to_i, movement_name: calorie_match[:remainder])
       else
-        finalize(reps: reps, movement_name: match[:rest])
+        finalize(reps: reps, movement_name: match[:remainder])
       end
     end
 
     # Movement name first, then a trailing dash-joined scheme, e.g. "Deadlift 5-5-5-5-5 reps".
-    # Mirrors FormatDetector's own set-based-lifting shape (all-equal numbers); only the uniform
+    # Mirrors WorkoutFormatDetector's own set-based-lifting shape (all-equal numbers); only the uniform
     # per-set rep count is captured here since workout.rounds already carries the set count.
     def trailing_rep_scheme_result
       match = TRAILING_REP_SCHEME.match(line)
@@ -89,11 +82,12 @@ module CfWod
     def finalize(movement_name:, reps: nil, calories: nil, distance: nil, distance_unit: nil)
       cleaned, clause_notes = strip_trailing_clause(movement_name)
       cleaned, annotation_notes = strip_trailing_annotation(cleaned)
-      cleaned, distance, distance_unit = strip_trailing_distance(cleaned) if distance.nil?
-      notes = [clause_notes, annotation_notes].compact.join('; ').presence
+      cleaned, distance, distance_unit = strip_trailing_distance(cleaned) unless distance
       Result.new(reps: reps, calories: calories, distance: distance, distance_unit: distance_unit,
-                 movement_name: cleaned, notes: notes)
+                 movement_name: cleaned, notes: join_notes(clause_notes, annotation_notes))
     end
+
+    def join_notes(*parts) = parts.compact.join('; ').presence
 
     def strip_trailing_clause(text)
       match = TRAILING_CLAUSE.match(text)
@@ -116,12 +110,6 @@ module CfWod
       [match[:movement].strip, match[:value].delete(',').to_i, normalize_distance_unit(match[:unit])]
     end
 
-    def normalize_distance_unit(unit)
-      case unit.downcase
-      when 'ft', 'feet', 'foot' then 'foot'
-      when 'in', 'inch' then 'inch'
-      else 'meter'
-      end
-    end
+    def normalize_distance_unit(unit) = UnitNormalizer.normalize(unit)
   end
 end

@@ -16,7 +16,7 @@ module CfWod
       text = "For time:\n15 hang squat cleans\n5 rope climbs to 15 feet\n12 hang squat cleans\n4 rope climbs\n" \
              "9 hang squat cleans\n3 rope climbs\n\nPost time to comments.\n\n♀ 105-lb barbell\n♂ 155-lb barbell"
 
-      result = Parser.call(page_for_text(text))
+      result = WorkoutParser.call(page_for_text(text))
 
       assert result.partial?
       assert_includes result.reason, 'Male/female load could not be confidently attached'

@@ -1,10 +1,10 @@
 module CfWod
-  class BodyBuilder
+  class WorkoutPartsBuilder
     def initialize(workout, body_text, format)
       @workout = workout
       @classifier = LineClassifier.new(body_text)
       @exercise_builder = ExerciseBuilder.new(format)
-      @position = 0
+      @workout_position = PositionCounter.new
       @last_single_exercise = nil
       @reasons = []
     end
@@ -16,8 +16,8 @@ module CfWod
 
     private
 
-    attr_reader :workout, :classifier, :exercise_builder, :reasons
-    attr_accessor :position, :last_single_exercise
+    attr_reader :workout, :classifier, :exercise_builder, :reasons, :workout_position
+    attr_accessor :last_single_exercise
 
     def process_paragraph(paragraph)
       lines = paragraph.split("\n").map(&:strip).reject(&:empty?)
@@ -42,16 +42,14 @@ module CfWod
     def process_segment_block(lines, kinds)
       self.last_single_exercise = nil
       minutes = classifier.segment_header_minutes(lines[kinds.index(:segment_header)])
-      self.position += 1
-      segment = workout.segments.build(position: position, time_seconds: minutes && (minutes * 60))
+      segment = workout.segments.build(position: workout_position.next!, time_seconds: minutes && (minutes * 60))
       build_lines_onto(segment, lines, kinds)
     end
 
     def process_penalty_block(lines, kinds)
       self.last_single_exercise = nil
       trigger_line = lines[kinds.index(:penalty_trigger)]
-      self.position += 1
-      PenaltySegmentBuilder.build(workout, position, trigger_line)
+      PenaltySegmentBuilder.build(workout, workout_position.next!, trigger_line)
       reasons << 'Event-triggered penalty segment; verify reps semantics'
     end
 
@@ -62,7 +60,7 @@ module CfWod
       end
 
       result = GenderedLoadParser.parse(paragraph)
-      ExerciseLoadAttacher.apply(last_single_exercise, result) if result
+      ExerciseLoadAssigner.assign(last_single_exercise, result) if result
       self.last_single_exercise = nil
     end
 
@@ -73,27 +71,25 @@ module CfWod
 
     def build_lines_onto(owner, lines, kinds)
       built = []
-      local_position = owner.equal?(workout) ? nil : 0
+      local_position = owner.equal?(workout) ? nil : PositionCounter.new
 
       lines.each_with_index do |line, index|
         case kinds[index]
         when :movement
-          local_position = advance_position(local_position)
-          exercise = exercise_builder.build(owner, local_position, line)
+          position = counter_for(local_position).next!
+          exercise = exercise_builder.build(owner, position, line)
           built << exercise if exercise
         when :rest
-          local_position = advance_position(local_position)
-          exercise_builder.build_rest(owner, local_position, classifier.rest_minutes(line))
+          position = counter_for(local_position).next!
+          exercise_builder.build_rest(owner, position, classifier.rest_minutes(line))
         end
       end
 
       built
     end
 
-    def advance_position(local_position)
-      return local_position + 1 if local_position
-
-      self.position += 1
+    def counter_for(local_position)
+      local_position || workout_position
     end
   end
 end

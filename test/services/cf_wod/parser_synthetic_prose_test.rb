@@ -21,7 +21,7 @@ module CfWod
       text = "Fran\n\n21-15-9 reps for time of\nThrusters (95/65 lb)\nPull-ups"
 
       assert_no_difference(['Movement.count', 'Workout.count']) do
-        result = Parser.call(page_for_text(text))
+        result = WorkoutParser.call(page_for_text(text))
 
         assert result.parsed?
         assert_nil result.reason
@@ -30,7 +30,7 @@ module CfWod
     end
 
     test 'Cindy-shaped AMRAP prose parses cleanly except for an ambiguous bare movement' do
-      result = Parser.call(page_for_text("As many rounds as possible in 20 minutes of\n5 pull-ups\n10 push-ups\n15 squats"))
+      result = WorkoutParser.call(page_for_text("As many rounds as possible in 20 minutes of\n5 pull-ups\n10 push-ups\n15 squats"))
 
       assert result.partial?
       assert_includes result.reason, 'squats'
@@ -40,7 +40,7 @@ module CfWod
     end
 
     test 'Chelsea-shaped EMOM prose sets rounds and time from the interval and total duration' do
-      result = Parser.call(page_for_text("Every minute on the minute for 30 minutes\n5 pull-ups\n10 push-ups\n15 squats"))
+      result = WorkoutParser.call(page_for_text("Every minute on the minute for 30 minutes\n5 pull-ups\n10 push-ups\n15 squats"))
 
       assert result.partial?
       assert_equal 'rep', result.workout.score_type
@@ -49,7 +49,7 @@ module CfWod
     end
 
     test 'Fran-shaped interval prose sets both interval and score_type, with a same-line gendered load' do
-      result = Parser.call(page_for_text("21-15-9 reps for time of\nThrusters (95/65 lb)\nPull-ups"))
+      result = WorkoutParser.call(page_for_text("21-15-9 reps for time of\nThrusters (95/65 lb)\nPull-ups"))
 
       assert result.parsed?
       assert_nil result.reason
@@ -63,7 +63,7 @@ module CfWod
     end
 
     test 'a 1RM lifting prescription sets score_type weight and a time cap in seconds' do
-      result = Parser.call(page_for_text("Establish a 1-rep-max clean and jerk within 6 minutes.\n\nClean and Jerk"))
+      result = WorkoutParser.call(page_for_text("Establish a 1-rep-max clean and jerk within 6 minutes.\n\nClean and Jerk"))
 
       assert result.parsed?
       assert_equal 'weight', result.workout.score_type
@@ -72,14 +72,14 @@ module CfWod
 
     test 'an ascending-ladder cue is not silently modeled as a fixed AMRAP' do
       text = "As many rounds as possible in 7 minutes of\n3 thrusters\n3 chest-to-bar pull-ups\nAdd 3 reps to each movement every round."
-      result = Parser.call(page_for_text(text))
+      result = WorkoutParser.call(page_for_text(text))
 
       assert result.partial?
       assert_not result.workout.ascending_ladder?
     end
 
     test 'a partner/team mention is flagged rather than silently dropped' do
-      result = Parser.call(page_for_text("For time, with a partner:\n100 wall-ball shots"))
+      result = WorkoutParser.call(page_for_text("For time, with a partner:\n100 wall-ball shots"))
 
       assert result.partial?
       assert_includes result.reason, 'partner/team'
@@ -88,7 +88,7 @@ module CfWod
 
     test 'a genuinely uncatalogued movement is flagged rather than auto-created' do
       assert_no_difference('Movement.count') do
-        result = Parser.call(page_for_text("For time:\n20 gorilla crawls"))
+        result = WorkoutParser.call(page_for_text("For time:\n20 gorilla crawls"))
 
         assert result.failed?
         assert_includes result.reason, 'gorilla crawls'
@@ -99,7 +99,7 @@ module CfWod
       text = "Ned\n\n7 rounds for time of:\n3 forward rolls\n5 wall walks\n9 box jumps"
 
       assert_no_difference('Movement.count') do
-        result = Parser.call(page_for_text(text))
+        result = WorkoutParser.call(page_for_text(text))
 
         assert_equal 'time', result.workout.score_type
         assert_equal 7, result.workout.rounds
@@ -110,7 +110,7 @@ module CfWod
     end
 
     test 'a movement-name-first rep scheme line parses the movement with the per-set rep count' do
-      result = Parser.call(page_for_text('Deadlift 5-5-5-5-5 reps'))
+      result = WorkoutParser.call(page_for_text('Deadlift 5-5-5-5-5 reps'))
 
       assert result.parsed?
       workout = result.workout
@@ -122,7 +122,7 @@ module CfWod
     test 'a bare "movement calories" line (no "for") is recognized as calorie-scored' do
       text = "30-20-10 reps for time of:\nBike calories\nFront-rack reverse lunges\nKnees-to-elbows"
 
-      result = Parser.call(page_for_text(text))
+      result = WorkoutParser.call(page_for_text(text))
 
       bike = result.workout.exercises.find { |exercise| exercise.movement.name == 'Bike' }
       assert_equal 0, bike.calories

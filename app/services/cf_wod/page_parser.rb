@@ -21,7 +21,7 @@ module CfWod
 
     def parse
       container = wod_container
-      raise Fetcher::UnrecognizedTemplateError, 'Unrecognized page template' unless container
+      raise UnrecognizedTemplateError, 'Unrecognized page template' unless container
 
       build_wod_page(container, bucket_paragraphs(container.css('p')))
     end
@@ -55,8 +55,8 @@ module CfWod
 
       paragraphs.each do |paragraph|
         heading = paragraph.at_css('strong')&.text
-        heading = heading.strip.downcase if heading
-        marker = SECTION_MARKERS.find { |prefix, _| heading&.start_with?(prefix.downcase) }
+        normalized_heading = heading.strip.downcase if heading
+        marker = SECTION_MARKERS.find { |prefix, _| normalized_heading&.start_with?(prefix.downcase) }
         current = marker.last if marker
         buckets[current] << paragraph
       end

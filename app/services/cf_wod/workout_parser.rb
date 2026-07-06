@@ -1,5 +1,5 @@
 module CfWod
-  class Parser
+  class WorkoutParser
     # No team_size detection in v1 -- just flag it for a human to add manually.
     PARTNER_OR_TEAM_MENTION = /\b(?:partner|team)\b/i
 
@@ -15,9 +15,9 @@ module CfWod
       named_workout = NamedWorkoutFinder.find(wod_page.body_text)
       return named_workout_result(named_workout) if named_workout
 
-      format = FormatDetector.new(wod_page.body_text).detect
+      format = WorkoutFormatDetector.new(wod_page.body_text).detect
       workout = build_workout(format)
-      reasons = collect_reasons(workout, format)
+      reasons = attach_parts(workout, format) + top_level_reasons(format)
       workout.notes = assemble_notes
 
       finalize(workout, reasons)
@@ -28,18 +28,22 @@ module CfWod
     attr_reader :wod_page
 
     def rest_day_result
-      ParseResult.new(workout: nil, status: :failed, reason: 'Rest day; no workout to parse', raw_text: wod_page.body_text)
+      WorkoutParseResult.new(workout: nil, status: :failed, reason: 'Rest day; no workout to parse', raw_text: wod_page.body_text)
     end
 
     # An existing, hand-curated Workout is a fully confident result -- there is nothing to
     # reconstruct or flag. Its notes are left untouched rather than overwritten with today's
     # scraped body text, since the seeded record is already the trusted source.
     def named_workout_result(workout)
-      ParseResult.new(workout: workout, status: :parsed, reason: nil, raw_text: wod_page.body_text)
+      WorkoutParseResult.new(workout: workout, status: :parsed, reason: nil, raw_text: wod_page.body_text)
     end
 
-    def collect_reasons(workout, format)
-      reasons = BodyBuilder.new(workout, wod_page.body_text, format).build
+    def attach_parts(workout, format)
+      WorkoutPartsBuilder.new(workout, wod_page.body_text, format).build
+    end
+
+    def top_level_reasons(format)
+      reasons = []
       reasons << 'Could not determine workout format from body text' unless format.score_type
       reasons << 'Mentions a partner/team; team_size not detected' if wod_page.body_text.match?(PARTNER_OR_TEAM_MENTION)
       reasons
@@ -67,7 +71,7 @@ module CfWod
       has_parts = workout.exercises.any? || workout.segments.any?
       status = status_for(has_parts, reasons)
 
-      ParseResult.new(
+      WorkoutParseResult.new(
         workout: has_parts ? workout : nil,
         status: status,
         reason: reasons.any? ? reasons.uniq.join('; ') : nil,

@@ -24,22 +24,18 @@ module CfWod
     ].freeze
     GENDERED_LOAD_LINE_PATTERNS = [/[♀♂]/, /\A(?:men|women):/i].freeze
 
-    def initialize(body_text)
-      @body_text = body_text
-    end
-
-    def paragraphs
-      body_text.split(/\n{2,}/).map(&:strip).reject(&:empty?)
-    end
-
     CLASSIFICATION_RULES = [
-      [:segment_header, ->(line) { line.match?(CLOCK_WINDOW_PATTERN) || line.match?(TIME_RANGE_HEADER_PATTERN) }],
-      [:penalty_trigger, ->(line) { line.match?(PENALTY_TRIGGER_PATTERN) }],
+      [:segment_header, ->(line) { [CLOCK_WINDOW_PATTERN, TIME_RANGE_HEADER_PATTERN].any? { |pattern| line.match?(pattern) } }],
+      [:penalty_trigger, ->(line) { [PENALTY_TRIGGER_PATTERN].any? { |pattern| line.match?(pattern) } }],
       [:header, ->(line) { HEADER_PATTERNS.any? { |pattern| line.match?(pattern) } }],
-      [:rest, ->(line) { line.match?(REST_PATTERN) }],
+      [:rest, ->(line) { [REST_PATTERN].any? { |pattern| line.match?(pattern) } }],
       [:meta, ->(line) { META_PATTERNS.any? { |pattern| line.match?(pattern) } }],
       [:gendered_load, ->(line) { GENDERED_LOAD_LINE_PATTERNS.any? { |pattern| line.match?(pattern) } }]
     ].freeze
+
+    def initialize(body_text)
+      @body_text = body_text
+    end
 
     def classify(line)
       match = CLASSIFICATION_RULES.find { |_kind, matcher| matcher.call(line) }
@@ -52,6 +48,10 @@ module CfWod
 
     def rest_minutes(line)
       REST_PATTERN.match(line)&.[](:minutes)&.to_i
+    end
+
+    def paragraphs
+      body_text.split(/\n{2,}/).map(&:strip).reject(&:empty?)
     end
 
     private

@@ -73,7 +73,7 @@ module CfWod
       stub_redirect('2026/06/20', '260620')
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620}).to_return(status: 200, body: SHELL_HTML)
 
-      assert_raises(Fetcher::UnrecognizedTemplateError) do
+      assert_raises(UnrecognizedTemplateError) do
         Fetcher.call(Date.new(2026, 6, 20))
       end
     end
@@ -104,20 +104,20 @@ module CfWod
     test 'raises FetchError on a non-success, non-redirect response' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2030/01/01}).to_return(status: 404)
 
-      assert_raises(Fetcher::FetchError) { Fetcher.call(Date.new(2030, 1, 1)) }
+      assert_raises(FetchError) { Fetcher.call(Date.new(2030, 1, 1)) }
     end
 
     test 'raises FetchError on a network timeout' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2030/01/02}).to_timeout
 
-      assert_raises(Fetcher::FetchError) { Fetcher.call(Date.new(2030, 1, 2)) }
+      assert_raises(FetchError) { Fetcher.call(Date.new(2030, 1, 2)) }
     end
 
     test 'raises FetchError when redirects exceed the max' do
       stub_redirect('2030/01/03', 'loop')
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/loop}).to_return(status: 301, headers: { 'Location' => '/loop' })
 
-      assert_raises(Fetcher::FetchError) { Fetcher.call(Date.new(2030, 1, 3)) }
+      assert_raises(FetchError) { Fetcher.call(Date.new(2030, 1, 3)) }
     end
   end
 end

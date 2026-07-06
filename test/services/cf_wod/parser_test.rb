@@ -18,7 +18,7 @@ module CfWod
 
     test 'legacy AMRAP fixture parses with round-scored format, exact movements, and a flagged unattached load' do
       page = page_for_fixture('legacy_with_scaling.html', Date.new(2018, 1, 10))
-      result = Parser.call(page)
+      result = WorkoutParser.call(page)
 
       assert result.partial?
       assert_includes result.reason, 'Male/female load could not be confidently attached'
@@ -32,7 +32,7 @@ module CfWod
 
     test 'modern multi-part (sled drag) fixture builds the main exercise and an event-triggered penalty segment' do
       page = page_for_fixture('modern_multi_part.html', Date.new(2026, 6, 20))
-      result = Parser.call(page)
+      result = WorkoutParser.call(page)
 
       assert result.partial?
       assert_includes result.reason, 'Event-triggered penalty segment'
@@ -50,7 +50,7 @@ module CfWod
 
     test 'modern windowed-clock fixture (250618) builds timed segments despite no workout-level score type' do
       page = page_for_fixture('modern_normal.html', Date.new(2025, 6, 18))
-      result = Parser.call(page)
+      result = WorkoutParser.call(page)
 
       assert result.partial?
       assert_includes result.reason, 'Could not determine workout format from body text'
@@ -68,7 +68,7 @@ module CfWod
 
     test 'rest day fixture fails immediately without attempting to parse' do
       page = page_for_fixture('modern_rest_day.html', Date.new(2026, 7, 2))
-      result = Parser.call(page)
+      result = WorkoutParser.call(page)
 
       assert result.failed?
       assert_nil result.workout

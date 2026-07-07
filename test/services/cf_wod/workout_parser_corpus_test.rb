@@ -77,5 +77,18 @@ module CfWod
       assert_equal [movements(:burpee), 5], [burpee.movement, burpee.reps]
       assert_equal [movements(:squat), 10], [squat.movement, squat.reps]
     end
+
+    test 'find-a-1-rep-max: a single lifting line with the load-zero sentinel' do
+      page = wod_page(slug: '300203', body_text: 'Find a 1-rep-max back squat.')
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'weight', workout.score_type
+      assert_equal 1, workout.exercises.length
+      exercise = workout.exercises.first
+      assert_equal movements(:back_squat), exercise.movement
+      assert_equal [1, 0], [exercise.reps, exercise.load]
+    end
   end
 end

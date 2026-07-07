@@ -63,5 +63,19 @@ module CfWod
       assert_equal 1, pull_up.reps
       assert_nil pull_up.female_load
     end
+
+    test 'EMOM: every-minute-on-the-minute with no prescription block' do
+      page = wod_page(slug: '300202', body_text: "Every minute on the minute for 10 minutes:\n5 burpees\n10 air squats")
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'rep', workout.score_type
+      assert_equal 10, workout.time
+      assert_equal 10, workout.rounds
+      burpee, squat = workout.exercises.sort_by(&:position)
+      assert_equal [movements(:burpee), 5], [burpee.movement, burpee.reps]
+      assert_equal [movements(:squat), 10], [squat.movement, squat.reps]
+    end
   end
 end

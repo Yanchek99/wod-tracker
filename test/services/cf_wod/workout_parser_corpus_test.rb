@@ -30,5 +30,17 @@ module CfWod
       assert_equal 1, rope_climb.reps
       assert_nil rope_climb.female_load
     end
+
+    test '260620: a real instructional sentence embedded in the body fails closed rather than guessing' do
+      stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
+        .to_return(status: 200, body: fixture('modern_multi_part.html'))
+      stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/06/20})
+        .to_return(status: 301, headers: { 'Location' => '/260620' })
+
+      page = Fetcher.call(Date.new(2026, 6, 20))
+
+      error = assert_raises(WorkoutParser::UnparseableError) { WorkoutParser.call(page) }
+      assert_includes error.message, 'Any time you stop'
+    end
   end
 end

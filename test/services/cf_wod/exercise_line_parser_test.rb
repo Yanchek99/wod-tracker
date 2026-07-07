@@ -1,0 +1,42 @@
+require 'test_helper'
+
+module CfWod
+  class ExerciseLineParserTest < ActiveSupport::TestCase
+    test 'parses a numbered reps line' do
+      assert_equal({ movement_name: 'power snatches', reps: 5 }, ExerciseLineParser.call('5 power snatches'))
+    end
+
+    test 'strips a trailing comma-qualifier from the movement name' do
+      result = ExerciseLineParser.call('1 rope climb, 15-ft. rope')
+      assert_equal({ movement_name: 'rope climb', reps: 1 }, result)
+    end
+
+    test 'strips a trailing "with" qualifier from the movement name' do
+      result = ExerciseLineParser.call('1,600-meter sled drag with a barbell front-rack carry')
+      assert_equal({ movement_name: 'sled drag', reps: 1, distance: 1600, distance_unit: :meter }, result)
+    end
+
+    test 'parses a leading distance-then-movement line' do
+      result = ExerciseLineParser.call('200-meter run')
+      assert_equal({ movement_name: 'run', reps: 1, distance: 200, distance_unit: :meter }, result)
+    end
+
+    test 'parses a trailing movement-then-distance line' do
+      result = ExerciseLineParser.call('Run 800 meters')
+      assert_equal({ movement_name: 'Run', reps: 1, distance: 800, distance_unit: :meter }, result)
+    end
+
+    test 'parses a bare "Max" line as the reps-zero sentinel' do
+      assert_equal({ movement_name: 'skin-the-cats', reps: 0 }, ExerciseLineParser.call('Max skin-the-cats'))
+    end
+
+    test 'parses a bare movement-only line as reps 1' do
+      assert_equal({ movement_name: 'Thrusters', reps: 1 }, ExerciseLineParser.call('Thrusters'))
+    end
+
+    test 'returns nil for a full prose sentence that is not an exercise line' do
+      line = 'Any time you stop, you must complete 15 bent-over rows with the barbell before starting again.'
+      assert_nil ExerciseLineParser.call(line)
+    end
+  end
+end

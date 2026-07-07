@@ -1,0 +1,46 @@
+require 'test_helper'
+
+module CfWod
+  class WorkoutParserTest < ActiveSupport::TestCase
+    def wod_page(slug:, body_text:)
+      WodPage.new(date: nil, slug: slug, title: nil, body_html: nil, body_text: body_text, description: nil,
+                  scaling: nil, rest_day: false, previous_slug: nil, next_slug: nil)
+    end
+
+    test 'builds a valid, unsaved flat for-time workout with no prescription' do
+      page = wod_page(slug: '300101', body_text: "For time:\n5 burpees")
+
+      workout = WorkoutParser.call(page)
+
+      assert_not workout.persisted?
+      assert workout.valid?
+      assert_equal 'CF-300101', workout.name
+      assert_equal 'time', workout.score_type
+      assert_equal 1, workout.exercises.length
+      exercise = workout.exercises.first
+      assert_equal movements(:burpee), exercise.movement
+      assert_equal 5, exercise.reps
+      assert_equal 1, exercise.position
+      assert_nil exercise.segment
+    end
+
+    test 'builds a find-a-1-rep-max workout with the load-zero sentinel' do
+      page = wod_page(slug: '300102', body_text: 'Find a 1-rep-max back squat.')
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'weight', workout.score_type
+      exercise = workout.exercises.first
+      assert_equal movements(:back_squat), exercise.movement
+      assert_equal 1, exercise.reps
+      assert_equal 0, exercise.load
+    end
+
+    test 'raises UnparseableError when the movement is unrecognized' do
+      page = wod_page(slug: '300103', body_text: "For time:\n5 completely unrecognized movements")
+
+      assert_raises(WorkoutParser::UnparseableError) { WorkoutParser.call(page) }
+    end
+  end
+end

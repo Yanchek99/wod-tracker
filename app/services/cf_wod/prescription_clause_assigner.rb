@@ -1,0 +1,78 @@
+module CfWod
+  class PrescriptionClauseAssigner
+    # Movement is genuinely load-bearing here, detected by name/line-text for now -- swap this
+    # for the equipment/load-bearing taxonomy (#1629) once it lands, same stopgap already used
+    # by Movement#supports_implement_count?.
+    BARBELL_FAMILY_KEYWORDS = %w[snatch clean jerk squat deadlift press thruster].freeze
+    BARBELL_CUE_PATTERN = /overhead|front-rack|back-rack/i
+
+    STOPWORDS = %w[a an the to of and or with for on at in].freeze
+    LOAD_UNITS = %i[lb kg].freeze
+    DISTANCE_UNITS = %i[inch foot meter].freeze
+
+    def self.call(exercise_lines, clauses) = new(exercise_lines, clauses).assign
+
+    def initialize(exercise_lines, clauses)
+      @exercise_lines = exercise_lines
+      @clauses = clauses
+      @bound = Set.new
+    end
+
+    def assign
+      clauses[:female].each_with_index do |female_values, index|
+        bind_clause_pair(female_values, clauses[:male][index])
+      end
+    end
+
+    private
+
+    attr_reader :exercise_lines, :clauses, :bound
+
+    def bind_clause_pair(female_values, male_values)
+      candidates = matching_candidates(female_values.first)
+      if candidates.empty?
+        implement = female_values.first[:implement]
+        raise WorkoutParser::UnparseableError, "prescription clause matched no movement: #{implement.inspect}"
+      end
+
+      candidates.each do |candidate|
+        bound << candidate
+        female_values.zip(male_values).each { |female_value, male_value| apply_value(candidate, female_value, male_value) }
+      end
+    end
+
+    def matching_candidates(primary_value)
+      by_token = unbound_lines.select { |line| shares_token?(primary_value[:implement], line[:raw_line]) }
+      by_token.presence || unbound_lines.select { |line| barbell_family?(line) }
+    end
+
+    def unbound_lines
+      exercise_lines.reject { |line| bound.include?(line) }
+    end
+
+    def shares_token?(implement, raw_line)
+      tokens(implement).intersect?(tokens(raw_line))
+    end
+
+    def tokens(text)
+      text.to_s.downcase.split(/[^a-z]+/).compact_blank - STOPWORDS
+    end
+
+    def barbell_family?(line)
+      name = line[:exercise].movement.name.downcase
+      BARBELL_FAMILY_KEYWORDS.any? { |keyword| name.include?(keyword) } || line[:raw_line].match?(BARBELL_CUE_PATTERN)
+    end
+
+    def apply_value(candidate, female_value, male_value)
+      exercise = candidate[:exercise]
+      if LOAD_UNITS.include?(female_value[:unit])
+        exercise.female_load = female_value[:value]
+        exercise.male_load = male_value[:value]
+      elsif DISTANCE_UNITS.include?(female_value[:unit])
+        exercise.female_distance = female_value[:value]
+        exercise.male_distance = male_value[:value]
+        exercise.distance_unit = female_value[:unit]
+      end
+    end
+  end
+end

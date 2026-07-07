@@ -25,3 +25,48 @@ thruster:
 
 back_squat:
   name: Back Squat
+
+power_snatch:
+  name: Power Snatch
+
+overhead_walking_lunge:
+  name: Overhead Walking Lunge
+
+rope_climb:
+  name: Rope Climb
+
+sled_drag:
+  name: Sled Drag
+
+pull_up:
+  name: Pull-up
+
+burpee:
+  name: Burpee
+
+handstand_push_up:
+  name: Handstand Push-up
+
+single_leg_squat:
+  name: Single-leg Squat
+
+freestanding_shoulder_tap:
+  name: Freestanding Shoulder Tap
+
+skin_the_cat:
+  name: Skin-the-cat
+
+l_pull_up:
+  name: L Pull-up
+
+deficit_push_up:
+  name: Deficit Push-up
+
+deadlift:
+  name: Deadlift
+
+wall_ball_shot:
+  name: Wall-ball Shot
+
+box_jump:
+  name: Box Jump

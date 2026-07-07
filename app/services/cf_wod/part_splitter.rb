@@ -34,21 +34,27 @@ module CfWod
 
     def build_parts(content_lines)
       parts = [new_part]
-
-      content_lines.each do |line|
-        if (match = TIME_WINDOW.match(line))
-          parts << segment_part(name: "#{match[1]}-#{match[2]}", time_seconds: window_seconds(match))
-        elsif (match = ROUNDS_OF.match(line))
-          parts << segment_part(rounds: match[1].to_i)
-        elsif line.match?(BARE_THEN)
-          parts << new_part
-          parts.last[:lines] << line.sub(BARE_THEN, '')
-        else
-          parts.last[:lines] << line
-        end
-      end
-
+      content_lines.each { |line| append_line(parts, line) }
       parts.reject { |part| part[:lines].empty? }
+    end
+
+    def append_line(parts, line)
+      if (segment = segment_for(line))
+        parts << segment
+      elsif line.match?(BARE_THEN)
+        parts << new_part
+        parts.last[:lines] << line.sub(BARE_THEN, '')
+      else
+        parts.last[:lines] << line
+      end
+    end
+
+    def segment_for(line)
+      if (match = TIME_WINDOW.match(line))
+        segment_part(name: "#{match[1]}-#{match[2]}", time_seconds: window_seconds(match))
+      elsif (match = ROUNDS_OF.match(line))
+        segment_part(rounds: match[1].to_i)
+      end
     end
 
     def new_part

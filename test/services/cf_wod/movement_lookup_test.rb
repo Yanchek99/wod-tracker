@@ -1,0 +1,22 @@
+require 'test_helper'
+
+module CfWod
+  class MovementLookupTest < ActiveSupport::TestCase
+    test 'normalizes a plural movement phrase and finds an exact match' do
+      assert_equal movements(:power_snatch), MovementLookup.call('power snatches')
+    end
+
+    test 'singularizes without breaking a hyphenated suffix' do
+      assert_equal movements(:sled_drag), MovementLookup.call('sled drag')
+      assert_equal movements(:pull_up), MovementLookup.call('pull-ups')
+    end
+
+    test 'strips a trailing period' do
+      assert_equal movements(:rope_climb), MovementLookup.call('Rope Climb.')
+    end
+
+    test 'returns nil for a name with no catalog match' do
+      assert_nil MovementLookup.call('a completely unrecognized movement phrase')
+    end
+  end
+end

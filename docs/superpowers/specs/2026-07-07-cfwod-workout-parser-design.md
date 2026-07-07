@@ -85,13 +85,21 @@ Anything not matching one of these known shapes raises `UnparseableError` immedi
 `PartSplitter` detects two shapes already proven to occur in this app's own hand-seeded workouts
 (`db/seeds/cf_workouts.rb`):
 
-- **Sequential parts** — "Then, N rounds of the couplet:" style transitions between blocks.
-- **Time-windowed parts** — explicit clock windows (e.g. "0:00–5:00:", "5:00–10:00:", as in the `260622` seed and
-  the `250618` example referenced in the epic).
+- **Sequential parts** — "Then, N rounds of the couplet:" style transitions between blocks. A *bare* "Then, ..."
+  line with no rounds count (e.g. "Then, run 800 meters" in `CFJ-181202`) is not a new segment — it closes any
+  currently-open segment and continues as a plain top-level line, with the "Then, " prefix stripped.
+- **Time-windowed parts** — explicit clock windows (e.g. "0:00-5:00:", "5:00-10:00:", as in the `260622` seed).
 
 A body with no such markers is a single flat part (the common case). Each detected part becomes a `Segment`
-(`workout.segments.build(...)`) with its own exercises; a flat body's exercises attach directly to the `Workout`
-with no segment, matching `Exercise#segment` being `optional: true`.
+(`workout.segments.build(...)`) with its own exercises; a flat body's exercises (and any top-level lines before/after
+a segment) attach directly to the `Workout` with no segment, matching `Exercise#segment` being `optional: true`.
+
+`PartSplitter` also strips known **boilerplate lines** that carry no exercise data before line-parsing ever sees
+them — e.g. "Post rounds completed to comments.", "Post time to comments.", "Scroll for scaling options." Every
+real WOD body pulled for the corpus contains at least one of these; without stripping them, `ExerciseLineParser`
+would fail closed on every single real WOD, since they don't match the exercise-line grammar. This isn't scope
+creep — it's a prerequisite for the parser succeeding on *any* real input at all, discovered while building the
+corpus below.
 
 ## Exercise line parsing
 
@@ -124,18 +132,29 @@ splits each sex's text on commas/"and" into individual clauses (e.g. `185-lb bar
 medicine ball to a 9-foot target`). A clause can carry more than one value+unit pair (weight *and* a "to a target"
 distance) — both are kept together as one clause, to be bound to the same movement.
 
-**`PrescriptionClauseAssigner`** binds each parsed clause to a movement line within the same part:
+**`PrescriptionClauseAssigner`** binds each parsed clause **globally**, against every movement line in the whole
+workout (not scoped to one part) — the Rx text conventionally appears once, at the very end of the body, and can
+address a movement inside any segment:
 
-1. **Shared noun** — if the clause's implement word (box, medicine ball, sled, rope, dumbbell, kettlebell, plate...)
-   appears in exactly one still-unbound movement line's own text, bind there (e.g. "box" clause → the "box jumps"
-   line; "medicine ball"/"target" clause → the "wall-ball shots" line).
-2. **Bare/barbell clause** (just a weight, or explicitly says "barbell") — bind to exactly one still-unbound
-   movement line whose movement name is in a small parser-local `BARBELL_FAMILY_MOVEMENTS` list (snatch, clean,
-   jerk, squat, deadlift, press, thruster, and lunge/carry variants whose *line text* says "overhead", "front-rack",
-   or "back-rack"). This list is a stopgap — commented as pointing at #1629 for the real load-bearing taxonomy, the
-   same pattern already used by `Movement::IMPLEMENT_COUNT_NAME_PATTERN` for implement counts.
-3. A clause matching zero or more than one candidate under either rule → `UnparseableError` (ambiguous binding).
-4. Movement lines untouched by any clause (rope climb, pull-ups, an already self-contained "1,000-meter row") stay
+1. **Shared token** — tokenize both the clause's implement phrase and each still-unbound movement line's text
+   (lowercase, split on non-letters, drop stopwords). If any token overlaps, bind there. This is token overlap, not
+   phrase equality: a "medicine ball" clause binds to a "wall-ball shots" line via the shared token "ball," without
+   needing a curated synonym table.
+2. **Bare/barbell clause** (just a weight, or explicitly says "barbell", no other implement noun) — bind to every
+   still-unbound movement line whose movement name is in a small parser-local `BARBELL_FAMILY_MOVEMENTS` list
+   (snatch, clean, jerk, squat, deadlift, press, thruster...), or whose *line text* says "overhead", "front-rack",
+   or "back-rack" (covers lunge/carry variants like the `180110` overhead walking lunge). This list is a stopgap —
+   commented as pointing at #1629 for the real load-bearing taxonomy, the same pattern already used by
+   `Movement::IMPLEMENT_COUNT_NAME_PATTERN` for implement counts.
+3. **A clause binds to every matching candidate, not just one** — this is the corrected rule. In `180110`, the bare
+   95/65 lb clause matches *both* the power snatch and the overhead walking lunge (both barbell-family), and both
+   receive the load; the rope climb matches neither rule and stays bodyweight. In the deadlift/box-jump/wall-ball
+   chipper (both movements repeat later in the same chipper), a clause binds to *every* occurrence. A clause
+   matching **zero** candidates → `UnparseableError` (nothing to bind to) — that's the only ambiguity case.
+4. A clause can carry more than one value+unit pair (e.g. "14-lb medicine ball to a 9-foot target" — ball weight
+   *and* target distance); both bind to the same matched movement line(s), onto their respective dimensions
+   (lb/kg → load, inch/foot/meter → distance), since `Exercise` supports load and distance independently.
+5. Movement lines untouched by any clause (rope climb, pull-ups, an already self-contained "1,000-meter row") stay
    bodyweight — no load/distance is set on them.
 
 This deliberately fails closed on prescription phrasing this design didn't anticipate, rather than guessing. The

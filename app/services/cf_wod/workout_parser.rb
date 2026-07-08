@@ -9,10 +9,10 @@ module CfWod
     end
 
     def parse
-      header, rest = wod_page.body_text.split("\n", 2)
+      header, body = wod_page.body_text.split("\n", 2)
       attrs = WorkoutFormatClassifier.call(header)
       workout = Workout.new(name: "CF-#{wod_page.slug}", notes: wod_page.body_text, **attrs.except(:lift_name))
-      build_workout_content(workout, attrs, rest)
+      build_workout_content(workout, attrs, body)
       validate_workout!(workout)
       workout
     end
@@ -21,11 +21,11 @@ module CfWod
 
     attr_reader :wod_page
 
-    def build_workout_content(workout, attrs, rest)
+    def build_workout_content(workout, attrs, body)
       if attrs[:lift_name]
         build_max_finding_exercise(workout, attrs[:lift_name])
       else
-        build_from_body(workout, rest.to_s)
+        build_from_body(workout, body.to_s)
       end
     end
 

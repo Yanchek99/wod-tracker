@@ -1,6 +1,6 @@
 module CfWod
   class PartSplitter
-    BOILERPLATE_LINE_PATTERNS = [
+    IRRELEVANT_LINE_PATTERNS = [
       /\Ascroll for scaling options\.?\z/i,
       /\Apost .*to comments\.?\z/i
     ].freeze
@@ -17,7 +17,7 @@ module CfWod
     end
 
     def split
-      cleaned = all_lines.reject { |line| boilerplate_line?(line) }
+      cleaned = all_lines.reject { |line| irrelevant_line?(line) }
       prescription = cleaned.reverse.take_while { |line| line.match?(PRESCRIPTION_LINE) }.reverse
       content = cleaned[0...(cleaned.length - prescription.length)]
 
@@ -28,8 +28,8 @@ module CfWod
 
     attr_reader :all_lines
 
-    def boilerplate_line?(line)
-      BOILERPLATE_LINE_PATTERNS.any? { |pattern| line.match?(pattern) }
+    def irrelevant_line?(line)
+      IRRELEVANT_LINE_PATTERNS.any? { |pattern| line.match?(pattern) }
     end
 
     def build_parts(content_lines)
@@ -50,10 +50,11 @@ module CfWod
     end
 
     def segment_for(line)
-      if (match = TIME_WINDOW.match(line))
-        segment_part(name: "#{match[1]}-#{match[2]}", time_seconds: window_seconds(match))
-      elsif (match = ROUNDS_OF.match(line))
-        segment_part(rounds: match[1].to_i)
+      if (time_window_match = TIME_WINDOW.match(line))
+        start_clock, end_clock = time_window_match.captures
+        segment_part(name: "#{start_clock}-#{end_clock}", time_seconds: window_seconds(start_clock, end_clock))
+      elsif (rounds_of_match = ROUNDS_OF.match(line))
+        segment_part(rounds: rounds_of_match[1].to_i)
       end
     end
 
@@ -65,12 +66,12 @@ module CfWod
       { segment: true, name: name, time_seconds: time_seconds, rounds: rounds, lines: [] }
     end
 
-    def window_seconds(match)
-      to_seconds(match[2]) - to_seconds(match[1])
+    def window_seconds(start_clock, end_clock)
+      clock_time_to_seconds(end_clock) - clock_time_to_seconds(start_clock)
     end
 
-    def to_seconds(clock)
-      minutes, seconds = clock.split(':').map(&:to_i)
+    def clock_time_to_seconds(clock_time)
+      minutes, seconds = clock_time.split(':').map(&:to_i)
       (minutes * 60) + seconds
     end
   end

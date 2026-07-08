@@ -30,8 +30,8 @@ module CfWod
     attr_reader :line
 
     def distance_then_movement_attributes
-      value, unit, rest = line.match(DISTANCE_THEN_MOVEMENT).captures
-      { movement_name: clean_name(rest), reps: 1, distance: value.delete(',').to_i,
+      value, unit, remaining = line.match(DISTANCE_THEN_MOVEMENT).captures
+      { movement_name: clean_name(remaining), reps: 1, distance: value.delete(',').to_i,
         distance_unit: DISTANCE_UNITS.fetch(unit.downcase) }
     end
 
@@ -42,8 +42,8 @@ module CfWod
     end
 
     def numbered_reps_attributes
-      reps, rest = line.match(NUMBERED_REPS).captures
-      { movement_name: clean_name(rest), reps: reps.to_i }
+      reps, remaining = line.match(NUMBERED_REPS).captures
+      { movement_name: clean_name(remaining), reps: reps.to_i }
     end
 
     def clean_name(raw)

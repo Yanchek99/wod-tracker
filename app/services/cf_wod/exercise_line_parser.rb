@@ -3,6 +3,8 @@ module CfWod
     MAX_REPS = /\AMax(?:imum)?[- ](.+)\z/i
     DISTANCE_THEN_MOVEMENT = /\A([\d,]+(?:\.\d+)?)[\s-](meters?|feet|foot|inches?|miles?)\s+(.+)\z/i
     MOVEMENT_THEN_DISTANCE = /\A([A-Za-z][A-Za-z '-]*?)\s+([\d,]+(?:\.\d+)?)\s+(meters?|feet|foot|inches?|miles?)\.?\z/i
+    REPS_MOVEMENT_TO_DISTANCE =
+      /\A(\d+)\s+([A-Za-z][A-Za-z '-]*?)\s+to\s+(?:an?\s+)?([\d,]+(?:\.\d+)?)[\s-]+(meters?|feet|foot|inches?|miles?)\.?\z/i
     NUMBERED_REPS = /\A(\d+)\s+(.+)\z/
     BARE_MOVEMENT = /\A([A-Za-z][A-Za-z '-]*)\z/
 
@@ -26,6 +28,7 @@ module CfWod
       when MAX_REPS then { movement_name: clean_name(line.match(MAX_REPS)[1]), reps: 0 }
       when DISTANCE_THEN_MOVEMENT then distance_then_movement_attributes
       when MOVEMENT_THEN_DISTANCE then movement_then_distance_attributes
+      when REPS_MOVEMENT_TO_DISTANCE then reps_movement_to_distance_attributes
       when NUMBERED_REPS then numbered_reps_attributes
       when BARE_MOVEMENT then { movement_name: clean_name(line), reps: 1 }
       end
@@ -54,6 +57,11 @@ module CfWod
     def mile_distance_attributes(raw_value)
       miles = raw_value.delete(',').to_f
       { distance: (miles * METERS_PER_MILE).round, distance_unit: :meter }
+    end
+
+    def reps_movement_to_distance_attributes
+      reps, movement, value, unit = line.match(REPS_MOVEMENT_TO_DISTANCE).captures
+      { movement_name: clean_name(movement), reps: reps.to_i }.merge(distance_attributes(value, unit))
     end
 
     def numbered_reps_attributes

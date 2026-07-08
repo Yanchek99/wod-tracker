@@ -26,6 +26,11 @@ module CfWod
       assert_equal({ movement_name: 'Run', reps: 1, distance: 800, distance_unit: :meter }, result)
     end
 
+    test 'parses a numbered reps line with a "to"-joined distance clause' do
+      result = ExerciseLineParser.call('5 rope climbs to 15 feet')
+      assert_equal({ movement_name: 'rope climbs', reps: 5, distance: 15, distance_unit: :foot }, result)
+    end
+
     test 'parses a bare "Max" line as the reps-zero sentinel' do
       assert_equal({ movement_name: 'skin-the-cats', reps: 0 }, ExerciseLineParser.call('Max skin-the-cats'))
     end

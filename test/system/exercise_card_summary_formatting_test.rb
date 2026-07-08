@@ -91,6 +91,9 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       select 'foot', from: 'Distance unit'
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
+      assert_field 'Female distance', with: '30'
+      assert_field 'Male distance', with: '40'
+      assert_select 'Distance unit', selected: 'foot'
       click_on 'Done'
 
       assert_text '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'

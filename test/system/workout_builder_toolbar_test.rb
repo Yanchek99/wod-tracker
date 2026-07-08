@@ -14,7 +14,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
   test 'keeps workout builder toolbar fixed to the bottom while scrolling' do
     visit new_workout_url
 
-    8.times { click_on 'Add Exercise', match: :first }
+    8.times { click_on 'Add Segment' }
     execute_script('window.scrollTo(0, Math.floor(document.body.scrollHeight / 2))')
 
     assert_selector '.workout-builder-toolbar'

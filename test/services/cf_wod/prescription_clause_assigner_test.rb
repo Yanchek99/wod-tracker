@@ -83,5 +83,41 @@ module CfWod
       error = assert_raises(WorkoutParser::UnparseableError) { PrescriptionClauseAssigner.call([wall_ball], clauses) }
       assert_match(/value-count/, error.message)
     end
+
+    test 'converts kg loads to canonical pounds' do
+      snatch = exercise_line(movements(:power_snatch), '5 power snatches')
+      clauses = { female: [[{ value: 43, unit: :kg, implement: '' }]], male: [[{ value: 61, unit: :kg, implement: '' }]] }
+
+      PrescriptionClauseAssigner.call([snatch], clauses)
+
+      assert_equal [95, 135], [snatch[:exercise].female_load, snatch[:exercise].male_load]
+    end
+
+    test 'converts decimal kg loads to canonical pounds using the published conversion table' do
+      snatch = exercise_line(movements(:power_snatch), '5 power snatches')
+      clauses = { female: [[{ value: 22.5, unit: :kg, implement: '' }]],
+                  male: [[{ value: 38.5, unit: :kg, implement: '' }]] }
+
+      PrescriptionClauseAssigner.call([snatch], clauses)
+
+      assert_equal [50, 85], [snatch[:exercise].female_load, snatch[:exercise].male_load]
+    end
+
+    test 'converts pood loads to canonical pounds' do
+      snatch = exercise_line(movements(:power_snatch), '5 power snatches')
+      clauses = { female: [[{ value: 1.5, unit: :pood, implement: '' }]], male: [[{ value: 2, unit: :pood, implement: '' }]] }
+
+      PrescriptionClauseAssigner.call([snatch], clauses)
+
+      assert_equal [53, 70], [snatch[:exercise].female_load, snatch[:exercise].male_load]
+    end
+
+    test 'does not treat a bodyweight Air Squat as barbell-family for a bare-noun clause' do
+      air_squat = Movement.find_or_create_by(name: 'Air Squat')
+      squat_line = exercise_line(air_squat, '20 air squats')
+      clauses = { female: [[{ value: 65, unit: :lb, implement: '' }]], male: [[{ value: 95, unit: :lb, implement: '' }]] }
+
+      assert_raises(WorkoutParser::UnparseableError) { PrescriptionClauseAssigner.call([squat_line], clauses) }
+    end
   end
 end

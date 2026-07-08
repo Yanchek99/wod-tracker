@@ -1,13 +1,20 @@
 module CfWod
   class PrescriptionClauseAssigner
-    # Movement is genuinely load-bearing here, detected by name/line-text for now -- swap this
-    # for the equipment/load-bearing taxonomy (#1629) once it lands, same stopgap already used
-    # by Movement#supports_implement_count?.
-    BARBELL_FAMILY_KEYWORDS = %w[snatch clean jerk squat deadlift press thruster].freeze
+    # Movement is genuinely load-bearing here, detected by exact name for now -- swap this for the
+    # equipment/load-bearing taxonomy (#1629) once it lands, same stopgap already used by
+    # Movement#supports_implement_count?. An exact-name allowlist (not a substring/keyword check),
+    # since a substring check on e.g. "squat" would also match the bodyweight "Air Squat".
+    BARBELL_FAMILY_MOVEMENTS = [
+      'Back Squat', 'Front Squat', 'Overhead Squat', 'Squat Clean', 'Squat Clean Thruster',
+      'Deadlift', 'Sumo Deadlift High Pull',
+      'Snatch', 'Power Snatch', 'Squat Snatch', 'Muscle Snatch',
+      'Clean', 'Power Clean', 'Hang Power Clean', 'Hang Squat Clean', 'Clean and Jerk',
+      'Jerk', 'Push Jerk', 'Split Jerk', 'Push Press', 'Thruster', 'Bench Press'
+    ].freeze
     BARBELL_CUE_PATTERN = /overhead|front-rack|back-rack/i
 
     STOPWORDS = %w[a an the to of and or with for on at in].freeze
-    LOAD_UNITS = %i[lb kg].freeze
+    LOAD_UNITS = %i[lb kg pood].freeze
     DISTANCE_UNITS = %i[inch foot meter].freeze
 
     def self.call(exercise_lines, clauses) = new(exercise_lines, clauses).assign
@@ -80,20 +87,27 @@ module CfWod
     end
 
     def barbell_family?(line)
-      name = line[:exercise].movement.name.downcase
-      BARBELL_FAMILY_KEYWORDS.any? { |keyword| name.include?(keyword) } || line[:raw_line].match?(BARBELL_CUE_PATTERN)
+      BARBELL_FAMILY_MOVEMENTS.include?(line[:exercise].movement.name) || line[:raw_line].match?(BARBELL_CUE_PATTERN)
     end
 
     def apply_value(candidate, female_value, male_value)
       exercise = candidate[:exercise]
       if LOAD_UNITS.include?(female_value[:unit])
-        exercise.female_load = female_value[:value]
-        exercise.male_load = male_value[:value]
+        apply_load(exercise, female_value, male_value)
       elsif DISTANCE_UNITS.include?(female_value[:unit])
-        exercise.female_distance = female_value[:value]
-        exercise.male_distance = male_value[:value]
-        exercise.distance_unit = female_value[:unit]
+        apply_distance(exercise, female_value, male_value)
       end
+    end
+
+    def apply_load(exercise, female_value, male_value)
+      exercise.female_load = LoadEquivalence.to_lb(female_value[:value], female_value[:unit])
+      exercise.male_load = LoadEquivalence.to_lb(male_value[:value], male_value[:unit])
+    end
+
+    def apply_distance(exercise, female_value, male_value)
+      exercise.female_distance = female_value[:value]
+      exercise.male_distance = male_value[:value]
+      exercise.distance_unit = female_value[:unit]
     end
   end
 end

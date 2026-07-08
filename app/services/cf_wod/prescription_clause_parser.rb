@@ -2,9 +2,10 @@ module CfWod
   class PrescriptionClauseParser
     MALE_PREFIX = /\A(?:men|male|♂):?\s*/i
     FEMALE_PREFIX = /\A(?:women|female|♀):?\s*/i
-    CLAUSE_PATTERN = /\A([\d,]+)[\s-](lb|kg|inch|foot|in|ft)\.?\s*(.*?)\.?\z/i
+    CLAUSE_PATTERN = /\A([\d,]+(?:\.\d+)?)[\s-](lb|kg|pood|inch|foot|in|ft)\.?\s*(.*?)\.?\z/i
     TARGET_SUFFIX = /\s+to\s+a\s+([\d,]+)-(foot|ft|inch|in)\.?\s+(.+)\z/i
-    UNIT_ALIASES = { 'lb' => :lb, 'kg' => :kg, 'inch' => :inch, 'in' => :inch, 'foot' => :foot, 'ft' => :foot }.freeze
+    UNIT_ALIASES = { 'lb' => :lb, 'kg' => :kg, 'pood' => :pood, 'inch' => :inch, 'in' => :inch,
+                     'foot' => :foot, 'ft' => :foot }.freeze
 
     def self.call(text) = new(text).parse
 
@@ -39,7 +40,15 @@ module CfWod
     end
 
     def clause_value(raw_value, raw_unit, implement)
-      { value: raw_value.delete(',').to_i, unit: UNIT_ALIASES.fetch(raw_unit.downcase), implement: implement.strip }
+      { value: numeric_value(raw_value), unit: UNIT_ALIASES.fetch(raw_unit.downcase), implement: implement.strip }
+    end
+
+    # Preserves decimal precision (e.g. "22.5" kg): LoadEquivalence's published kg -> lb table keys
+    # on the exact decimal magnitude, so truncating to an integer here would miss lookups like
+    # KG_TO_LB[22.5] and fall back to an imprecise generic conversion instead.
+    def numeric_value(raw_value)
+      cleaned = raw_value.delete(',')
+      cleaned.include?('.') ? cleaned.to_f : cleaned.to_i
     end
   end
 end

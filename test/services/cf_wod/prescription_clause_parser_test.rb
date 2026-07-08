@@ -29,5 +29,26 @@ module CfWod
       assert_equal [[{ value: 2, unit: :inch, implement: 'deficit' }]], result[:female]
       assert_equal [[{ value: 4, unit: :inch, implement: 'deficit' }]], result[:male]
     end
+
+    test 'parses whole-number kg values as integers' do
+      result = PrescriptionClauseParser.call("Men: 61 kg.\nWomen: 43 kg.")
+
+      assert_equal [[{ value: 43, unit: :kg, implement: '' }]], result[:female]
+      assert_equal [[{ value: 61, unit: :kg, implement: '' }]], result[:male]
+    end
+
+    test 'preserves decimal precision for kg values' do
+      result = PrescriptionClauseParser.call("Men: 38.5 kg.\nWomen: 22.5 kg.")
+
+      assert_equal [[{ value: 22.5, unit: :kg, implement: '' }]], result[:female]
+      assert_equal [[{ value: 38.5, unit: :kg, implement: '' }]], result[:male]
+    end
+
+    test 'parses pood values' do
+      result = PrescriptionClauseParser.call("Men: 2 pood.\nWomen: 1.5 pood.")
+
+      assert_equal [[{ value: 1.5, unit: :pood, implement: '' }]], result[:female]
+      assert_equal [[{ value: 2, unit: :pood, implement: '' }]], result[:male]
+    end
   end
 end

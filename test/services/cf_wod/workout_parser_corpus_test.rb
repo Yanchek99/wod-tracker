@@ -113,5 +113,37 @@ module CfWod
       assert_equal [movements(:handstand_push_up), 10], [hspu.movement, hspu.reps]
       assert_equal [movements(:single_leg_squat), 10], [single_leg_squat.movement, single_leg_squat.reps]
     end
+
+    test 'CF-260622: time-windowed multi-part with a prescription binding across segments' do
+      body = "On a 20-minute clock for total reps:\n0:00-5:00:\n200-meter run\nMax freestanding shoulder taps\n\n" \
+             "5:00-10:00:\n200-meter run\nMax skin-the-cats\n\n10:00-15:00:\n200-meter run\nMax L pull-ups\n\n" \
+             "15:00-20:00:\n200-meter run\nMax deficit push-ups\n\nFemale 2-inch deficit\nMale 4-inch deficit"
+      page = wod_page(slug: '300205', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 4, workout.segments.length
+      windows = workout.segments.sort_by(&:position)
+      assert_equal ['0:00-5:00', '5:00-10:00', '10:00-15:00', '15:00-20:00'], windows.map(&:name)
+      assert(windows.all? { |segment| segment.time_seconds == 300 })
+
+      # segment.exercises is empty on unsaved records (Exercise belongs_to both :workout and
+      # :segment; building via workout.exercises.build(segment:) doesn't populate the Segment
+      # side's in-memory has_many for a new record) -- filter from workout.exercises instead.
+      segment_exercises = ->(segment) { workout.exercises.select { |exercise| exercise.segment == segment } }
+
+      gymnastics_movements = windows.map { |segment| segment_exercises.call(segment).max_by(&:position).movement }
+      assert_equal [movements(:freestanding_shoulder_tap), movements(:skin_the_cat), movements(:l_pull_up),
+                    movements(:deficit_push_up)], gymnastics_movements
+
+      deficit_push_up = segment_exercises.call(windows.last).max_by(&:position)
+      assert_equal 0, deficit_push_up.reps
+      assert_equal [2, 4], [deficit_push_up.female_distance, deficit_push_up.male_distance]
+      assert_equal :inch, deficit_push_up.distance_unit.to_sym
+
+      other_gymnastics = windows[0..2].map { |segment| segment_exercises.call(segment).max_by(&:position) }
+      assert(other_gymnastics.all? { |exercise| exercise.female_distance.nil? })
+    end
   end
 end

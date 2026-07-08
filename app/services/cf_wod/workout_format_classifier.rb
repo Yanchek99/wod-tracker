@@ -5,6 +5,7 @@ module CfWod
     EVERY_MINUTE = /\Aevery minute on the minute for (\d+) minutes?:?\z/i
     REP_LADDER = /\A(\d+(?:-\d+)+) reps for time of:?\z/i
     FIND_MAX = /\Afind a 1-rep-max (.+?)\.?\z/i
+    TIME_WINDOWED = /\Aon a (\d+)-minute clock for total reps:?\z/i
 
     def self.call(header_line) = new(header_line).classify
 
@@ -19,6 +20,7 @@ module CfWod
       when EVERY_MINUTE then emom_attributes
       when REP_LADDER then { score_type: :time, interval: header_line.match(REP_LADDER)[1] }
       when FIND_MAX then { score_type: :weight, lift_name: header_line.match(FIND_MAX)[1] }
+      when TIME_WINDOWED then { score_type: :rep, time: header_line.match(TIME_WINDOWED)[1].to_i }
       else
         raise WorkoutParser::UnparseableError, "unrecognized format header: #{header_line.inspect}"
       end

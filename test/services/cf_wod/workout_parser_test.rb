@@ -57,5 +57,26 @@ module CfWod
       assert_equal 3, exercise.reps
       assert_equal 0, exercise.load
     end
+
+    test 'returns an existing named workout directly instead of re-parsing its prose' do
+      named = Workout.create!(name: 'Test Named Hero', score_type: :time, rounds: 5, team_size: 2)
+      body = "Test Named Hero\n\nWith a partner, 5 rounds for time of:\n99 completely unparseable gibberish (each)"
+      page = wod_page(slug: '300105', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert_equal named, workout
+    end
+
+    test 'returns an existing workout when parsed content matches a differently named one' do
+      existing = Workout.create!(name: 'Legacy Burpee Bench', score_type: :time)
+      existing.exercises.create!(movement: movements(:burpee), position: 1, reps: 5)
+      existing.refresh_content_key!
+      page = wod_page(slug: '300106', body_text: "For time:\n5 burpees")
+
+      workout = WorkoutParser.call(page)
+
+      assert_equal existing, workout
+    end
   end
 end

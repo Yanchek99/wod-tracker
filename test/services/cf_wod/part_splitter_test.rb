@@ -13,6 +13,12 @@ module CfWod
       assert_not part[:segment]
       assert_equal ['5 power snatches', '10 overhead walking lunges', '1 rope climb, 15-ft. rope'], part[:lines]
       assert_equal "Men: 95 lb.\nWomen: 65 lb.", result[:prescription_text]
+      assert_equal "Scroll for scaling options.\nPost rounds completed to comments.", result[:notes]
+    end
+
+    test 'returns a nil notes when nothing matches the irrelevant-line patterns' do
+      result = PartSplitter.call("5 burpees\n10 air squats")
+      assert_nil result[:notes]
     end
 
     test 'splits sequential parts, closing the segment on a bare "Then," continuation' do
@@ -68,6 +74,7 @@ module CfWod
       assert_equal 1, result[:parts].length
       assert_equal ['800-meter run', '80 pull-ups', '80 deadlifts', '800-meter run'], result[:parts].first[:lines]
       assert_equal "♀ 95-lb barbell\n♂ 135-lb barbell", result[:prescription_text]
+      assert_equal 'Partition the pull-up and deadlift reps any way.', result[:notes]
     end
 
     test 'drops the generic "Partition the reps any way you like." template phrasing too' do

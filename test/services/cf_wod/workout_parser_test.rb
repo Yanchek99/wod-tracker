@@ -22,6 +22,34 @@ module CfWod
       assert_equal 5, exercise.reps
       assert_equal 1, exercise.position
       assert_nil exercise.segment
+      assert workout.notes.blank?
+    end
+
+    test 'leaves notes blank rather than duplicating the raw prose when nothing is left over' do
+      body = "For time:\n800-meter run\n80 pull-ups\n80 deadlifts\n800-meter run\n\n" \
+             "♀ 95-lb barbell\n♂ 135-lb barbell"
+      page = wod_page(slug: '300107', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert workout.notes.blank?
+    end
+
+    test 'captures genuinely leftover boilerplate as notes, without the header or exercise lines' do
+      body = "For time:\n800-meter run\n80 pull-ups\n80 deadlifts\n800-meter run\n\n" \
+             "Partition the pull-up and deadlift reps any way.\n\n" \
+             "♀ 95-lb barbell\n♂ 135-lb barbell\n\nPost time to comments."
+      page = wod_page(slug: '300108', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      notes = workout.notes.to_plain_text.strip
+      assert_equal "Partition the pull-up and deadlift reps any way.\nPost time to comments.", notes
+      assert_not_includes notes, '80 pull-ups'
+      assert_not_includes notes, '95-lb'
+      assert_not_includes notes, 'For time'
     end
 
     test 'builds a find-a-1-rep-max workout with the load-zero sentinel' do
@@ -35,6 +63,15 @@ module CfWod
       assert_equal movements(:back_squat), exercise.movement
       assert_equal 1, exercise.reps
       assert_equal 0, exercise.load
+    end
+
+    test 'stores trailing text after a 1-rep-max header as notes, since nothing else models it' do
+      page = wod_page(slug: '300109', body_text: "Find a 1-rep-max back squat.\n\nRest as needed between attempts.")
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'Rest as needed between attempts.', workout.notes.to_plain_text.strip
     end
 
     test 'raises UnparseableError when the movement is unrecognized' do

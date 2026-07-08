@@ -21,11 +21,12 @@ module CfWod
     end
 
     def split
-      cleaned = all_lines.reject { |line| irrelevant_line?(line) }
+      irrelevant, cleaned = all_lines.partition { |line| irrelevant_line?(line) }
       prescription = cleaned.reverse.take_while { |line| line.match?(PRESCRIPTION_LINE) }.reverse
       content = cleaned[0...(cleaned.length - prescription.length)]
 
-      { parts: build_parts(content), prescription_text: prescription.join("\n").presence }
+      { parts: build_parts(content), prescription_text: prescription.join("\n").presence,
+        notes: irrelevant.join("\n").presence }
     end
 
     private

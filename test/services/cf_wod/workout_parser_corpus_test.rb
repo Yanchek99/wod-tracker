@@ -68,6 +68,11 @@ module CfWod
       assert_equal 1, by_movement[movements(:pull_up)].length
       deadlift = by_movement[movements(:deadlift)].first
       assert_equal [95, 135], [deadlift.female_load, deadlift.male_load]
+
+      notes = workout.notes.to_plain_text.strip
+      assert_equal "Partition the pull-up and deadlift reps any way.\nPost time to comments.", notes
+      assert_not_includes notes, '800-meter run'
+      assert_not_includes notes, '135-lb barbell'
     end
 
     test 'Fran: rep-ladder with a bare-movement-only line, load applies to the thruster but not the pull-up' do

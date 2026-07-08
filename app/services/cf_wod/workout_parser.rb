@@ -20,8 +20,7 @@ module CfWod
     def parse_from_prose(lines)
       header, body = extract_header_and_body(lines)
       attrs = WorkoutFormatClassifier.call(header)
-      workout = Workout.new(name: "CF-#{wod_page.slug}", notes: wod_page.body_text,
-                            **attrs.except(:lift_name, :set_reps))
+      workout = Workout.new(name: "CF-#{wod_page.slug}", **attrs.except(:lift_name, :set_reps))
       build_workout_content(workout, attrs, body)
       validate_workout!(workout)
       find_content_duplicate(workout) || workout
@@ -67,6 +66,10 @@ module CfWod
     def build_workout_content(workout, attrs, body)
       if attrs[:lift_name]
         build_max_finding_exercise(workout, attrs[:lift_name], attrs[:set_reps] || 1)
+        # Unlike build_from_body, nothing here structurally models the trailing body text (this
+        # branch never reaches PartSplitter), so none of it is a duplicate of parsed data -- keep
+        # it as notes rather than dropping it.
+        workout.notes = normalize_leftover_body(body)
       else
         build_from_body(workout, body.to_s)
       end
@@ -84,10 +87,15 @@ module CfWod
     def build_from_body(workout, body)
       split = PartSplitter.call(body)
       exercise_lines = build_exercise_lines(workout, split[:parts])
+      workout.notes = split[:notes]
       return unless split[:prescription_text]
 
       clauses = PrescriptionClauseParser.call(split[:prescription_text])
       PrescriptionClauseAssigner.call(exercise_lines, clauses)
+    end
+
+    def normalize_leftover_body(body)
+      body.to_s.split("\n").map(&:strip).compact_blank.join("\n").presence
     end
 
     def build_exercise_lines(workout, parts)

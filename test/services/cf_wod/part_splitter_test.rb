@@ -84,5 +84,14 @@ module CfWod
 
       assert_equal ['50 pull-ups', '50 deadlifts'], result[:parts].first[:lines]
     end
+
+    test 'drops the "Post ... to the comments." phrasing (with "the") as irrelevant too' do
+      body = "40-calorie row\n15 muscle-ups\n\nPost time to the comments."
+
+      result = PartSplitter.call(body)
+
+      assert_equal ['40-calorie row', '15 muscle-ups'], result[:parts].first[:lines]
+      assert_equal 'Post time to the comments.', result[:notes]
+    end
   end
 end

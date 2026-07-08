@@ -5,6 +5,7 @@ module CfWod
     MOVEMENT_THEN_DISTANCE = /\A([A-Za-z][A-Za-z '-]*?)\s+([\d,]+(?:\.\d+)?)\s+(meters?|feet|foot|inches?|miles?)\.?\z/i
     REPS_MOVEMENT_TO_DISTANCE =
       /\A(\d+)\s+([A-Za-z][A-Za-z '-]*?)\s+to\s+(?:an?\s+)?([\d,]+(?:\.\d+)?)[\s-]+(meters?|feet|foot|inches?|miles?)\.?\z/i
+    CALORIE_THEN_MOVEMENT = /\A(\d+)[\s-]calories?\s+(.+)\z/i
     NUMBERED_REPS = /\A(\d+)\s+(.+)\z/
     BARE_MOVEMENT = /\A([A-Za-z][A-Za-z '-]*)\z/
 
@@ -23,20 +24,35 @@ module CfWod
       @line = line.to_s.strip
     end
 
+    # A case/when per pattern reads naturally but each additional shape trips
+    # Metrics/CyclomaticComplexity -- dispatch through an ordered lookup instead so the
+    # first-match-wins priority order among these mutually exclusive line shapes still holds.
+    PATTERN_HANDLERS = {
+      MAX_REPS => :max_reps_attributes,
+      DISTANCE_THEN_MOVEMENT => :distance_then_movement_attributes,
+      MOVEMENT_THEN_DISTANCE => :movement_then_distance_attributes,
+      REPS_MOVEMENT_TO_DISTANCE => :reps_movement_to_distance_attributes,
+      CALORIE_THEN_MOVEMENT => :calorie_then_movement_attributes,
+      NUMBERED_REPS => :numbered_reps_attributes,
+      BARE_MOVEMENT => :bare_movement_attributes
+    }.freeze
+
     def parse
-      case line
-      when MAX_REPS then { movement_name: clean_name(line.match(MAX_REPS)[1]), reps: 0 }
-      when DISTANCE_THEN_MOVEMENT then distance_then_movement_attributes
-      when MOVEMENT_THEN_DISTANCE then movement_then_distance_attributes
-      when REPS_MOVEMENT_TO_DISTANCE then reps_movement_to_distance_attributes
-      when NUMBERED_REPS then numbered_reps_attributes
-      when BARE_MOVEMENT then { movement_name: clean_name(line), reps: 1 }
-      end
+      _pattern, handler = PATTERN_HANDLERS.find { |pattern, _handler| line.match?(pattern) }
+      send(handler) if handler
     end
 
     private
 
     attr_reader :line
+
+    def max_reps_attributes
+      { movement_name: clean_name(line.match(MAX_REPS)[1]), reps: 0 }
+    end
+
+    def bare_movement_attributes
+      { movement_name: clean_name(line), reps: 1 }
+    end
 
     def distance_then_movement_attributes
       value, unit, remaining = line.match(DISTANCE_THEN_MOVEMENT).captures
@@ -62,6 +78,11 @@ module CfWod
     def reps_movement_to_distance_attributes
       reps, movement, value, unit = line.match(REPS_MOVEMENT_TO_DISTANCE).captures
       { movement_name: clean_name(movement), reps: reps.to_i }.merge(distance_attributes(value, unit))
+    end
+
+    def calorie_then_movement_attributes
+      value, remaining = line.match(CALORIE_THEN_MOVEMENT).captures
+      { movement_name: clean_name(remaining), reps: 1, calories: value.to_i }
     end
 
     def numbered_reps_attributes

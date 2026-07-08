@@ -2,7 +2,7 @@ module CfWod
   class PartSplitter
     IRRELEVANT_LINE_PATTERNS = [
       /\Ascroll for scaling options\.?\z/i,
-      /\Apost .*to comments\.?\z/i,
+      /\Apost .*to (?:the )?comments\.?\z/i,
       # Recurring rep-partitioning boilerplate (e.g. "Partition the pull-up and deadlift reps
       # any way." / "Partition the reps any way you like."): tells athletes how to split reps
       # already specified on the exercise lines, so it adds no exercise data of its own.

@@ -68,5 +68,10 @@ module CfWod
       result = ExerciseLineParser.call('400-meter run (together)')
       assert_equal({ movement_name: 'run', reps: 1, distance: 400, distance_unit: :meter }, result)
     end
+
+    test 'parses a leading calorie-then-movement line' do
+      result = ExerciseLineParser.call('40-calorie row')
+      assert_equal({ movement_name: 'row', reps: 1, calories: 40 }, result)
+    end
   end
 end

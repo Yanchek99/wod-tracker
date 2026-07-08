@@ -17,6 +17,7 @@ module CfWod
     # dynamically per-test, which would collide with a permanent global fixture of the same name.
     def box_jump = Movement.find_or_create_by(name: 'Box Jump')
     def wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
+    def muscle_up = Movement.find_or_create_by(name: 'Muscle-up')
 
     test '180110: AMRAP with a load shared across two movements, excluding the bodyweight rope climb' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
@@ -200,6 +201,30 @@ module CfWod
       end
       by_movement[movements(:pull_up)].each { |exercise| assert_nil exercise.female_load }
       assert_nil by_movement[movements(:row)].first.female_load
+    end
+
+    test '260411: a redundant couplet with calorie-based row lines and no gendered calorie split' do
+      body = "For time:\n40-calorie row\n15 muscle-ups\n40-calorie row\n10 muscle-ups\n40-calorie row\n" \
+             "5 muscle-ups\n\nPost time to the comments."
+      page = wod_page(slug: '300207', body_text: body)
+      muscle_up_movement = muscle_up
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'time', workout.score_type
+      assert_equal 6, workout.exercises.length
+
+      row_exercises = workout.exercises.select { |exercise| exercise.movement == movements(:row) }
+      assert_equal 3, row_exercises.length
+      row_exercises.each do |exercise|
+        assert_equal [1, 40], [exercise.reps, exercise.calories]
+        assert_nil exercise.distance
+        assert_nil exercise.distance_unit
+      end
+
+      muscle_up_exercises = workout.exercises.select { |exercise| exercise.movement == muscle_up_movement }
+      assert_equal [15, 10, 5], muscle_up_exercises.sort_by(&:position).map(&:reps)
     end
   end
 end

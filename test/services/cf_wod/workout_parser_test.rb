@@ -42,5 +42,20 @@ module CfWod
 
       assert_raises(WorkoutParser::UnparseableError) { WorkoutParser.call(page) }
     end
+
+    test 'builds a set-based lifting workout with the load-zero sentinel and the parsed reps-per-set' do
+      front_squat = Movement.find_or_create_by(name: 'Front Squat')
+      page = wod_page(slug: '300104', body_text: 'Front squat 3-3-3-3-3 reps')
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'weight', workout.score_type
+      assert_equal 5, workout.rounds
+      exercise = workout.exercises.first
+      assert_equal front_squat, exercise.movement
+      assert_equal 3, exercise.reps
+      assert_equal 0, exercise.load
+    end
   end
 end

@@ -36,5 +36,16 @@ module CfWod
       result = WorkoutFormatClassifier.call('5 rounds for time of:')
       assert_equal({ score_type: :time, rounds: 5 }, result)
     end
+
+    test 'classifies a set-based lifting header, extracting the lift name, set count, and reps per set' do
+      result = WorkoutFormatClassifier.call('Front squat 3-3-3-3-3 reps')
+      assert_equal({ score_type: :weight, rounds: 5, lift_name: 'Front squat', set_reps: 3 }, result)
+    end
+
+    test 'raises UnparseableError for a set-based lifting header with a varying rep scheme' do
+      assert_raises(WorkoutParser::UnparseableError) do
+        WorkoutFormatClassifier.call('Front squat 5-3-3-1-1 reps')
+      end
+    end
   end
 end

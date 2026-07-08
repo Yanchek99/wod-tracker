@@ -7,6 +7,7 @@ module CfWod
     FIND_MAX = /\Afind a 1-rep-max (.+?)\.?\z/i
     TIME_WINDOWED = /\Aon a (\d+)-minute clock for total reps:?\z/i
     ROUNDS_FOR_TIME = /\A(\d+) rounds? for time(?: of)?:?\z/i
+    SET_BASED_LIFTING = /\A(.+?) (\d+(?:-\d+)+)\s+reps\z/i
 
     FORMATS = [
       [FOR_TIME, :for_time_attributes],
@@ -15,7 +16,8 @@ module CfWod
       [REP_LADDER, :rep_ladder_attributes],
       [FIND_MAX, :find_max_attributes],
       [TIME_WINDOWED, :time_windowed_attributes],
-      [ROUNDS_FOR_TIME, :rounds_for_time_attributes]
+      [ROUNDS_FOR_TIME, :rounds_for_time_attributes],
+      [SET_BASED_LIFTING, :set_based_lifting_attributes]
     ].freeze
 
     def self.call(header_line) = new(header_line).classify
@@ -62,6 +64,18 @@ module CfWod
 
     def rounds_for_time_attributes
       { score_type: :time, rounds: header_line.match(ROUNDS_FOR_TIME)[1].to_i }
+    end
+
+    # e.g. "Front squat 3-3-3-3-3 reps" -- a fixed number of sets at a constant reps-per-set,
+    # scored by load (Workout#set_based_lifting?). A varying scheme (e.g. "5-3-3-1-1") doesn't fit
+    # this app's single reps-per-set modeling, so it fails closed rather than guessing which set's
+    # rep count to use.
+    def set_based_lifting_attributes
+      lift_name, scheme = header_line.match(SET_BASED_LIFTING).captures
+      reps_per_set = scheme.split('-').map(&:to_i)
+      raise WorkoutParser::UnparseableError, "unsupported varying rep scheme: #{scheme.inspect}" unless reps_per_set.uniq.one?
+
+      { score_type: :weight, rounds: reps_per_set.length, lift_name: lift_name, set_reps: reps_per_set.first }
     end
   end
 end

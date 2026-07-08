@@ -11,7 +11,8 @@ module CfWod
     def parse
       header, body = wod_page.body_text.split("\n", 2)
       attrs = WorkoutFormatClassifier.call(header)
-      workout = Workout.new(name: "CF-#{wod_page.slug}", notes: wod_page.body_text, **attrs.except(:lift_name))
+      workout = Workout.new(name: "CF-#{wod_page.slug}", notes: wod_page.body_text,
+                            **attrs.except(:lift_name, :set_reps))
       build_workout_content(workout, attrs, body)
       validate_workout!(workout)
       workout
@@ -23,7 +24,7 @@ module CfWod
 
     def build_workout_content(workout, attrs, body)
       if attrs[:lift_name]
-        build_max_finding_exercise(workout, attrs[:lift_name])
+        build_max_finding_exercise(workout, attrs[:lift_name], attrs[:set_reps] || 1)
       else
         build_from_body(workout, body.to_s)
       end
@@ -33,9 +34,9 @@ module CfWod
       raise UnparseableError, "built workout failed validation: #{workout.errors.full_messages.join(', ')}" unless workout.valid?
     end
 
-    def build_max_finding_exercise(workout, lift_name)
+    def build_max_finding_exercise(workout, lift_name, reps)
       movement = lookup_movement!(lift_name)
-      workout.exercises.build(movement: movement, position: 1, reps: 1, load: 0)
+      workout.exercises.build(movement: movement, position: 1, reps: reps, load: 0)
     end
 
     def build_from_body(workout, body)

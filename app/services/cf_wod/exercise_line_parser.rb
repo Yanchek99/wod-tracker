@@ -62,7 +62,7 @@ module CfWod
     end
 
     def clean_name(raw)
-      raw.split(/,| with /i).first.strip
+      raw.split(/,| with |\s+\(/i).first.strip
     end
   end
 end

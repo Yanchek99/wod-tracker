@@ -53,5 +53,15 @@ module CfWod
       result = ExerciseLineParser.call('1.5-mile run')
       assert_equal({ movement_name: 'run', reps: 1, distance: 2400, distance_unit: :meter }, result)
     end
+
+    test 'strips a trailing parenthetical qualifier from the movement name' do
+      assert_equal({ movement_name: 'double-unders', reps: 24 }, ExerciseLineParser.call('24 double-unders (each)'))
+      assert_equal({ movement_name: 'clean and jerks', reps: 2 }, ExerciseLineParser.call('2 clean and jerks (total)'))
+    end
+
+    test 'strips a trailing parenthetical qualifier after a distance' do
+      result = ExerciseLineParser.call('400-meter run (together)')
+      assert_equal({ movement_name: 'run', reps: 1, distance: 400, distance_unit: :meter }, result)
+    end
   end
 end

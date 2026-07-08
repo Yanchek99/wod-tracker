@@ -18,5 +18,10 @@ module CfWod
     test 'returns nil for a name with no catalog match' do
       assert_nil MovementLookup.call('a completely unrecognized movement phrase')
     end
+
+    test 'keeps connector words lowercase except as the first word' do
+      clean_and_jerk = Movement.find_or_create_by(name: 'Clean and Jerk')
+      assert_equal clean_and_jerk, MovementLookup.call('clean and jerks')
+    end
   end
 end

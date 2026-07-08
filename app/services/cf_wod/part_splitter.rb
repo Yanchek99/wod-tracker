@@ -8,7 +8,7 @@ module CfWod
     TIME_WINDOW = /\A(\d{1,2}:\d{2})-(\d{1,2}:\d{2}):\z/
     ROUNDS_OF = /\AThen,\s*(\d+)\s+rounds?\s+of(?:\s+the\s+couplet)?:\z/i
     BARE_THEN = /\AThen,\s*/i
-    PRESCRIPTION_LINE = /\A(?:men|women|male|female|♂|♀)\b/i
+    PRESCRIPTION_LINE = /\A(?:(?:men|women|male|female)\b|[♂♀])/i
 
     def self.call(body) = new(body).split
 

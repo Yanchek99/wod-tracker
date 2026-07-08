@@ -145,5 +145,32 @@ module CfWod
       other_gymnastics = windows[0..2].map { |segment| segment_exercises.call(segment).max_by(&:position) }
       assert(other_gymnastics.all? { |exercise| exercise.female_distance.nil? })
     end
+
+    test 'chipper: one Rx line encodes three different equipment dimensions across repeated movements' do
+      body = "For time:\n10 deadlifts\n20 pull-ups\n30 wall-ball shots\n40 box jumps\n1,000-meter row\n" \
+             "40 box jumps\n30 wall-ball shots\n20 pull-ups\n10 deadlifts\n\n" \
+             "♀ 185-lb barbell, 20-inch box, and 14-lb medicine ball to a 9-foot target\n" \
+             '♂ 275-lb barbell, 24-inch box, and 20-lb medicine ball to a 10-foot target'
+      page = wod_page(slug: '300206', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 9, workout.exercises.length
+      by_movement = workout.exercises.group_by(&:movement)
+
+      by_movement[movements(:deadlift)].each { |exercise| assert_equal [185, 275], [exercise.female_load, exercise.male_load] }
+      by_movement[movements(:box_jump)].each do |exercise|
+        assert_equal [20, 24], [exercise.female_distance, exercise.male_distance]
+        assert_equal :inch, exercise.distance_unit.to_sym
+      end
+      by_movement[movements(:wall_ball_shot)].each do |exercise|
+        assert_equal [14, 20], [exercise.female_load, exercise.male_load]
+        assert_equal [9, 10], [exercise.female_distance, exercise.male_distance]
+        assert_equal :foot, exercise.distance_unit.to_sym
+      end
+      by_movement[movements(:pull_up)].each { |exercise| assert_nil exercise.female_load }
+      assert_nil by_movement[movements(:row)].first.female_load
+    end
   end
 end

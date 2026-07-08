@@ -6,6 +6,11 @@ module CfWod
       { exercise: Exercise.new(movement: movement), raw_line: raw_line }
     end
 
+    # Not fixtures: test/helpers/measurable_helper_test.rb creates these same movement names
+    # dynamically per-test, which would collide with a permanent global fixture of the same name.
+    def box_jump = Movement.find_or_create_by(name: 'Box Jump')
+    def wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
+
     test 'binds a bare no-noun clause to every barbell-family movement, skipping bodyweight ones' do
       snatch = exercise_line(movements(:power_snatch), '5 power snatches')
       lunge = exercise_line(movements(:overhead_walking_lunge), '10 overhead walking lunges')
@@ -20,8 +25,8 @@ module CfWod
     end
 
     test 'binds a shared-token clause to every occurrence of a repeated movement' do
-      first_box_jump = exercise_line(movements(:box_jump), '40 box jumps')
-      second_box_jump = exercise_line(movements(:box_jump), '40 box jumps')
+      first_box_jump = exercise_line(box_jump, '40 box jumps')
+      second_box_jump = exercise_line(box_jump, '40 box jumps')
       deadlift = exercise_line(movements(:deadlift), '10 deadlifts')
       clauses = { female: [[{ value: 20, unit: :inch, implement: 'box' }]],
                   male: [[{ value: 24, unit: :inch, implement: 'box' }]] }
@@ -34,7 +39,7 @@ module CfWod
     end
 
     test 'binds a shared-token clause across a synonymous implement noun (medicine ball vs wall-ball)' do
-      wall_ball = exercise_line(movements(:wall_ball_shot), '30 wall-ball shots')
+      wall_ball = exercise_line(wall_ball_shot, '30 wall-ball shots')
       clauses = { female: [[{ value: 14, unit: :lb, implement: 'medicine ball' },
                             { value: 9, unit: :foot, implement: 'target' }]],
                   male: [[{ value: 20, unit: :lb, implement: 'medicine ball' },
@@ -57,18 +62,20 @@ module CfWod
     end
 
     test 'raises UnparseableError when female and male clause counts differ' do
-      box_jump = exercise_line(movements(:box_jump), '40 box jumps')
-      wall_ball = exercise_line(movements(:wall_ball_shot), '30 wall-ball shots')
+      box_jump_line = exercise_line(box_jump, '40 box jumps')
+      wall_ball = exercise_line(wall_ball_shot, '30 wall-ball shots')
       clauses = { female: [[{ value: 20, unit: :inch, implement: 'box' }],
                            [{ value: 14, unit: :lb, implement: 'medicine ball' }]],
                   male: [[{ value: 24, unit: :inch, implement: 'box' }]] }
 
-      error = assert_raises(WorkoutParser::UnparseableError) { PrescriptionClauseAssigner.call([box_jump, wall_ball], clauses) }
+      error = assert_raises(WorkoutParser::UnparseableError) do
+        PrescriptionClauseAssigner.call([box_jump_line, wall_ball], clauses)
+      end
       assert_match(/clause count/, error.message)
     end
 
     test 'raises UnparseableError when a clause pair has mismatched value counts' do
-      wall_ball = exercise_line(movements(:wall_ball_shot), '30 wall-ball shots')
+      wall_ball = exercise_line(wall_ball_shot, '30 wall-ball shots')
       clauses = { female: [[{ value: 14, unit: :lb, implement: 'medicine ball' },
                             { value: 9, unit: :foot, implement: 'target' }]],
                   male: [[{ value: 20, unit: :lb, implement: 'medicine ball' }]] }

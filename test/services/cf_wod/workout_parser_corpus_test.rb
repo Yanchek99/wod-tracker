@@ -13,6 +13,11 @@ module CfWod
                   scaling: nil, rest_day: false, previous_slug: nil, next_slug: nil)
     end
 
+    # Not fixtures: test/helpers/measurable_helper_test.rb creates these same movement names
+    # dynamically per-test, which would collide with a permanent global fixture of the same name.
+    def box_jump = Movement.find_or_create_by(name: 'Box Jump')
+    def wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
+
     test '180110: AMRAP with a load shared across two movements, excluding the bodyweight rope climb' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
         .to_return(status: 200, body: fixture('legacy_with_scaling.html'))
@@ -152,6 +157,8 @@ module CfWod
              "♀ 185-lb barbell, 20-inch box, and 14-lb medicine ball to a 9-foot target\n" \
              '♂ 275-lb barbell, 24-inch box, and 20-lb medicine ball to a 10-foot target'
       page = wod_page(slug: '300206', body_text: body)
+      box_jump_movement = box_jump
+      wall_ball_shot_movement = wall_ball_shot
 
       workout = WorkoutParser.call(page)
 
@@ -160,11 +167,11 @@ module CfWod
       by_movement = workout.exercises.group_by(&:movement)
 
       by_movement[movements(:deadlift)].each { |exercise| assert_equal [185, 275], [exercise.female_load, exercise.male_load] }
-      by_movement[movements(:box_jump)].each do |exercise|
+      by_movement[box_jump_movement].each do |exercise|
         assert_equal [20, 24], [exercise.female_distance, exercise.male_distance]
         assert_equal :inch, exercise.distance_unit.to_sym
       end
-      by_movement[movements(:wall_ball_shot)].each do |exercise|
+      by_movement[wall_ball_shot_movement].each do |exercise|
         assert_equal [14, 20], [exercise.female_load, exercise.male_load]
         assert_equal [9, 10], [exercise.female_distance, exercise.male_distance]
         assert_equal :foot, exercise.distance_unit.to_sym

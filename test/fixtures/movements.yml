@@ -65,8 +65,8 @@ deficit_push_up:
 deadlift:
   name: Deadlift
 
-wall_ball_shot:
-  name: Wall-ball Shot
-
-box_jump:
-  name: Box Jump
+# Deliberately not fixtures: "Box Jump" and "Wall-ball Shot" are created dynamically per-test
+# in test/helpers/measurable_helper_test.rb, which would collide with a permanent global
+# fixture of the same name. Tests needing these movements create them via
+# Movement.find_or_create_by instead (see prescription_clause_assigner_test.rb and
+# workout_parser_corpus_test.rb).

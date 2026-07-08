@@ -53,6 +53,23 @@ module CfWod
       assert_includes error.message, 'Any time you stop'
     end
 
+    test '260406: a "Partition the reps any way." boilerplate instruction is dropped, not treated as an exercise line' do
+      body = "For time:\n800-meter run\n80 pull-ups\n80 deadlifts\n800-meter run\n\n" \
+             "Partition the pull-up and deadlift reps any way.\n\n" \
+             "♀ 95-lb barbell\n♂ 135-lb barbell\n\nPost time to comments."
+      page = wod_page(slug: '260406', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 4, workout.exercises.length
+      by_movement = workout.exercises.group_by(&:movement)
+      assert_equal 2, by_movement[movements(:run)].length
+      assert_equal 1, by_movement[movements(:pull_up)].length
+      deadlift = by_movement[movements(:deadlift)].first
+      assert_equal [95, 135], [deadlift.female_load, deadlift.male_load]
+    end
+
     test 'Fran: rep-ladder with a bare-movement-only line, load applies to the thruster but not the pull-up' do
       page = wod_page(slug: '300201', body_text: "21-15-9 reps for time of:\nThrusters\nPull-ups\n\nMen: 95 lb.\nWomen: 65 lb.")
 

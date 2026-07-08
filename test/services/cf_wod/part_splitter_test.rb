@@ -57,5 +57,25 @@ module CfWod
       result = PartSplitter.call("5 burpees\n10 air squats")
       assert_nil result[:prescription_text]
     end
+
+    test 'drops a "Partition the ... reps any way." boilerplate instruction as irrelevant' do
+      body = "800-meter run\n80 pull-ups\n80 deadlifts\n800-meter run\n\n" \
+             "Partition the pull-up and deadlift reps any way.\n\n" \
+             "♀ 95-lb barbell\n♂ 135-lb barbell"
+
+      result = PartSplitter.call(body)
+
+      assert_equal 1, result[:parts].length
+      assert_equal ['800-meter run', '80 pull-ups', '80 deadlifts', '800-meter run'], result[:parts].first[:lines]
+      assert_equal "♀ 95-lb barbell\n♂ 135-lb barbell", result[:prescription_text]
+    end
+
+    test 'drops the generic "Partition the reps any way you like." template phrasing too' do
+      body = "50 pull-ups\n50 deadlifts\n\nPartition the reps any way you like.\n\nMen: 135 lb.\nWomen: 95 lb."
+
+      result = PartSplitter.call(body)
+
+      assert_equal ['50 pull-ups', '50 deadlifts'], result[:parts].first[:lines]
+    end
   end
 end

@@ -19,6 +19,7 @@ module CfWod
     end
 
     def assign
+      validate_clause_symmetry!
       clauses[:female].each_with_index do |female_values, index|
         bind_clause_pair(female_values, clauses[:male][index])
       end
@@ -27,6 +28,26 @@ module CfWod
     private
 
     attr_reader :exercise_lines, :clauses, :bound
+
+    def validate_clause_symmetry!
+      female_clauses = clauses[:female]
+      male_clauses = clauses[:male]
+      if female_clauses.length != male_clauses.length
+        raise WorkoutParser::UnparseableError,
+              "prescription clause count mismatch: #{female_clauses.length} female clause(s), " \
+              "#{male_clauses.length} male clause(s)"
+      end
+
+      female_clauses.each_with_index { |female_values, index| validate_clause_pair_symmetry!(female_values, male_clauses[index], index) }
+    end
+
+    def validate_clause_pair_symmetry!(female_values, male_values, index)
+      return if female_values.length == male_values.length
+
+      raise WorkoutParser::UnparseableError,
+            "prescription clause #{index} value-count mismatch: #{female_values.length} female value(s), " \
+            "#{male_values.length} male value(s)"
+    end
 
     def bind_clause_pair(female_values, male_values)
       candidates = matching_candidates(female_values.first)

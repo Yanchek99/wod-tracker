@@ -55,5 +55,26 @@ module CfWod
 
       assert_raises(WorkoutParser::UnparseableError) { PrescriptionClauseAssigner.call([rope_climb], clauses) }
     end
+
+    test 'raises UnparseableError when female and male clause counts differ' do
+      box_jump = exercise_line(movements(:box_jump), '40 box jumps')
+      wall_ball = exercise_line(movements(:wall_ball_shot), '30 wall-ball shots')
+      clauses = { female: [[{ value: 20, unit: :inch, implement: 'box' }],
+                           [{ value: 14, unit: :lb, implement: 'medicine ball' }]],
+                  male: [[{ value: 24, unit: :inch, implement: 'box' }]] }
+
+      error = assert_raises(WorkoutParser::UnparseableError) { PrescriptionClauseAssigner.call([box_jump, wall_ball], clauses) }
+      assert_match(/clause count/, error.message)
+    end
+
+    test 'raises UnparseableError when a clause pair has mismatched value counts' do
+      wall_ball = exercise_line(movements(:wall_ball_shot), '30 wall-ball shots')
+      clauses = { female: [[{ value: 14, unit: :lb, implement: 'medicine ball' },
+                            { value: 9, unit: :foot, implement: 'target' }]],
+                  male: [[{ value: 20, unit: :lb, implement: 'medicine ball' }]] }
+
+      error = assert_raises(WorkoutParser::UnparseableError) { PrescriptionClauseAssigner.call([wall_ball], clauses) }
+      assert_match(/value-count/, error.message)
+    end
   end
 end

@@ -10,8 +10,8 @@ module CfWod
     end
 
     test 'parses a modern multi-clause block with implement nouns' do
-      female = "♀ 185-lb barbell, 20-inch box, and 14-lb medicine ball to a 9-foot target"
-      male = "♂ 275-lb barbell, 24-inch box, and 20-lb medicine ball to a 10-foot target"
+      female = '♀ 185-lb barbell, 20-inch box, and 14-lb medicine ball to a 9-foot target'
+      male = '♂ 275-lb barbell, 24-inch box, and 20-lb medicine ball to a 10-foot target'
 
       result = PrescriptionClauseParser.call("#{female}\n#{male}")
 
@@ -19,7 +19,7 @@ module CfWod
       assert_equal [{ value: 185, unit: :lb, implement: 'barbell' }], result[:female][0]
       assert_equal [{ value: 20, unit: :inch, implement: 'box' }], result[:female][1]
       assert_equal [{ value: 14, unit: :lb, implement: 'medicine ball' },
-                     { value: 9, unit: :foot, implement: 'target' }], result[:female][2]
+                    { value: 9, unit: :foot, implement: 'target' }], result[:female][2]
       assert_equal [{ value: 275, unit: :lb, implement: 'barbell' }], result[:male][0]
     end
 

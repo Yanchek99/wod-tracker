@@ -20,23 +20,23 @@ module CfWod
     end
 
     test 'binds a shared-token clause to every occurrence of a repeated movement' do
-      box_jump_1 = exercise_line(movements(:box_jump), '40 box jumps')
-      box_jump_2 = exercise_line(movements(:box_jump), '40 box jumps')
+      first_box_jump = exercise_line(movements(:box_jump), '40 box jumps')
+      second_box_jump = exercise_line(movements(:box_jump), '40 box jumps')
       deadlift = exercise_line(movements(:deadlift), '10 deadlifts')
       clauses = { female: [[{ value: 20, unit: :inch, implement: 'box' }]],
                   male: [[{ value: 24, unit: :inch, implement: 'box' }]] }
 
-      PrescriptionClauseAssigner.call([box_jump_1, box_jump_2, deadlift], clauses)
+      PrescriptionClauseAssigner.call([first_box_jump, second_box_jump, deadlift], clauses)
 
-      assert_equal [20, 24], [box_jump_1[:exercise].female_distance, box_jump_1[:exercise].male_distance]
-      assert_equal [20, 24], [box_jump_2[:exercise].female_distance, box_jump_2[:exercise].male_distance]
+      assert_equal [20, 24], [first_box_jump[:exercise].female_distance, first_box_jump[:exercise].male_distance]
+      assert_equal [20, 24], [second_box_jump[:exercise].female_distance, second_box_jump[:exercise].male_distance]
       assert_nil deadlift[:exercise].female_distance
     end
 
     test 'binds a shared-token clause across a synonymous implement noun (medicine ball vs wall-ball)' do
       wall_ball = exercise_line(movements(:wall_ball_shot), '30 wall-ball shots')
       clauses = { female: [[{ value: 14, unit: :lb, implement: 'medicine ball' },
-                             { value: 9, unit: :foot, implement: 'target' }]],
+                            { value: 9, unit: :foot, implement: 'target' }]],
                   male: [[{ value: 20, unit: :lb, implement: 'medicine ball' },
                           { value: 10, unit: :foot, implement: 'target' }]] }
 

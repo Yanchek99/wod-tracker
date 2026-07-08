@@ -38,5 +38,20 @@ module CfWod
       line = 'Any time you stop, you must complete 15 bent-over rows with the barbell before starting again.'
       assert_nil ExerciseLineParser.call(line)
     end
+
+    test 'converts a leading mile distance to canonical meters' do
+      result = ExerciseLineParser.call('1-mile run')
+      assert_equal({ movement_name: 'run', reps: 1, distance: 1600, distance_unit: :meter }, result)
+    end
+
+    test 'converts a trailing mile distance to canonical meters' do
+      result = ExerciseLineParser.call('Run 1 mile')
+      assert_equal({ movement_name: 'Run', reps: 1, distance: 1600, distance_unit: :meter }, result)
+    end
+
+    test 'converts a decimal mile distance to canonical meters' do
+      result = ExerciseLineParser.call('1.5-mile run')
+      assert_equal({ movement_name: 'run', reps: 1, distance: 2400, distance_unit: :meter }, result)
+    end
   end
 end

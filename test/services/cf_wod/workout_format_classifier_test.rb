@@ -47,5 +47,10 @@ module CfWod
         WorkoutFormatClassifier.call('Front squat 5-3-3-1-1 reps')
       end
     end
+
+    test 'classifies a "With a partner," rounds-for-time header, extracting team_size' do
+      result = WorkoutFormatClassifier.call('With a partner, 5 rounds for time of:')
+      assert_equal({ score_type: :time, rounds: 5, team_size: 2 }, result)
+    end
   end
 end

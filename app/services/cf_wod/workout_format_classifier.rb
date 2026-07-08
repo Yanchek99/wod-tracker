@@ -8,6 +8,7 @@ module CfWod
     TIME_WINDOWED = /\Aon a (\d+)-minute clock for total reps:?\z/i
     ROUNDS_FOR_TIME = /\A(\d+) rounds? for time(?: of)?:?\z/i
     SET_BASED_LIFTING = /\A(.+?) (\d+(?:-\d+)+)\s+reps\z/i
+    PARTNER_PREFIX = /\Awith a partner,\s*/i
 
     FORMATS = [
       [FOR_TIME, :for_time_attributes],
@@ -23,19 +24,22 @@ module CfWod
     def self.call(header_line) = new(header_line).classify
 
     def initialize(header_line)
-      @header_line = header_line.to_s.strip
+      stripped = header_line.to_s.strip
+      @team_size = stripped.match?(PARTNER_PREFIX) ? 2 : nil
+      @header_line = stripped.sub(PARTNER_PREFIX, '')
     end
 
     def classify
       _pattern, handler = FORMATS.find { |pattern, _handler| header_line.match?(pattern) }
       raise WorkoutParser::UnparseableError, "unrecognized format header: #{header_line.inspect}" unless handler
 
-      send(handler)
+      attrs = send(handler)
+      team_size ? attrs.merge(team_size: team_size) : attrs
     end
 
     private
 
-    attr_reader :header_line
+    attr_reader :header_line, :team_size
 
     def for_time_attributes
       { score_type: :time }

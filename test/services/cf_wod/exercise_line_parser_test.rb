@@ -73,5 +73,10 @@ module CfWod
       result = ExerciseLineParser.call('40-calorie row')
       assert_equal({ movement_name: 'row', reps: 1, calories: 40 }, result)
     end
+
+    test 'parses a leading gender-split calorie-then-movement line' do
+      result = ExerciseLineParser.call('24/30-calorie bike')
+      assert_equal({ movement_name: 'bike', reps: 1, female_calories: 24, male_calories: 30 }, result)
+    end
   end
 end

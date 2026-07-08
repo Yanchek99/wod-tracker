@@ -18,6 +18,7 @@ module CfWod
     def box_jump = Movement.find_or_create_by(name: 'Box Jump')
     def wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
     def muscle_up = Movement.find_or_create_by(name: 'Muscle-up')
+    def bike = Movement.find_or_create_by(name: 'Bike')
 
     test '180110: AMRAP with a load shared across two movements, excluding the bodyweight rope climb' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
@@ -225,6 +226,28 @@ module CfWod
 
       muscle_up_exercises = workout.exercises.select { |exercise| exercise.movement == muscle_up_movement }
       assert_equal [15, 10, 5], muscle_up_exercises.sort_by(&:position).map(&:reps)
+    end
+
+    test '260415: an inline gender-split calorie line ("24/30-calorie bike")' do
+      body = "For time:\n15 power snatches\n24/30-calorie bike\n15 power snatches\n\n" \
+             "♀ 75-lb barbell\n♂ 115-lb barbell\n\nPost time to comments."
+      page = wod_page(slug: '260415', body_text: body)
+      bike_movement = bike
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'time', workout.score_type
+      assert_equal 3, workout.exercises.length
+
+      snatch_exercises = workout.exercises.select { |exercise| exercise.movement == movements(:power_snatch) }
+      snatch_exercises.each { |exercise| assert_equal [15, 75, 115], [exercise.reps, exercise.female_load, exercise.male_load] }
+
+      bike_exercise = workout.exercises.find { |exercise| exercise.movement == bike_movement }
+      assert_equal [1, 24, 30], [bike_exercise.reps, bike_exercise.female_calories, bike_exercise.male_calories]
+      assert_nil bike_exercise.calories
+      assert_nil bike_exercise.distance
+      assert_nil bike_exercise.distance_unit
     end
   end
 end

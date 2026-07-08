@@ -5,6 +5,7 @@ module CfWod
     MOVEMENT_THEN_DISTANCE = /\A([A-Za-z][A-Za-z '-]*?)\s+([\d,]+(?:\.\d+)?)\s+(meters?|feet|foot|inches?|miles?)\.?\z/i
     REPS_MOVEMENT_TO_DISTANCE =
       /\A(\d+)\s+([A-Za-z][A-Za-z '-]*?)\s+to\s+(?:an?\s+)?([\d,]+(?:\.\d+)?)[\s-]+(meters?|feet|foot|inches?|miles?)\.?\z/i
+    CALORIE_SPLIT_THEN_MOVEMENT = %r{\A(\d+)/(\d+)[\s-]calories?\s+(.+)\z}i
     CALORIE_THEN_MOVEMENT = /\A(\d+)[\s-]calories?\s+(.+)\z/i
     NUMBERED_REPS = /\A(\d+)\s+(.+)\z/
     BARE_MOVEMENT = /\A([A-Za-z][A-Za-z '-]*)\z/
@@ -32,6 +33,7 @@ module CfWod
       DISTANCE_THEN_MOVEMENT => :distance_then_movement_attributes,
       MOVEMENT_THEN_DISTANCE => :movement_then_distance_attributes,
       REPS_MOVEMENT_TO_DISTANCE => :reps_movement_to_distance_attributes,
+      CALORIE_SPLIT_THEN_MOVEMENT => :calorie_split_then_movement_attributes,
       CALORIE_THEN_MOVEMENT => :calorie_then_movement_attributes,
       NUMBERED_REPS => :numbered_reps_attributes,
       BARE_MOVEMENT => :bare_movement_attributes
@@ -78,6 +80,11 @@ module CfWod
     def reps_movement_to_distance_attributes
       reps, movement, value, unit = line.match(REPS_MOVEMENT_TO_DISTANCE).captures
       { movement_name: clean_name(movement), reps: reps.to_i }.merge(distance_attributes(value, unit))
+    end
+
+    def calorie_split_then_movement_attributes
+      female, male, remaining = line.match(CALORIE_SPLIT_THEN_MOVEMENT).captures
+      { movement_name: clean_name(remaining), reps: 1, female_calories: female.to_i, male_calories: male.to_i }
     end
 
     def calorie_then_movement_attributes

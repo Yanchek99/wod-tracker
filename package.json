@@ -25,7 +25,7 @@
     "local-time": "^3.0.3",
     "sass": "^1.101.0",
     "sortablejs": "^1.15.7",
-    "tom-select": "^2.6.1",
+    "tom-select": "^2.6.2",
     "trix": "^2.1.19"
   },
   "devDependencies": {}

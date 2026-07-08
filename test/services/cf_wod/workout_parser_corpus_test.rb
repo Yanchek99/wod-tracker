@@ -90,5 +90,28 @@ module CfWod
       assert_equal movements(:back_squat), exercise.movement
       assert_equal [1, 0], [exercise.reps, exercise.load]
     end
+
+    test 'CFJ-181202: sequential multi-part with a bare "Then," continuation back at top level' do
+      body = "For time:\nRun 800 meters\nThen, 10 rounds of the couplet:\n10 handstand push-ups\n" \
+             "10 single-leg squats\nThen, run 800 meters"
+      page = wod_page(slug: '300204', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'time', workout.score_type
+      top_level = workout.exercises.select { |exercise| exercise.segment.blank? }.sort_by(&:position)
+      assert_equal 2, top_level.length
+      assert_equal [movements(:run), movements(:run)], top_level.map(&:movement)
+      assert_equal [800, 800], top_level.map(&:distance)
+
+      assert_equal 1, workout.segments.length
+      segment = workout.segments.first
+      assert_equal 10, segment.rounds
+      segment_exercises = workout.exercises.select { |exercise| exercise.segment == segment }.sort_by(&:position)
+      hspu, single_leg_squat = segment_exercises
+      assert_equal [movements(:handstand_push_up), 10], [hspu.movement, hspu.reps]
+      assert_equal [movements(:single_leg_squat), 10], [single_leg_squat.movement, single_leg_squat.reps]
+    end
   end
 end

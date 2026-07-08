@@ -31,5 +31,10 @@ module CfWod
         WorkoutFormatClassifier.call('Some completely novel workout format:')
       end
     end
+
+    test 'classifies a rounds-for-time header, extracting the round count' do
+      result = WorkoutFormatClassifier.call('5 rounds for time of:')
+      assert_equal({ score_type: :time, rounds: 5 }, result)
+    end
   end
 end

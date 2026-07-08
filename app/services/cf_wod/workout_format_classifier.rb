@@ -6,6 +6,17 @@ module CfWod
     REP_LADDER = /\A(\d+(?:-\d+)+) reps for time of:?\z/i
     FIND_MAX = /\Afind a 1-rep-max (.+?)\.?\z/i
     TIME_WINDOWED = /\Aon a (\d+)-minute clock for total reps:?\z/i
+    ROUNDS_FOR_TIME = /\A(\d+) rounds? for time(?: of)?:?\z/i
+
+    FORMATS = [
+      [FOR_TIME, :for_time_attributes],
+      [AMRAP, :amrap_attributes],
+      [EVERY_MINUTE, :emom_attributes],
+      [REP_LADDER, :rep_ladder_attributes],
+      [FIND_MAX, :find_max_attributes],
+      [TIME_WINDOWED, :time_windowed_attributes],
+      [ROUNDS_FOR_TIME, :rounds_for_time_attributes]
+    ].freeze
 
     def self.call(header_line) = new(header_line).classify
 
@@ -14,25 +25,43 @@ module CfWod
     end
 
     def classify
-      case header_line
-      when FOR_TIME then { score_type: :time }
-      when AMRAP then { score_type: :rep, time: header_line.match(AMRAP)[1].to_i }
-      when EVERY_MINUTE then emom_attributes
-      when REP_LADDER then { score_type: :time, interval: header_line.match(REP_LADDER)[1] }
-      when FIND_MAX then { score_type: :weight, lift_name: header_line.match(FIND_MAX)[1] }
-      when TIME_WINDOWED then { score_type: :rep, time: header_line.match(TIME_WINDOWED)[1].to_i }
-      else
-        raise WorkoutParser::UnparseableError, "unrecognized format header: #{header_line.inspect}"
-      end
+      _pattern, handler = FORMATS.find { |pattern, _handler| header_line.match?(pattern) }
+      raise WorkoutParser::UnparseableError, "unrecognized format header: #{header_line.inspect}" unless handler
+
+      send(handler)
     end
 
     private
 
     attr_reader :header_line
 
+    def for_time_attributes
+      { score_type: :time }
+    end
+
+    def amrap_attributes
+      { score_type: :rep, time: header_line.match(AMRAP)[1].to_i }
+    end
+
     def emom_attributes
       minutes = header_line.match(EVERY_MINUTE)[1].to_i
       { score_type: :rep, time: minutes, rounds: minutes }
+    end
+
+    def rep_ladder_attributes
+      { score_type: :time, interval: header_line.match(REP_LADDER)[1] }
+    end
+
+    def find_max_attributes
+      { score_type: :weight, lift_name: header_line.match(FIND_MAX)[1] }
+    end
+
+    def time_windowed_attributes
+      { score_type: :rep, time: header_line.match(TIME_WINDOWED)[1].to_i }
+    end
+
+    def rounds_for_time_attributes
+      { score_type: :time, rounds: header_line.match(ROUNDS_FOR_TIME)[1].to_i }
     end
   end
 end

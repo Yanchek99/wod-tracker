@@ -87,10 +87,21 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       select_movement 'Dumbbell Overhead Walking Lunge'
       fill_in 'Reps', with: '1'
       fill_in 'Female distance', with: '30'
+
+      # Typing into Female distance is what flips exercise-form#toggleDistanceUnits' hasDistance
+      # check from false to true for the first time (both distance fields share the same
+      # exercise-form-target: distanceValue binding), which un-hides the "Distance units per rep"
+      # field further down the card. Waiting for Female distance to visibly settle here gives that
+      # DOM change a chance to finish before Capybara moves on to click into Male distance right
+      # after it -- without this, Male distance intermittently ends up empty (reproduced locally
+      # ~1 in 6-8 runs before this fix; 30/30 clean after it).
+      assert_field 'Female distance', with: '30'
+
       fill_in 'Male distance', with: '40'
       select 'foot', from: 'Distance unit'
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
+
       click_on 'Done'
 
       assert_text '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'

@@ -1,0 +1,6 @@
+# config/recurring.yml
+production:
+  scrape_crossfit_wod:
+    class: ScrapeCrossfitWodJob
+    queue: default
+    schedule: "TZ=America/Los_Angeles 0 20 * * *"

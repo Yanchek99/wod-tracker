@@ -40,6 +40,10 @@ Metrics/BlockLength:
   Exclude:
     - config/**/*
 
+Metrics/ClassLength:
+  Exclude:
+    - test/services/cf_wod/workout_parser_corpus_test.rb
+
 Metrics/MethodLength:
   CountComments: false
   Max: 20

@@ -3,4 +3,4 @@ production:
   scrape_crossfit_wod:
     class: ScrapeCrossfitWodJob
     queue: default
-    schedule: "TZ=America/Los_Angeles 0 20 * * *"
+    schedule: "0 20 * * * America/Los_Angeles"

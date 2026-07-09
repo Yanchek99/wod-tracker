@@ -1,24 +1,32 @@
 class ScrapeCrossfitWodJob < ApplicationJob
   queue_as :default
 
-  # retry_on's final-failure block runs with `self` bound to the job class (lexical scope, not
-  # instance_exec'd on the job instance), so it calls the class methods below rather than a
-  # private instance method.
   retry_on CfWod::Fetcher::FetchError, wait: :polynomially_longer, attempts: 3 do |job, error|
-    date = job.arguments.first || default_date
-    log_failure(date, error.message)
+    WodImport.log_failure!(job.arguments.first, error.message)
+  end
+
+  # CfWod::Fetcher already retries an empty-template response internally
+  # (MAX_EMPTY_TEMPLATE_RETRIES). UnrecognizedTemplateError is a FetchError subclass, so without
+  # this more specific handler -- declared after, and therefore checked before, the FetchError
+  # handler above (rescue_from searches most-recently-declared first) -- the generic retry would
+  # stack 3 more job-level attempts on top of Fetcher's own 3, requesting the page up to 9 times
+  # before finally giving up.
+  retry_on CfWod::Fetcher::UnrecognizedTemplateError, attempts: 1 do |job, error|
+    WodImport.log_failure!(job.arguments.first, error.message)
   end
 
   def self.default_date
     ActiveSupport::TimeZone['America/Los_Angeles'].today + 1
   end
 
-  def self.log_failure(date, message, raw_text: nil)
-    WodImport.find_or_initialize_by(wod_date: date)
-             .update!(status: :failed, raw_text: raw_text, error_message: message)
-  end
-
+  # Pin the resolved date onto the job's own arguments immediately: config/recurring.yml enqueues
+  # this job with no args, so `date`'s default is otherwise re-evaluated fresh on every retry
+  # (ActiveJob re-invokes `perform` with whatever `arguments` currently holds, and Ruby evaluates
+  # an omitted default argument at each call). Without this, a retry that crosses local midnight
+  # in America/Los_Angeles would silently target a different day's WOD than the attempt before it.
   def perform(date = self.class.default_date)
+    self.arguments = [date]
+
     page = CfWod::Fetcher.call(date)
     return if page.rest_day?
 
@@ -27,8 +35,9 @@ class ScrapeCrossfitWodJob < ApplicationJob
     Program.find_by!(name: 'Crossfit.com')
            .schedules.find_or_initialize_by(posted_at: date)
            .update!(workout: workout)
-  rescue CfWod::WorkoutParser::UnparseableError => e
-    self.class.log_failure(date, e.message, raw_text: page&.body_text)
+    WodImport.clear!(date)
+  rescue CfWod::WorkoutParser::UnparseableError, ActiveRecord::ActiveRecordError => e
+    WodImport.log_failure!(date, e.message, raw_text: page&.body_text)
   end
 
   private

@@ -2,5 +2,4 @@
 production:
   scrape_crossfit_wod:
     class: ScrapeCrossfitWodJob
-    queue: default
     schedule: "0 20 * * * America/Los_Angeles"

@@ -39,4 +39,13 @@ RailsAdmin.config do |config|
     # history_index
     # history_show
   end
+
+  config.model 'WodImport' do
+    list do
+      field :wod_date
+      field :status
+      field :error_message
+      field :created_at
+    end
+  end
 end

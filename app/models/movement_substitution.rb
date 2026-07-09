@@ -34,6 +34,8 @@ class MovementSubstitution < ApplicationRecord
   end
 
   def inverse_substitution_scope
+    # Reverse lateral rows are semantically redundant, and reverse easier/harder rows are
+    # contradictory, so a single directed row owns each movement pair.
     scope = self.class.where(
       movement_id: substitute_movement_id,
       substitute_movement_id: movement_id,

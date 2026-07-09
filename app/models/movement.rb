@@ -67,7 +67,9 @@ class Movement < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
-  scope :supporting_implement_count, -> { where('name ~* ?', IMPLEMENT_COUNT_NAME_PATTERN.source) }
+  scope :supporting_implement_count, lambda {
+    equipment_dumbbell.or(equipment_kettlebell).or(where('name ~* ?', IMPLEMENT_COUNT_NAME_PATTERN.source))
+  }
 
   def supports_implement_count?
     equipment_dumbbell? || equipment_kettlebell? || name.to_s.match?(IMPLEMENT_COUNT_NAME_PATTERN)

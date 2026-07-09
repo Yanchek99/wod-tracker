@@ -19,11 +19,13 @@ class MovementTest < ActiveSupport::TestCase
   test 'scopes movements that support implement count' do
     dumbbell = Movement.create!(name: 'Dumbbell Snatch')
     kettlebell = Movement.create!(name: 'Kettlebell Clean')
+    equipment_only = Movement.create!(name: 'Renegade Row', equipment: :dumbbell)
 
     supported = Movement.supporting_implement_count
 
     assert_includes supported, dumbbell
     assert_includes supported, kettlebell
+    assert_includes supported, equipment_only
     assert_not_includes supported, movements(:back_squat)
   end
 
@@ -56,6 +58,15 @@ class MovementTest < ActiveSupport::TestCase
     function_role_ids = movement.movement_function_roles.ids
 
     movement.update!(name: 'Barbell Thruster')
+
+    assert_equal function_role_ids, movement.movement_function_roles.reload.ids
+  end
+
+  test 'does not rewrite function roles when assigned roles are unchanged' do
+    movement = movements(:thruster)
+    function_role_ids = movement.movement_function_roles.ids
+
+    movement.update!(function_roles: { primary: [:squat], secondary: [:vertical_push] })
 
     assert_equal function_role_ids, movement.movement_function_roles.reload.ids
   end

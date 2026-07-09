@@ -75,8 +75,19 @@ module MovementFunctionRoles
   end
 
   def sync_function_roles
+    return remove_instance_variable(:@function_role_assignments) if function_role_assignments_unchanged?
+
     movement_function_roles.delete_all
     movement_function_roles.create!(@function_role_assignments) if @function_role_assignments.any?
     remove_instance_variable(:@function_role_assignments)
+  end
+
+  def function_role_assignments_unchanged?
+    current_assignments = movement_function_roles.map do |function_role|
+      { movement_function: self.class.function_value(function_role.movement_function),
+        role: self.class.role_value(function_role.role) }
+    end
+    assignment_key = ->(assignment) { [assignment[:movement_function], assignment[:role]] }
+    current_assignments.sort_by(&assignment_key) == @function_role_assignments.sort_by(&assignment_key)
   end
 end

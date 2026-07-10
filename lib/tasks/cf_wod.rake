@@ -1,4 +1,4 @@
-namespace :cf_wod do
+namespace :cf_wod do # rubocop:disable Metrics/BlockLength
   desc "Fetch and parse a single day's WOD from crossfit.com and print it (does not persist)"
   task :fetch, [:date] => :environment do |_task, args|
     abort 'Usage: bin/rails "cf_wod:fetch[YYYY-MM-DD]"' if args[:date].blank?
@@ -26,5 +26,17 @@ namespace :cf_wod do
     wod_import = WodImport.find_by(wod_date: date)
     abort "Failed: #{wod_import.error_message}" if wod_import
     puts "Scraped #{date} successfully"
+  end
+
+  desc 'Enqueue ScrapeCfWodJob for every date in a range, staggered to avoid hammering crossfit.com'
+  task :backfill, %i[start_date end_date] => :environment do |_task, args|
+    abort 'Usage: bin/rails "cf_wod:backfill[YYYY-MM-DD,YYYY-MM-DD]"' if args[:start_date].blank? || args[:end_date].blank?
+
+    start_date = Date.parse(args[:start_date])
+    end_date = Date.parse(args[:end_date])
+    BackfillCrossfitWodsJob.perform_now(start_date, end_date)
+    puts "Enqueued #{(start_date..end_date).count} days (#{start_date}..#{end_date}) for backfill"
+  rescue ArgumentError => e
+    abort "Backfill failed: #{e.message}"
   end
 end

@@ -9,12 +9,12 @@ module CfWod
     end
 
     def infer
-      raise_ambiguous unless parsed_lines.last&.fetch(:raw_line, '').to_s.strip.match?(ETC)
+      raise_ambiguous unless parsed_lines.last&.fetch(:raw_line, '').to_s.match?(ETC)
 
       exercise_lines = parsed_lines[0...-1]
       movement_names = exercise_lines.map { |line| line.dig(:attrs, :movement_name) }
       raise_ambiguous unless exercise_lines.all? do |line|
-        line.dig(:attrs, :movement_name).present? && line.dig(:attrs, :reps).present?
+        line.dig(:attrs, :movement_name).present? && line.dig(:attrs, :reps).is_a?(Integer)
       end
 
       rung_width = movement_names.each_index.find { |index| movement_names[0...index].include?(movement_names[index]) }
@@ -27,7 +27,7 @@ module CfWod
 
       deltas = rungs.each_cons(2).flat_map do |previous_rung, next_rung|
         previous_rung.zip(next_rung).map do |previous_line, next_line|
-          next_line.dig(:attrs, :reps).to_i - previous_line.dig(:attrs, :reps).to_i
+          next_line.dig(:attrs, :reps) - previous_line.dig(:attrs, :reps)
         end
       end
       raise_ambiguous unless deltas.uniq.one? && deltas.first&.positive?

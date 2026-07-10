@@ -108,3 +108,60 @@ The focused test remains blocked before Rails starts by the sandbox restriction 
 ## Concerns
 
 - DONE_WITH_CONCERNS: the required focused test could not run in this sandbox because RVM requires unsandboxed `/bin/ps`; GREEN status is unverified locally.
+
+## Controller GREEN Verification
+
+The controller reran the focused test outside the sandbox:
+
+```bash
+rvm 4.0.5@wod-tracker do bundle exec rails test test/services/cf_wod/ascending_ladder_inferer_test.rb
+```
+
+Relevant output:
+
+```text
+5 runs, 9 assertions, 0 failures, 0 errors, 0 skips
+```
+
+## Review Fixes
+
+Files changed:
+
+- `app/services/cf_wod/ascending_ladder_inferer.rb`
+- `test/services/cf_wod/ascending_ladder_inferer_test.rb`
+- `.superpowers/sdd/task-1-report.md`
+
+Fixes applied:
+
+- Require the raw final line to match `Etc.` or `Etc` exactly, without stripping surrounding whitespace.
+- Require every participating `reps` value to be an `Integer` before calculating deltas; malformed values no longer pass through `to_i`.
+- Extend the valid couplet test through the 9/9 rung.
+- Add fail-closed coverage for whitespace-padded `Etc.` and malformed reps such as `3 reps`.
+
+## Review Fix Verification
+
+Command run:
+
+```bash
+rvm 4.0.5@wod-tracker do bundle exec rails test test/services/cf_wod/ascending_ladder_inferer_test.rb
+```
+
+Exact output:
+
+```text
+/Users/matthewyanchek/.rvm/scripts/rvm: line 29: /bin/ps: Operation not permitted
+RVM not loaded, aborting.
+```
+
+The focused test is blocked before Rails starts by the sandbox restriction on `/bin/ps`. Both changed Ruby files pass standalone syntax checks, and `git diff --check` passes.
+
+## Review Self-review
+
+- The termination check now evaluates the raw final line directly against the existing exact-match regex.
+- The rep type check covers all exercise lines before rung deltas are computed.
+- The valid test now includes 3/3, 6/6, and 9/9 rungs while preserving the expected first-rung result and step.
+- Only the owned service, test, and report files were changed; unrelated untracked files were left untouched.
+
+## Review Concerns
+
+- DONE_WITH_CONCERNS: the mandated focused test command could not run locally because RVM requires unsandboxed `/bin/ps`; the controller should rerun it outside the sandbox.

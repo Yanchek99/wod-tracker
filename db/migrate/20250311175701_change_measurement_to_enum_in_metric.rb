@@ -1,4 +1,8 @@
 class ChangeMeasurementToEnumInMetric < ActiveRecord::Migration[8.0]
+  class MigrationMetric < ActiveRecord::Base
+    self.table_name = 'metrics'
+  end
+
   def up
     # Step 1: Add a temporary integer column
     add_column :metrics, :measurement_int, :integer
@@ -11,8 +15,8 @@ class ChangeMeasurementToEnumInMetric < ActiveRecord::Migration[8.0]
       'time' => 9, 'weight' => 10, 'height' => 11, 'distance' => 12
     }
 
-    Metric.reset_column_information
-    Metric.find_each do |metric|
+    MigrationMetric.reset_column_information
+    MigrationMetric.find_each do |metric|
       if measurement_mapping.key?(metric.measurement)
         metric.update_columns(measurement_int: measurement_mapping[metric.measurement])
       end
@@ -34,8 +38,8 @@ class ChangeMeasurementToEnumInMetric < ActiveRecord::Migration[8.0]
       9 => 'time', 10 => 'weight', 11 => 'height', 12 => 'distance'
     }
 
-    Metric.reset_column_information
-    Metric.find_each do |metric|
+    MigrationMetric.reset_column_information
+    MigrationMetric.find_each do |metric|
       if measurement_mapping.key?(metric.measurement)
         metric.update_columns(measurement_str: measurement_mapping[metric.measurement])
       end

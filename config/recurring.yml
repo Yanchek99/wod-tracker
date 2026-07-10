@@ -1,0 +1,5 @@
+# config/recurring.yml
+production:
+  scrape_cf_wod:
+    class: ScrapeCfWodJob
+    schedule: "0 20 * * * America/Los_Angeles"

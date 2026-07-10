@@ -2,12 +2,6 @@ require 'test_helper'
 
 module CfWod
   class WorkoutParserCorpusTest < ActiveSupport::TestCase
-    FIXTURES = Rails.root.join('test/fixtures/cf_wod')
-
-    def fixture(name)
-      File.read(FIXTURES.join(name))
-    end
-
     def wod_page(slug:, body_text:)
       WodPage.new(date: nil, slug: slug, title: nil, body_html: nil, body_text: body_text, description: nil,
                   scaling: nil, rest_day: false, previous_slug: nil, next_slug: nil)
@@ -22,7 +16,7 @@ module CfWod
 
     test '180110: AMRAP with a load shared across two movements, excluding the bodyweight rope climb' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
-        .to_return(status: 200, body: fixture('legacy_with_scaling.html'))
+        .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
       page = Fetcher.call(Date.new(2018, 1, 10))
       workout = WorkoutParser.call(page)
@@ -45,7 +39,7 @@ module CfWod
 
     test '260620: a real instructional sentence embedded in the body fails closed rather than guessing' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
-        .to_return(status: 200, body: fixture('modern_multi_part.html'))
+        .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/06/20})
         .to_return(status: 301, headers: { 'Location' => '/260620' })
 

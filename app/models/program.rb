@@ -3,4 +3,6 @@ class Program < ApplicationRecord
   has_many :workouts, through: :schedules
   has_many :subscriptions, dependent: :destroy
   has_many :users, through: :subscriptions
+
+  validates :name, uniqueness: true
 end

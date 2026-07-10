@@ -15,5 +15,16 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
+
+    CF_WOD_FIXTURES = Rails.root.join('test/fixtures/cf_wod')
+
+    def cf_wod_fixture(name)
+      File.read(CF_WOD_FIXTURES.join(name))
+    end
+
+    def stub_cf_wod_redirect(legacy_path, slug)
+      stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/#{legacy_path}})
+        .to_return(status: 301, headers: { 'Location' => "/#{slug}" })
+    end
   end
 end

@@ -15,4 +15,16 @@ namespace :cf_wod do
   rescue CfWod::WorkoutParser::UnparseableError => e
     abort "Parse failed: #{e.message}"
   end
+
+  desc 'Run ScrapeCfWodJob for a single date, persisting the Workout/Schedule or logging a WodImport failure'
+  task :scrape, [:date] => :environment do |_task, args|
+    abort 'Usage: bin/rails "cf_wod:scrape[YYYY-MM-DD]"' if args[:date].blank?
+
+    date = Date.parse(args[:date])
+    ScrapeCfWodJob.perform_now(date)
+
+    wod_import = WodImport.find_by(wod_date: date)
+    abort "Failed: #{wod_import.error_message}" if wod_import
+    puts "Scraped #{date} successfully"
+  end
 end

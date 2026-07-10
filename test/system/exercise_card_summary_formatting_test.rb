@@ -121,6 +121,19 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
     end
   end
 
+  test 'renders max calories before movement after local save' do
+    visit new_workout_url
+    click_on 'Add Exercise'
+
+    within '.exercise' do
+      select_movement 'Row'
+      fill_in 'Calories', with: '0'
+      click_on 'Done'
+
+      assert_text 'max calories Row'
+    end
+  end
+
   private
 
   def select_movement(name)

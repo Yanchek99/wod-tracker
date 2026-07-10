@@ -1,9 +1,6 @@
 module CfWod
-  # rubocop:disable Metrics/ClassLength
   class WorkoutParser
     class UnparseableError < StandardError; end
-
-    ETC_LINE = /\AEtc\.?\z/i
 
     def self.call(wod_page) = new(wod_page).parse
 
@@ -89,29 +86,13 @@ module CfWod
 
     def build_from_body(workout, body)
       split = PartSplitter.call(body)
-      parts = normalize_ladder_parts(workout, split[:parts])
+      parts = AscendingLadderPartNormalizer.call(workout, split[:parts])
       exercise_lines = build_exercise_lines(workout, parts)
       workout.notes = split[:notes]
       return unless split[:prescription_text]
 
       clauses = PrescriptionClauseParser.call(split[:prescription_text])
       PrescriptionClauseAssigner.call(exercise_lines, clauses)
-    end
-
-    def normalize_ladder_parts(workout, parts)
-      return parts unless flat_etc_ladder_candidate?(parts)
-
-      parsed_lines = parts.first[:lines].map do |line|
-        { raw_line: line, attrs: ExerciseLineParser.call(line) }
-      end
-      ladder = AscendingLadderInferer.call(parsed_lines)
-      workout.ladder_step = ladder[:ladder_step]
-
-      [parts.first.merge(lines: ladder[:lines].pluck(:raw_line))]
-    end
-
-    def flat_etc_ladder_candidate?(parts)
-      parts.one? && !parts.first[:segment] && parts.first[:lines].last&.match?(ETC_LINE)
     end
 
     def normalize_leftover_body(body)
@@ -155,5 +136,4 @@ module CfWod
       MovementLookup.call(name) || raise(UnparseableError, "unrecognized movement: #{name.inspect}")
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

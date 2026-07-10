@@ -1,7 +1,7 @@
 module CfWod
   class WorkoutFormatClassifier
     FOR_TIME = /\Afor time:?\z/i
-    AMRAP = /\A(?:complete )?as many rounds(?: and reps)? as possible in (\d+) minutes? of:?\z/i
+    AMRAP = /\A(?:complete )?as many (?:rounds(?: and reps)?|reps) as possible in (\d+) minutes? of:?\z/i
     EVERY_MINUTE = /\Aevery minute on the minute for (\d+) minutes?:?\z/i
     REP_LADDER = /\A(\d+(?:-\d+)+) reps for time of:?\z/i
     FIND_MAX = /\Afind a 1-rep-max (.+?)\.?\z/i

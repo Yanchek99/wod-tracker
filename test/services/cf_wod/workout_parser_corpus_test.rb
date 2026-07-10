@@ -16,6 +16,7 @@ module CfWod
     # Not fixtures: test/helpers/measurable_helper_test.rb creates these same movement names
     # dynamically per-test, which would collide with a permanent global fixture of the same name.
     def box_jump = Movement.find_or_create_by(name: 'Box Jump')
+    def burpee_box_jump_over = Movement.find_or_create_by(name: 'Burpee Box Jump-over')
     def wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
     def muscle_up = Movement.find_or_create_by(name: 'Muscle-up')
     def bike = Movement.find_or_create_by(name: 'Bike')
@@ -53,6 +54,27 @@ module CfWod
 
       error = assert_raises(WorkoutParser::UnparseableError) { WorkoutParser.call(page) }
       assert_includes error.message, 'Any time you stop'
+    end
+
+    test '260710: an open-ended ascending AMRAP ladder keeps its first rung and barbell load' do
+      body = "Complete as many rounds as possible in 10 minutes of:\n3 burpee box jump-overs\n3 deadlifts\n" \
+             "6 burpee box jump-overs\n6 deadlifts\n9 burpee box jump-overs\n9 deadlifts\nEtc.\n\n" \
+             "♀ 125-lb barbell\n♂ 185-lb barbell"
+      page = wod_page(slug: '260710', body_text: body)
+      burpee_box_jump_over_movement = burpee_box_jump_over
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'rep', workout.score_type
+      assert_equal 10, workout.time
+      assert_equal 3, workout.ladder_step
+      assert_equal 2, workout.exercises.length
+
+      burpee_box_jump_over, deadlift = workout.exercises.sort_by(&:position)
+      assert_equal [burpee_box_jump_over_movement, 3], [burpee_box_jump_over.movement, burpee_box_jump_over.reps]
+      assert_equal [movements(:deadlift), 3], [deadlift.movement, deadlift.reps]
+      assert_equal [125, 185], [deadlift.female_load, deadlift.male_load]
     end
 
     test '260406: a "Partition the reps any way." boilerplate instruction is dropped, not treated as an exercise line' do

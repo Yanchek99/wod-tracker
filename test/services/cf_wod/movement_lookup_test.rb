@@ -23,5 +23,10 @@ module CfWod
       clean_and_jerk = Movement.find_or_create_by(name: 'Clean and Jerk')
       assert_equal clean_and_jerk, MovementLookup.call('clean and jerks')
     end
+
+    test 'falls back to treating a hyphenated compound as space-separated words' do
+      toes_to_bar = Movement.find_or_create_by(name: 'Toes to Bar')
+      assert_equal toes_to_bar, MovementLookup.call('toes-to-bars')
+    end
   end
 end

@@ -83,11 +83,13 @@ class CfWodRakeTest < ActiveSupport::TestCase
     error = assert_raises(SystemExit) { Rake::Task['cf_wod:backfill'].invoke('2026-01-01') }
 
     assert_equal 1, error.status
+    assert_includes error.message, 'Usage:'
   end
 
   test 'backfill aborts with the range error message when start is after end' do
     error = assert_raises(SystemExit) { Rake::Task['cf_wod:backfill'].invoke('2026-01-03', '2026-01-01') }
 
     assert_equal 1, error.status
+    assert_includes error.message, 'start_date must be <= end_date'
   end
 end

@@ -38,10 +38,12 @@ module MeasurableHelper
   end
 
   def additional_metrics(measurable)
-    leading_prescription(measurable)&.additional_metrics ||
-      measurable.prescription_metrics.reject(&:rep?)
-                .reject { |metric| duration_metric?(metric) }
-                .select { |metric| visible_metric?(metric) }
+    metrics = leading_prescription(measurable)&.additional_metrics ||
+              measurable.prescription_metrics.reject(&:rep?)
+                        .reject { |metric| duration_metric?(metric) }
+                        .select { |metric| visible_metric?(metric) }
+
+    metrics.sort_by { |metric| additional_metric_display_order(metric) }
   end
 
   def leading_prescription(measurable)

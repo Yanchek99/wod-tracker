@@ -64,6 +64,13 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal 'max calories Row', measurable_message(exercise)
   end
 
+  test 'renders additional calories before load for exercises' do
+    exercise = workouts(:fran).exercises.create!(movement: movements(:row), position: 3,
+                                                 reps: 10, calories: 20, load: 135, load_unit: :lb)
+
+    assert_equal '10 Rows (20 calories / 135 lbs)', measurable_message(exercise)
+  end
+
   test 'renders a max-load test from columns' do
     workout = Workout.create!(name: 'Back Squat Max', score_type: :weight)
     exercise = workout.exercises.create!(movement: movements(:back_squat), position: 1, reps: 4,
@@ -100,5 +107,14 @@ class MeasurableHelperTest < ActionView::TestCase
                                                          distance: 300, distance_unit: :meter)
 
     assert_equal 'Row (300 meters)', measurable_message(movement_log)
+  end
+
+  test 'renders additional distance before load for movement logs' do
+    movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:row),
+                                                         reps: 10, distance: 400,
+                                                         distance_unit: :meter, load: 135,
+                                                         load_unit: :lb)
+
+    assert_equal '10 Rows (400 meters / 135 lbs)', measurable_message(movement_log)
   end
 end

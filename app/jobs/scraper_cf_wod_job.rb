@@ -1,4 +1,4 @@
-class ScrapeCrossfitWodJob < ApplicationJob
+class ScraperCfWodJob < ApplicationJob
   queue_as :default
 
   retry_on CfWod::Fetcher::FetchError, wait: :polynomially_longer, attempts: 3 do |job, error|

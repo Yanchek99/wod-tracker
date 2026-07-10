@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
+class ScraperCfWodJobTest < ActiveJob::TestCase
   setup do
     @program = Program.create!(name: 'Crossfit.com')
   end
@@ -9,7 +9,7 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2018, 1, 10)) }
+    perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2018, 1, 10)) }
 
     workout = Workout.find_by!(name: 'CF-180110')
     schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
@@ -21,7 +21,7 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    2.times { perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2018, 1, 10)) } }
+    2.times { perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2018, 1, 10)) } }
 
     assert_equal 1, @program.schedules.where(posted_at: Date.new(2018, 1, 10)).count
     assert_equal 1, Workout.where(name: 'CF-180110').count
@@ -32,7 +32,7 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260702})
       .to_return(status: 200, body: cf_wod_fixture('modern_rest_day.html'))
 
-    perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2026, 7, 2)) }
+    perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2026, 7, 2)) }
 
     assert_equal 0, @program.schedules.count
     assert_equal 0, WodImport.count
@@ -43,7 +43,7 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
       .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
 
-    perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2026, 6, 20)) }
+    perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2026, 6, 20)) }
 
     wod_import = WodImport.find_by!(wod_date: Date.new(2026, 6, 20))
     assert wod_import.failed?
@@ -56,7 +56,7 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/07/11}).to_return(status: 500)
 
     assert_difference('WodImport.count', 1) do
-      perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2026, 7, 11)) }
+      perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2026, 7, 11)) }
     end
 
     assert_requested(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/07/11}, times: 3)
@@ -72,7 +72,7 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260712}).to_return(status: 200, body: shell_html)
 
     assert_difference('WodImport.count', 1) do
-      perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2026, 7, 12)) }
+      perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2026, 7, 12)) }
     end
 
     assert_requested(:get, %r{\Ahttps://www\.crossfit\.com/260712}, times: 3)
@@ -85,7 +85,7 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2018, 1, 10)) }
+    perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2018, 1, 10)) }
 
     wod_import = WodImport.find_by!(wod_date: Date.new(2018, 1, 10))
     assert wod_import.failed?
@@ -97,13 +97,13 @@ class ScrapeCrossfitWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    perform_enqueued_jobs { ScrapeCrossfitWodJob.perform_later(Date.new(2018, 1, 10)) }
+    perform_enqueued_jobs { ScraperCfWodJob.perform_later(Date.new(2018, 1, 10)) }
 
     assert_equal 0, WodImport.count
   end
 
   test 'perform resolves and pins the default date onto job.arguments so a later invocation reuses it' do
-    job = ScrapeCrossfitWodJob.new
+    job = ScraperCfWodJob.new
 
     travel_to Time.utc(2026, 1, 15, 12, 0, 0) do # noon UTC = 4am PST Jan 15 -> default_date (tomorrow PT) = Jan 16
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/01/16}).to_return(status: 500)

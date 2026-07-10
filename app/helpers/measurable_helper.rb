@@ -23,7 +23,23 @@ module MeasurableHelper
     movement_name = measurable.movement.name
     return "max reps #{movement_name}" if max_rep_metric?(rep_metric)
 
-    [metric_unit_msg(rep_metric), movement_name_for_rep_metric(movement_name, rep_metric)].compact_blank.join(' ')
+    [rep_movement_count_msg(measurable, rep_metric), movement_name_for_rep_metric(movement_name, rep_metric)]
+      .compact_blank.join(' ')
+  end
+
+  # A bare movement line with no interval-defined rep scheme (e.g. a chipper's standalone "Rope
+  # Climb") means the athlete truly does one rep -- show it, unlike a Fran-style ladder movement
+  # where reps: 1 is a structural placeholder (see Exercise#reps_defined_by_interval?).
+  def rep_movement_count_msg(measurable, rep_metric)
+    return rep_metric.value.to_s if literal_single_rep?(measurable, rep_metric)
+
+    metric_unit_msg(rep_metric)
+  end
+
+  def literal_single_rep?(measurable, rep_metric)
+    rep_metric.value == 1 &&
+      measurable.respond_to?(:reps_defined_by_interval?) &&
+      !measurable.reps_defined_by_interval?
   end
 
   def measurable_reps_msg(measurable)

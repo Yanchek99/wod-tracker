@@ -65,6 +65,16 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal '4:00 to find a 4-rep max Back Squat', measurable_message(exercise)
   end
 
+  test 'renders a literal single rep on a plain for-time workout, unlike a ladder placeholder' do
+    exercise = workouts(:murph).exercises.create!(movement: movements(:rope_climb), position: 6, reps: 1)
+
+    assert_equal '1 Rope Climb', measurable_message(exercise)
+  end
+
+  test 'does not render a numeral for a Fran-style ladder placeholder rep' do
+    assert_equal 'Pull Up', measurable_message(exercises(:fran_pullup))
+  end
+
   test 'renders timed station movements without pluralizing fixed single-rep movements' do
     exercise = workouts(:fran).exercises.create!(movement: movements(:row), position: 3,
                                                  reps: 1, duration_seconds: 60, calories: 0)

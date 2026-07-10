@@ -59,6 +59,15 @@ class Exercise < ApplicationRecord
     reps + (rung * workout.ladder_step)
   end
 
+  # True when reps: 1 is a structural placeholder for a round-by-round count set by the workout's
+  # (or segment's) interval scheme, e.g. Fran's "21-15-9" -- the same distinction
+  # Metric#calculated_value uses to multiply out total work for interval ladders. False for a bare
+  # movement line with no interval scheme (e.g. a chipper's standalone "Rope Climb"), where reps: 1
+  # is a real, displayable count.
+  def reps_defined_by_interval?
+    (segment.presence || workout).interval?
+  end
+
   def distance_score_component
     distance = distance_metric
     return nil unless scorable_metric?(distance) && distance_units_per_rep.positive?

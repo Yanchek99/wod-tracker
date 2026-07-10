@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class MeasurablePrescribedWorkHelperTest < ActionView::TestCase
+class MeasurableLeadingPrescriptionIntegrationTest < ActionView::TestCase
   include MeasurableHelper
   include MetricsHelper
 

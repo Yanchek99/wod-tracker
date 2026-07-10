@@ -1,6 +1,4 @@
 module MeasurableHelper
-  include MeasurablePrescribedWorkHelper
-
   def measurable_message(measurable)
     [measurable_movement_msg(measurable), measurable_additional_metrics(measurable)].compact.join(' ')
   end
@@ -11,8 +9,8 @@ module MeasurableHelper
     return max_load_test_msg(measurable, rep_metric, duration_metric) if measurable.respond_to?(:max_load_test?) && measurable.max_load_test?
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
-    work_metric = prescribed_work_metric(measurable)
-    return prescribed_work_movement_msg(measurable, work_metric) if work_metric
+    leading = leading_prescription(measurable)
+    return [leading.text, movement_name_for_summary_metric(measurable.movement.name, leading.metric)].compact_blank.join(' ') if leading&.metric
 
     rep_movement_msg(measurable, rep_metric)
   end
@@ -40,13 +38,16 @@ module MeasurableHelper
   end
 
   def additional_metrics(measurable)
-    work_metric = prescribed_work_metric(measurable)
+    leading_prescription(measurable)&.additional_metrics ||
+      measurable.prescription_metrics.reject(&:rep?)
+                .reject { |metric| duration_metric?(metric) }
+                .select { |metric| visible_metric?(metric) }
+  end
 
-    measurable.prescription_metrics.reject(&:rep?)
-              .reject { |metric| metric == work_metric }
-              .reject { |metric| duration_metric?(metric) }
-              .select { |metric| visible_metric?(metric) }
-              .sort_by { |metric| additional_metric_display_order(metric) }
+  def leading_prescription(measurable)
+    return unless measurable.is_a?(Exercise)
+
+    Measurable::LeadingPrescription.new(measurable.prescription_metrics)
   end
 
   def grouped_sex_specific_metrics?(metrics)
@@ -65,6 +66,14 @@ module MeasurableHelper
 
   def movement_name_for_rep_metric(movement_name, metric)
     pluralize_movement?(metric) ? movement_name.pluralize : movement_name
+  end
+
+  def movement_name_for_summary_metric(movement_name, metric)
+    return movement_name unless metric
+    return movement_name if metric.rep? && metric.value.blank? && !metric.sex_specific?
+    return movement_name_for_rep_metric(movement_name, metric) if metric.rep?
+
+    movement_name
   end
 
   def sex_specific_metrics_msg(metrics)

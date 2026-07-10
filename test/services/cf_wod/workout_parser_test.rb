@@ -81,8 +81,11 @@ module CfWod
     end
 
     test 'raises UnparseableError for an ambiguous Etc.-terminated ascending ladder' do
-      page = wod_page(slug: '300110', body_text: "Complete as many rounds as possible in 10 minutes of:\n" \
-                                              "3 burpees\n3 deadlifts\nEtc.")
+      page = wod_page(
+        slug: '300110',
+        body_text: "Complete as many rounds as possible in 10 minutes of:\n" \
+                   "3 burpees\n3 deadlifts\nEtc."
+      )
 
       error = assert_raises(WorkoutParser::UnparseableError) { WorkoutParser.call(page) }
 

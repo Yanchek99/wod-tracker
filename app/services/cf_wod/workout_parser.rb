@@ -1,4 +1,5 @@
 module CfWod
+  # rubocop:disable Metrics/ClassLength
   class WorkoutParser
     class UnparseableError < StandardError; end
 
@@ -106,7 +107,7 @@ module CfWod
       ladder = AscendingLadderInferer.call(parsed_lines)
       workout.ladder_step = ladder[:ladder_step]
 
-      [parts.first.merge(lines: ladder[:lines].map { |line| line[:raw_line] })]
+      [parts.first.merge(lines: ladder[:lines].pluck(:raw_line))]
     end
 
     def flat_etc_ladder_candidate?(parts)
@@ -154,4 +155,5 @@ module CfWod
       MovementLookup.call(name) || raise(UnparseableError, "unrecognized movement: #{name.inspect}")
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

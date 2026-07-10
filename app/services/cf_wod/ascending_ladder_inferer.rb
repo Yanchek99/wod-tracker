@@ -9,22 +9,57 @@ module CfWod
     end
 
     def infer
+      exercise_lines = extract_exercise_lines
+      rung_width = determine_rung_width(exercise_lines)
+      rungs = build_rungs(exercise_lines, rung_width)
+      first_rung = rungs.first
+      validate_rung_movements!(rungs, first_rung)
+
+      { ladder_step: calculate_ladder_step(rungs), lines: first_rung }
+    end
+
+    private
+
+    attr_reader :parsed_lines
+
+    def extract_exercise_lines
       raise_ambiguous unless parsed_lines.last&.fetch(:raw_line, '').to_s.match?(ETC)
 
       exercise_lines = parsed_lines[0...-1]
-      movement_names = exercise_lines.map { |line| line.dig(:attrs, :movement_name) }
-      raise_ambiguous unless exercise_lines.all? do |line|
+      valid_lines = exercise_lines.all? do |line|
         line.dig(:attrs, :movement_name).present? && line.dig(:attrs, :reps).is_a?(Integer)
       end
+      raise_ambiguous unless valid_lines
 
-      rung_width = movement_names.each_index.find { |index| movement_names[0...index].include?(movement_names[index]) }
+      exercise_lines
+    end
+
+    def determine_rung_width(exercise_lines)
+      movement_names = exercise_lines.map { |line| line.dig(:attrs, :movement_name) }
+      rung_width = movement_names.each_index.find do |index|
+        movement_names[0...index].include?(movement_names[index])
+      end
       raise_ambiguous unless rung_width&.positive?
-      raise_ambiguous unless exercise_lines.length >= rung_width * 2 && (exercise_lines.length % rung_width).zero?
 
-      rungs = exercise_lines.each_slice(rung_width).to_a
-      first_rung = rungs.first
-      raise_ambiguous unless rungs.all? { |rung| rung.map { |line| line.dig(:attrs, :movement_name) } == first_rung.map { |line| line.dig(:attrs, :movement_name) } }
+      rung_width
+    end
 
+    def build_rungs(exercise_lines, rung_width)
+      valid_rung_count = exercise_lines.length >= rung_width * 2 && (exercise_lines.length % rung_width).zero?
+      raise_ambiguous unless valid_rung_count
+
+      exercise_lines.each_slice(rung_width).to_a
+    end
+
+    def validate_rung_movements!(rungs, first_rung)
+      first_movement_names = first_rung.map { |line| line.dig(:attrs, :movement_name) }
+      matching_movements = rungs.all? do |rung|
+        rung.map { |line| line.dig(:attrs, :movement_name) } == first_movement_names
+      end
+      raise_ambiguous unless matching_movements
+    end
+
+    def calculate_ladder_step(rungs)
       deltas = rungs.each_cons(2).flat_map do |previous_rung, next_rung|
         previous_rung.zip(next_rung).map do |previous_line, next_line|
           next_line.dig(:attrs, :reps) - previous_line.dig(:attrs, :reps)
@@ -32,12 +67,8 @@ module CfWod
       end
       raise_ambiguous unless deltas.uniq.one? && deltas.first&.positive?
 
-      { ladder_step: deltas.first, lines: first_rung }
+      deltas.first
     end
-
-    private
-
-    attr_reader :parsed_lines
 
     def raise_ambiguous
       raise WorkoutParser::UnparseableError, 'ambiguous ascending ladder ending in Etc.'

@@ -1,4 +1,4 @@
-module WodExtraction
+module WorkoutExtraction
   class LlmParser
     class ExtractionError < StandardError; end
 

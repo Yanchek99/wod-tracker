@@ -1,6 +1,6 @@
 require 'test_helper'
 
-module WodExtraction
+module WorkoutExtraction
   class LlmParserTest < ActiveSupport::TestCase
     setup do
       @movement = movements(:thruster)
@@ -27,7 +27,7 @@ module WodExtraction
         ]
       )
 
-      workout = WodExtraction::LlmParser.call('21-15-9 Thrusters (95/65) Pull-ups')
+      workout = WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65) Pull-ups')
 
       assert_not workout.persisted?
       assert_equal 'Fran', workout.name
@@ -48,7 +48,7 @@ module WodExtraction
         exercises: [{ movement_name: @movement.name, position: 1, reps: 20 }]
       )
 
-      workout = WodExtraction::LlmParser.call('Part A: 10 Pull-ups\n20 Thrusters')
+      workout = WorkoutExtraction::LlmParser.call('Part A: 10 Pull-ups\n20 Thrusters')
 
       assert workout.valid?
       assert_not workout.persisted?
@@ -75,8 +75,8 @@ module WodExtraction
         ]
       )
 
-      assert_raises(WodExtraction::LlmParser::ExtractionError) do
-        WodExtraction::LlmParser.call('10 Not A Real Movement')
+      assert_raises(WorkoutExtraction::LlmParser::ExtractionError) do
+        WorkoutExtraction::LlmParser.call('10 Not A Real Movement')
       end
     end
 
@@ -84,8 +84,8 @@ module WodExtraction
       stub_request(:post, 'https://api.anthropic.com/v1/messages')
         .to_return(status: 429, body: { type: 'error', error: { type: 'rate_limit_error', message: 'slow down' } }.to_json)
 
-      assert_raises(WodExtraction::LlmParser::ExtractionError) do
-        WodExtraction::LlmParser.call('any text')
+      assert_raises(WorkoutExtraction::LlmParser::ExtractionError) do
+        WorkoutExtraction::LlmParser.call('any text')
       end
     end
 

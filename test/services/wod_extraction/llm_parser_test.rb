@@ -65,7 +65,6 @@ class WodExtraction::LlmParserTest < ActiveSupport::TestCase
   private
 
   def stub_anthropic_response(payload)
-    tool_call_id = "toolu_stub_001"
     stub_request(:post, "https://api.anthropic.com/v1/messages")
       .to_return(
         status: 200,

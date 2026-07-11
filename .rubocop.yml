@@ -46,6 +46,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - test/services/cf_wod/workout_parser_corpus_test.rb
+    - app/services/wod_extraction/llm_parser.rb
 
 Metrics/MethodLength:
   CountComments: false

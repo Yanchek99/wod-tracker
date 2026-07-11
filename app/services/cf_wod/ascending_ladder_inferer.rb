@@ -23,13 +23,13 @@ module CfWod
     attr_reader :parsed_lines
 
     def extract_exercise_lines
-      raise_ambiguous unless parsed_lines.last&.fetch(:raw_line, '').to_s.match?(ETC)
+      raise_ambiguous('missing final Etc. line') unless parsed_lines.last&.fetch(:raw_line, '').to_s.match?(ETC)
 
       exercise_lines = parsed_lines[0...-1]
       valid_lines = exercise_lines.all? do |line|
         line.dig(:attrs, :movement_name).present? && line.dig(:attrs, :reps).is_a?(Integer)
       end
-      raise_ambiguous unless valid_lines
+      raise_ambiguous('exercise lines must include movement names and integer reps') unless valid_lines
 
       exercise_lines
     end
@@ -39,14 +39,14 @@ module CfWod
       rung_width = movement_names.each_index.find do |index|
         movement_names[0...index].include?(movement_names[index])
       end
-      raise_ambiguous unless rung_width&.positive?
+      raise_ambiguous('requires at least two complete rungs') unless rung_width&.positive?
 
       rung_width
     end
 
     def build_rungs(exercise_lines, rung_width)
       valid_rung_count = exercise_lines.length >= rung_width * 2 && (exercise_lines.length % rung_width).zero?
-      raise_ambiguous unless valid_rung_count
+      raise_ambiguous('requires at least two complete rungs') unless valid_rung_count
 
       exercise_lines.each_slice(rung_width).to_a
     end
@@ -56,7 +56,7 @@ module CfWod
       matching_movements = rungs.all? do |rung|
         rung.map { |line| line.dig(:attrs, :movement_name) } == first_movement_names
       end
-      raise_ambiguous unless matching_movements
+      raise_ambiguous('movement sequence changes between rungs') unless matching_movements
     end
 
     def calculate_ladder_step(rungs)
@@ -65,13 +65,13 @@ module CfWod
           next_line.dig(:attrs, :reps) - previous_line.dig(:attrs, :reps)
         end
       end
-      raise_ambiguous unless deltas.uniq.one? && deltas.first&.positive?
+      raise_ambiguous('rep step is not constant and increasing across rungs') unless deltas.uniq.one? && deltas.first&.positive?
 
       deltas.first
     end
 
-    def raise_ambiguous
-      raise WorkoutParser::UnparseableError, 'ambiguous ascending ladder ending in Etc.'
+    def raise_ambiguous(reason)
+      raise WorkoutParser::UnparseableError, "ambiguous ascending ladder ending in Etc.: #{reason}"
     end
   end
 end

@@ -39,6 +39,8 @@ Metrics/BlockLength:
   Max: 25
   Exclude:
     - config/**/*
+    # Rake namespaces grow linearly with the number of independent tasks inside
+    # them, not with any one task's complexity -- same shape as config/**/* above.
     - lib/tasks/**/*.rake
 
 Metrics/ClassLength:

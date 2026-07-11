@@ -86,7 +86,8 @@ module CfWod
 
     def build_from_body(workout, body)
       split = PartSplitter.call(body)
-      exercise_lines = build_exercise_lines(workout, split[:parts])
+      parts = AscendingLadderPartNormalizer.call(workout, split[:parts])
+      exercise_lines = build_exercise_lines(workout, parts)
       workout.notes = split[:notes]
       return unless split[:prescription_text]
 

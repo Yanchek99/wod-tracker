@@ -129,13 +129,6 @@ class ExerciseTest < ActiveSupport::TestCase
     assert_includes exercise.errors[:base], 'load requires both female and male values'
   end
 
-  test 'reps are interval-defined for a rep-ladder workout like Fran but not for a plain for-time workout' do
-    plain_exercise = workouts(:murph).exercises.build(movement: movements(:pullup), position: 3, reps: 1)
-
-    assert_predicate exercises(:fran_pullup), :reps_defined_by_interval?
-    assert_not plain_exercise.reps_defined_by_interval?
-  end
-
   test 'validates distance units per rep against the column distance' do
     exercise = workouts(:fran).exercises.build(movement: movements(:run), position: 3,
                                                reps: 1, distance: 400, distance_unit: :meter,

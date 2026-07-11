@@ -80,6 +80,18 @@ module CfWod
       assert_raises(WorkoutParser::UnparseableError) { WorkoutParser.call(page) }
     end
 
+    test 'raises UnparseableError for an ambiguous Etc.-terminated ascending ladder' do
+      page = wod_page(
+        slug: '300110',
+        body_text: "Complete as many rounds as possible in 10 minutes of:\n" \
+                   "3 burpees\n3 deadlifts\nEtc."
+      )
+
+      error = assert_raises(WorkoutParser::UnparseableError) { WorkoutParser.call(page) }
+
+      assert_includes error.message, 'ambiguous ascending ladder'
+    end
+
     test 'builds a set-based lifting workout with the load-zero sentinel and the parsed reps-per-set' do
       front_squat = Movement.find_or_create_by(name: 'Front Squat')
       page = wod_page(slug: '300104', body_text: 'Front squat 3-3-3-3-3 reps')

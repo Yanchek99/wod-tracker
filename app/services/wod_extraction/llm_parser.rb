@@ -120,8 +120,9 @@ module WodExtraction
       workout_attrs = attrs.slice(:name, :score_type, :rounds, :time, :interval, :time_cap,
                                   :ladder_step, :team_size, :notes).compact
       workout = Workout.new(workout_attrs)
-      build_segments(workout, attrs[:segments] || [])
-      build_exercises(workout, attrs[:exercises] || [], segment: nil, position_offset: 0)
+      segments = attrs[:segments] || []
+      build_segments(workout, segments)
+      build_exercises(workout, attrs[:exercises] || [], segment: nil, position_offset: segments.size)
       workout
     end
 

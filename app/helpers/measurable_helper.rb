@@ -10,7 +10,11 @@ module MeasurableHelper
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
     leading = leading_prescription(measurable)
-    return [leading.text, movement_name_for_summary_metric(measurable.movement.name, leading.metric)].compact_blank.join(' ') if leading&.metric
+    if leading&.metric
+      return rep_movement_msg(measurable, rep_metric) if leading.metric.rep?
+
+      return [leading.text, movement_name_for_summary_metric(measurable.movement.name, leading.metric)].compact_blank.join(' ')
+    end
 
     rep_movement_msg(measurable, rep_metric)
   end

@@ -15,6 +15,9 @@ gem 'pg'
 # Database-backed Active Job queuing backend
 gem 'solid_queue'
 
+# Anthropic client for LLM-based WOD extraction
+gem 'anthropic'
+
 # HTML/XML parsing for the WOD scraper
 gem 'nokogiri'
 

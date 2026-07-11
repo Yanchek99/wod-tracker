@@ -6,6 +6,7 @@ class CfWodRakeTest < ActiveSupport::TestCase
     Rails.application.load_tasks if Rake::Task.tasks.empty?
     Rake::Task['cf_wod:fetch'].reenable
     Rake::Task['cf_wod:scrape'].reenable
+    Rake::Task['cf_wod:backfill'].reenable
   end
 
   test 'fetches, parses, and prints a WOD for a given date' do
@@ -70,5 +71,25 @@ class CfWodRakeTest < ActiveSupport::TestCase
     error = assert_raises(SystemExit) { Rake::Task['cf_wod:scrape'].invoke('2026-06-20') }
 
     assert_equal 1, error.status
+  end
+
+  test 'backfill enqueues ScrapeCfWodJob for each date in the range and reports the count' do
+    output = capture_io { Rake::Task['cf_wod:backfill'].invoke('2026-01-01', '2026-01-03') }.join
+
+    assert_includes output, 'Enqueued 3 days (2026-01-01..2026-01-03) for backfill'
+  end
+
+  test 'backfill aborts with a usage message when a date is missing' do
+    error = assert_raises(SystemExit) { Rake::Task['cf_wod:backfill'].invoke('2026-01-01') }
+
+    assert_equal 1, error.status
+    assert_includes error.message, 'Usage:'
+  end
+
+  test 'backfill aborts with the range error message when start is after end' do
+    error = assert_raises(SystemExit) { Rake::Task['cf_wod:backfill'].invoke('2026-01-03', '2026-01-01') }
+
+    assert_equal 1, error.status
+    assert_includes error.message, 'start_date must be <= end_date'
   end
 end

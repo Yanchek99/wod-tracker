@@ -9,14 +9,7 @@ module MeasurableHelper
     return max_load_test_msg(measurable, rep_metric, duration_metric) if measurable.respond_to?(:max_load_test?) && measurable.max_load_test?
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
-    leading = leading_prescription(measurable)
-    if leading&.metric
-      return rep_movement_msg(measurable, rep_metric) if leading.metric.rep?
-
-      return [leading.text, movement_name_for_summary_metric(measurable.movement.name, leading.metric)].compact_blank.join(' ')
-    end
-
-    rep_movement_msg(measurable, rep_metric)
+    leading_movement_msg(measurable, rep_metric) || rep_movement_msg(measurable, rep_metric)
   end
 
   def rep_movement_msg(measurable, rep_metric)
@@ -90,12 +83,12 @@ module MeasurableHelper
     pluralize_movement?(metric) ? movement_name.pluralize : movement_name
   end
 
-  def movement_name_for_summary_metric(movement_name, metric)
-    return movement_name unless metric
-    return movement_name if metric.rep? && metric.value.blank? && !metric.sex_specific?
-    return movement_name_for_rep_metric(movement_name, metric) if metric.rep?
+  def leading_movement_msg(measurable, rep_metric)
+    leading = leading_prescription(measurable)
+    return unless leading&.metric
+    return rep_movement_msg(measurable, rep_metric) if leading.metric.rep?
 
-    movement_name
+    [leading.text, measurable.movement.name].compact_blank.join(' ')
   end
 
   def sex_specific_metrics_msg(metrics)

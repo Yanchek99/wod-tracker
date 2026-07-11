@@ -209,12 +209,9 @@ export default class extends Controller {
   }
 
   additionalMetrics(metrics, summaryMetric) {
-    const leading = new LeadingPrescription(metrics, this)
-    const representedMetric = summaryMetric || leading.metric
-
     return metrics
       .filter((metric) => metric.kind !== "rep")
-      .filter((metric) => metric !== representedMetric)
+      .filter((metric) => metric !== summaryMetric)
       .filter((metric) => !this.durationMetric(metric))
       .filter((metric) => this.visibleMetric(metric))
       .sort((left, right) => this.compareOrders(this.additionalMetricDisplayOrder(left), this.additionalMetricDisplayOrder(right)))

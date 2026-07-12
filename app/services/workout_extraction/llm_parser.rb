@@ -7,61 +7,35 @@ module WorkoutExtraction
 
     EXERCISE_SCHEMA = {
       type: 'object',
-      properties: {
-        movement_name: { type: 'string' },
-        position: { type: 'integer' },
-        reps: { type: 'integer' },
-        duration_seconds: { type: 'integer' },
-        load: { type: 'number' },
-        female_load: { type: 'number' },
-        male_load: { type: 'number' },
-        implement_count: { type: 'integer' },
-        distance: { type: 'number' },
-        female_distance: { type: 'number' },
-        male_distance: { type: 'number' },
-        distance_unit: { type: 'string' },
-        distance_units_per_rep: { type: 'number' },
-        calories: { type: 'integer' },
-        female_calories: { type: 'integer' },
-        male_calories: { type: 'integer' },
-        ladder_step_every: { type: 'integer' },
-        ladder_exempt: { type: 'boolean' },
-        notes: { type: 'string' }
-      },
-      required: %w[movement_name position],
+      properties: ModelSchema.properties_for(
+        Exercise,
+        except: %w[id workout_id movement_id segment_id created_at updated_at position],
+        overrides: { movement_name: { type: 'string' } }
+      ),
+      required: %w[movement_name],
       additionalProperties: false
     }.freeze
 
     SEGMENT_SCHEMA = {
       type: 'object',
-      properties: {
-        name: { type: 'string' },
-        rounds: { type: 'integer' },
-        time_seconds: { type: 'integer' },
-        interval_scheme: { type: 'string' },
-        rest_seconds: { type: 'integer' },
-        notes: { type: 'string' },
-        exercises: { type: 'array', items: EXERCISE_SCHEMA }
-      },
+      properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
+                             .merge(exercises: { type: 'array', items: EXERCISE_SCHEMA }),
       required: %w[name exercises],
       additionalProperties: false
     }.freeze
 
     SCHEMA = {
       type: 'object',
-      properties: {
-        name: { type: 'string' },
-        score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
-        rounds: { type: 'integer' },
-        time: { type: 'integer' },
-        interval: { type: 'string' },
-        time_cap: { type: 'string' },
-        ladder_step: { type: 'integer' },
-        team_size: { type: 'integer' },
-        notes: { type: 'string' },
-        segments: { type: 'array', items: SEGMENT_SCHEMA },
-        exercises: { type: 'array', items: EXERCISE_SCHEMA }
-      },
+      properties: ModelSchema.properties_for(
+        Workout,
+        except: %w[id created_at updated_at content_key time_cap_seconds],
+        overrides: {
+          # Narrower than Workout's full score_type enum: only these 5 values are valid WOD scores.
+          score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
+          time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
+          notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
+        }
+      ).merge(segments: { type: 'array', items: SEGMENT_SCHEMA }, exercises: { type: 'array', items: EXERCISE_SCHEMA }),
       required: %w[name score_type segments exercises],
       additionalProperties: false
     }.freeze

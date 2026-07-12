@@ -55,7 +55,7 @@ end
 
 CF_PROGRAM.schedules.find_or_initialize_by(workout: crossfit_workout).update(posted_at: Date.new(2026, 6, 22))
 
-# Example WODS
+# Example Workouts
 #
 # ==============================================================================
 # https://www.crossfit.com/workout/2018/12/02#/comments

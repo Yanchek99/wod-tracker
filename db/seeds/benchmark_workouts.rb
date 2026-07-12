@@ -35,7 +35,7 @@ end
 CF_PROGRAM.schedules.find_or_initialize_by(workout: fight_gone_bad).update(posted_at: Date.new(2018, 2, 1))
 
 # ==============================================================================
-# The Girl WODS
+# The Girl Workouts
 # ==============================================================================
 # Angie
 # For time
@@ -264,7 +264,7 @@ end
 
 CF_PROGRAM.schedules.find_or_initialize_by(workout: nancy).update(posted_at: Date.new(2018, 1, 16))
 
-# The New Girls WODS
+# The New Girls Workouts
 
 # ==============================================================================
 # Annie

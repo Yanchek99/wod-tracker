@@ -1,6 +1,6 @@
 module CfWod
   class PageParser
-    # Matched case-insensitively against each paragraph's leading <strong> text. Some WODs
+    # Matched case-insensitively against each paragraph's leading <strong> text. Some workouts
     # (e.g. crossfit.com/260620) go straight from the description into "Intermediate option"/
     # "Beginner option" paragraphs with no separate "Scaling" heading at all.
     SECTION_MARKERS = {

@@ -40,9 +40,9 @@ RailsAdmin.config do |config|
     # history_show
   end
 
-  config.model 'WodImport' do
+  config.model 'WorkoutImport' do
     list do
-      field :wod_date
+      field :workout_date
       field :status
       field :error_message
       field :created_at

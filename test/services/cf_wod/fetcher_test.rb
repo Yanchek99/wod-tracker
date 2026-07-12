@@ -4,7 +4,7 @@ module CfWod
   class FetcherTest < ActiveSupport::TestCase
     SHELL_HTML = '<html><body><div id="root"></div></body></html>'.freeze
 
-    test 'fetches a modern-template WOD reached via redirect, re-requesting with a fresh cache-buster' do
+    test 'fetches a modern-template workout reached via redirect, re-requesting with a fresh cache-buster' do
       stub_cf_wod_redirect('2025/06/18', '250618')
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618}).to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
 
@@ -27,7 +27,7 @@ module CfWod
       end
     end
 
-    test 'fetches a modern-template multi-part WOD, with scaling detected despite no "Scaling" heading' do
+    test 'fetches a modern-template multi-part workout, with scaling detected despite no "Scaling" heading' do
       stub_cf_wod_redirect('2026/06/20', '260620')
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620}).to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
 
@@ -77,7 +77,7 @@ module CfWod
       assert page.rest_day?
     end
 
-    test 'fetches a legacy-template WOD with inline scaling' do
+    test 'fetches a legacy-template workout with inline scaling' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10}).to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
       page = Fetcher.call(Date.new(2018, 1, 10))

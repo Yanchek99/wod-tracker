@@ -1,5 +1,5 @@
 namespace :cf_wod do
-  desc "Fetch and parse a single day's WOD from crossfit.com and print it (does not persist)"
+  desc "Fetch and parse a single day's workout from crossfit.com and print it (does not persist)"
   task :fetch, [:date] => :environment do |_task, args|
     abort 'Usage: bin/rails "cf_wod:fetch[YYYY-MM-DD]"' if args[:date].blank?
 
@@ -16,15 +16,15 @@ namespace :cf_wod do
     abort "Parse failed: #{e.message}"
   end
 
-  desc 'Run ScrapeCfWodJob for a single date, persisting the Workout/Schedule or logging a WodImport failure'
+  desc 'Run ScrapeCfWodJob for a single date, persisting the Workout/Schedule or logging a WorkoutImport failure'
   task :scrape, [:date] => :environment do |_task, args|
     abort 'Usage: bin/rails "cf_wod:scrape[YYYY-MM-DD]"' if args[:date].blank?
 
     date = Date.parse(args[:date])
     ScrapeCfWodJob.perform_now(date)
 
-    wod_import = WodImport.find_by(wod_date: date)
-    abort "Failed: #{wod_import.error_message}" if wod_import
+    workout_import = WorkoutImport.find_by(workout_date: date)
+    abort "Failed: #{workout_import.error_message}" if workout_import
     puts "Scraped #{date} successfully"
   end
 

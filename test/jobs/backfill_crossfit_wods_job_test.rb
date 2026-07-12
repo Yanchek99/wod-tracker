@@ -35,14 +35,14 @@ class BackfillCrossfitWodsJobTest < ActiveJob::TestCase
 
     assert_equal 2, program.schedules.count
     assert_equal 1, Workout.where(name: 'CF-180110').count
-    wod_import = WodImport.find_by!(wod_date: Date.new(2018, 1, 11))
-    assert wod_import.failed?
+    workout_import = WorkoutImport.find_by!(workout_date: Date.new(2018, 1, 11))
+    assert workout_import.failed?
 
     # Re-run: idempotent, no duplicates, failing day still isolated
     perform_enqueued_jobs { BackfillCrossfitWodsJob.perform_later(Date.new(2018, 1, 10), Date.new(2018, 1, 12)) }
 
     assert_equal 2, program.schedules.count
     assert_equal 1, Workout.where(name: 'CF-180110').count
-    assert_equal 1, WodImport.count
+    assert_equal 1, WorkoutImport.count
   end
 end

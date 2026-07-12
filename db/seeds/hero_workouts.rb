@@ -1,9 +1,9 @@
-# Hero WODS
+# Hero Workouts
 #
 # Movements and structure come from https://www.crossfit.com/heroes. The index
 # summaries omit most barbell loads and the per-workout detail pages are
 # client-rendered (loads aren't in their fetchable HTML), so loads are taken
-# from the official Hero WODs PDF linked from that page. Every load and height
+# from the official Hero Workouts PDF linked from that page. Every load and height
 # that can attach to a movement is prescribed on the exercise (barbell/dumbbell/
 # kettlebell/sandbag/plate/ruck loads, loaded carries and runs, box/rope-climb
 # heights, and wall-ball target heights). Only what can't attach to a movement —

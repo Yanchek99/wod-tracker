@@ -2,7 +2,7 @@ class ScrapeCfWodJob < ApplicationJob
   queue_as :default
 
   retry_on CfWod::Fetcher::FetchError, wait: :polynomially_longer, attempts: 3 do |job, error|
-    WodImport.log_failure!(job.arguments.first, error.message)
+    WorkoutImport.log_failure!(job.arguments.first, error.message)
   end
 
   # CfWod::Fetcher already retries an empty-template response internally
@@ -12,7 +12,7 @@ class ScrapeCfWodJob < ApplicationJob
   # stack 3 more job-level attempts on top of Fetcher's own 3, requesting the page up to 9 times
   # before finally giving up.
   retry_on CfWod::Fetcher::UnrecognizedTemplateError, attempts: 1 do |job, error|
-    WodImport.log_failure!(job.arguments.first, error.message)
+    WorkoutImport.log_failure!(job.arguments.first, error.message)
   end
 
   def self.default_date
@@ -23,7 +23,7 @@ class ScrapeCfWodJob < ApplicationJob
   # this job with no args, so `date`'s default is otherwise re-evaluated fresh on every retry
   # (ActiveJob re-invokes `perform` with whatever `arguments` currently holds, and Ruby evaluates
   # an omitted default argument at each call). Without this, a retry that crosses local midnight
-  # in America/Los_Angeles would silently target a different day's WOD than the attempt before it.
+  # in America/Los_Angeles would silently target a different day's workout than the attempt before it.
   def perform(date = self.class.default_date)
     self.arguments = [date]
 
@@ -35,9 +35,9 @@ class ScrapeCfWodJob < ApplicationJob
     Program.find_by!(name: 'Crossfit.com')
            .schedules.find_or_initialize_by(posted_at: date)
            .update!(workout: workout)
-    WodImport.clear!(date)
+    WorkoutImport.clear!(date)
   rescue CfWod::WorkoutParser::UnparseableError, ActiveRecord::ActiveRecordError => e
-    WodImport.log_failure!(date, e.message, raw_text: page&.body_text)
+    WorkoutImport.log_failure!(date, e.message, raw_text: page&.body_text)
   end
 
   private

@@ -30,7 +30,7 @@ module WorkoutExtraction
         Workout,
         except: %w[id created_at updated_at content_key time_cap_seconds],
         overrides: {
-          # Narrower than Workout's full score_type enum: only these 5 values are valid WOD scores.
+          # Narrower than Workout's full score_type enum: only these 5 values are valid workout scores.
           score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
           time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
           notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
@@ -131,7 +131,7 @@ module WorkoutExtraction
 
     def system_prompt
       <<~PROMPT
-        You convert CrossFit workout ("WOD") prose into structured JSON matching the provided schema.
+        You convert CrossFit workout prose into structured JSON matching the provided schema.
 
         Rules:
         - "score_type" must be exactly one of: #{Metric.workout_measurements.join(', ')}. Use "time" for
@@ -144,9 +144,9 @@ module WorkoutExtraction
           workouts, or interval-ladder workouts (use "interval" instead).
         - "time" is a time cap or AMRAP duration in seconds; "time_cap" is a "MM:SS" string cap on a
           for-time workout, independent of "time".
-        - Use "segments" only when the workout has multiple distinct labeled parts (e.g. "Part A" / "Part B",
-          or a warm-up and a WOD you're asked to structure). Most single-block WODs should list their
-          movements directly under top-level "exercises" with no segments.
+        - Use "segments" only when the workout has multiple distinct labeled parts (e.g. "Part A" / "Part B").
+          Most single-block workouts should list their movements directly under top-level "exercises" with
+          no segments.
         - "movement_name" must be copied verbatim from this exact list of recognized movements (case and
           spelling matter):
           #{Movement.pluck(:name).sort.join(', ')}

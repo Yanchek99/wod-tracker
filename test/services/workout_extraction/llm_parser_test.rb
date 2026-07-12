@@ -64,7 +64,7 @@ module WorkoutExtraction
 
     test "raises ExtractionError when a movement name doesn't resolve" do
       stub_anthropic_response(
-        name: 'Unknown Move WOD', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        name: 'Unknown Move workout', score_type: 'time', rounds: nil, time: nil, interval: nil,
         time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, segments: [],
         exercises: [
           { movement_name: 'Not A Real Movement', position: 1, reps: 10, load: nil,

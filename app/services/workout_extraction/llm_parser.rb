@@ -6,45 +6,67 @@ module WorkoutExtraction
     MODEL = 'claude-haiku-4-5'.freeze
     MAX_TOKENS = 2048
 
-    EXERCISE_SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(
-        Exercise,
-        except: %w[id workout_id movement_id segment_id created_at updated_at position],
-        overrides: { movement_name: { type: 'string' } }
-      ),
-      required: %w[movement_name],
-      additionalProperties: false
-    }.freeze
+    # Anthropic's structured-outputs grammar compiler limits how many *optional* (non-required)
+    # properties a schema can have in total. Every property here is required instead, with a
+    # nullable type standing in for "the LLM isn't confident about this one" -- required-but-nullable
+    # is cheap for the compiler, optional/omittable is expensive.
+    def self.nullable(properties)
+      properties.transform_values { |property| { anyOf: [property, { type: 'null' }] } }
+    end
+    private_class_method :nullable
 
-    SEGMENT_SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
-                             .merge(exercises: { type: 'array', items: EXERCISE_SCHEMA }),
-      required: %w[name exercises],
-      additionalProperties: false
-    }.freeze
+    EXERCISE_SCHEMA = begin
+      properties = nullable(
+        ModelSchema.properties_for(Exercise, except: %w[id workout_id movement_id segment_id created_at updated_at position])
+      ).merge(movement_name: { type: 'string' })
 
-    SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(
-        Workout,
-        except: %w[id created_at updated_at content_key time_cap_seconds],
-        overrides: {
-          # Narrower than Workout's full score_type enum: only these 5 values are valid workout scores.
-          score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
-          time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
-          notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
-        }
+      {
+        type: 'object',
+        properties: properties,
+        required: properties.keys.map(&:to_s),
+        additionalProperties: false
+      }
+    end.freeze
+
+    SEGMENT_SCHEMA = begin
+      properties = nullable(
+        ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
+      ).merge(exercises: { type: 'array', items: EXERCISE_SCHEMA })
+
+      {
+        type: 'object',
+        properties: properties,
+        required: properties.keys.map(&:to_s),
+        additionalProperties: false
+      }
+    end.freeze
+
+    SCHEMA = begin
+      properties = nullable(
+        ModelSchema.properties_for(
+          Workout,
+          except: %w[id created_at updated_at content_key time_cap_seconds],
+          overrides: {
+            # Narrower than Workout's full score_type enum: only these 5 values are valid workout scores.
+            score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
+            time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
+            notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
+          }
+        )
       ).merge(
         segments: { type: 'array', items: SEGMENT_SCHEMA },
         exercises: { type: 'array', items: EXERCISE_SCHEMA },
         extractable: { type: 'boolean' },
-        gap_reason: { type: 'string' }
-      ),
-      required: %w[extractable],
-      additionalProperties: false
-    }.freeze
+        gap_reason: { anyOf: [{ type: 'string' }, { type: 'null' }] }
+      )
+
+      {
+        type: 'object',
+        properties: properties,
+        required: properties.keys.map(&:to_s),
+        additionalProperties: false
+      }
+    end.freeze
 
     def self.call(text) = new(text).parse
 

@@ -20,16 +20,32 @@ module WorkoutExtraction
       )
     end
 
-    test 'distance_unit is auto-constrained to the enum values instead of an unconstrained string' do
-      assert_equal({ type: 'string', enum: %w[meter foot inch] }, LlmParser::EXERCISE_SCHEMA[:properties][:distance_unit])
+    test 'distance_unit is auto-constrained to the enum values, nullable like the rest of the detail fields' do
+      assert_equal(
+        { anyOf: [{ type: 'string', enum: %w[meter foot inch] }, { type: 'null' }] },
+        LlmParser::EXERCISE_SCHEMA[:properties][:distance_unit]
+      )
     end
 
     test 'score_type stays constrained to the workout-valid subset, not the full 12-value enum' do
-      assert_equal(%w[calorie rep round time weight].sort, LlmParser::SCHEMA[:properties][:score_type][:enum].sort)
+      enum = LlmParser::SCHEMA[:properties][:score_type][:anyOf].find { |branch| branch[:enum] }[:enum]
+
+      assert_equal(%w[calorie rep round time weight].sort, enum.sort)
     end
 
-    test 'only extractable is required at the top level, so the LLM can decline without a schema violation' do
-      assert_equal(%w[extractable], LlmParser::SCHEMA[:required])
+    test 'every property is required in every schema, so the LLM can never omit a key' do
+      assert_equal(LlmParser::EXERCISE_SCHEMA[:properties].keys.map(&:to_s).sort, LlmParser::EXERCISE_SCHEMA[:required].sort)
+      assert_equal(LlmParser::SEGMENT_SCHEMA[:properties].keys.map(&:to_s).sort, LlmParser::SEGMENT_SCHEMA[:required].sort)
+      assert_equal(LlmParser::SCHEMA[:properties].keys.map(&:to_s).sort, LlmParser::SCHEMA[:required].sort)
+    end
+
+    test 'extractable and movement_name stay strictly non-nullable, since real logic branches on them' do
+      assert_equal({ type: 'boolean' }, LlmParser::SCHEMA[:properties][:extractable])
+      assert_equal({ type: 'string' }, LlmParser::EXERCISE_SCHEMA[:properties][:movement_name])
+    end
+
+    test 'gap_reason is nullable, since it only applies when extractable is false' do
+      assert_equal({ anyOf: [{ type: 'string' }, { type: 'null' }] }, LlmParser::SCHEMA[:properties][:gap_reason])
     end
   end
 end

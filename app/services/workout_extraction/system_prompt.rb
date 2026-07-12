@@ -45,8 +45,8 @@ module WorkoutExtraction
           appear in the source text. Each entry's "text" is just that one movement's own prescription
           phrase (e.g. "21-15-9 Thrusters (95/65) Pull-ups" becomes two snippets, "Thrusters (95/65)"
           and "Pull-ups" -- the shared "21-15-9" goes in the workout-level "interval" field above, not
-          in either snippet). Set "segment_index" to the 0-based index into "segments" for the segment
-          this exercise belongs to, or null for a top-level exercise not inside any segment.
+          in either snippet). Include "segment_index" (the 0-based index into "segments") only when
+          the exercise belongs to a segment; leave it out entirely for a top-level exercise.
         - Only include a field when the source text specifies it; omit fields you're not confident
           about rather than guessing a value.
 

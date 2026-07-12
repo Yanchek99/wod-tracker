@@ -28,29 +28,34 @@ module WorkoutExtraction
     end
 
     test 'score_type stays constrained to the workout-valid subset, not the full 12-value enum' do
-      enum = LlmParser::WORKOUT_SHAPE_SCHEMA[:properties][:score_type][:anyOf].find { |branch| branch[:enum] }[:enum]
+      enum = LlmParser::WORKOUT_SHAPE_SCHEMA[:properties][:score_type][:enum]
 
       assert_equal(%w[calorie rep round time weight].sort, enum.sort)
     end
 
-    test 'extractable and movement_name stay strictly non-nullable and required, since real logic branches on them' do
+    test 'extractable and movement_name are the only strictly required fields in their schemas' do
       assert_equal({ type: 'boolean' }, LlmParser::WORKOUT_SHAPE_SCHEMA[:properties][:extractable])
-      assert_includes LlmParser::WORKOUT_SHAPE_SCHEMA[:required], 'extractable'
+      assert_equal(%w[extractable], LlmParser::WORKOUT_SHAPE_SCHEMA[:required])
       assert_equal({ type: 'string' }, LlmParser::EXERCISE_SCHEMA[:properties][:movement_name])
-      assert_includes LlmParser::EXERCISE_SCHEMA[:required], 'movement_name'
+      assert_equal(%w[movement_name], LlmParser::EXERCISE_SCHEMA[:required])
     end
 
-    test 'gap_reason is required but nullable, since it only applies when extractable is false' do
-      assert_equal({ anyOf: [{ type: 'string' }, { type: 'null' }] }, LlmParser::WORKOUT_SHAPE_SCHEMA[:properties][:gap_reason])
-      assert_includes LlmParser::WORKOUT_SHAPE_SCHEMA[:required], 'gap_reason'
+    test 'gap_reason and segment_index are plainly optional, not required or nullable' do
+      assert_equal({ type: 'string' }, LlmParser::WORKOUT_SHAPE_SCHEMA[:properties][:gap_reason])
+      assert_not_includes LlmParser::WORKOUT_SHAPE_SCHEMA[:required], 'gap_reason'
+      assert_equal({ type: 'integer' }, LlmParser::EXERCISE_SNIPPET_SCHEMA[:properties][:segment_index])
+      assert_not_includes LlmParser::EXERCISE_SNIPPET_SCHEMA[:required], 'segment_index'
     end
 
-    test 'exercise_snippets carry a nullable segment_index and a required text field' do
-      properties = LlmParser::EXERCISE_SNIPPET_SCHEMA[:properties]
+    test 'no schema uses anyOf/nullable types anywhere, since those were the cause of a grammar compilation timeout' do
+      schemas = [
+        LlmParser::WORKOUT_SHAPE_SCHEMA, LlmParser::SEGMENT_OUTLINE_SCHEMA, LlmParser::EXERCISE_SNIPPET_SCHEMA,
+        LlmParser::EXERCISE_SCHEMA, LlmParser::EXERCISE_DETAILS_SCHEMA
+      ]
 
-      assert_equal({ type: 'string' }, properties[:text])
-      assert_equal({ anyOf: [{ type: 'integer' }, { type: 'null' }] }, properties[:segment_index])
-      assert_equal(%w[text segment_index], LlmParser::EXERCISE_SNIPPET_SCHEMA[:required])
+      schemas.each do |schema|
+        assert_empty(schema[:properties].select { |_, prop| prop.key?(:anyOf) }, "#{schema} has an anyOf-typed property")
+      end
     end
 
     test 'call 1 (workout shape) property counts stay within Anthropic structured-outputs limits' do

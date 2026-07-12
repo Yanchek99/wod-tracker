@@ -7,18 +7,16 @@ module WorkoutExtraction
     MAX_TOKENS = 2048
 
     # Anthropic's structured-outputs grammar compiler caps how many *optional* (non-required)
-    # properties a schema can have (limit 24) and how many *nullable/union-typed* properties it can
-    # have (limit 16), and separately rejects schemas that are simply too large/deeply nested
-    # ("Schema is too complex"). A single call carrying the full nested Workout -> Segments ->
-    # Exercises shape hit all three limits in turn even after careful field-level bucketing, so
-    # extraction is split into two calls: one for the workout's shape (segments, exercise text
-    # snippets, no per-exercise detail), and one that structures every snippet into a full exercise
-    # in a single flat array -- each call's schema is shallow enough to stay well under every limit.
-    def self.nullable(properties)
-      properties.transform_values { |property| { anyOf: [property, { type: 'null' }] } }
-    end
-    private_class_method :nullable
-
+    # properties a schema can have (limit 24), how many *nullable/union-typed* properties it can have
+    # (limit 16), separately rejects schemas that are too large/deeply nested ("Schema is too
+    # complex"), and can time out compiling a schema outright ("Grammar compilation timed out") --
+    # observed specifically after union types (anyOf) were used inside array item schemas, which is
+    # consistent with union-typed array elements requiring the compiler to account for a much larger
+    # combined state space than a flat optional field would. So: extraction is split into two calls
+    # (one for the workout's shape -- segments, exercise text snippets, no per-exercise detail --
+    # and one that structures every snippet into a full exercise in a single flat array), and every
+    # field in both schemas is a single, non-union type: required where the field is unconditionally
+    # present, plainly optional (omittable) everywhere else. No anyOf/nullable types anywhere.
     SEGMENT_OUTLINE_SCHEMA = {
       type: 'object',
       properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position]),
@@ -30,14 +28,15 @@ module WorkoutExtraction
       type: 'object',
       properties: {
         text: { type: 'string' },
-        segment_index: { anyOf: [{ type: 'integer' }, { type: 'null' }] }
+        segment_index: { type: 'integer' } # omitted entirely for a top-level exercise, not in any segment
       },
-      required: %w[text segment_index],
+      required: %w[text],
       additionalProperties: false
     }.freeze
 
-    WORKOUT_SHAPE_SCHEMA = begin
-      detail_properties = ModelSchema.properties_for(
+    WORKOUT_SHAPE_SCHEMA = {
+      type: 'object',
+      properties: ModelSchema.properties_for(
         Workout,
         except: %w[id created_at updated_at content_key time_cap_seconds],
         overrides: {
@@ -46,44 +45,26 @@ module WorkoutExtraction
           time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
           notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
         }
-      )
-      # name/score_type are the only Workout detail fields conditional on extractable (absent when
-      # the LLM declines), so only they need the required-but-nullable treatment; the rest are
-      # independently optional exactly as before the gap-reporting feature.
-      nullable_fields = %w[name score_type]
-      properties = detail_properties.except(*nullable_fields.map(&:to_sym))
-                                    .merge(nullable(detail_properties.slice(*nullable_fields.map(&:to_sym))))
-                                    .merge(
-                                      segments: { type: 'array', items: SEGMENT_OUTLINE_SCHEMA },
-                                      exercise_snippets: { type: 'array', items: EXERCISE_SNIPPET_SCHEMA },
-                                      extractable: { type: 'boolean' },
-                                      gap_reason: { anyOf: [{ type: 'string' }, { type: 'null' }] }
-                                    )
+      ).merge(
+        segments: { type: 'array', items: SEGMENT_OUTLINE_SCHEMA },
+        exercise_snippets: { type: 'array', items: EXERCISE_SNIPPET_SCHEMA },
+        extractable: { type: 'boolean' },
+        gap_reason: { type: 'string' }
+      ),
+      required: %w[extractable],
+      additionalProperties: false
+    }.freeze
 
-      {
-        type: 'object',
-        properties: properties,
-        required: nullable_fields + %w[segments exercise_snippets extractable gap_reason],
-        additionalProperties: false
-      }
-    end.freeze
-
-    EXERCISE_SCHEMA = begin
-      detail_properties = ModelSchema.properties_for(
-        Exercise, except: %w[id workout_id movement_id segment_id created_at updated_at position]
-      )
-      nullable_fields = %w[reps duration_seconds load female_load male_load distance calories notes]
-      properties = detail_properties.except(*nullable_fields.map(&:to_sym))
-                                    .merge(nullable(detail_properties.slice(*nullable_fields.map(&:to_sym))))
-                                    .merge(movement_name: { type: 'string' })
-
-      {
-        type: 'object',
-        properties: properties,
-        required: nullable_fields + ['movement_name'],
-        additionalProperties: false
-      }
-    end.freeze
+    EXERCISE_SCHEMA = {
+      type: 'object',
+      properties: ModelSchema.properties_for(
+        Exercise,
+        except: %w[id workout_id movement_id segment_id created_at updated_at position],
+        overrides: { movement_name: { type: 'string' } }
+      ),
+      required: %w[movement_name],
+      additionalProperties: false
+    }.freeze
 
     EXERCISE_DETAILS_SCHEMA = {
       type: 'object',

@@ -10,6 +10,7 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
   test 'parses text into a Workout and prints it' do
     movement = movements(:thruster)
     stub_anthropic_response(
+      extractable: true,
       name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9', time_cap: nil,
       ladder_step: nil, team_size: nil, notes: nil, segments: [],
       exercises: [

@@ -8,22 +8,13 @@ module WorkoutExtraction
 
     test 'builds an unsaved Workout from a well-formed API response' do
       stub_anthropic_response(
-        name: 'Fran',
-        score_type: 'time',
-        rounds: nil,
-        time: nil,
-        interval: '21-15-9',
-        time_cap: nil,
-        ladder_step: nil,
-        team_size: nil,
-        notes: nil,
-        segments: [],
+        extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, segments: [],
         exercises: [
           { movement_name: @movement.name, position: 1, reps: 1, load: nil, female_load: 65, male_load: 95,
             duration_seconds: nil, implement_count: nil, distance: nil, female_distance: nil,
             male_distance: nil, distance_unit: nil, distance_units_per_rep: nil, calories: nil,
-            female_calories: nil, male_calories: nil, ladder_step_every: nil, ladder_exempt: nil,
-            notes: nil }
+            female_calories: nil, male_calories: nil, ladder_step_every: nil, ladder_exempt: nil, notes: nil }
         ]
       )
 
@@ -40,6 +31,7 @@ module WorkoutExtraction
       pull_up = movements(:pullup)
 
       stub_anthropic_response(
+        extractable: true,
         name: 'Part A + Extra', score_type: 'time', rounds: nil, time: nil, interval: nil,
         time_cap: nil, ladder_step: nil, team_size: nil, notes: nil,
         segments: [
@@ -64,6 +56,7 @@ module WorkoutExtraction
 
     test "raises ExtractionError when a movement name doesn't resolve" do
       stub_anthropic_response(
+        extractable: true,
         name: 'Unknown Move workout', score_type: 'time', rounds: nil, time: nil, interval: nil,
         time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, segments: [],
         exercises: [
@@ -78,6 +71,19 @@ module WorkoutExtraction
       assert_raises(WorkoutExtraction::LlmParser::ExtractionError) do
         WorkoutExtraction::LlmParser.call('10 Not A Real Movement')
       end
+    end
+
+    test 'raises UnrepresentableWorkoutError with the gap reason when the LLM declines to extract' do
+      stub_anthropic_response(
+        extractable: false,
+        gap_reason: 'no movement in the catalog resembles "quantum burpees"'
+      )
+
+      error = assert_raises(WorkoutExtraction::LlmParser::UnrepresentableWorkoutError) do
+        WorkoutExtraction::LlmParser.call('50 quantum burpees for time')
+      end
+
+      assert_equal 'no movement in the catalog resembles "quantum burpees"', error.message
     end
 
     test 'raises ExtractionError on API failure' do

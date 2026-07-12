@@ -1,6 +1,7 @@
 module WorkoutExtraction
   class LlmParser
     class ExtractionError < StandardError; end
+    class UnrepresentableWorkoutError < StandardError; end
 
     MODEL = 'claude-haiku-4-5'.freeze
     MAX_TOKENS = 2048
@@ -35,8 +36,13 @@ module WorkoutExtraction
           time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
           notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
         }
-      ).merge(segments: { type: 'array', items: SEGMENT_SCHEMA }, exercises: { type: 'array', items: EXERCISE_SCHEMA }),
-      required: %w[name score_type segments exercises],
+      ).merge(
+        segments: { type: 'array', items: SEGMENT_SCHEMA },
+        exercises: { type: 'array', items: EXERCISE_SCHEMA },
+        extractable: { type: 'boolean' },
+        gap_reason: { type: 'string' }
+      ),
+      required: %w[extractable],
       additionalProperties: false
     }.freeze
 
@@ -59,6 +65,8 @@ module WorkoutExtraction
 
     def parse
       attrs = fetch_structured_attrs
+      raise_unrepresentable!(attrs) unless attrs[:extractable]
+
       workout = build_workout(attrs)
       validate_workout!(workout)
       workout
@@ -125,6 +133,11 @@ module WorkoutExtraction
       CfWod::MovementLookup.call(name) || raise(ExtractionError, "unrecognized movement: #{name.inspect}")
     end
 
+    def raise_unrepresentable!(attrs)
+      reason = attrs[:gap_reason].presence || 'the LLM reported the workout as unrepresentable with no reason given'
+      raise UnrepresentableWorkoutError, reason
+    end
+
     def validate_workout!(workout)
       raise ExtractionError, "built workout failed validation: #{workout.errors.full_messages.join(', ')}" unless workout.valid?
     end
@@ -133,7 +146,14 @@ module WorkoutExtraction
       <<~PROMPT
         You convert CrossFit workout prose into structured JSON matching the provided schema.
 
-        Rules:
+        If you can confidently represent the workout with this schema, set "extractable" to true and
+        fill in the fields below. If you cannot -- a movement isn't in the recognized list below with
+        no reasonably close match, the scoring doesn't fit any valid "score_type", or the workout's
+        structure genuinely can't be represented by "segments"/"exercises" -- set "extractable" to
+        false, explain why in "gap_reason", and leave every other field out. Do not guess or force a
+        fit; an honest "extractable": false is far more useful than a wrong workout.
+
+        Rules (when "extractable" is true):
         - "score_type" must be exactly one of: #{Metric.workout_measurements.join(', ')}. Use "time" for
           for-time workouts, "rep" for AMRAP/max-rep workouts scored by total reps, "round" for
           rounds-for-time or max-rounds workouts, "weight" for max-load workouts, "calorie" for
@@ -150,8 +170,9 @@ module WorkoutExtraction
         - "movement_name" must be copied verbatim from this exact list of recognized movements (case and
           spelling matter):
           #{Movement.pluck(:name).sort.join(', ')}
-          If a movement in the text isn't in this list, pick the closest exact match from the list --
-          never invent a name that isn't on it.
+          A minor spelling or plural/singular variation still counts as a match; a movement that isn't
+          a clear match to anything on this list is a gap -- decline via "extractable": false instead
+          of inventing a name or picking an unrelated one.
         - Only include a field when the source text specifies it; omit fields you're not confident about
           rather than guessing a value.
 

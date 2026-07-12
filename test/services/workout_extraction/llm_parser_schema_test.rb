@@ -14,7 +14,8 @@ module WorkoutExtraction
         LlmParser::SEGMENT_SCHEMA[:properties].keys.sort
       )
       assert_equal(
-        %i[name rounds time interval ladder_step team_size score_type time_cap notes segments exercises].sort,
+        %i[name rounds time interval ladder_step team_size score_type time_cap notes segments exercises
+           extractable gap_reason].sort,
         LlmParser::SCHEMA[:properties].keys.sort
       )
     end
@@ -25,6 +26,10 @@ module WorkoutExtraction
 
     test 'score_type stays constrained to the workout-valid subset, not the full 12-value enum' do
       assert_equal(%w[calorie rep round time weight].sort, LlmParser::SCHEMA[:properties][:score_type][:enum].sort)
+    end
+
+    test 'only extractable is required at the top level, so the LLM can decline without a schema violation' do
+      assert_equal(%w[extractable], LlmParser::SCHEMA[:required])
     end
   end
 end

@@ -2,11 +2,6 @@ module CfWod
   class WorkoutParser
     class UnparseableError < StandardError; end
 
-    # crossfit.com titles an Open-workout rerun "Open Workout <n.n>" (e.g. "Open Workout 20.5"),
-    # while the catalog stores it under its plain name (e.g. "Open 20.5") -- the same convention
-    # used for every other Open workout.
-    OPEN_RERUN_TITLE = /\AOpen Workout (.+)\z/i
-
     def self.call(wod_page) = new(wod_page).parse
 
     def initialize(wod_page)
@@ -42,9 +37,9 @@ module CfWod
       Workout.find_by(name: title) || find_open_rerun_workout(title)
     end
 
+    # crossfit.com titles an Open-workout rerun "Open Workout 20.5"; the catalog stores it as "Open 20.5".
     def find_open_rerun_workout(title)
-      match = OPEN_RERUN_TITLE.match(title)
-      Workout.find_by(name: "Open #{match[1]}") if match
+      Workout.find_by(name: title.sub(/\bWorkout /i, '')) if title.match?(/\AOpen\b/i)
     end
 
     # Content identifies a workout (see WorkoutFingerprint): if the freshly parsed workout's

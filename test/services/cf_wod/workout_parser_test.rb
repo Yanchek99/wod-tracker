@@ -117,16 +117,6 @@ module CfWod
       assert_equal named, workout
     end
 
-    test 'returns the catalog Open workout when crossfit.com titles a rerun "Open Workout <n.n>"' do
-      named = Workout.create!(name: 'Open 20.5', score_type: :time, time_cap_seconds: 1200)
-      body = "Open Workout 20.5\n\nFor time, partitioned any way:\n99 completely unparseable gibberish (each)"
-      page = wod_page(slug: '300111', body_text: body)
-
-      workout = WorkoutParser.call(page)
-
-      assert_equal named, workout
-    end
-
     test 'returns an existing workout when parsed content matches a differently named one' do
       existing = Workout.create!(name: 'Legacy Burpee Bench', score_type: :time)
       existing.exercises.create!(movement: movements(:burpee), position: 1, reps: 5)

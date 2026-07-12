@@ -108,7 +108,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
     end
   end
 
-  test 'omits zero calories from the local summary' do
+  test 'renders max calories before movement after local save' do
     visit new_workout_url
     click_on 'Add Exercise'
 
@@ -117,7 +117,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Calories', with: '0'
       click_on 'Done'
 
-      assert_text 'Row'
+      assert_equal 'max calories Row', find('.exercise-summary__text').text
     end
   end
 

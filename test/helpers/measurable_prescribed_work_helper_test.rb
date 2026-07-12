@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class MeasurablePrescribedWorkHelperTest < ActionView::TestCase
+class MeasurableLeadingPrescriptionIntegrationTest < ActionView::TestCase
   include MeasurableHelper
   include MetricsHelper
 
@@ -62,5 +62,61 @@ class MeasurablePrescribedWorkHelperTest < ActionView::TestCase
                                                  female_load: 35, male_load: 50, load_unit: :lb)
 
     assert_equal '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)', measurable_message(exercise)
+  end
+end
+
+class MeasurableLeadingPrescriptionTest < ActiveSupport::TestCase
+  test 'selects fixed rep as leading prescription' do
+    rep = Metric.new(measurement: :rep, value: 21)
+    leading = Measurable::LeadingPrescription.new([rep])
+
+    assert_same rep, leading.metric
+    assert_equal '21', leading.text
+    assert_empty leading.additional_metrics
+  end
+
+  test 'selects max rep as leading prescription' do
+    rep = Metric.new(measurement: :rep)
+    leading = Measurable::LeadingPrescription.new([rep])
+
+    assert_same rep, leading.metric
+    assert_equal 'max reps', leading.text
+  end
+
+  test 'selects fixed calories as leading prescription' do
+    calorie = Metric.new(measurement: :calorie, value: 20)
+    leading = Measurable::LeadingPrescription.new([calorie])
+
+    assert_same calorie, leading.metric
+    assert_equal '20 calorie', leading.text
+  end
+
+  test 'selects max calories as leading prescription' do
+    calorie = Metric.new(measurement: :calorie)
+    leading = Measurable::LeadingPrescription.new([calorie])
+
+    assert_same calorie, leading.metric
+    assert_equal 'max calories', leading.text
+  end
+
+  test 'selects distance with structural single rep and load detail' do
+    rep = Metric.new(measurement: :rep, value: 1)
+    distance = Metric.new(measurement: :foot, value: 80)
+    load = Metric.new(measurement: :lb, female_value: 35, male_value: 50)
+    leading = Measurable::LeadingPrescription.new([rep, load, distance])
+
+    assert_same distance, leading.metric
+    assert_equal '80ft', leading.text
+    assert_equal [load], leading.additional_metrics
+  end
+
+  test 'does not select distance when fixed reps are visible work' do
+    rep = Metric.new(measurement: :rep, value: 10)
+    distance = Metric.new(measurement: :meter, value: 400)
+    leading = Measurable::LeadingPrescription.new([rep, distance])
+
+    assert_same rep, leading.metric
+    assert_equal '10', leading.text
+    assert_equal [distance], leading.additional_metrics
   end
 end

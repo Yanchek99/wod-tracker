@@ -275,5 +275,16 @@ module CfWod
 
       assert_equal named, workout
     end
+
+    test "260101: a bare-number rerun doesn't loosely match a trailing-letter catalog variant" do
+      Workout.create!(name: 'Open 15.1a', score_type: :time)
+      exact = Workout.create!(name: 'Open 15.1', score_type: :time)
+      body = "Open Workout 15.1\n\nFor time, partitioned any way:\n99 completely unparseable gibberish (each)"
+      page = wod_page(slug: '260101', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert_equal exact, workout
+    end
   end
 end

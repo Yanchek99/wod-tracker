@@ -37,9 +37,10 @@ module CfWod
       Workout.find_by(name: title) || find_open_rerun_workout(title)
     end
 
-    # crossfit.com titles an Open-workout rerun "Open Workout 20.5"; the catalog stores it as "Open 20.5".
+    # Match loosely on the workout number rather than the exact "Open Workout 20.5" title wording,
+    # anchored at the end so a trailing-letter variant like "15.1a" can't match a search for "15.1".
     def find_open_rerun_workout(title)
-      Workout.find_by(name: title.sub(/\bWorkout /i, '')) if title.match?(/\AOpen\b/i)
+      (number = title[/\AOpen\b.*?(\d+\.\d+[a-z]?)/i, 1]) && Workout.where('name LIKE ?', "%#{number}").first
     end
 
     # Content identifies a workout (see WorkoutFingerprint): if the freshly parsed workout's

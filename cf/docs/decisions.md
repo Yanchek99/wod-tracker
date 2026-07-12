@@ -4,7 +4,7 @@
 
 The epic's "Key findings" note (#1679) said plain HTTP GET + Nokogiri is enough to scrape
 crossfit.com — true, but two non-obvious behaviors of the live site had to be confirmed
-before `CfWorkout::Fetcher` (#1674) could rely on it, since a naive implementation following
+before `CfWod::Fetcher` (#1674) could rely on it, since a naive implementation following
 the issue text literally would intermittently fetch an empty page:
 
 - **There is really one canonical URL to request, not two.** `https://www.crossfit.com/workout/{YYYY}/{MM}/{DD}`

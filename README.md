@@ -38,7 +38,7 @@ An open source webapp to track your workout of the day capturing key points of d
 ## CrossFit.com Workout Fetcher
 - Fetch and parse a single day's workout from crossfit.com into a structured `Workout` and print it (does not persist anything):
   ```
-  bin/rails "cf_workout:fetch[2026-06-20]"
+  bin/rails "cf_wod:fetch[2026-06-20]"
   ```
-- Raises `CfWorkout::Fetcher::FetchError` on network errors, unexpected HTTP responses, or a page that doesn't match either known crossfit.com template.
-- Raises `CfWorkout::WorkoutParser::UnparseableError` when the workout's prose doesn't match a known format, movement, or prescription pattern.
+- Raises `CfWod::Fetcher::FetchError` on network errors, unexpected HTTP responses, or a page that doesn't match either known crossfit.com template.
+- Raises `CfWod::WorkoutParser::UnparseableError` when the workout's prose doesn't match a known format, movement, or prescription pattern.

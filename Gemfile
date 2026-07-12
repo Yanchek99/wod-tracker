@@ -15,10 +15,10 @@ gem 'pg'
 # Database-backed Active Job queuing backend
 gem 'solid_queue'
 
-# Anthropic client for LLM-based WOD extraction
+# Anthropic client for LLM-based workout extraction
 gem 'anthropic'
 
-# HTML/XML parsing for the WOD scraper
+# HTML/XML parsing for the workout scraper
 gem 'nokogiri'
 
 # Use Puma as the app server

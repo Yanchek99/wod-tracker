@@ -1,5 +1,5 @@
 # config/recurring.yml
 production:
-  scrape_cf_wod:
-    class: ScrapeCfWodJob
+  scrape_cf_workout:
+    class: ScrapeCfWorkoutJob
     schedule: "0 20 * * * America/Los_Angeles"

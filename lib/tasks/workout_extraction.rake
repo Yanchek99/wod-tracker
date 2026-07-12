@@ -1,13 +1,17 @@
 namespace :workout_extraction do
-  desc 'Parse raw workout text into a Workout via the LLM parser and print it (does not persist)'
-  task :parse, [:text] => :environment do |_task, args|
-    abort 'Usage: bin/rails "workout_extraction:parse[TEXT]"' if args[:text].blank?
+  desc 'Parse workout text (paste it in, then press Ctrl-D) into a Workout via the LLM parser and print it (does not persist)'
+  task parse: :environment do
+    puts 'Paste the workout text below, then press Ctrl-D (Ctrl-Z on Windows) when done:'
+    text = $stdin.read
+    abort 'No text given' if text.blank?
 
-    workout = WorkoutExtraction::LlmParser.call(args[:text])
+    workout = WorkoutExtraction::LlmParser.call(text)
     pp workout
     pp workout.segments
     pp workout.exercises
   rescue WorkoutExtraction::LlmParser::ExtractionError => e
     abort "Extraction failed: #{e.message}"
+  rescue WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e
+    abort "Not extractable: #{e.message}"
   end
 end

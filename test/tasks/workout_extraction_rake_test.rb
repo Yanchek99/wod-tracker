@@ -7,7 +7,7 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
     Rake::Task['workout_extraction:parse'].reenable
   end
 
-  test 'parses text into a Workout and prints it' do
+  test 'parses pasted stdin text into a Workout and prints it' do
     movement = movements(:thruster)
     stub_anthropic_response(
       extractable: true,
@@ -21,13 +21,13 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
       ]
     )
 
-    output = capture_io { Rake::Task['workout_extraction:parse'].invoke('21-15-9 Thrusters (95/65) Pull-ups') }.join
+    output = with_stdin('21-15-9 Thrusters (95/65) Pull-ups') { capture_io { Rake::Task['workout_extraction:parse'].invoke }.join }
 
     assert_includes output, 'name: "Fran"'
   end
 
-  test 'aborts with a usage message when no text is given' do
-    error = assert_raises(SystemExit) { Rake::Task['workout_extraction:parse'].invoke }
+  test 'aborts with a usage message when stdin is blank' do
+    error = with_stdin('') { assert_raises(SystemExit) { Rake::Task['workout_extraction:parse'].invoke } }
 
     assert_equal 1, error.status
   end
@@ -36,12 +36,30 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
     stub_request(:post, 'https://api.anthropic.com/v1/messages')
       .to_return(status: 429, body: { type: 'error', error: { type: 'rate_limit_error', message: 'slow down' } }.to_json)
 
-    error = assert_raises(SystemExit) { Rake::Task['workout_extraction:parse'].invoke('any text') }
+    error = with_stdin('any text') { assert_raises(SystemExit) { Rake::Task['workout_extraction:parse'].invoke } }
+
+    assert_equal 1, error.status
+  end
+
+  test 'aborts with the gap reason when the LLM declines to extract' do
+    stub_anthropic_response(extractable: false, gap_reason: 'no movement in the catalog resembles "quantum burpees"')
+
+    error = with_stdin('50 quantum burpees for time') do
+      assert_raises(SystemExit) { Rake::Task['workout_extraction:parse'].invoke }
+    end
 
     assert_equal 1, error.status
   end
 
   private
+
+  def with_stdin(text)
+    original_stdin = $stdin
+    $stdin = StringIO.new(text)
+    yield
+  ensure
+    $stdin = original_stdin
+  end
 
   def stub_anthropic_response(payload)
     stub_request(:post, 'https://api.anthropic.com/v1/messages')

@@ -34,7 +34,13 @@ module CfWod
       title = lines.first.to_s.strip
       return nil if title.blank? || recognized_header?(title)
 
-      Workout.find_by(name: title)
+      Workout.find_by(name: title) || find_open_rerun_workout(title)
+    end
+
+    # Match loosely on the workout number rather than the exact "Open Workout 20.5" title wording,
+    # anchored at the end so a trailing-letter variant like "15.1a" can't match a search for "15.1".
+    def find_open_rerun_workout(title)
+      (number = title[/\AOpen\b.*?(\d+\.\d+[a-z]?)/i, 1]) && Workout.where('name LIKE ?', "%#{number}").first
     end
 
     # Content identifies a workout (see WorkoutFingerprint): if the freshly parsed workout's

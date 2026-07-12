@@ -265,5 +265,26 @@ module CfWod
       assert_nil bike_exercise.distance
       assert_nil bike_exercise.distance_unit
     end
+
+    test '260711: a repeated Open workout titled "Open Workout <n.n>" resolves to its catalog name' do
+      named = Workout.create!(name: 'Open 20.5', score_type: :time, time_cap_seconds: 1200)
+      body = "Open Workout 20.5\n\nFor time, partitioned any way:\n99 completely unparseable gibberish (each)"
+      page = wod_page(slug: '260711', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert_equal named, workout
+    end
+
+    test "260101: a bare-number rerun doesn't loosely match a trailing-letter catalog variant" do
+      Workout.create!(name: 'Open 15.1a', score_type: :time)
+      exact = Workout.create!(name: 'Open 15.1', score_type: :time)
+      body = "Open Workout 15.1\n\nFor time, partitioned any way:\n99 completely unparseable gibberish (each)"
+      page = wod_page(slug: '260101', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert_equal exact, workout
+    end
   end
 end

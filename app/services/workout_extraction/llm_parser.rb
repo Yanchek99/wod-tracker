@@ -6,52 +6,12 @@ module WorkoutExtraction
     MODEL = 'claude-haiku-4-5'.freeze
     MAX_TOKENS = 2048
 
-    # Extraction is two calls: one for the workout's shape (segments, exercise text snippets, no
-    # per-exercise detail) and one that structures every snippet into full exercise details. Neither
-    # call enforces its schema via output_config/json_schema -- confirmed via LlmParser's step logger
-    # that even the workout-shape call (13 properties, two small nested arrays-of-objects) triggered
-    # "Schema is too complex", after several rounds of assuming (wrongly) that only the richer
-    # exercise-details schema could. These constants exist only so the prompts' field descriptions
-    # can be derived programmatically instead of hand-written, so they can't silently drift from the
-    # Workout/Segment/Exercise models. See SystemPrompt.
-    SEGMENT_OUTLINE_SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position]),
-      required: %w[name],
-      additionalProperties: false
-    }.freeze
-
-    EXERCISE_SNIPPET_SCHEMA = {
-      type: 'object',
-      properties: {
-        text: { type: 'string' },
-        segment_index: { type: 'integer' } # omitted entirely for a top-level exercise, not in any segment
-      },
-      required: %w[text],
-      additionalProperties: false
-    }.freeze
-
-    WORKOUT_SHAPE_SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(
-        Workout,
-        except: %w[id created_at updated_at content_key time_cap_seconds],
-        overrides: {
-          # Narrower than Workout's full score_type enum: only these 5 values are valid workout scores.
-          score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
-          time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
-          notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
-        }
-      ).merge(
-        segments: { type: 'array', items: SEGMENT_OUTLINE_SCHEMA },
-        exercise_snippets: { type: 'array', items: EXERCISE_SNIPPET_SCHEMA },
-        extractable: { type: 'boolean' },
-        gap_reason: { type: 'string' }
-      ),
-      required: %w[extractable],
-      additionalProperties: false
-    }.freeze
-
+    # Extraction is a single call: neither this nor the prior two-call version enforces its schema
+    # via output_config/json_schema (both triggered Anthropic structured-outputs compiler errors
+    # regardless of shape), so there's no longer a compiler-imposed reason to keep the workout's
+    # shape and its exercises' details as two separate calls. These constants exist only so
+    # SystemPrompt's field descriptions can be derived programmatically instead of hand-written, so
+    # they can't silently drift from the Workout/Segment/Exercise models.
     EXERCISE_SCHEMA = {
       type: 'object',
       properties: ModelSchema.properties_for(
@@ -63,48 +23,73 @@ module WorkoutExtraction
       additionalProperties: false
     }.freeze
 
-    # logger is opt-in and silent by default (nil) so normal callers don't get unexpected output;
-    # pass one (e.g. Logger.new($stdout)) to see which of the two calls is in flight when something
-    # fails, rather than guessing from the error message alone.
-    def self.call(text, logger: nil) = new(text, logger: logger).parse
+    SEGMENT_SCHEMA = {
+      type: 'object',
+      properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
+                             .merge(exercises: { type: 'array', items: EXERCISE_SCHEMA }),
+      required: %w[name],
+      additionalProperties: false
+    }.freeze
 
-    def initialize(text, logger: nil)
+    WORKOUT_SCHEMA = {
+      type: 'object',
+      properties: ModelSchema.properties_for(
+        Workout,
+        except: %w[id created_at updated_at content_key time_cap_seconds],
+        overrides: {
+          # Narrower than Workout's full score_type enum: only these 5 values are valid workout scores.
+          score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
+          time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
+          notes: { type: 'string' } # Workout#notes is ActionText, not a plain column
+        }
+      ).merge(
+        segments: { type: 'array', items: SEGMENT_SCHEMA },
+        exercises: { type: 'array', items: EXERCISE_SCHEMA },
+        extractable: { type: 'boolean' },
+        gap_reason: { type: 'string' }
+      ),
+      required: %w[extractable],
+      additionalProperties: false
+    }.freeze
+
+    # logger is opt-in and silent by default (nil) so normal callers don't get unexpected output;
+    # pass one (e.g. Logger.new($stdout)) to see progress or where a failure occurred.
+    def self.call(text, date:, logger: nil) = new(text, date: date, logger: logger).parse
+
+    def initialize(text, date:, logger: nil)
       @text = text
+      @date = date
       @logger = logger
     end
 
     def parse
-      shape = logged_workout_shape
-      raise_unrepresentable!(shape) unless shape[:extractable]
+      attrs = logged_fetch
+      raise_unrepresentable!(attrs) unless attrs[:extractable]
 
-      snippets = shape[:exercise_snippets] || []
-      exercise_details = snippets.empty? ? [] : logged_exercise_details(snippets)
-
-      workout = build_workout(shape, snippets, exercise_details)
+      workout = build_workout(attrs)
       validate_workout!(workout)
       workout
     rescue Anthropic::Errors::APIStatusError, Anthropic::Errors::APIConnectionError => e
       log("Anthropic API error: #{e.message}")
       raise ExtractionError, "Anthropic API error: #{e.message}"
+    rescue ArgumentError => e
+      # Raised by Rails' enum setters (score_type, distance_unit) when the LLM outputs a value
+      # outside the enum -- schema enforcement no longer prevents this (see the class comment), so
+      # this is a real, reachable failure mode rather than a defensive-only rescue.
+      log("Invalid attribute value from LLM: #{e.message}")
+      raise ExtractionError, "invalid attribute value from LLM: #{e.message}"
     end
 
     private
 
-    attr_reader :text, :logger
+    attr_reader :text, :date, :logger
 
-    def logged_workout_shape
-      log('Fetching workout shape...')
-      shape = fetch_workout_shape
-      log("Workout shape received: extractable=#{shape[:extractable].inspect}, " \
-          "segments=#{shape[:segments]&.size || 0}, exercise_snippets=#{shape[:exercise_snippets]&.size || 0}")
-      shape
-    end
-
-    def logged_exercise_details(snippets)
-      log("Fetching exercise details for #{snippets.size} snippet(s)...")
-      details = fetch_exercise_details(snippets)
-      log("Exercise details received: #{details.size} entries")
-      details
+    def logged_fetch
+      log('Fetching workout...')
+      attrs = fetch_workout
+      log("Workout received: extractable=#{attrs[:extractable].inspect}, " \
+          "segments=#{attrs[:segments]&.size || 0}, exercises=#{attrs[:exercises]&.size || 0}")
+      attrs
     end
 
     def log(message)
@@ -115,25 +100,14 @@ module WorkoutExtraction
       @client ||= Anthropic::Client.new(api_key: Rails.application.credentials.dig(:anthropic, :api_key))
     end
 
-    def fetch_workout_shape
+    def fetch_workout
       response = client.messages.create(
         model: MODEL,
         max_tokens: MAX_TOKENS,
-        system: SystemPrompt.workout_shape_text,
+        system: SystemPrompt.text,
         messages: [{ role: 'user', content: text }]
       )
       parse_json_response(response)
-    end
-
-    def fetch_exercise_details(snippets)
-      numbered_snippets = snippets.each_with_index.map { |snippet, index| "#{index + 1}. #{snippet[:text]}" }.join("\n")
-      response = client.messages.create(
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
-        system: SystemPrompt.exercise_details_text,
-        messages: [{ role: 'user', content: numbered_snippets }]
-      )
-      parse_json_response(response)[:exercises]
     end
 
     def parse_json_response(response)
@@ -145,60 +119,55 @@ module WorkoutExtraction
       raise ExtractionError, "malformed JSON from Anthropic: #{e.message}"
     end
 
-    # Neither call enforces its schema, so neither response is guaranteed fence-free -- strip a
+    # The call isn't schema-enforced, so the response isn't guaranteed fence-free -- strip a
     # ```json fence if the model added one despite being told not to. A no-op when there's none.
     def strip_markdown_fences(text)
       text.strip.sub(/\A```(?:json)?\s*\n?/, '').sub(/\n?```\s*\z/, '')
     end
 
-    def build_workout(shape, snippets, exercise_details)
-      workout_attrs = shape.slice(:name, :score_type, :rounds, :time, :interval, :time_cap,
+    def build_workout(attrs)
+      workout_attrs = attrs.slice(:name, :score_type, :rounds, :time, :interval, :time_cap,
                                   :ladder_step, :team_size, :notes).compact
+      workout_attrs[:name] = default_name if workout_attrs[:name].blank?
       workout = Workout.new(workout_attrs)
-
-      segments = build_segments(workout, shape[:segments] || [])
-      build_exercises(workout, segments, snippets, exercise_details)
+      segments = attrs[:segments] || []
+      build_segments(workout, segments)
+      build_exercises(workout, attrs[:exercises] || [], segment: nil, position_offset: segments.size)
       workout
     end
 
-    def build_segments(workout, segment_shapes)
-      segment_shapes.each_with_index.map do |segment_attrs, index|
-        workout.segments.build(
+    # Matches CfWod::WorkoutParser's convention for unnamed scraped workouts (same slug format).
+    def default_name
+      "CF-#{date.strftime('%y%m%d')}"
+    end
+
+    def build_segments(workout, segments)
+      segments.each_with_index do |segment_attrs, index|
+        segment = workout.segments.build(
           name: segment_attrs[:name], rounds: segment_attrs[:rounds],
           time_seconds: segment_attrs[:time_seconds], interval_scheme: segment_attrs[:interval_scheme],
           rest_seconds: segment_attrs[:rest_seconds], notes: segment_attrs[:notes], position: index + 1
         )
+        build_exercises(workout, segment_attrs[:exercises] || [], segment: segment, position_offset: 0)
       end
     end
 
-    def build_exercises(workout, segments, snippets, exercise_details)
-      raise ExtractionError, "expected #{snippets.size} structured exercises, got #{exercise_details.size}" if snippets.size != exercise_details.size
-
-      position_counters = Hash.new(0)
-      position_counters[:top_level] = segments.size
-
-      snippets.each_with_index do |snippet, index|
-        build_exercise(workout, segments, snippet, exercise_details[index], position_counters)
+    def build_exercises(workout, exercises, segment:, position_offset:)
+      exercises.each_with_index do |exercise_attrs, index|
+        movement = lookup_movement!(exercise_attrs[:movement_name])
+        workout.exercises.build(
+          exercise_attrs.except(:movement_name).merge(movement: movement, segment: segment,
+                                                      position: position_offset + index + 1)
+        )
       end
-    end
-
-    def build_exercise(workout, segments, snippet, exercise_attrs, position_counters)
-      movement = lookup_movement!(exercise_attrs[:movement_name])
-      segment = snippet[:segment_index] && segments[snippet[:segment_index]]
-      counter_key = segment || :top_level
-      position_counters[counter_key] += 1
-
-      workout.exercises.build(
-        exercise_attrs.except(:movement_name).merge(movement: movement, segment: segment, position: position_counters[counter_key])
-      )
     end
 
     def lookup_movement!(name)
       CfWod::MovementLookup.call(name) || raise(ExtractionError, "unrecognized movement: #{name.inspect}")
     end
 
-    def raise_unrepresentable!(shape)
-      reason = shape[:gap_reason].presence || 'the LLM reported the workout as unrepresentable with no reason given'
+    def raise_unrepresentable!(attrs)
+      reason = attrs[:gap_reason].presence || 'the LLM reported the workout as unrepresentable with no reason given'
       raise UnrepresentableWorkoutError, reason
     end
 

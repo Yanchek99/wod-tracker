@@ -9,12 +9,9 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
 
   test 'parses pasted stdin text into a Workout and prints it' do
     movement = movements(:thruster)
-    stub_two_call_response(
-      shape: {
-        extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
-        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
-        exercise_snippets: [{ text: 'Thrusters (95/65)', segment_index: nil }]
-      },
+    stub_llm_response(
+      extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
+      time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
       exercises: [
         { movement_name: movement.name, reps: 1, load: nil, female_load: 65, male_load: 95,
           duration_seconds: nil, implement_count: nil, distance: nil, female_distance: nil,
@@ -44,12 +41,10 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
   end
 
   test 'aborts with the gap reason when the LLM declines to extract' do
-    stub_two_call_response(
-      shape: {
-        extractable: false, gap_reason: 'no movement in the catalog resembles "quantum burpees"',
-        name: nil, score_type: nil, rounds: nil, time: nil, interval: nil, time_cap: nil,
-        ladder_step: nil, team_size: nil, notes: nil, segments: [], exercise_snippets: []
-      }
+    stub_llm_response(
+      extractable: false, gap_reason: 'no movement in the catalog resembles "quantum burpees"',
+      name: nil, score_type: nil, rounds: nil, time: nil, interval: nil, time_cap: nil,
+      ladder_step: nil, team_size: nil, notes: nil, segments: [], exercises: []
     )
 
     error = with_stdin('50 quantum burpees for time') do
@@ -69,14 +64,8 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
     $stdin = original_stdin
   end
 
-  # Stubs the two sequential calls LlmParser makes: the workout-shape call, then (only if the shape
-  # includes exercise_snippets) the exercise-details call. WebMock serves stubbed responses to the
-  # same URL in the order given, matching LlmParser's fixed call order.
-  def stub_two_call_response(shape:, exercises: nil)
-    payloads = [shape]
-    payloads << { exercises: exercises } if exercises
-
-    stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(*payloads.map { |payload| anthropic_http_response(payload) })
+  def stub_llm_response(payload)
+    stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(anthropic_http_response(payload))
   end
 
   def anthropic_http_response(payload)

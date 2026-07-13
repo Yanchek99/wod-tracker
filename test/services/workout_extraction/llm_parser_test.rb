@@ -2,21 +2,20 @@ require 'test_helper'
 
 module WorkoutExtraction
   class LlmParserTest < ActiveSupport::TestCase
+    DATE = Date.new(2026, 1, 15)
+
     setup do
       @movement = movements(:thruster)
     end
 
-    test 'builds an unsaved Workout from well-formed shape and exercise-detail responses' do
-      stub_two_call_response(
-        shape: {
-          extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
-          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
-          exercise_snippets: [{ text: 'Thrusters (95/65)', segment_index: nil }]
-        },
+    test 'builds an unsaved Workout from a well-formed response' do
+      stub_llm_response(
+        extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
         exercises: [exercise_payload(movement_name: @movement.name, reps: 1, female_load: 65, male_load: 95)]
       )
 
-      workout = WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)')
+      workout = WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)', date: DATE)
 
       assert_not workout.persisted?
       assert_equal 'Fran', workout.name
@@ -25,26 +24,32 @@ module WorkoutExtraction
       assert_equal @movement, workout.exercises.first.movement
     end
 
+    test 'falls back to a date-based name when the LLM omits one' do
+      stub_llm_response(
+        extractable: true, name: nil, score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 20)]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('20 Thrusters for time', date: DATE)
+
+      assert_equal 'CF-260115', workout.name
+    end
+
     test 'builds segments and top-level exercises without colliding positions' do
       pull_up = movements(:pullup)
 
-      stub_two_call_response(
-        shape: {
-          extractable: true, name: 'Part A + Extra', score_type: 'time', rounds: nil, time: nil, interval: nil,
-          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil,
-          segments: [{ name: 'Part A', rounds: nil, time_seconds: nil, interval_scheme: nil, rest_seconds: nil, notes: nil }],
-          exercise_snippets: [
-            { text: '10 Pull-ups', segment_index: 0 },
-            { text: '20 Thrusters', segment_index: nil }
-          ]
-        },
-        exercises: [
-          exercise_payload(movement_name: pull_up.name, reps: 10),
-          exercise_payload(movement_name: @movement.name, reps: 20)
-        ]
+      stub_llm_response(
+        extractable: true, name: 'Part A + Extra', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil,
+        segments: [
+          { name: 'Part A', rounds: nil, time_seconds: nil, interval_scheme: nil, rest_seconds: nil, notes: nil,
+            exercises: [exercise_payload(movement_name: pull_up.name, reps: 10)] }
+        ],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 20)]
       )
 
-      workout = WorkoutExtraction::LlmParser.call('Part A: 10 Pull-ups\n20 Thrusters')
+      workout = WorkoutExtraction::LlmParser.call('Part A: 10 Pull-ups\n20 Thrusters', date: DATE)
 
       assert workout.valid?
       assert_not workout.persisted?
@@ -58,19 +63,16 @@ module WorkoutExtraction
       assert top_level_exercise.segment.blank?
     end
 
-    test 'parses exercise details even when wrapped in a markdown code fence' do
-      stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(
-        anthropic_http_response(
-          extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: nil,
-          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
-          exercise_snippets: [{ text: 'Thrusters (95/65)', segment_index: nil }]
-        ),
-        anthropic_http_response_with_raw_text(
-          "```json\n#{{ exercises: [exercise_payload(movement_name: @movement.name, reps: 1)] }.to_json}\n```"
-        )
-      )
+    test 'parses the response even when wrapped in a markdown code fence' do
+      payload = {
+        extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 1)]
+      }
+      stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        .to_return(anthropic_http_response_with_raw_text("```json\n#{payload.to_json}\n```"))
 
-      workout = WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)')
+      workout = WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)', date: DATE)
 
       assert_equal 1, workout.exercises.size
       assert_equal @movement, workout.exercises.first.movement
@@ -78,14 +80,8 @@ module WorkoutExtraction
 
     private
 
-    # Stubs the two sequential calls LlmParser makes: the workout-shape call, then (only if the shape
-    # includes exercise_snippets) the exercise-details call. WebMock serves stubbed responses to the
-    # same URL in the order given, matching LlmParser's fixed call order.
-    def stub_two_call_response(shape:, exercises: nil)
-      payloads = [shape]
-      payloads << { exercises: exercises } if exercises
-
-      stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(*payloads.map { |payload| anthropic_http_response(payload) })
+    def stub_llm_response(payload)
+      stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(anthropic_http_response(payload))
     end
 
     def anthropic_http_response(payload)

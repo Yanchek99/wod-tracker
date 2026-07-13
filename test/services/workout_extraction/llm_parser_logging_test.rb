@@ -2,50 +2,41 @@ require 'test_helper'
 
 module WorkoutExtraction
   class LlmParserLoggingTest < ActiveSupport::TestCase
+    DATE = Date.new(2026, 1, 15)
+
     setup do
       @movement = movements(:thruster)
     end
 
-    test 'logs progress through both calls when a logger is given, to distinguish which call is in flight' do
-      stub_two_call_response(
-        shape: {
-          extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
-          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
-          exercise_snippets: [{ text: 'Thrusters (95/65)', segment_index: nil }]
-        },
+    test 'logs progress through the call when a logger is given' do
+      stub_llm_response(
+        extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
         exercises: [exercise_payload(movement_name: @movement.name, reps: 1)]
       )
       logged = StringIO.new
       logger = Logger.new(logged)
 
-      WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)', logger: logger)
+      WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)', date: DATE, logger: logger)
 
-      assert_includes logged.string, 'Fetching workout shape...'
-      assert_includes logged.string, 'Workout shape received: extractable=true, segments=0, exercise_snippets=1'
-      assert_includes logged.string, 'Fetching exercise details for 1 snippet(s)...'
-      assert_includes logged.string, 'Exercise details received: 1 entries'
+      assert_includes logged.string, 'Fetching workout...'
+      assert_includes logged.string, 'Workout received: extractable=true, segments=0, exercises=1'
     end
 
     test 'logs nothing when no logger is given' do
-      stub_two_call_response(
-        shape: {
-          extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
-          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
-          exercise_snippets: [{ text: 'Thrusters (95/65)', segment_index: nil }]
-        },
+      stub_llm_response(
+        extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
         exercises: [exercise_payload(movement_name: @movement.name, reps: 1)]
       )
 
-      assert_nothing_raised { WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)') }
+      assert_nothing_raised { WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)', date: DATE) }
     end
 
     private
 
-    def stub_two_call_response(shape:, exercises: nil)
-      payloads = [shape]
-      payloads << { exercises: exercises } if exercises
-
-      stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(*payloads.map { |payload| anthropic_http_response(payload) })
+    def stub_llm_response(payload)
+      stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(anthropic_http_response(payload))
     end
 
     def anthropic_http_response(payload)

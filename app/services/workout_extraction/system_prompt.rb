@@ -9,8 +9,10 @@ module WorkoutExtraction
       - "AMRAP 20" = as many rounds/reps as possible in 20 minutes (time: 1200; score_type "round" if
         scored by full rounds, "rep" if scored by total reps including partial rounds).
       - "EMOM 10" = every minute on the minute for 10 minutes; a fixed-work-per-interval workout.
-      - Loads written "95/65" are male/female (male_load/female_load); a single number applies to both
-        sexes equally via "load".
+      - "♀95lb / ♂135lb" (or "Women: 95lb, Men: 135lb") explicitly labels each value -- use the
+        symbol/label, not position, to assign female_load/male_load. A bare, unlabeled split like
+        "65/95" is female/male (female_load/male_load) -- female value first, male value second.
+        A single number applies to both sexes equally via "load".
     CHEATSHEET
 
     def self.text
@@ -72,7 +74,8 @@ module WorkoutExtraction
           of inventing a name or picking an unrelated one.
         - "distance_unit" only supports "meter", "foot", and "inch". Convert any other unit in the
           source text (miles, yards, kilometers) to meters before writing "distance" (e.g. "1 mile"
-          is about 1609 meters) -- never write a "distance_unit" outside those three values.
+          is 1600 meters -- CrossFit's own rounded convention, not the physics-exact 1609.34) --
+          never write a "distance_unit" outside those three values.
         - Only include a field when the source text specifies it; omit fields you're not confident about
           rather than guessing a value.
 

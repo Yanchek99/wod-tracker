@@ -5,7 +5,7 @@ namespace :workout_extraction do
     text = $stdin.read
     abort 'No text given' if text.blank?
 
-    workout = WorkoutExtraction::LlmParser.call(text)
+    workout = WorkoutExtraction::LlmParser.call(text, logger: Logger.new($stdout))
     pp workout
     pp workout.segments
     pp workout.exercises

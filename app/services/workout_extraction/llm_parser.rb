@@ -66,29 +66,53 @@ module WorkoutExtraction
       additionalProperties: false
     }.freeze
 
-    def self.call(text) = new(text).parse
+    # logger is opt-in and silent by default (nil) so normal callers don't get unexpected output;
+    # pass one (e.g. Logger.new($stdout)) to see which of the two calls is in flight when something
+    # fails, rather than guessing from the error message alone.
+    def self.call(text, logger: nil) = new(text, logger: logger).parse
 
-    def initialize(text)
+    def initialize(text, logger: nil)
       @text = text
+      @logger = logger
     end
 
     def parse
-      shape = fetch_workout_shape
+      shape = logged_workout_shape
       raise_unrepresentable!(shape) unless shape[:extractable]
 
       snippets = shape[:exercise_snippets] || []
-      exercise_details = snippets.empty? ? [] : fetch_exercise_details(snippets)
+      exercise_details = snippets.empty? ? [] : logged_exercise_details(snippets)
 
       workout = build_workout(shape, snippets, exercise_details)
       validate_workout!(workout)
       workout
     rescue Anthropic::Errors::APIStatusError, Anthropic::Errors::APIConnectionError => e
+      log("Anthropic API error: #{e.message}")
       raise ExtractionError, "Anthropic API error: #{e.message}"
     end
 
     private
 
-    attr_reader :text
+    attr_reader :text, :logger
+
+    def logged_workout_shape
+      log('Fetching workout shape...')
+      shape = fetch_workout_shape
+      log("Workout shape received: extractable=#{shape[:extractable].inspect}, " \
+          "segments=#{shape[:segments]&.size || 0}, exercise_snippets=#{shape[:exercise_snippets]&.size || 0}")
+      shape
+    end
+
+    def logged_exercise_details(snippets)
+      log("Fetching exercise details for #{snippets.size} snippet(s)...")
+      details = fetch_exercise_details(snippets)
+      log("Exercise details received: #{details.size} entries")
+      details
+    end
+
+    def log(message)
+      logger&.info("[WorkoutExtraction::LlmParser] #{message}")
+    end
 
     def client
       @client ||= Anthropic::Client.new(api_key: Rails.application.credentials.dig(:anthropic, :api_key))

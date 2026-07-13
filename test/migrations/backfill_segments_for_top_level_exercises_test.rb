@@ -6,6 +6,7 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
     workout = Workout.create!(name: 'Fran', score_type: :time, interval: '21-15-9')
     workout.exercises.create!(movement: movements(:thruster), position: 1, reps: 1)
     workout.exercises.create!(movement: movements(:pull_up), position: 2, reps: 1)
+    stale_content_key = workout.reload.content_key
 
     BackfillSegmentsForTopLevelExercises.new.up
 
@@ -15,6 +16,17 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
     assert_nil segment.rounds
     assert_equal [1, 2], segment.exercises.order(:position).pluck(:position)
     assert_empty workout.exercises.where(segment_id: nil)
+    assert_not_equal stale_content_key, workout.reload.content_key
+    assert_equal workout.content_fingerprint, workout.content_key
+  end
+
+  test 'converts workout time from minutes to segment seconds' do
+    workout = Workout.create!(name: 'Time Domain', score_type: :time, time: 12)
+    workout.exercises.create!(movement: movements(:run), position: 1, reps: 400)
+
+    BackfillSegmentsForTopLevelExercises.new.up
+
+    assert_equal 720, workout.reload.segments.sole.time_seconds
   end
 
   test 'preserves existing segments when wrapping a leading rounds run' do

@@ -33,6 +33,7 @@ class BackfillSegmentsForTopLevelExercises < ActiveRecord::Migration[8.1]
     scheme = workout_scheme(workout)
     reject_ambiguous_runs!(workout, exercise_runs, scheme)
     exercise_runs.each { |run| wrap_run(workout, run, scheme) }
+    Workout.find(workout_id).refresh_content_key!
   end
 
   def ordered_parts(workout_id)

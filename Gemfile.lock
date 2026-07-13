@@ -127,7 +127,6 @@ GEM
       railties (>= 7.0)
       responders
       warden (~> 1.2.3)
-    docile (1.4.0)
     drb (2.2.3)
     erb (6.0.4)
     erubi (1.13.1)
@@ -325,12 +324,7 @@ GEM
     simple_form (5.4.1)
       actionpack (>= 7.0)
       activemodel (>= 7.0)
-    simplecov (0.22.0)
-      docile (~> 1.1)
-      simplecov-html (~> 0.11)
-      simplecov_json_formatter (~> 0.1)
-    simplecov-html (0.12.3)
-    simplecov_json_formatter (0.1.4)
+    simplecov (1.0.0)
     slim (5.2.1)
       temple (~> 0.10.0)
       tilt (>= 2.1.0)
@@ -414,7 +408,7 @@ DEPENDENCIES
   sassc-rails
   selenium-webdriver
   simple_form
-  simplecov (= 0.22.0)
+  simplecov (= 1.0.0)
   slim
   solid_queue
   sprockets-rails

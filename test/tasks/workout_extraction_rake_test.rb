@@ -19,7 +19,7 @@ class WorkoutExtractionRakeTest < ActiveSupport::TestCase
         { movement_name: movement.name, reps: 1, load: nil, female_load: 65, male_load: 95,
           duration_seconds: nil, implement_count: nil, distance: nil, female_distance: nil,
           male_distance: nil, distance_unit: nil, distance_units_per_rep: nil, calories: nil,
-          female_calories: nil, male_calories: nil, ladder_step_every: nil, ladder_exempt: nil, notes: nil }
+          female_calories: nil, male_calories: nil, ladder_step_every: nil, ladder_exempt: nil }
       ]
     )
 

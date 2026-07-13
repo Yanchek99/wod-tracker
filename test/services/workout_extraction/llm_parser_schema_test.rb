@@ -6,7 +6,7 @@ module WorkoutExtraction
       assert_equal(
         %i[reps duration_seconds load female_load male_load implement_count distance female_distance
            male_distance distance_unit distance_units_per_rep calories female_calories male_calories
-           ladder_step_every ladder_exempt notes movement_name].sort,
+           ladder_step_every ladder_exempt movement_name].sort,
         LlmParser::EXERCISE_SCHEMA[:properties].keys.sort
       )
       assert_equal(
@@ -19,7 +19,6 @@ module WorkoutExtraction
         LlmParser::WORKOUT_SHAPE_SCHEMA[:properties].keys.sort
       )
       assert_equal(%i[text segment_index].sort, LlmParser::EXERCISE_SNIPPET_SCHEMA[:properties].keys.sort)
-      assert_equal(%i[exercises], LlmParser::EXERCISE_DETAILS_SCHEMA[:properties].keys)
     end
 
     test 'distance_unit is auto-constrained to the enum values and stays plainly optional' do
@@ -50,7 +49,7 @@ module WorkoutExtraction
     test 'no schema uses anyOf/nullable types anywhere, since those were the cause of a grammar compilation timeout' do
       schemas = [
         LlmParser::WORKOUT_SHAPE_SCHEMA, LlmParser::SEGMENT_OUTLINE_SCHEMA, LlmParser::EXERCISE_SNIPPET_SCHEMA,
-        LlmParser::EXERCISE_SCHEMA, LlmParser::EXERCISE_DETAILS_SCHEMA
+        LlmParser::EXERCISE_SCHEMA
       ]
 
       schemas.each do |schema|
@@ -58,23 +57,15 @@ module WorkoutExtraction
       end
     end
 
+    # Only the workout-shape call is still enforced via output_config/json_schema -- the
+    # exercise-details call stopped using structured outputs entirely after every prior attempt to
+    # satisfy the grammar compiler for a rich per-exercise schema failed, so EXERCISE_SCHEMA's
+    # property counts against Anthropic's structured-outputs limits are no longer a relevant check.
     test 'call 1 (workout shape) property counts stay within Anthropic structured-outputs limits' do
       call_1_schemas = [LlmParser::WORKOUT_SHAPE_SCHEMA, LlmParser::SEGMENT_OUTLINE_SCHEMA, LlmParser::EXERCISE_SNIPPET_SCHEMA]
 
-      assert_within_structured_output_limits(call_1_schemas)
-    end
-
-    test 'call 2 (exercise details) property counts stay within Anthropic structured-outputs limits' do
-      call_2_schemas = [LlmParser::EXERCISE_DETAILS_SCHEMA, LlmParser::EXERCISE_SCHEMA]
-
-      assert_within_structured_output_limits(call_2_schemas)
-    end
-
-    private
-
-    def assert_within_structured_output_limits(schemas)
-      total_optional = schemas.sum { |schema| schema[:properties].keys.map(&:to_s).length - schema[:required].length }
-      total_nullable = schemas.sum { |schema| schema[:properties].count { |_, prop| prop.key?(:anyOf) } }
+      total_optional = call_1_schemas.sum { |schema| schema[:properties].keys.map(&:to_s).length - schema[:required].length }
+      total_nullable = call_1_schemas.sum { |schema| schema[:properties].count { |_, prop| prop.key?(:anyOf) } }
 
       assert_operator total_optional, :<=, 24, "optional count #{total_optional} exceeds Anthropic's limit of 24"
       assert_operator total_nullable, :<=, 16, "nullable count #{total_nullable} exceeds Anthropic's limit of 16"

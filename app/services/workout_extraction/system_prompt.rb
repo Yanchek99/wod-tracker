@@ -57,7 +57,18 @@ module WorkoutExtraction
     def self.exercise_details_text
       <<~PROMPT
         You convert a numbered list of CrossFit exercise prescription snippets into structured JSON,
-        one entry per snippet, in the same order, matching the provided schema's "exercises" array.
+        one entry per snippet, in the same order.
+
+        Respond with ONLY a JSON object -- no other text, no markdown code fences -- matching exactly
+        this shape:
+        {
+          "exercises": [
+            {
+              "movement_name": "<string, required -- copied verbatim from the recognized list below>",
+        #{exercise_field_lines}
+            }
+          ]
+        }
 
         Rules:
         - "movement_name" must be copied verbatim from this exact list of recognized movements (case
@@ -69,6 +80,15 @@ module WorkoutExtraction
 
         #{PRESCRIPTION_CHEAT_SHEET}
       PROMPT
+    end
+
+    # Builds the exercise-details prompt's field list directly from EXERCISE_SCHEMA, so the prompt
+    # can't silently drift from the Exercise model the way a hand-written description could.
+    def self.exercise_field_lines
+      WorkoutExtraction::LlmParser::EXERCISE_SCHEMA[:properties].except(:movement_name).map do |name, property|
+        type_hint = property[:enum] ? property[:enum].map(&:inspect).join('/') : property[:type]
+        "      \"#{name}\": <#{type_hint}, omit if not specified>"
+      end.join(",\n")
     end
   end
 end

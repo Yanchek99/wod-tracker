@@ -6,17 +6,13 @@ module WorkoutExtraction
     MODEL = 'claude-haiku-4-5'.freeze
     MAX_TOKENS = 2048
 
-    # Anthropic's structured-outputs grammar compiler caps how many *optional* (non-required)
-    # properties a schema can have (limit 24), how many *nullable/union-typed* properties it can have
-    # (limit 16), separately rejects schemas that are too large/deeply nested ("Schema is too
-    # complex"), and can time out compiling a schema outright ("Grammar compilation timed out") --
-    # observed specifically after union types (anyOf) were used inside array item schemas, which is
-    # consistent with union-typed array elements requiring the compiler to account for a much larger
-    # combined state space than a flat optional field would. So: extraction is split into two calls
-    # (one for the workout's shape -- segments, exercise text snippets, no per-exercise detail --
-    # and one that structures every snippet into a full exercise in a single flat array), and every
-    # field in both schemas is a single, non-union type: required where the field is unconditionally
-    # present, plainly optional (omittable) everywhere else. No anyOf/nullable types anywhere.
+    # Extraction is two calls: one for the workout's shape (segments, exercise text snippets, no
+    # per-exercise detail) and one that structures every snippet into full exercise details. The
+    # workout-shape call enforces WORKOUT_SHAPE_SCHEMA via output_config/json_schema; the
+    # exercise-details call does not enforce EXERCISE_SCHEMA that way (see the comment there) --
+    # every prior attempt to satisfy Anthropic's structured-outputs grammar compiler for a rich
+    # per-exercise schema (optional-property limits, nullable/union-type limits, "too complex",
+    # "grammar compilation timed out") failed specifically on that call, never on the shape call.
     SEGMENT_OUTLINE_SCHEMA = {
       type: 'object',
       properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position]),
@@ -55,21 +51,18 @@ module WorkoutExtraction
       additionalProperties: false
     }.freeze
 
+    # Every failure above happened in the exercise-details call specifically (this one has never
+    # failed); the exercise-details call therefore doesn't enforce this schema via output_config at
+    # all -- it's used only to derive the prompt's field descriptions programmatically, so the
+    # prompt can't silently drift from the Exercise model. See SystemPrompt#exercise_details_text.
     EXERCISE_SCHEMA = {
       type: 'object',
       properties: ModelSchema.properties_for(
         Exercise,
-        except: %w[id workout_id movement_id segment_id created_at updated_at position],
+        except: %w[id workout_id movement_id segment_id created_at updated_at position notes],
         overrides: { movement_name: { type: 'string' } }
       ),
       required: %w[movement_name],
-      additionalProperties: false
-    }.freeze
-
-    EXERCISE_DETAILS_SCHEMA = {
-      type: 'object',
-      properties: { exercises: { type: 'array', items: EXERCISE_SCHEMA } },
-      required: %w[exercises],
       additionalProperties: false
     }.freeze
 
@@ -118,8 +111,7 @@ module WorkoutExtraction
         model: MODEL,
         max_tokens: MAX_TOKENS,
         system: SystemPrompt.exercise_details_text,
-        messages: [{ role: 'user', content: numbered_snippets }],
-        output_config: { format: { type: 'json_schema', schema: EXERCISE_DETAILS_SCHEMA } }
+        messages: [{ role: 'user', content: numbered_snippets }]
       )
       parse_json_response(response)[:exercises]
     end
@@ -128,9 +120,16 @@ module WorkoutExtraction
       text_block = response.content.find { |block| block.type == :text }
       raise ExtractionError, 'no text content in Anthropic response' unless text_block
 
-      JSON.parse(text_block.text, symbolize_names: true)
+      JSON.parse(strip_markdown_fences(text_block.text), symbolize_names: true)
     rescue JSON::ParserError => e
       raise ExtractionError, "malformed JSON from Anthropic: #{e.message}"
+    end
+
+    # Only the (still schema-enforced) workout-shape call is guaranteed fence-free; the
+    # exercise-details call has no such guarantee, so strip a ```json fence if the model added one
+    # despite being told not to. A no-op when there's no fence to strip.
+    def strip_markdown_fences(text)
+      text.strip.sub(/\A```(?:json)?\s*\n?/, '').sub(/\n?```\s*\z/, '')
     end
 
     def build_workout(shape, snippets, exercise_details)

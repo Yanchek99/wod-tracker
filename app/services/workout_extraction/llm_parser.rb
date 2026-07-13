@@ -7,12 +7,13 @@ module WorkoutExtraction
     MAX_TOKENS = 2048
 
     # Extraction is two calls: one for the workout's shape (segments, exercise text snippets, no
-    # per-exercise detail) and one that structures every snippet into full exercise details. The
-    # workout-shape call enforces WORKOUT_SHAPE_SCHEMA via output_config/json_schema; the
-    # exercise-details call does not enforce EXERCISE_SCHEMA that way (see the comment there) --
-    # every prior attempt to satisfy Anthropic's structured-outputs grammar compiler for a rich
-    # per-exercise schema (optional-property limits, nullable/union-type limits, "too complex",
-    # "grammar compilation timed out") failed specifically on that call, never on the shape call.
+    # per-exercise detail) and one that structures every snippet into full exercise details. Neither
+    # call enforces its schema via output_config/json_schema -- confirmed via LlmParser's step logger
+    # that even the workout-shape call (13 properties, two small nested arrays-of-objects) triggered
+    # "Schema is too complex", after several rounds of assuming (wrongly) that only the richer
+    # exercise-details schema could. These constants exist only so the prompts' field descriptions
+    # can be derived programmatically instead of hand-written, so they can't silently drift from the
+    # Workout/Segment/Exercise models. See SystemPrompt.
     SEGMENT_OUTLINE_SCHEMA = {
       type: 'object',
       properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position]),
@@ -51,10 +52,6 @@ module WorkoutExtraction
       additionalProperties: false
     }.freeze
 
-    # Every failure above happened in the exercise-details call specifically (this one has never
-    # failed); the exercise-details call therefore doesn't enforce this schema via output_config at
-    # all -- it's used only to derive the prompt's field descriptions programmatically, so the
-    # prompt can't silently drift from the Exercise model. See SystemPrompt#exercise_details_text.
     EXERCISE_SCHEMA = {
       type: 'object',
       properties: ModelSchema.properties_for(
@@ -123,8 +120,7 @@ module WorkoutExtraction
         model: MODEL,
         max_tokens: MAX_TOKENS,
         system: SystemPrompt.workout_shape_text,
-        messages: [{ role: 'user', content: text }],
-        output_config: { format: { type: 'json_schema', schema: WORKOUT_SHAPE_SCHEMA } }
+        messages: [{ role: 'user', content: text }]
       )
       parse_json_response(response)
     end
@@ -149,9 +145,8 @@ module WorkoutExtraction
       raise ExtractionError, "malformed JSON from Anthropic: #{e.message}"
     end
 
-    # Only the (still schema-enforced) workout-shape call is guaranteed fence-free; the
-    # exercise-details call has no such guarantee, so strip a ```json fence if the model added one
-    # despite being told not to. A no-op when there's no fence to strip.
+    # Neither call enforces its schema, so neither response is guaranteed fence-free -- strip a
+    # ```json fence if the model added one despite being told not to. A no-op when there's none.
     def strip_markdown_fences(text)
       text.strip.sub(/\A```(?:json)?\s*\n?/, '').sub(/\n?```\s*\z/, '')
     end

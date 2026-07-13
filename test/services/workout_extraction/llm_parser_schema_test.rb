@@ -46,7 +46,13 @@ module WorkoutExtraction
       assert_not_includes LlmParser::EXERCISE_SNIPPET_SCHEMA[:required], 'segment_index'
     end
 
-    test 'no schema uses anyOf/nullable types anywhere, since those were the cause of a grammar compilation timeout' do
+    # Neither call enforces its schema via output_config/json_schema anymore -- even the
+    # workout-shape call (13 properties, two small nested arrays-of-objects) triggered "Schema is
+    # too complex" once confirmed via the step logger, after several rounds of assuming only the
+    # richer exercise-details schema could. These schemas exist only as the source the prompts'
+    # field descriptions are derived from, so Anthropic's structured-outputs property-count limits
+    # no longer apply to either one -- kept here only as a style check, not a compiled-limit check.
+    test 'no schema uses anyOf/nullable types anywhere, matching the plain required/optional style used throughout' do
       schemas = [
         LlmParser::WORKOUT_SHAPE_SCHEMA, LlmParser::SEGMENT_OUTLINE_SCHEMA, LlmParser::EXERCISE_SNIPPET_SCHEMA,
         LlmParser::EXERCISE_SCHEMA
@@ -55,20 +61,6 @@ module WorkoutExtraction
       schemas.each do |schema|
         assert_empty(schema[:properties].select { |_, prop| prop.key?(:anyOf) }, "#{schema} has an anyOf-typed property")
       end
-    end
-
-    # Only the workout-shape call is still enforced via output_config/json_schema -- the
-    # exercise-details call stopped using structured outputs entirely after every prior attempt to
-    # satisfy the grammar compiler for a rich per-exercise schema failed, so EXERCISE_SCHEMA's
-    # property counts against Anthropic's structured-outputs limits are no longer a relevant check.
-    test 'call 1 (workout shape) property counts stay within Anthropic structured-outputs limits' do
-      call_1_schemas = [LlmParser::WORKOUT_SHAPE_SCHEMA, LlmParser::SEGMENT_OUTLINE_SCHEMA, LlmParser::EXERCISE_SNIPPET_SCHEMA]
-
-      total_optional = call_1_schemas.sum { |schema| schema[:properties].keys.map(&:to_s).length - schema[:required].length }
-      total_nullable = call_1_schemas.sum { |schema| schema[:properties].count { |_, prop| prop.key?(:anyOf) } }
-
-      assert_operator total_optional, :<=, 24, "optional count #{total_optional} exceeds Anthropic's limit of 24"
-      assert_operator total_nullable, :<=, 16, "nullable count #{total_nullable} exceeds Anthropic's limit of 16"
     end
   end
 end

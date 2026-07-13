@@ -21,6 +21,23 @@ module WorkoutExtraction
         structure each exercise yet -- only recognize where one movement's own prescription starts
         and ends within the text.
 
+        Respond with ONLY a JSON object -- no other text, no markdown code fences -- matching exactly
+        this shape:
+        {
+          "extractable": <boolean, required>,
+          "gap_reason": "<string, only when extractable is false>",
+        #{workout_field_lines},
+          "segments": [
+            {
+              "name": "<string, required>",
+        #{segment_field_lines}
+            }
+          ],
+          "exercise_snippets": [
+            { "text": "<string, required>", "segment_index": <integer, only if the exercise belongs to a segment> }
+          ]
+        }
+
         If you can confidently represent the workout with this schema, set "extractable" to true and
         fill in the fields below. If you cannot -- the scoring doesn't fit any valid "score_type", or
         the workout's structure genuinely can't be broken into segments and exercise snippets -- set
@@ -82,13 +99,26 @@ module WorkoutExtraction
       PROMPT
     end
 
-    # Builds the exercise-details prompt's field list directly from EXERCISE_SCHEMA, so the prompt
-    # can't silently drift from the Exercise model the way a hand-written description could.
-    def self.exercise_field_lines
-      WorkoutExtraction::LlmParser::EXERCISE_SCHEMA[:properties].except(:movement_name).map do |name, property|
+    # Builds a prompt field-description list directly from a schema's properties, so the prompt
+    # can't silently drift from the underlying model the way a hand-written description could.
+    def self.field_lines(properties, indent: '      ')
+      properties.map do |name, property|
         type_hint = property[:enum] ? property[:enum].map(&:inspect).join('/') : property[:type]
-        "      \"#{name}\": <#{type_hint}, omit if not specified>"
+        "#{indent}\"#{name}\": <#{type_hint}, omit if not specified>"
       end.join(",\n")
+    end
+
+    def self.exercise_field_lines
+      field_lines(WorkoutExtraction::LlmParser::EXERCISE_SCHEMA[:properties].except(:movement_name))
+    end
+
+    def self.workout_field_lines
+      field_lines(WorkoutExtraction::LlmParser::WORKOUT_SHAPE_SCHEMA[:properties]
+        .except(:extractable, :gap_reason, :segments, :exercise_snippets), indent: '  ')
+    end
+
+    def self.segment_field_lines
+      field_lines(WorkoutExtraction::LlmParser::SEGMENT_OUTLINE_SCHEMA[:properties].except(:name))
     end
   end
 end

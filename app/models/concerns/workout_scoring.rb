@@ -35,7 +35,10 @@ module WorkoutScoring
   end
 
   def top_level_exercises
-    exercises.reject(&:segment_id)
+    direct_exercises = exercises.reject(&:segment_id)
+    return direct_exercises if direct_exercises.any?
+
+    segments.select(&:implicit_workout_part?).flat_map(&:exercises)
   end
 
   def amrap_score_components

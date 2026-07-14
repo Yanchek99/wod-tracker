@@ -1,4 +1,6 @@
 class BackfillSegmentsForTopLevelExercises < ActiveRecord::Migration[8.1]
+  disable_ddl_transaction!
+
   class MigrationWorkout < ActiveRecord::Base
     self.table_name = 'workouts'
   end
@@ -14,7 +16,7 @@ class BackfillSegmentsForTopLevelExercises < ActiveRecord::Migration[8.1]
   end
 
   def up
-    workout_ids = MigrationExercise.where(segment_id: nil).distinct.pluck(:workout_id)
+    workout_ids = MigrationExercise.where(segment_id: nil).distinct.pluck(:workout_id).compact
 
     say_with_time "Backfilling implicit segments for #{workout_ids.size} workouts" do
       workout_ids.each { |workout_id| backfill_workout(workout_id) }
@@ -33,7 +35,7 @@ class BackfillSegmentsForTopLevelExercises < ActiveRecord::Migration[8.1]
     scheme = workout_scheme(workout)
     reject_ambiguous_runs!(workout, exercise_runs, scheme)
     exercise_runs.each { |run| wrap_run(workout, run, scheme) }
-    Workout.find(workout_id).refresh_content_key!
+    refresh_and_absorb_duplicate!(workout_id)
   end
 
   def ordered_parts(workout_id)
@@ -60,8 +62,15 @@ class BackfillSegmentsForTopLevelExercises < ActiveRecord::Migration[8.1]
     {
       rounds: (workout.rounds if workout.rounds.to_i > 1),
       time_seconds: (workout.time * 60 if workout.time.present?),
-      interval_scheme: workout.interval
+      interval_scheme: workout.interval.presence
     }.compact
+  end
+
+  def refresh_and_absorb_duplicate!(workout_id)
+    Workout.find(workout_id).tap do |workout|
+      workout.save!(validate: false)
+      workout.absorb_duplicate!
+    end
   end
 
   def wrap_run(workout, run, scheme)

@@ -47,4 +47,18 @@ class SegmentsHelperTest < ActionView::TestCase
   test 'falls back to a generic label for empty segments' do
     assert_equal 'Segment:', segment_objective(Segment.new)
   end
+
+  test 'keeps objectives for explicit unnamed unschemed segments' do
+    workout = Workout.new(name: 'Plain', score_type: :time)
+    segment = workout.segments.build(position: 1)
+
+    assert segment_objective?(segment)
+  end
+
+  test 'suppresses objectives for implicit workout-part segment wrappers' do
+    workout = Workout.new(name: 'Back Squat 5x5', rounds: 5, score_type: :weight)
+    segment = workout.segments.build(position: 1, rounds: 5)
+
+    assert_not segment_objective?(segment)
+  end
 end

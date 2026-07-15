@@ -5,6 +5,10 @@ module SegmentsHelper
     "#{msg}#{segment_prescription(segment)}"
   end
 
+  def segment_objective?(segment)
+    !segment.implicit_workout_part?
+  end
+
   private
 
   def named_max_reps_segment?(segment)

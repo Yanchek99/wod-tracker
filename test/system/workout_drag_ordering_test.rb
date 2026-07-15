@@ -123,7 +123,8 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
-    assert_text_order 'Segment:', '400 meter Run', '10 Pull Ups'
+    assert_text_order '400 meter Run', '10 Pull Ups'
+    assert_no_text 'Segment:'
   end
 
   test 'edits a workout with reordered existing parts' do

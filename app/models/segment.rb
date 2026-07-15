@@ -1,4 +1,5 @@
 class Segment < ApplicationRecord
+  include ImplicitWorkoutPart
   include RefreshesWorkoutContentKey
 
   belongs_to :workout

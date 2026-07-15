@@ -34,17 +34,23 @@ class Workout < ApplicationRecord
   # The one segment that determines the workout's overall scheme: the sole segment when there's
   # exactly one, or the sole schemed one when there are several but only one carries an actual
   # scheme. nil when no single segment dominates (a genuine multi-part chipper).
+  #
+  # Segments are loaded into an Array before checking one?/many? here: CollectionProxy#one?/
+  # #many?/#count run a SQL query rather than counting the in-memory target, which returns 0 for
+  # an unsaved workout with only just-built (unpersisted) segments -- e.g. CfWod::WorkoutParser's
+  # freshly parsed, not-yet-saved Workout. Array#one?/#many? don't have that problem.
   def governing_segment
-    return segments.sole if segments.one?
+    parts = segments.to_a
+    return parts.sole if parts.one?
 
-    schemed = segments.select(&:schemed?)
+    schemed = parts.select(&:schemed?)
     schemed.sole if schemed.one?
   end
 
   def rounds_for_time?
     return governing_segment.rounds? || !governing_segment.schemed? if governing_segment
 
-    segments.many? && !segmented_total_reps?
+    segments.to_a.many? && !segmented_total_reps?
   end
 
   def amrap?
@@ -64,7 +70,7 @@ class Workout < ApplicationRecord
   # individually represents the whole clock. Distinct from governing_segment, which only fits
   # shapes where one segment sets the pace for the others.
   def segmented_total_reps?
-    score_measurement == 'rep' && segments.many? && segments.all? { |segment| segment.time_seconds.present? }
+    score_measurement == 'rep' && segments.to_a.many? && segments.all? { |segment| segment.time_seconds.present? }
   end
 
   def segmented_total_reps_minutes

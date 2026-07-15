@@ -106,6 +106,21 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
     assert_equal [movements(:run)], middle_segment.exercises.map(&:movement)
   end
 
+  test 'wraps a plain unschemed workout as an implicit segment' do
+    workout = Workout.create!(name: 'Plain Chipper', score_type: :time)
+    workout.exercises.create!(movement: movements(:run), position: 1, reps: 400)
+    workout.exercises.create!(movement: movements(:pull_up), position: 2, reps: 10)
+
+    BackfillSegmentsForTopLevelExercises.new.up
+
+    segment = workout.reload.segments.sole
+    assert_predicate segment, :implicit_workout_part?
+    assert_nil segment.rounds
+    assert_nil segment.time_seconds
+    assert_nil segment.interval_scheme
+    assert_empty workout.exercises.where(segment_id: nil)
+  end
+
   test 'raises for multiple exercise runs in a workout with a scheme' do
     workout = Workout.create!(name: 'Ambiguous', score_type: :time, rounds: 3)
     workout.exercises.create!(movement: movements(:run), position: 1, reps: 400)

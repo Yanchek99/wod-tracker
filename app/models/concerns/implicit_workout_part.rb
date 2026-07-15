@@ -4,7 +4,7 @@ module ImplicitWorkoutPart
   # Backfilled wrappers preserve the old workout-part shape: the workout owns the
   # scheme/objective, and this segment only groups the exercises that used to be top-level.
   def implicit_workout_part?
-    blank_wrapper? && workout.present? && segment_scheme == workout_part_scheme
+    persisted? && blank_wrapper? && workout.present? && segment_scheme == workout_part_scheme
   end
 
   private
@@ -22,14 +22,9 @@ module ImplicitWorkoutPart
   end
 
   def workout_part_scheme
-    return {} if unschemed_weight_workout?
-    return nil if unschemed_workout?
+    return {} if unschemed_workout?
 
     workout_real_scheme
-  end
-
-  def unschemed_weight_workout?
-    workout.score_measurement == 'weight' && unschemed_workout?
   end
 
   def unschemed_workout?

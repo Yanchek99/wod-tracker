@@ -48,16 +48,23 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal 'Segment:', segment_objective(Segment.new)
   end
 
-  test 'keeps objectives for explicit unnamed unschemed segments' do
+  test 'keeps objectives for new explicit unnamed unschemed segments' do
     workout = Workout.new(name: 'Plain', score_type: :time)
     segment = workout.segments.build(position: 1)
 
     assert segment_objective?(segment)
   end
 
-  test 'suppresses objectives for implicit workout-part segment wrappers' do
-    workout = Workout.new(name: 'Back Squat 5x5', rounds: 5, score_type: :weight)
-    segment = workout.segments.build(position: 1, rounds: 5)
+  test 'suppresses objectives for scheme-backed implicit workout-part segment wrappers' do
+    workout = Workout.create!(name: 'Back Squat 5x5', rounds: 5, score_type: :weight)
+    segment = workout.segments.create!(position: 1, rounds: 5)
+
+    assert_not segment_objective?(segment)
+  end
+
+  test 'suppresses objectives for unschemed implicit workout-part segment wrappers' do
+    workout = Workout.create!(name: 'Plain Chipper', score_type: :time)
+    segment = workout.segments.create!(position: 1)
 
     assert_not segment_objective?(segment)
   end

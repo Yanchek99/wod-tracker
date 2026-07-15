@@ -48,6 +48,7 @@ Metrics/ClassLength:
     - test/services/cf_wod/workout_parser_corpus_test.rb
     - test/models/workout_test.rb
     - test/models/workout_fingerprint_test.rb
+    - test/migrations/backfill_segments_for_top_level_exercises_test.rb
 
 Metrics/MethodLength:
   CountComments: false

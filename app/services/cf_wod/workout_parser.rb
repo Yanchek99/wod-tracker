@@ -87,7 +87,8 @@ module CfWod
 
     def build_max_finding_exercise(workout, lift_name, reps)
       movement = lookup_movement!(lift_name)
-      workout.exercises.build(movement: movement, position: 1, reps: reps, load: 0)
+      segment = workout.segments.build(position: 1)
+      segment.exercises.build(movement: movement, position: 1, reps: reps, load: 0)
     end
 
     def build_from_body(workout, body)
@@ -110,31 +111,31 @@ module CfWod
       exercise_lines = []
 
       parts.each do |part|
-        if part[:segment]
-          top_level_position += 1
-          segment = workout.segments.build(name: part[:name], time_seconds: part[:time_seconds],
-                                           rounds: part[:rounds], position: top_level_position)
-          part[:lines].each_with_index do |line, index|
-            exercise_lines << build_exercise_line(workout, line, position: index + 1, segment: segment)
-          end
-        else
-          part[:lines].each do |line|
-            top_level_position += 1
-            exercise_lines << build_exercise_line(workout, line, position: top_level_position)
-          end
+        top_level_position += 1
+        segment = build_part_segment(workout, part, top_level_position)
+        part[:lines].each_with_index do |line, index|
+          exercise_lines << build_exercise_line(line, position: index + 1, segment: segment)
         end
       end
 
       exercise_lines
     end
 
-    def build_exercise_line(workout, line, position:, segment: nil)
+    # A schemed part (rounds/time-window) becomes its own named/scoped segment; a plain,
+    # unschemed run of top-level exercise lines becomes an implicit segment wrapping just that run.
+    def build_part_segment(workout, part, position)
+      return workout.segments.build(position: position) unless part[:segment]
+
+      workout.segments.build(name: part[:name], time_seconds: part[:time_seconds], rounds: part[:rounds],
+                             position: position)
+    end
+
+    def build_exercise_line(line, position:, segment:)
       attrs = ExerciseLineParser.call(line)
       raise UnparseableError, "unrecognized exercise line: #{line.inspect}" unless attrs
 
       movement = lookup_movement!(attrs[:movement_name])
-      exercise = workout.exercises.build(attrs.except(:movement_name).merge(movement: movement, position: position,
-                                                                            segment: segment))
+      exercise = segment.exercises.build(attrs.except(:movement_name).merge(movement: movement, position: position))
       { exercise: exercise, raw_line: line }
     end
 

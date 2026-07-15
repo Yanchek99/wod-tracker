@@ -4,8 +4,8 @@ require Rails.root.join('db/migrate/20260713120000_backfill_segments_for_top_lev
 class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
   test 'wraps a flat interval workout in one segment' do
     workout = Workout.create!(name: 'Fran', score_type: :time, interval: '21-15-9')
-    workout.exercises.create!(movement: movements(:thruster), position: 1, reps: 1)
-    workout.exercises.create!(movement: movements(:pull_up), position: 2, reps: 1)
+    create_top_level_exercise!(workout, movement: movements(:thruster), position: 1, reps: 1)
+    create_top_level_exercise!(workout, movement: movements(:pull_up), position: 2, reps: 1)
     stale_content_key = workout.reload.content_key
 
     BackfillSegmentsForTopLevelExercises.new.up
@@ -22,7 +22,7 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
 
   test 'normalizes blank interval strings away from generated segments' do
     workout = Workout.create!(name: 'Blank Interval', score_type: :time, interval: '')
-    workout.exercises.create!(movement: movements(:run), position: 1, reps: 1)
+    create_top_level_exercise!(workout, movement: movements(:run), position: 1, reps: 1)
 
     BackfillSegmentsForTopLevelExercises.new.up
 
@@ -51,7 +51,7 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
 
   test 'converts workout time from minutes to segment seconds' do
     workout = Workout.create!(name: 'Time Domain', score_type: :time, time: 12)
-    workout.exercises.create!(movement: movements(:run), position: 1, reps: 400)
+    create_top_level_exercise!(workout, movement: movements(:run), position: 1, reps: 400)
 
     BackfillSegmentsForTopLevelExercises.new.up
 
@@ -65,8 +65,8 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
     segment.exercises.create!(movement: movements(:pull_up), position: 2, reps: 1)
 
     duplicate = Workout.create!(name: 'Flat Fran', score_type: :time, interval: '21-15-9')
-    duplicate.exercises.create!(movement: movements(:thruster), position: 1, reps: 1)
-    duplicate.exercises.create!(movement: movements(:pull_up), position: 2, reps: 1)
+    create_top_level_exercise!(duplicate, movement: movements(:thruster), position: 1, reps: 1)
+    create_top_level_exercise!(duplicate, movement: movements(:pull_up), position: 2, reps: 1)
 
     assert_difference('Workout.count', -1) do
       BackfillSegmentsForTopLevelExercises.new.up
@@ -78,7 +78,7 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
 
   test 'preserves existing segments when wrapping a leading rounds run' do
     workout = Workout.create!(name: 'Brenton', score_type: :time, rounds: 5)
-    workout.exercises.create!(movement: movements(:run), position: 1, reps: 400)
+    create_top_level_exercise!(workout, movement: movements(:run), position: 1, reps: 400)
     existing_segment = workout.segments.create!(name: 'Carry', position: 2)
 
     BackfillSegmentsForTopLevelExercises.new.up
@@ -94,7 +94,7 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
   test 'wraps a middle run without a scheme' do
     workout = Workout.create!(name: 'Alec', score_type: :time, rounds: 1)
     workout.segments.create!(name: 'First', position: 1)
-    workout.exercises.create!(movement: movements(:run), position: 2, reps: 400)
+    create_top_level_exercise!(workout, movement: movements(:run), position: 2, reps: 400)
     workout.segments.create!(name: 'Last', position: 5)
 
     BackfillSegmentsForTopLevelExercises.new.up
@@ -108,8 +108,8 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
 
   test 'wraps a plain unschemed workout as an implicit segment' do
     workout = Workout.create!(name: 'Plain Chipper', score_type: :time)
-    workout.exercises.create!(movement: movements(:run), position: 1, reps: 400)
-    workout.exercises.create!(movement: movements(:pull_up), position: 2, reps: 10)
+    create_top_level_exercise!(workout, movement: movements(:run), position: 1, reps: 400)
+    create_top_level_exercise!(workout, movement: movements(:pull_up), position: 2, reps: 10)
 
     BackfillSegmentsForTopLevelExercises.new.up
 
@@ -123,10 +123,22 @@ class BackfillSegmentsForTopLevelExercisesTest < ActiveSupport::TestCase
 
   test 'raises for multiple exercise runs in a workout with a scheme' do
     workout = Workout.create!(name: 'Ambiguous', score_type: :time, rounds: 3)
-    workout.exercises.create!(movement: movements(:run), position: 1, reps: 400)
+    create_top_level_exercise!(workout, movement: movements(:run), position: 1, reps: 400)
     workout.segments.create!(name: 'Break', position: 2)
-    workout.exercises.create!(movement: movements(:pull_up), position: 3, reps: 10)
+    create_top_level_exercise!(workout, movement: movements(:pull_up), position: 3, reps: 10)
 
     assert_raises(RuntimeError) { BackfillSegmentsForTopLevelExercises.new.up }
+  end
+
+  private
+
+  # Inserts a segment-less Exercise row directly, bypassing model validation, to simulate the
+  # pre-migration shape (a top-level exercise with no segment) that the real Exercise model can
+  # no longer represent now that Exercise belongs_to :segment is required.
+  def create_top_level_exercise!(workout, movement:, position:, **attrs)
+    # rubocop:disable Rails/SkipsModelValidations
+    Exercise.insert!({ workout_id: workout.id, movement_id: movement.id, position: position,
+                       created_at: Time.current, updated_at: Time.current }.merge(attrs))
+    # rubocop:enable Rails/SkipsModelValidations
   end
 end

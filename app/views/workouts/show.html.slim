@@ -24,7 +24,8 @@
       ul.list-unstyled.mb-3
         - @workout.ordered_parts.each_with_index do |part, index|
           - if part.is_a?(Segment)
-            li = segment_objective(part, then_prefix: index.positive?)
+            - if segment_objective?(part)
+              li = segment_objective(part, then_prefix: index.positive?)
             - part.exercises.each do |exercise|
               li.ms-4 #{measurable_message(exercise)}
           - else

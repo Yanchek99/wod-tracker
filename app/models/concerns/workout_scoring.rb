@@ -25,7 +25,7 @@ module WorkoutScoring
   def exercises_for_log_recording
     return exercises unless set_based_lifting?
 
-    rounds.times.flat_map { governing_segment_exercises }
+    governing_segment.rounds.times.flat_map { governing_segment_exercises }
   end
 
   def lifting_score(movement_logs)

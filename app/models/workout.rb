@@ -44,7 +44,7 @@ class Workout < ApplicationRecord
   def rounds_for_time?
     return governing_segment.rounds? || !governing_segment.schemed? if governing_segment
 
-    segments.many?
+    segments.many? && !segmented_total_reps?
   end
 
   def amrap?

@@ -418,7 +418,9 @@ Workout.find_or_create_by(name: 'Clovis') do |workout|
   segment = workout.segments.build(position: 1)
   workout.score_type = :time
   workout.notes = 'Partition the run and burpee pull-ups as needed.'
-  segment.exercises.build(movement: run, position: 1, reps: 1, distance: 16_000, distance_unit: :meter)
+  # rubocop:disable Style/NumericLiterals -- Preserve the original seed literal.
+  segment.exercises.build(movement: run, position: 1, reps: 1, distance: 16000, distance_unit: :meter)
+  # rubocop:enable Style/NumericLiterals
   segment.exercises.build(movement: burpee_pull_up, position: 2, reps: 150)
 end
 

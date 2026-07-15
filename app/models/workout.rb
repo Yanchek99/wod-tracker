@@ -49,11 +49,21 @@ class Workout < ApplicationRecord
   end
 
   def segmented_total_reps?
-    amrap? &&
+    segmented_total_reps_minutes.present? &&
       score_measurement == 'rep' &&
       segments.any? &&
       exercises.any? &&
       exercises.none? { |exercise| exercise.segment.blank? }
+  end
+
+  def segmented_total_reps_minutes
+    return time if time.present?
+    return if segments.blank?
+
+    segment_seconds = segments.map(&:time_seconds)
+    return if segment_seconds.any?(&:blank?)
+
+    segment_seconds.sum / 60
   end
 
   def emom?

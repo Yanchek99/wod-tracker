@@ -55,7 +55,7 @@ module WorkoutsHelper
   end
 
   def total_reps_clock_objective(workout)
-    "On a #{workout.time}-minute clock for total reps"
+    "On a #{workout.segmented_total_reps_minutes}-minute clock for total reps"
   end
 
   def timed_rounds_objective(workout)

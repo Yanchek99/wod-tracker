@@ -32,6 +32,23 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_predicate workouts(:segmented_total_reps), :segmented_total_reps?
   end
 
+  test 'identifies segmented total-rep clocks from segment windows' do
+    workout = Workout.new(name: 'Windowed Reps', score_type: :rep)
+
+    first = workout.segments.build(time_seconds: 300, position: 1)
+    workout.exercises.build(movement: movements(:run), segment: first, position: 1,
+                            reps: 1, distance: 200, distance_unit: :meter)
+    workout.exercises.build(movement: movements(:pushup), segment: first, position: 2, reps: 0)
+
+    second = workout.segments.build(time_seconds: 300, position: 2)
+    workout.exercises.build(movement: movements(:run), segment: second, position: 1,
+                            reps: 1, distance: 200, distance_unit: :meter)
+    workout.exercises.build(movement: movements(:pullup), segment: second, position: 2, reps: 0)
+
+    assert_predicate workout, :segmented_total_reps?
+    assert_equal 10, workout.segmented_total_reps_minutes
+  end
+
   test 'does not identify empty segmented clocks as total-rep clocks' do
     workout = Workout.new(name: 'Empty Segments', time: 20, score_type: :rep)
     workout.segments.build(time_seconds: 300, position: 1)

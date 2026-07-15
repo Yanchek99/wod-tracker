@@ -52,7 +52,8 @@ class WorkoutLoadIdentityTest < ActiveSupport::TestCase
   # Builds and validates a one-exercise workout so the load input is canonicalized to pounds.
   def build_loaded(load:, unit:)
     Workout.new(name: "Loaded #{load}#{unit}", score_type: :time).tap do |workout|
-      workout.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load:, load_unit: unit)
+      segment = workout.segments.build(position: 1)
+      segment.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load:, load_unit: unit)
       workout.validate
     end
   end

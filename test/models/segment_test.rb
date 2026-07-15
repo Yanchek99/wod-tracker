@@ -5,18 +5,11 @@ class SegmentTest < ActiveSupport::TestCase
     segment = workouts(:segmented).segments.build
 
     assert segment.valid?
-    assert_equal 4, segment.position
+    assert_equal 3, segment.position
   end
 
   test 'rejects duplicate positions among segments in the same workout' do
     segment = workouts(:segmented).segments.build(position: 2)
-
-    assert_not segment.valid?
-    assert_includes segment.errors[:position], 'has already been taken'
-  end
-
-  test 'rejects positions already used by top-level exercises' do
-    segment = workouts(:segmented).segments.build(position: 1)
 
     assert_not segment.valid?
     assert_includes segment.errors[:position], 'has already been taken'
@@ -30,13 +23,6 @@ class SegmentTest < ActiveSupport::TestCase
 
     assert_not segment.valid?
     assert_includes segment.errors[:position], 'has already been taken'
-  end
-
-  test 'rejects top-level exercise positions already used by segments' do
-    exercise = workouts(:segmented).exercises.build(movement: movements(:run), position: 2)
-
-    assert_not exercise.valid?
-    assert_includes exercise.errors[:position], 'has already been taken'
   end
 
   test 'identifies emom segments by whole-minute rounds' do

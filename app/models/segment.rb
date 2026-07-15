@@ -16,6 +16,10 @@ class Segment < ApplicationRecord
                        uniqueness: { scope: :workout_id }
   validate :position_unique_within_workout_parts
 
+  def schemed?
+    rounds.present? || time_seconds.present? || interval_scheme.present?
+  end
+
   def rounds?
     rounds.present? && time_seconds.blank? && interval_scheme.blank?
   end
@@ -62,24 +66,14 @@ class Segment < ApplicationRecord
   def assign_position
     return if workout.blank?
 
-    self.position = next_workout_part_position
+    self.position = next_segment_position
   end
 
-  def next_workout_part_position
-    positions = workout_part_positions
-    positions << persisted_workout_part_position
+  def next_segment_position
+    positions = segment_positions
+    positions << persisted_segment_position
 
     positions.compact.max.to_i + 1
-  end
-
-  def workout_part_positions
-    top_level_exercise_positions + segment_positions
-  end
-
-  def top_level_exercise_positions
-    workout.exercises.filter_map do |exercise|
-      exercise.position if exercise.segment.blank? && !exercise.marked_for_destruction?
-    end
   end
 
   def segment_positions
@@ -88,41 +82,16 @@ class Segment < ApplicationRecord
     end
   end
 
-  def persisted_workout_part_position
+  def persisted_segment_position
     return if workout_id.blank?
 
-    [
-      Exercise.unscoped.where(workout_id:, segment_id: nil).maximum(:position),
-      Segment.unscoped.where(workout_id:).where.not(id:).maximum(:position)
-    ].compact.max
+    Segment.unscoped.where(workout_id:).where.not(id:).maximum(:position)
   end
 
   def position_unique_within_workout_parts
     return if position.blank?
 
-    errors.add(:position, 'has already been taken') if duplicate_workout_part_position?
-  end
-
-  def duplicate_workout_part_position?
-    duplicate_top_level_exercise_position? || unsaved_segment_position_exists?
-  end
-
-  def duplicate_top_level_exercise_position?
-    persisted_top_level_exercise_position_exists? || unsaved_top_level_exercise_position_exists?
-  end
-
-  def persisted_top_level_exercise_position_exists?
-    return false if workout_id.blank?
-
-    Exercise.unscoped.exists?(workout_id:, segment_id: nil, position:)
-  end
-
-  def unsaved_top_level_exercise_position_exists?
-    return false if workout.blank?
-
-    workout.exercises.any? do |exercise|
-      exercise.segment.blank? && exercise.position == position && !exercise.marked_for_destruction?
-    end
+    errors.add(:position, 'has already been taken') if unsaved_segment_position_exists?
   end
 
   def unsaved_segment_position_exists?

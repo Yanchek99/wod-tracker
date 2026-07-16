@@ -1,5 +1,5 @@
-- if exercises.any?
-  - exercises.first.workout.segments.each_with_index do |segment, index|
+- if workout.segments.any? { |segment| segment.exercises.any? }
+  - workout.segments.each_with_index do |segment, index|
     - objective = segment_objective(segment, then_prefix: index.positive?)
     - if objective
       li = objective

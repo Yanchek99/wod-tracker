@@ -73,16 +73,6 @@ class Workout < ApplicationRecord
     score_measurement == 'rep' && segments.to_a.many? && segments.all? { |segment| segment.time_seconds.present? }
   end
 
-  def segmented_total_reps_minutes
-    return time if time.present?
-    return if segments.blank?
-
-    segment_seconds = segments.map(&:time_seconds)
-    return if segment_seconds.any?(&:blank?)
-
-    segment_seconds.sum / 60
-  end
-
   def emom?
     governing_segment&.emom? || false
   end

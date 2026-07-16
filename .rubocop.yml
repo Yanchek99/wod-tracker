@@ -50,6 +50,7 @@ Metrics/ClassLength:
     - test/models/workout_test.rb
     - test/models/workout_fingerprint_test.rb
     - test/migrations/backfill_segments_for_top_level_exercises_test.rb
+    - test/system/workout_drag_ordering_test.rb
 
 Metrics/MethodLength:
   CountComments: false

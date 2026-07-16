@@ -1,12 +1,6 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# ==============================================================================
-# Fran
-# 21-15-9 reps for time
-# 95-lb. thrusters
-# Pull-ups
 fran_thruster:
   workout: fran
+  segment: fran_segment
   movement: thruster
   position: 1
   reps: 1
@@ -14,20 +8,14 @@ fran_thruster:
 
 fran_pullup:
   workout: fran
+  segment: fran_segment
   movement: pullup
   position: 2
   reps: 1
 
-# ==============================================================================
-# Murph
-# For time
-# Run 1 mile
-# 100 pull-ups
-# 200 push-ups
-# 300 squats
-# Run 1 mile
 murph_run:
   workout: murph
+  segment: murph_segment
   movement: run
   position: 1
   reps: 1
@@ -35,71 +23,74 @@ murph_run:
 
 murph_pullup:
   workout: murph
+  segment: murph_segment
   movement: pullup
   position: 2
   reps: 100
 
 murph_pushup:
   workout: murph
+  segment: murph_segment
   movement: pushup
   position: 3
   reps: 200
 
 murph_squat:
   workout: murph
+  segment: murph_segment
   movement: squat
   position: 4
   reps: 300
 
 murph_second_run:
   workout: murph
+  segment: murph_segment
   movement: run
   position: 5
   reps: 1
   distance: 1600
 
-# For time:
-# Run 800 meters
-# Then, 10 rounds of the couplet:
-#    10 handstand push-ups
-#    10 single-leg squats
-# Then, run 800 meters
 segmented_run:
   workout: segmented
+  segment: segmented_before
   movement: run
   position: 1
 
 segmented_hspu:
   workout: segmented
-  movement: hspu
   segment: test
+  movement: hspu
   position: 1
 
 segmented_pistol:
   workout: segmented
-  movement: pistol
   segment: test
+  movement: pistol
   position: 2
 
 segmented_second_run:
   workout: segmented
+  segment: segmented_after
   movement: run
-  position: 3
+  position: 1
 
 amrap_couplet_pullup:
   workout: amrap_couplet
+  segment: amrap_couplet_segment
   movement: pullup
   position: 1
   reps: 10
 
 amrap_couplet_pushup:
   workout: amrap_couplet
+  segment: amrap_couplet_segment
   movement: pushup
   position: 2
   reps: 15
 
 amrap_mixed_row:
   workout: amrap_mixed
+  segment: amrap_mixed_segment
   movement: row
   position: 1
   distance_units_per_rep: 10
@@ -109,18 +100,21 @@ amrap_mixed_row:
 
 amrap_mixed_pushup:
   workout: amrap_mixed
+  segment: amrap_mixed_segment
   movement: pushup
   position: 2
   reps: 10
 
 amrap_mixed_run:
   workout: amrap_mixed
+  segment: amrap_mixed_segment
   movement: run
   position: 3
   calories: 20
 
 amrap_unknown_distance_run:
   workout: amrap_unknown_distance
+  segment: amrap_unknown_distance_segment
   movement: run
   position: 1
   distance: 400
@@ -128,6 +122,7 @@ amrap_unknown_distance_run:
 
 back_squat_5x5_back_squat:
   workout: back_squat_5x5
+  segment: back_squat_5x5_segment
   movement: back_squat
   position: 1
   reps: 5

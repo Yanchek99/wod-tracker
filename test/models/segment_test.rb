@@ -5,7 +5,7 @@ class SegmentTest < ActiveSupport::TestCase
     segment = workouts(:segmented).segments.build
 
     assert segment.valid?
-    assert_equal 3, segment.position
+    assert_equal 4, segment.position
   end
 
   test 'rejects duplicate positions among segments in the same workout' do

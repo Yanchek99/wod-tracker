@@ -22,7 +22,6 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_difference(['Workout.count', 'ActionText::RichText.count']) do
       post workouts_url, params: { workout: {
         name: @workout.name,
-        rounds: @workout.rounds,
         notes: '<div>Use the prescribed loading.</div>',
         score_type: :round
       } }
@@ -38,12 +37,10 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       post workouts_url, params: { workout: {
         name: 'Nested Workout',
         score_type: :time,
-        exercises_attributes: {
-          '0' => {
-            movement_id: movements(:pullup).id,
-            position: 1,
-            reps: 10
-          }
+        segments_attributes: {
+          '0' => { position: 1, exercises_attributes: {
+            '0' => { movement_id: movements(:pullup).id, position: 1, reps: 10 }
+          } }
         }
       } }
     end
@@ -59,13 +56,10 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       post workouts_url, params: { workout: {
         name: 'Sex Specific Workout',
         score_type: :time,
-        exercises_attributes: {
-          '0' => {
-            movement_id: movements(:thruster).id,
-            position: 1,
-            reps: 1,
-            female_load: 65, male_load: 95
-          }
+        segments_attributes: {
+          '0' => { position: 1, exercises_attributes: {
+            '0' => { movement_id: movements(:thruster).id, position: 1, reps: 1, female_load: 65, male_load: 95 }
+          } }
         }
       } }
     end
@@ -91,7 +85,6 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   test 'should update workout' do
     patch workout_url(@workout), params: { workout: {
       name: @workout.name,
-      rounds: @workout.rounds,
       notes: '<div>Break up the pull-ups early.</div>'
     } }
 

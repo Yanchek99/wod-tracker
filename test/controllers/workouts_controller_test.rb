@@ -22,7 +22,6 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_difference(['Workout.count', 'ActionText::RichText.count']) do
       post workouts_url, params: { workout: {
         name: @workout.name,
-        rounds: @workout.rounds,
         notes: '<div>Use the prescribed loading.</div>',
         score_type: :round
       } }
@@ -38,12 +37,10 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       post workouts_url, params: { workout: {
         name: 'Nested Workout',
         score_type: :time,
-        exercises_attributes: {
-          '0' => {
-            movement_id: movements(:pullup).id,
-            position: 1,
-            reps: 10
-          }
+        segments_attributes: {
+          '0' => { position: 1, exercises_attributes: {
+            '0' => { movement_id: movements(:pullup).id, position: 1, reps: 10 }
+          } }
         }
       } }
     end
@@ -59,13 +56,10 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       post workouts_url, params: { workout: {
         name: 'Sex Specific Workout',
         score_type: :time,
-        exercises_attributes: {
-          '0' => {
-            movement_id: movements(:thruster).id,
-            position: 1,
-            reps: 1,
-            female_load: 65, male_load: 95
-          }
+        segments_attributes: {
+          '0' => { position: 1, exercises_attributes: {
+            '0' => { movement_id: movements(:thruster).id, position: 1, reps: 1, female_load: 65, male_load: 95 }
+          } }
         }
       } }
     end
@@ -82,6 +76,13 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'does not repeat the governing segment scheme as its own header line' do
+    get workout_url(@workout)
+
+    assert_select 'p', text: '21-15-9 for time'
+    assert_select 'li', text: '21-15-9 of', count: 0
+  end
+
   test 'should get edit' do
     get edit_workout_url(@workout)
     assert_response :success
@@ -91,12 +92,32 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   test 'should update workout' do
     patch workout_url(@workout), params: { workout: {
       name: @workout.name,
-      rounds: @workout.rounds,
       notes: '<div>Break up the pull-ups early.</div>'
     } }
 
     assert_redirected_to workout_url(@workout)
     assert_equal 'Break up the pull-ups early.', @workout.reload.notes.to_plain_text.strip
+  end
+
+  test 'submitting a blank interval field keeps a timed-rounds segment timed-rounds' do
+    workout = Workout.create!(name: 'Timed Rounds Update Test', score_type: :time)
+    segment = workout.segments.create!(rounds: 4, time_seconds: 1500, position: 1)
+
+    # The builder form always submits interval_scheme now (see _segment_fields.html.slim);
+    # an unfilled interval field arrives as "" here, the same way a real form submission
+    # would, not just via the client-side "Done" button's local JS state.
+    patch workout_url(workout), params: { workout: {
+      name: workout.name,
+      score_type: workout.score_type,
+      segments_attributes: {
+        '0' => { id: segment.id, position: 1, rounds: 4, time_seconds: 1500, interval_scheme: '' }
+      }
+    } }
+
+    assert_redirected_to workout_url(workout)
+    segment.reload
+    assert_predicate segment, :timed_rounds?
+    assert_not_predicate segment, :interval?
   end
 
   test 'should destroy workout' do

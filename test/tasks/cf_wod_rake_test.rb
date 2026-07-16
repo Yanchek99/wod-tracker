@@ -9,7 +9,7 @@ class CfWodRakeTest < ActiveSupport::TestCase
     Rake::Task['cf_wod:backfill'].reenable
   end
 
-  test 'fetches, parses, and prints a WOD for a given date' do
+  test 'fetches, parses, and prints a workout for a given date' do
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: Rails.root.join('test/fixtures/cf_wod/legacy_with_scaling.html').read)
 
@@ -33,7 +33,7 @@ class CfWodRakeTest < ActiveSupport::TestCase
     assert_equal 1, error.status
   end
 
-  test 'aborts with the parse error message on an unparseable WOD' do
+  test 'aborts with the parse error message on an unparseable workout' do
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/06/20})
       .to_return(status: 301, headers: { 'Location' => '/260620' })
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
@@ -61,7 +61,7 @@ class CfWodRakeTest < ActiveSupport::TestCase
     assert_equal 1, error.status
   end
 
-  test 'scrape aborts with the WodImport failure message on an unparseable WOD' do
+  test 'scrape aborts with the WorkoutImport failure message on an unparseable workout' do
     Program.create!(name: 'Crossfit.com')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/06/20})
       .to_return(status: 301, headers: { 'Location' => '/260620' })

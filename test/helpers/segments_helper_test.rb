@@ -44,7 +44,29 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal 'Then, Middle:', segment_objective(Segment.new(name: 'Middle'), then_prefix: true)
   end
 
-  test 'falls back to a generic label for empty segments' do
-    assert_equal 'Segment:', segment_objective(Segment.new)
+  test 'keeps objectives for new explicit unnamed unschemed segments' do
+    workout = Workout.new(name: 'Plain', score_type: :time)
+    segment = workout.segments.build(position: 1)
+
+    assert segment_objective?(segment)
+  end
+
+  test 'suppresses objectives for scheme-backed implicit workout-part segment wrappers' do
+    workout = Workout.create!(name: 'Back Squat 5x5', rounds: 5, score_type: :weight)
+    segment = workout.segments.create!(position: 1, rounds: 5)
+
+    assert_not segment_objective?(segment)
+  end
+
+  test 'suppresses objectives for unschemed implicit workout-part segment wrappers' do
+    workout = Workout.create!(name: 'Plain Chipper', score_type: :time)
+    segment = workout.segments.create!(position: 1)
+
+    assert_not segment_objective?(segment)
+  end
+
+  test 'an unschemed, unnamed segment has no objective text' do
+    segment = Segment.new
+    assert_nil segment_objective(segment)
   end
 end

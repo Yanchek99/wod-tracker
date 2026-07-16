@@ -1,6 +1,4 @@
 module MeasurableHelper
-  include MeasurablePrescribedWorkHelper
-
   def measurable_message(measurable)
     [measurable_movement_msg(measurable), measurable_additional_metrics(measurable)].compact.join(' ')
   end
@@ -11,10 +9,7 @@ module MeasurableHelper
     return max_load_test_msg(measurable, rep_metric, duration_metric) if measurable.respond_to?(:max_load_test?) && measurable.max_load_test?
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
-    work_metric = prescribed_work_metric(measurable)
-    return prescribed_work_movement_msg(measurable, work_metric) if work_metric
-
-    rep_movement_msg(measurable, rep_metric)
+    leading_movement_msg(measurable, rep_metric) || rep_movement_msg(measurable, rep_metric)
   end
 
   def rep_movement_msg(measurable, rep_metric)
@@ -56,13 +51,18 @@ module MeasurableHelper
   end
 
   def additional_metrics(measurable)
-    work_metric = prescribed_work_metric(measurable)
+    metrics = leading_prescription(measurable)&.additional_metrics ||
+              measurable.prescription_metrics.reject(&:rep?)
+                        .reject { |metric| duration_metric?(metric) }
+                        .select { |metric| visible_metric?(metric) }
 
-    measurable.prescription_metrics.reject(&:rep?)
-              .reject { |metric| metric == work_metric }
-              .reject { |metric| duration_metric?(metric) }
-              .select { |metric| visible_metric?(metric) }
-              .sort_by { |metric| additional_metric_display_order(metric) }
+    metrics.sort_by { |metric| additional_metric_display_order(metric) }
+  end
+
+  def leading_prescription(measurable)
+    return unless measurable.is_a?(Exercise)
+
+    Measurable::LeadingPrescription.new(measurable.prescription_metrics)
   end
 
   def grouped_sex_specific_metrics?(metrics)
@@ -81,6 +81,14 @@ module MeasurableHelper
 
   def movement_name_for_rep_metric(movement_name, metric)
     pluralize_movement?(metric) ? movement_name.pluralize : movement_name
+  end
+
+  def leading_movement_msg(measurable, rep_metric)
+    leading = leading_prescription(measurable)
+    return unless leading&.metric
+    return rep_movement_msg(measurable, rep_metric) if leading.metric.rep?
+
+    [leading.text, measurable.movement.name].compact_blank.join(' ')
   end
 
   def sex_specific_metrics_msg(metrics)

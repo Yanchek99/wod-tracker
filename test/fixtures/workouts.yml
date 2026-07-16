@@ -1,13 +1,9 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 fran:
   name: Fran
-  interval: 21-15-9
   score_type: time
 
 murph:
   name: Murph
-  rounds: 1
   score_type: time
 
 segmented:
@@ -16,25 +12,20 @@ segmented:
 
 amrap_couplet:
   name: AMRAP Couplet
-  time: 10
   score_type: rep
 
 amrap_mixed:
   name: AMRAP Mixed
-  time: 20
   score_type: rep
 
 amrap_unknown_distance:
   name: AMRAP Unknown Distance
-  time: 12
   score_type: rep
 
 back_squat_5x5:
   name: Back Squat 5x5
-  rounds: 5
   score_type: weight
 
 segmented_total_reps:
   name: Segmented Total Reps
-  time: 20
   score_type: rep

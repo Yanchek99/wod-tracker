@@ -14,8 +14,11 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
   test 'creates a workout with an exercise' do
     visit new_workout_url
 
-    fill_in 'Name', with: 'System Test Workout'
+    fill_in 'Name *', with: 'System Test Workout'
     select 'time', from: 'For'
+    # Clicking the "For" select is outside the default segment card, which collapses it
+    # (segment-card#handleDocumentClick) -- expand it again before adding an exercise.
+    click_on 'New segment'
     click_on 'Add Exercise'
 
     within '.exercise' do
@@ -44,8 +47,11 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
   test 'shows distance units per rep only for distance metrics' do
     visit new_workout_url
 
-    fill_in 'Name', with: 'Distance Scored Workout'
+    fill_in 'Name *', with: 'Distance Scored Workout'
     select 'rep', from: 'For'
+    # Clicking the "For" select is outside the default segment card, which collapses it
+    # (segment-card#handleDocumentClick) -- expand it again before adding an exercise.
+    click_on 'New segment'
     click_on 'Add Exercise'
 
     within '.exercise' do

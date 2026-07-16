@@ -15,10 +15,10 @@ gem 'pg'
 # Database-backed Active Job queuing backend
 gem 'solid_queue'
 
-# Anthropic client for LLM-based WOD extraction
+# Anthropic client for LLM-based workout extraction
 gem 'anthropic'
 
-# HTML/XML parsing for the WOD scraper
+# HTML/XML parsing for the workout scraper
 gem 'nokogiri'
 
 # Use Puma as the app server
@@ -81,6 +81,6 @@ group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara'
   gem 'selenium-webdriver'
-  gem 'simplecov', '0.22.0', require: false # Version locked because of code climate issues
+  gem 'simplecov', '1.0.1', require: false # Version locked because of code climate issues
   gem 'webmock' # Stub and disable external HTTP in tests
 end

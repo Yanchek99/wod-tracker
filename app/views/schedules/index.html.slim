@@ -19,7 +19,7 @@
         p.col #{workout_objective schedule.workout}
       .row
         ul.list-unstyled.col
-          = render partial: 'exercises/exercises', object: schedule.workout.exercises
+          = render partial: 'exercises/exercises', locals: { workout: schedule.workout }
       .row
         .col-12
           .d-grid

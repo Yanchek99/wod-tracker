@@ -15,6 +15,14 @@ module CfWod
     def muscle_up = Movement.find_or_create_by(name: 'Muscle-up')
     def bike = Movement.find_or_create_by(name: 'Bike')
 
+    # Exercises are built via `segment.exercises.build(...)` (see CfWod::WorkoutParser), not
+    # `workout.exercises.build(segment:)`, because a has_many :through :segments association
+    # cannot autosave new records that were added directly to its own in-memory collection --
+    # Rails raises ActiveRecord::HasManyThroughCantAssociateThroughHasOneOrManyReflection on
+    # save otherwise. That means `workout.exercises` stays empty in memory on an unsaved,
+    # freshly-parsed workout; read exercises via each segment instead.
+    def workout_exercises(workout) = workout.segments.flat_map(&:exercises)
+
     test '180110: AMRAP with a load shared across two movements, excluding the bodyweight rope climb' do
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
         .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
@@ -26,9 +34,9 @@ module CfWod
       assert_equal 'CF-180110', workout.name
       assert_equal 'rep', workout.score_type
       assert_equal 10, workout.time
-      assert_equal 3, workout.exercises.length
+      assert_equal 3, workout_exercises(workout).length
 
-      snatch, lunge, rope_climb = workout.exercises.sort_by(&:position)
+      snatch, lunge, rope_climb = workout_exercises(workout).sort_by(&:position)
       assert_equal movements(:power_snatch), snatch.movement
       assert_equal [5, 65, 95], [snatch.reps, snatch.female_load, snatch.male_load]
       assert_equal movements(:overhead_walking_lunge), lunge.movement
@@ -63,9 +71,9 @@ module CfWod
       assert_equal 'rep', workout.score_type
       assert_equal 10, workout.time
       assert_equal 3, workout.ladder_step
-      assert_equal 2, workout.exercises.length
+      assert_equal 2, workout_exercises(workout).length
 
-      burpee_box_jump_over, deadlift = workout.exercises.sort_by(&:position)
+      burpee_box_jump_over, deadlift = workout_exercises(workout).sort_by(&:position)
       assert_equal [burpee_box_jump_over_movement, 3], [burpee_box_jump_over.movement, burpee_box_jump_over.reps]
       assert_equal [movements(:deadlift), 3], [deadlift.movement, deadlift.reps]
       assert_equal [125, 185], [deadlift.female_load, deadlift.male_load]
@@ -80,8 +88,8 @@ module CfWod
       workout = WorkoutParser.call(page)
 
       assert workout.valid?
-      assert_equal 4, workout.exercises.length
-      by_movement = workout.exercises.group_by(&:movement)
+      assert_equal 4, workout_exercises(workout).length
+      by_movement = workout_exercises(workout).group_by(&:movement)
       assert_equal 2, by_movement[movements(:run)].length
       assert_equal 1, by_movement[movements(:pull_up)].length
       deadlift = by_movement[movements(:deadlift)].first
@@ -101,7 +109,7 @@ module CfWod
       assert workout.valid?
       assert_equal 'time', workout.score_type
       assert_equal '21-15-9', workout.interval
-      thruster, pull_up = workout.exercises.sort_by(&:position)
+      thruster, pull_up = workout_exercises(workout).sort_by(&:position)
       assert_equal movements(:thruster), thruster.movement
       assert_equal [1, 65, 95], [thruster.reps, thruster.female_load, thruster.male_load]
       assert_equal movements(:pull_up), pull_up.movement
@@ -118,7 +126,7 @@ module CfWod
       assert_equal 'rep', workout.score_type
       assert_equal 10, workout.time
       assert_equal 10, workout.rounds
-      burpee, squat = workout.exercises.sort_by(&:position)
+      burpee, squat = workout_exercises(workout).sort_by(&:position)
       assert_equal [movements(:burpee), 5], [burpee.movement, burpee.reps]
       assert_equal [movements(:squat), 10], [squat.movement, squat.reps]
     end
@@ -130,8 +138,8 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'weight', workout.score_type
-      assert_equal 1, workout.exercises.length
-      exercise = workout.exercises.first
+      assert_equal 1, workout_exercises(workout).length
+      exercise = workout_exercises(workout).first
       assert_equal movements(:back_squat), exercise.movement
       assert_equal [1, 0], [exercise.reps, exercise.load]
     end
@@ -145,15 +153,15 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'time', workout.score_type
-      top_level = workout.exercises.select { |exercise| exercise.segment.blank? }.sort_by(&:position)
+      top_level = workout_exercises(workout).reject { |exercise| exercise.segment.schemed? }.sort_by(&:position)
       assert_equal 2, top_level.length
       assert_equal [movements(:run), movements(:run)], top_level.map(&:movement)
       assert_equal [800, 800], top_level.map(&:distance)
 
-      assert_equal 1, workout.segments.length
-      segment = workout.segments.first
+      assert_equal 1, workout.segments.count(&:schemed?)
+      segment = workout.segments.detect(&:schemed?)
       assert_equal 10, segment.rounds
-      segment_exercises = workout.exercises.select { |exercise| exercise.segment == segment }.sort_by(&:position)
+      segment_exercises = workout_exercises(workout).select { |exercise| exercise.segment == segment }.sort_by(&:position)
       hspu, single_leg_squat = segment_exercises
       assert_equal [movements(:handstand_push_up), 10], [hspu.movement, hspu.reps]
       assert_equal [movements(:single_leg_squat), 10], [single_leg_squat.movement, single_leg_squat.reps]
@@ -173,10 +181,7 @@ module CfWod
       assert_equal ['0:00-5:00', '5:00-10:00', '10:00-15:00', '15:00-20:00'], windows.map(&:name)
       assert(windows.all? { |segment| segment.time_seconds == 300 })
 
-      # segment.exercises is empty on unsaved records (Exercise belongs_to both :workout and
-      # :segment; building via workout.exercises.build(segment:) doesn't populate the Segment
-      # side's in-memory has_many for a new record) -- filter from workout.exercises instead.
-      segment_exercises = ->(segment) { workout.exercises.select { |exercise| exercise.segment == segment } }
+      segment_exercises = ->(segment) { workout_exercises(workout).select { |exercise| exercise.segment == segment } }
 
       gymnastics_movements = windows.map { |segment| segment_exercises.call(segment).max_by(&:position).movement }
       assert_equal [movements(:freestanding_shoulder_tap), movements(:skin_the_cat), movements(:l_pull_up),
@@ -203,8 +208,8 @@ module CfWod
       workout = WorkoutParser.call(page)
 
       assert workout.valid?
-      assert_equal 9, workout.exercises.length
-      by_movement = workout.exercises.group_by(&:movement)
+      assert_equal 9, workout_exercises(workout).length
+      by_movement = workout_exercises(workout).group_by(&:movement)
 
       by_movement[movements(:deadlift)].each { |exercise| assert_equal [185, 275], [exercise.female_load, exercise.male_load] }
       by_movement[box_jump_movement].each do |exercise|
@@ -230,9 +235,9 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'time', workout.score_type
-      assert_equal 6, workout.exercises.length
+      assert_equal 6, workout_exercises(workout).length
 
-      row_exercises = workout.exercises.select { |exercise| exercise.movement == movements(:row) }
+      row_exercises = workout_exercises(workout).select { |exercise| exercise.movement == movements(:row) }
       assert_equal 3, row_exercises.length
       row_exercises.each do |exercise|
         assert_equal [1, 40], [exercise.reps, exercise.calories]
@@ -240,7 +245,7 @@ module CfWod
         assert_nil exercise.distance_unit
       end
 
-      muscle_up_exercises = workout.exercises.select { |exercise| exercise.movement == muscle_up_movement }
+      muscle_up_exercises = workout_exercises(workout).select { |exercise| exercise.movement == muscle_up_movement }
       assert_equal [15, 10, 5], muscle_up_exercises.sort_by(&:position).map(&:reps)
     end
 
@@ -254,16 +259,37 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'time', workout.score_type
-      assert_equal 3, workout.exercises.length
+      assert_equal 3, workout_exercises(workout).length
 
-      snatch_exercises = workout.exercises.select { |exercise| exercise.movement == movements(:power_snatch) }
+      snatch_exercises = workout_exercises(workout).select { |exercise| exercise.movement == movements(:power_snatch) }
       snatch_exercises.each { |exercise| assert_equal [15, 75, 115], [exercise.reps, exercise.female_load, exercise.male_load] }
 
-      bike_exercise = workout.exercises.find { |exercise| exercise.movement == bike_movement }
+      bike_exercise = workout_exercises(workout).find { |exercise| exercise.movement == bike_movement }
       assert_equal [1, 24, 30], [bike_exercise.reps, bike_exercise.female_calories, bike_exercise.male_calories]
       assert_nil bike_exercise.calories
       assert_nil bike_exercise.distance
       assert_nil bike_exercise.distance_unit
+    end
+
+    test '260711: a repeated Open workout titled "Open Workout <n.n>" resolves to its catalog name' do
+      named = Workout.create!(name: 'Open 20.5', score_type: :time, time_cap_seconds: 1200)
+      body = "Open Workout 20.5\n\nFor time, partitioned any way:\n99 completely unparseable gibberish (each)"
+      page = wod_page(slug: '260711', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert_equal named, workout
+    end
+
+    test "260101: a bare-number rerun doesn't loosely match a trailing-letter catalog variant" do
+      Workout.create!(name: 'Open 15.1a', score_type: :time)
+      exact = Workout.create!(name: 'Open 15.1', score_type: :time)
+      body = "Open Workout 15.1\n\nFor time, partitioned any way:\n99 completely unparseable gibberish (each)"
+      page = wod_page(slug: '260101', body_text: body)
+
+      workout = WorkoutParser.call(page)
+
+      assert_equal exact, workout
     end
   end
 end

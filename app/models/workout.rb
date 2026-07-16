@@ -3,16 +3,15 @@ class Workout < ApplicationRecord
   include WorkoutPositionReservation
   include WorkoutScoring
 
-  has_many :exercises, dependent: :destroy
-  has_many :movements, through: :exercises
   has_many :segments, dependent: :destroy
+  has_many :exercises, through: :segments
+  has_many :movements, through: :exercises
   has_many :logs, dependent: :destroy
   has_many :movement_logs, through: :logs
   has_many :schedules, dependent: :destroy
   has_many :programs, through: :schedules
   has_rich_text :notes
 
-  accepts_nested_attributes_for :exercises, allow_destroy: true
   accepts_nested_attributes_for :segments, allow_destroy: true
 
   enum :score_type, Metric.measurements, prefix: :score
@@ -32,12 +31,30 @@ class Workout < ApplicationRecord
     where(query)
   end
 
+  # The one segment that determines the workout's overall scheme: the sole segment when there's
+  # exactly one, or the sole schemed one when there are several but only one carries an actual
+  # scheme. nil when no single segment dominates (a genuine multi-part chipper).
+  #
+  # Segments are loaded into an Array before checking one?/many? here: CollectionProxy#one?/
+  # #many?/#count run a SQL query rather than counting the in-memory target, which returns 0 for
+  # an unsaved workout with only just-built (unpersisted) segments -- e.g. CfWod::WorkoutParser's
+  # freshly parsed, not-yet-saved Workout. Array#one?/#many? don't have that problem.
+  def governing_segment
+    parts = segments.to_a
+    return parts.sole if parts.one?
+
+    schemed = parts.select(&:schemed?)
+    schemed.sole if schemed.one?
+  end
+
   def rounds_for_time?
-    rounds.present? && time.blank? && interval.blank?
+    return governing_segment.rounds? || !governing_segment.schemed? if governing_segment
+
+    segments.to_a.many? && !segmented_total_reps?
   end
 
   def amrap?
-    time.present? && rounds.blank? && interval.blank?
+    governing_segment&.amrap? || false
   end
 
   # An open-ended ascending-rep ladder: each round's reps start at the participating exercise's own
@@ -48,24 +65,24 @@ class Workout < ApplicationRecord
     ladder_step.present?
   end
 
+  # A shared clock split across contiguous, labeled time-block segments (e.g. "0:00-5:00: row",
+  # "5:00-10:00: bike"), where every segment carries its own time slice and none of them
+  # individually represents the whole clock. Distinct from governing_segment, which only fits
+  # shapes where one segment sets the pace for the others.
   def segmented_total_reps?
-    amrap? &&
-      score_measurement == 'rep' &&
-      segments.any? &&
-      exercises.any? &&
-      exercises.none? { |exercise| exercise.segment.blank? }
+    score_measurement == 'rep' && segments.to_a.many? && segments.all? { |segment| segment.time_seconds.present? }
   end
 
   def emom?
-    time.present? && rounds.present? && (time % rounds).zero?
+    governing_segment&.emom? || false
   end
 
   def timed_rounds?
-    rounds.present? && time.present? && interval.nil?
+    governing_segment&.timed_rounds? || false
   end
 
   def interval?
-    interval&.present?
+    governing_segment&.interval? || false
   end
 
   # Work is shared across multiple athletes (a partner or team workout). team_size
@@ -82,15 +99,8 @@ class Workout < ApplicationRecord
     logs.where(user)
   end
 
-  def ordered_parts
-    (exercises.select { |exercise| exercise.segment.blank? } + segments)
-      .sort_by { |part| [part.position || Float::INFINITY, part.id || 0] }
-  end
-
   def reps_from_interval
-    return nil unless interval?
-
-    interval.split('-').sum(&:to_i)
+    governing_segment&.reps_from_interval
   end
 
   def score_measurement

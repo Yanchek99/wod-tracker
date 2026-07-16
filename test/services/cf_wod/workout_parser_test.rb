@@ -7,6 +7,14 @@ module CfWod
                   scaling: nil, rest_day: false, previous_slug: nil, next_slug: nil)
     end
 
+    # Exercises are built via `segment.exercises.build(...)` (see CfWod::WorkoutParser), not
+    # `workout.exercises.build(segment:)`, because a has_many :through :segments association
+    # cannot autosave new records that were added directly to its own in-memory collection --
+    # Rails raises ActiveRecord::HasManyThroughCantAssociateThroughHasOneOrManyReflection on
+    # save otherwise. That means `workout.exercises` stays empty in memory on an unsaved,
+    # freshly-parsed workout; read exercises via each segment instead.
+    def workout_exercises(workout) = workout.segments.flat_map(&:exercises)
+
     test 'builds a valid, unsaved flat for-time workout with no prescription' do
       page = wod_page(slug: '300101', body_text: "For time:\n5 burpees")
 
@@ -16,12 +24,13 @@ module CfWod
       assert workout.valid?
       assert_equal 'CF-300101', workout.name
       assert_equal 'time', workout.score_type
-      assert_equal 1, workout.exercises.length
-      exercise = workout.exercises.first
+      assert_equal 1, workout_exercises(workout).length
+      exercise = workout_exercises(workout).first
       assert_equal movements(:burpee), exercise.movement
       assert_equal 5, exercise.reps
       assert_equal 1, exercise.position
-      assert_nil exercise.segment
+      assert exercise.segment.present?
+      assert_not exercise.segment.schemed?
       assert workout.notes.blank?
     end
 
@@ -59,7 +68,7 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'weight', workout.score_type
-      exercise = workout.exercises.first
+      exercise = workout_exercises(workout).first
       assert_equal movements(:back_squat), exercise.movement
       assert_equal 1, exercise.reps
       assert_equal 0, exercise.load
@@ -101,7 +110,7 @@ module CfWod
       assert workout.valid?
       assert_equal 'weight', workout.score_type
       assert_equal 5, workout.rounds
-      exercise = workout.exercises.first
+      exercise = workout_exercises(workout).first
       assert_equal front_squat, exercise.movement
       assert_equal 3, exercise.reps
       assert_equal 0, exercise.load
@@ -119,7 +128,8 @@ module CfWod
 
     test 'returns an existing workout when parsed content matches a differently named one' do
       existing = Workout.create!(name: 'Legacy Burpee Bench', score_type: :time)
-      existing.exercises.create!(movement: movements(:burpee), position: 1, reps: 5)
+      segment = existing.segments.create!(position: 1)
+      segment.exercises.create!(movement: movements(:burpee), position: 1, reps: 5)
       existing.refresh_content_key!
       page = wod_page(slug: '300106', body_text: "For time:\n5 burpees")
 

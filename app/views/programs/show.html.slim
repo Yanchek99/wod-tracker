@@ -17,7 +17,7 @@
       p.col #{workout_objective schedule.workout}
     .row
       ul.list-unstyled.col
-        = render partial: 'exercises/exercises', object: schedule.workout.exercises.order(:position)
+        = render partial: 'exercises/exercises', locals: { workout: schedule.workout }
     .row
       .col.d-grid
         = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-outline-primary' if Current.user.subscribed? @program

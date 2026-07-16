@@ -2,17 +2,17 @@ require 'application_system_test_case'
 
 module WorkoutDragOrderingSystemHelpers
   def fill_required_workout_fields(name)
-    fill_in 'Name', with: name
+    fill_in 'Name *', with: name
     select 'time', from: 'For'
   end
 
-  def add_top_level_exercise(movement:, reps: nil, distance: nil)
-    within '.workout-builder-toolbar' do
-      click_on 'Add Exercise'
+  # The default segment on a brand-new workout starts expanded, but any click outside
+  # its card (e.g. filling the workout's own Name/For fields) collapses it via
+  # segment-card#handleDocumentClick -- re-expand it before adding an exercise.
+  def expand_segment(segment)
+    within segment do
+      click_on 'New segment'
     end
-
-    exercise = all('#workout-parts > .fields > .exercise').last
-    fill_exercise(exercise, movement:, reps:, distance:)
   end
 
   def add_segment(name: nil)
@@ -80,33 +80,44 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     Warden.test_reset!
   end
 
-  test 'creates a workout with reordered top-level exercises' do
+  test 'creates a workout with reordered exercises in the default segment' do
     visit new_workout_url
 
     fill_required_workout_fields('Dragged Exercises')
-    add_top_level_exercise(movement: 'Pull Up', reps: '10')
-    add_top_level_exercise(movement: 'Run', distance: '400')
+    default_segment = all('#workout-parts > .fields > .nested-fields').last
+    expand_segment(default_segment)
+    within default_segment do
+      add_segment_exercise(movement: 'Pull Up', reps: '10')
+      add_segment_exercise(movement: 'Run', distance: '400')
+    end
 
-    reorder_sortable_list('#workout-parts', from: 1, to: 0)
+    reorder_sortable_list('#segmented_exercises', from: 1, to: 0)
     click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
     assert_text_order '400 meter Run', '10 Pull Ups'
   end
 
-  test 'creates a workout with reordered mixed top-level parts' do
+  test 'creates a workout with reordered segments' do
     visit new_workout_url
 
-    fill_required_workout_fields('Dragged Mixed Parts')
-    add_top_level_exercise(movement: 'Pull Up', reps: '10')
-    add_top_level_exercise(movement: 'Run', distance: '400')
-    add_segment(name: 'Middle')
+    fill_required_workout_fields('Dragged Segments')
+    default_segment = all('#workout-parts > .fields > .nested-fields').last
+    expand_segment(default_segment)
+    within default_segment do
+      fill_in 'Name', with: 'First'
+      add_segment_exercise(movement: 'Pull Up', reps: '10')
+    end
+    second_segment = add_segment(name: 'Middle')
+    within second_segment do
+      add_segment_exercise(movement: 'Run', distance: '400')
+    end
 
-    reorder_sortable_list('#workout-parts', from: 2, to: 1)
+    reorder_sortable_list('#workout-parts', from: 1, to: 0)
     click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
-    assert_text_order '10 Pull Ups', 'Then, Middle:', '400 meter Run'
+    assert_text_order 'Middle:', '400 meter Run', 'First:', '10 Pull Ups'
   end
 
   test 'creates a workout with reordered segment exercises' do
@@ -123,13 +134,17 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     click_on 'Save Workout'
 
     assert_current_path %r{/workouts/\d+}
-    assert_text_order 'Segment:', '400 meter Run', '10 Pull Ups'
+    assert_text_order '400 meter Run', '10 Pull Ups'
+    assert_no_text 'Segment:'
   end
 
-  test 'edits a workout with reordered existing parts' do
+  test 'edits a workout with reordered exercises in its sole segment' do
     visit edit_workout_url(workouts(:murph))
 
-    reorder_sortable_list('#workout-parts', from: 1, to: 0)
+    # A persisted segment starts collapsed to its summary line -- expand it to reach
+    # its exercises.
+    find('.segment-summary__button').click
+    reorder_sortable_list('#segmented_exercises', from: 1, to: 0)
     click_on 'Save Workout'
 
     assert_current_path workout_path(workouts(:murph))
@@ -151,16 +166,20 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
     visit new_workout_url
 
     fill_required_workout_fields('Dragged Deleted Exercise')
-    add_top_level_exercise(movement: 'Pull Up', reps: '10')
-    add_top_level_exercise(movement: 'Push Up', reps: '20')
-    add_top_level_exercise(movement: 'Run', distance: '400')
+    default_segment = all('#workout-parts > .fields > .nested-fields').last
+    expand_segment(default_segment)
+    within default_segment do
+      add_segment_exercise(movement: 'Pull Up', reps: '10')
+      add_segment_exercise(movement: 'Push Up', reps: '20')
+      add_segment_exercise(movement: 'Run', distance: '400')
+    end
 
-    reorder_sortable_list('#workout-parts', from: 2, to: 0)
-    within all('#workout-parts > .fields > .exercise').last do
+    reorder_sortable_list('#segmented_exercises', from: 2, to: 0)
+    within all('#segmented_exercises .exercise').last do
       find('[aria-label="Delete exercise"]').click
     end
 
-    positions = all('#workout-parts > .fields > .exercise:not([hidden]) input[name$="[position]"]',
+    positions = all('#segmented_exercises .exercise:not([hidden]) input[name$="[position]"]',
                     visible: false).map(&:value)
     assert_equal %w[1 2], positions
 
@@ -173,15 +192,19 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
 
   private
 
+  # The former top-level "Rest" exercise between two schemed segments becomes its own
+  # implicit (unschemed, unnamed) segment, matching how a real flat stretch between two
+  # real segments is represented post-segment-unification (see Alec's shape).
   def create_tabata_workout
     rest = Movement.find_or_create_by!(name: 'Rest')
     workout = Workout.create!(name: 'CFJ-181226 Reorder Test', score_type: :rep)
     first_segment = workout.segments.create!(rounds: 8, position: 1)
-    first_segment.exercises.create!(workout:, movement: movements(:hspu), position: 1, duration_seconds: 20)
-    first_segment.exercises.create!(workout:, movement: rest, position: 2, duration_seconds: 10)
-    workout.exercises.create!(movement: rest, position: 2, duration_seconds: 60)
+    first_segment.exercises.create!(movement: movements(:hspu), position: 1, duration_seconds: 20)
+    first_segment.exercises.create!(movement: rest, position: 2, duration_seconds: 10)
+    rest_segment = workout.segments.create!(position: 2)
+    rest_segment.exercises.create!(movement: rest, position: 1, duration_seconds: 60)
     second_segment = workout.segments.create!(rounds: 8, position: 3)
-    second_segment.exercises.create!(workout:, movement: movements(:pistol), position: 1, duration_seconds: 20)
+    second_segment.exercises.create!(movement: movements(:pistol), position: 1, duration_seconds: 20)
     workout
   end
 end

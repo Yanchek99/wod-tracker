@@ -13,6 +13,8 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
   test 'edits an existing workout exercise through a summary card' do
     visit edit_workout_url(workouts(:fran))
+    # Fran's persisted segment starts collapsed -- expand it to reach its exercises.
+    find('.segment-summary__button').click
 
     within first('.exercise') do
       assert_no_field 'Reps'
@@ -58,6 +60,8 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
   test 'opening another card saves and collapses the currently open exercise' do
     visit edit_workout_url(workouts(:fran))
+    # Fran's persisted segment starts collapsed -- expand it to reach its exercises.
+    find('.segment-summary__button').click
 
     cards = all('.exercise')
 

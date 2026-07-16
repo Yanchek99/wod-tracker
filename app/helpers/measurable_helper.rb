@@ -53,7 +53,7 @@ module MeasurableHelper
   def measurable_notes(measurable)
     return unless measurable.respond_to?(:notes) && measurable.notes.present?
 
-    "(#{measurable.notes})"
+    "** #{measurable.notes}"
   end
 
   def additional_metrics(measurable)

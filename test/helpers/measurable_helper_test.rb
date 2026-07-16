@@ -20,7 +20,7 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                  load_unit: :lb, female_load: 25, male_load: 45,
                                                                  notes: 'Carry a plate.')
 
-    assert_equal '400 meter Run (♀25lb / ♂45lb) (Carry a plate.)', measurable_message(exercise)
+    assert_equal '400 meter Run (♀25lb / ♂45lb) ** Carry a plate.', measurable_message(exercise)
   end
 
   test 'renders multi-implement dumbbell load with a count prefix' do

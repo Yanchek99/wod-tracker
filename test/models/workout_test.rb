@@ -102,7 +102,7 @@ class WorkoutTest < ActiveSupport::TestCase
   end
 
   test 'does not identify empty segmented clocks as total-rep clocks' do
-    workout = Workout.new(name: 'Empty Segments', time: 20, score_type: :rep)
+    workout = Workout.new(name: 'Empty Segments', score_type: :rep)
     workout.segments.build(time_seconds: 300, position: 1)
 
     assert_not_predicate workout, :segmented_total_reps?

@@ -1,5 +1,4 @@
 fran_thruster:
-  workout: fran
   segment: fran_segment
   movement: thruster
   position: 1
@@ -7,14 +6,12 @@ fran_thruster:
   load: 95
 
 fran_pullup:
-  workout: fran
   segment: fran_segment
   movement: pullup
   position: 2
   reps: 1
 
 murph_run:
-  workout: murph
   segment: murph_segment
   movement: run
   position: 1
@@ -22,28 +19,24 @@ murph_run:
   distance: 1600
 
 murph_pullup:
-  workout: murph
   segment: murph_segment
   movement: pullup
   position: 2
   reps: 100
 
 murph_pushup:
-  workout: murph
   segment: murph_segment
   movement: pushup
   position: 3
   reps: 200
 
 murph_squat:
-  workout: murph
   segment: murph_segment
   movement: squat
   position: 4
   reps: 300
 
 murph_second_run:
-  workout: murph
   segment: murph_segment
   movement: run
   position: 5
@@ -51,45 +44,38 @@ murph_second_run:
   distance: 1600
 
 segmented_run:
-  workout: segmented
   segment: segmented_before
   movement: run
   position: 1
 
 segmented_hspu:
-  workout: segmented
   segment: test
   movement: hspu
   position: 1
 
 segmented_pistol:
-  workout: segmented
   segment: test
   movement: pistol
   position: 2
 
 segmented_second_run:
-  workout: segmented
   segment: segmented_after
   movement: run
   position: 1
 
 amrap_couplet_pullup:
-  workout: amrap_couplet
   segment: amrap_couplet_segment
   movement: pullup
   position: 1
   reps: 10
 
 amrap_couplet_pushup:
-  workout: amrap_couplet
   segment: amrap_couplet_segment
   movement: pushup
   position: 2
   reps: 15
 
 amrap_mixed_row:
-  workout: amrap_mixed
   segment: amrap_mixed_segment
   movement: row
   position: 1
@@ -99,21 +85,18 @@ amrap_mixed_row:
   distance_unit: meter
 
 amrap_mixed_pushup:
-  workout: amrap_mixed
   segment: amrap_mixed_segment
   movement: pushup
   position: 2
   reps: 10
 
 amrap_mixed_run:
-  workout: amrap_mixed
   segment: amrap_mixed_segment
   movement: run
   position: 3
   calories: 20
 
 amrap_unknown_distance_run:
-  workout: amrap_unknown_distance
   segment: amrap_unknown_distance_segment
   movement: run
   position: 1
@@ -121,7 +104,6 @@ amrap_unknown_distance_run:
   distance_unit: meter
 
 back_squat_5x5_back_squat:
-  workout: back_squat_5x5
   segment: back_squat_5x5_segment
   movement: back_squat
   position: 1
@@ -129,7 +111,6 @@ back_squat_5x5_back_squat:
   load: 0
 
 segmented_total_reps_run:
-  workout: segmented_total_reps
   segment: segmented_total_reps_first
   movement: run
   position: 1
@@ -138,7 +119,6 @@ segmented_total_reps_run:
   distance_unit: meter
 
 segmented_total_reps_pushup:
-  workout: segmented_total_reps
   segment: segmented_total_reps_first
   movement: pushup
   position: 2

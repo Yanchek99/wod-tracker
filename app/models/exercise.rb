@@ -5,9 +5,15 @@ class Exercise < ApplicationRecord
 
   SEX_PAIRED_DIMENSIONS = %i[load distance calories].freeze
 
-  belongs_to :workout
   belongs_to :movement
   belongs_to :segment
+
+  # No direct workout_id column or association anymore -- segment is the sole owner of workout
+  # membership. Kept private since it's an implementation detail for ladder_participant?,
+  # ladder_reps, ExercisePrescription#max_load_test?, and the shared RefreshesWorkoutContentKey
+  # concern; callers that want the workout for prescription purposes should read exercise.segment
+  # directly instead (see #reps_defined_by_interval? and Log#movement_log_metric_value).
+  delegate :workout, to: :segment, private: true
 
   default_scope { order(:position) }
 
@@ -65,7 +71,7 @@ class Exercise < ApplicationRecord
   # movement line with no interval scheme (e.g. a chipper's standalone "Rope Climb"), where reps: 1
   # is a real, displayable count.
   def reps_defined_by_interval?
-    (segment.presence || workout).interval?
+    segment.interval?
   end
 
   def distance_score_component

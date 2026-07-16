@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_13_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_13_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -73,14 +73,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_13_120000) do
     t.string "notes"
     t.integer "position", null: false
     t.integer "reps"
-    t.bigint "segment_id"
+    t.bigint "segment_id", null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.bigint "workout_id"
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
-    t.index ["position", "segment_id"], name: "index_exercises_on_position_and_segment_id", unique: true, where: "(segment_id IS NOT NULL)"
-    t.index ["position", "workout_id"], name: "index_exercises_on_position_and_workout_id", unique: true, where: "(segment_id IS NULL)"
+    t.index ["position", "segment_id"], name: "index_exercises_on_position_and_segment_id", unique: true
     t.index ["segment_id"], name: "index_exercises_on_segment_id"
-    t.index ["workout_id"], name: "index_exercises_on_workout_id"
   end
 
   create_table "logs", force: :cascade do |t|
@@ -321,13 +318,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_13_120000) do
   create_table "workouts", force: :cascade do |t|
     t.string "content_key"
     t.datetime "created_at", precision: nil, null: false
-    t.string "interval"
     t.integer "ladder_step"
     t.string "name"
-    t.integer "rounds"
     t.integer "score_type", null: false
     t.integer "team_size"
-    t.integer "time"
     t.integer "time_cap_seconds"
     t.datetime "updated_at", precision: nil, null: false
     t.index ["content_key"], name: "index_workouts_on_content_key", unique: true
@@ -337,7 +331,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_13_120000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "exercises", "movements"
   add_foreign_key "exercises", "segments"
-  add_foreign_key "exercises", "workouts"
   add_foreign_key "movement_logs", "logs"
   add_foreign_key "movement_logs", "movements"
   add_foreign_key "schedules", "programs"

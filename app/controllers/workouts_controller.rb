@@ -78,7 +78,7 @@ class WorkoutsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_workout
-    @workout = Workout.includes(:exercises).find(params.expect(:id))
+    @workout = Workout.includes(segments: :exercises).find(params.expect(:id))
   end
 
   # Only allow a list of trusted parameters through.

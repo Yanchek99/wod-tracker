@@ -20,7 +20,7 @@ module CfWod
     def parse_from_prose(lines)
       header, body = extract_header_and_body(lines)
       attrs = WorkoutFormatClassifier.call(header)
-      workout = Workout.new(name: "CF-#{wod_page.slug}", **attrs.except(:lift_name, :set_reps))
+      workout = Workout.new(name: "CF-#{wod_page.slug}", **attrs.except(:lift_name, :set_reps, :rounds, :time, :interval))
       build_workout_content(workout, attrs, header_scheme(attrs), body)
       validate_workout!(workout)
       find_content_duplicate(workout) || workout

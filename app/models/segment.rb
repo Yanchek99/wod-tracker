@@ -38,7 +38,7 @@ class Segment < ApplicationRecord
   end
 
   def timed_rounds?
-    rounds.present? && time_seconds.present? && interval_scheme.nil?
+    rounds.present? && time_seconds.present? && interval_scheme.blank?
   end
 
   def interval?

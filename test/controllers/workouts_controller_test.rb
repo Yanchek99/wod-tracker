@@ -99,6 +99,27 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Break up the pull-ups early.', @workout.reload.notes.to_plain_text.strip
   end
 
+  test 'submitting a blank interval field keeps a timed-rounds segment timed-rounds' do
+    workout = Workout.create!(name: 'Timed Rounds Update Test', score_type: :time)
+    segment = workout.segments.create!(rounds: 4, time_seconds: 1500, position: 1)
+
+    # The builder form always submits interval_scheme now (see _segment_fields.html.slim);
+    # an unfilled interval field arrives as "" here, the same way a real form submission
+    # would, not just via the client-side "Done" button's local JS state.
+    patch workout_url(workout), params: { workout: {
+      name: workout.name,
+      score_type: workout.score_type,
+      segments_attributes: {
+        '0' => { id: segment.id, position: 1, rounds: 4, time_seconds: 1500, interval_scheme: '' }
+      }
+    } }
+
+    assert_redirected_to workout_url(workout)
+    segment.reload
+    assert_predicate segment, :timed_rounds?
+    assert_not_predicate segment, :interval?
+  end
+
   test 'should destroy workout' do
     assert_difference('Workout.count', -1) do
       delete workout_url(@workout)

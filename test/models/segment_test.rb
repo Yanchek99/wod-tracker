@@ -35,6 +35,12 @@ class SegmentTest < ActiveSupport::TestCase
     assert_not_predicate Segment.new(rounds: 4), :timed_rounds?
   end
 
+  test 'identifies timed rounds segments with a blank (not nil) submitted interval_scheme' do
+    # The builder form always submits interval_scheme now (see _segment_fields.html.slim),
+    # so an unfilled interval field persists as "" rather than the column's nil default.
+    assert_predicate Segment.new(time_seconds: 1500, rounds: 4, interval_scheme: ''), :timed_rounds?
+  end
+
   test 'identifies max-rep segments by zero-rep exercises' do
     segment = Segment.new(time_seconds: 300)
     segment.exercises.build(reps: 0)

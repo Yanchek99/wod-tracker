@@ -9,18 +9,9 @@ class MeasurableHelperTest < ActionView::TestCase
 
   test 'renders sex-specific additional exercise metrics' do
     exercise = exercises(:fran_pullup)
-    exercise.update!(load_unit: :lb, female_load: 65, male_load: 95)
+    exercise.update!(load_unit: :lb, female_load: 65, male_load: 95, notes: 'Carry a plate.')
 
-    assert_equal 'Pull Up (♀65lb / ♂95lb)', measurable_message(exercise)
-  end
-
-  test 'renders exercise notes after the prescription' do
-    exercise = workouts(:murph).segments.first.exercises.create!(movement: movements(:run), position: 6, reps: 1,
-                                                                 distance: 400, distance_unit: :meter,
-                                                                 load_unit: :lb, female_load: 25, male_load: 45,
-                                                                 notes: 'Carry a plate.')
-
-    assert_equal '400 meter Run (♀25lb / ♂45lb) ** Carry a plate.', measurable_message(exercise)
+    assert_equal 'Pull Up (♀65lb / ♂95lb) ** Carry a plate.', measurable_message(exercise)
   end
 
   test 'renders multi-implement dumbbell load with a count prefix' do

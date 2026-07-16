@@ -1,5 +1,5 @@
 - cancel_path = @workout.persisted? ? workout_path(@workout) : workouts_path
-- ladder_segment = @workout.governing_segment
+- ladder_segment = @workout.segments.first
 - ladder_hidden = ladder_segment.blank? || ladder_segment.time_seconds.blank? || ladder_segment.rounds.present? || ladder_segment.interval_scheme.present?
 
 = simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form', data: { controller: 'ladder-fields' } } do |f|

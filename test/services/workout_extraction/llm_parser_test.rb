@@ -8,6 +8,12 @@ module WorkoutExtraction
       @movement = movements(:thruster)
     end
 
+    # Exercises are built via `segment.exercises.build(...)`, not `workout.exercises.build(...)` --
+    # a has_many :through :segments association can't autosave records added directly to its own
+    # in-memory collection, so `workout.exercises` stays empty on an unsaved workout (see
+    # CfWod::WorkoutParserTest, which hit the same thing first). Read exercises via each segment.
+    def workout_exercises(workout) = workout.segments.flat_map(&:exercises)
+
     test 'builds an unsaved Workout from a well-formed response' do
       stub_llm_response(
         extractable: true, name: 'Fran', score_type: 'time', rounds: nil, time: nil, interval: '21-15-9',
@@ -20,8 +26,8 @@ module WorkoutExtraction
       assert_not workout.persisted?
       assert_equal 'Fran', workout.name
       assert_equal 'time', workout.score_type
-      assert_equal 1, workout.exercises.size
-      assert_equal @movement, workout.exercises.first.movement
+      assert_equal 1, workout_exercises(workout).size
+      assert_equal @movement, workout_exercises(workout).first.movement
     end
 
     test 'falls back to a date-based name when the LLM omits one' do
@@ -36,7 +42,25 @@ module WorkoutExtraction
       assert_equal 'CF-260115', workout.name
     end
 
-    test 'builds segments and top-level exercises without colliding positions' do
+    test 'wraps a flat workout in one implicit unnamed segment carrying its scheme' do
+      stub_llm_response(
+        extractable: true, name: 'Cindy', score_type: 'round', rounds: nil, time: 1200, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 20)]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('AMRAP 20: 20 Thrusters', date: DATE)
+
+      assert workout.valid?
+      assert_equal 1, workout.segments.size
+      segment = workout.segments.first
+      assert_nil segment.name
+      assert_equal 1200, segment.time_seconds
+      assert_equal 1, segment.exercises.size
+      assert_equal @movement, segment.exercises.first.movement
+    end
+
+    test 'wraps top-level exercises in an implicit segment positioned after any named segments' do
       pull_up = movements(:pullup)
 
       stub_llm_response(
@@ -53,14 +77,14 @@ module WorkoutExtraction
 
       assert workout.valid?
       assert_not workout.persisted?
+      assert_equal 2, workout.segments.size
 
-      segment = workout.segments.first
-      segment_exercise = workout.exercises.find { |exercise| exercise.segment == segment }
-      top_level_exercise = workout.exercises.find { |exercise| exercise.segment.blank? }
-
-      assert_not_equal segment.position, top_level_exercise.position
-      assert_equal segment, segment_exercise.segment
-      assert top_level_exercise.segment.blank?
+      named_segment, implicit_segment = workout.segments.sort_by(&:position)
+      assert_equal 'Part A', named_segment.name
+      assert_nil implicit_segment.name
+      assert_not_equal named_segment.position, implicit_segment.position
+      assert_equal pull_up, named_segment.exercises.first.movement
+      assert_equal @movement, implicit_segment.exercises.first.movement
     end
 
     test 'parses the response even when wrapped in a markdown code fence' do
@@ -74,8 +98,23 @@ module WorkoutExtraction
 
       workout = WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)', date: DATE)
 
-      assert_equal 1, workout.exercises.size
-      assert_equal @movement, workout.exercises.first.movement
+      assert_equal 1, workout_exercises(workout).size
+      assert_equal @movement, workout_exercises(workout).first.movement
+    end
+
+    test 'uses the last fenced block when the model self-corrects with a second one' do
+      draft = { extractable: true, name: 'Fran', score_type: 'time', segments: [],
+                exercises: [exercise_payload(movement_name: 'wrong movement', reps: 1)] }
+      corrected = { extractable: true, name: 'Fran', score_type: 'time', segments: [],
+                    exercises: [exercise_payload(movement_name: @movement.name, reps: 1)] }
+      raw_text = "```json\n#{draft.to_json}\n```\n\nWait, let me reconsider.\n\n```json\n#{corrected.to_json}\n```"
+      stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        .to_return(anthropic_http_response_with_raw_text(raw_text))
+
+      workout = WorkoutExtraction::LlmParser.call('21-15-9 Thrusters (95/65)', date: DATE)
+
+      assert_equal 1, workout_exercises(workout).size
+      assert_equal @movement, workout_exercises(workout).first.movement
     end
 
     private

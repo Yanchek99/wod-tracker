@@ -8,7 +8,9 @@ namespace :workout_extraction do
     workout = WorkoutExtraction::LlmParser.call(text, date: Date.current, logger: Logger.new($stdout))
     pp workout
     pp workout.segments
-    pp workout.exercises
+    # workout.exercises (has_many :through :segments) stays empty in memory on an unsaved workout --
+    # read exercises via each segment instead.
+    pp workout.segments.flat_map(&:exercises)
   rescue WorkoutExtraction::LlmParser::ExtractionError => e
     abort "Extraction failed: #{e.message}"
   rescue WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e

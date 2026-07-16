@@ -116,6 +116,21 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
     end
   end
 
+  test 'allows setting a scheme on a flat, unschemed persisted segment' do
+    # Murph's sole segment is unschemed and unnamed -- the shape that used to be
+    # unconditionally hidden from editing (implicit_workout_part?), back when the
+    # now-removed workout-level rounds/time/interval fields were the only way to
+    # give a flat, migrated workout a scheme.
+    visit edit_workout_url(workouts(:murph))
+    find('.segment-summary__button').click
+
+    assert_field 'Rounds'
+    fill_in 'Rounds', with: '3'
+    click_on 'Done'
+
+    assert_text '3 rounds of'
+  end
+
   test 'collapses an open segment when clicking outside it' do
     visit edit_workout_url(workouts(:segmented))
 

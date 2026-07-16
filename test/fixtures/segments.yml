@@ -1,12 +1,53 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+fran_segment:
+  workout: fran
+  interval_scheme: 21-15-9
+  position: 1
+
+murph_segment:
+  workout: murph
+  position: 1
+
+segmented_before:
+  workout: segmented
+  position: 1
 
 test:
   workout: segmented
   rounds: 10
   position: 2
 
+segmented_after:
+  workout: segmented
+  position: 3
+
+amrap_couplet_segment:
+  workout: amrap_couplet
+  time_seconds: 600
+  position: 1
+
+amrap_mixed_segment:
+  workout: amrap_mixed
+  time_seconds: 1200
+  position: 1
+
+amrap_unknown_distance_segment:
+  workout: amrap_unknown_distance
+  time_seconds: 720
+  position: 1
+
+back_squat_5x5_segment:
+  workout: back_squat_5x5
+  rounds: 5
+  position: 1
+
 segmented_total_reps_first:
   workout: segmented_total_reps
-  name: 0:00-5:00
+  name: '0:00-5:00'
   time_seconds: 300
   position: 1
+
+segmented_total_reps_second:
+  workout: segmented_total_reps
+  name: '5:00-10:00'
+  time_seconds: 300
+  position: 2

@@ -1,7 +1,8 @@
 module SegmentsHelper
   def segment_objective(segment, then_prefix: false)
-    msg = then_prefix && !named_max_reps_segment?(segment) ? 'Then, ' : ''
+    return nil if segment.name.blank? && !segment.schemed?
 
+    msg = then_prefix && !named_max_reps_segment?(segment) ? 'Then, ' : ''
     "#{msg}#{segment_prescription(segment)}"
   end
 

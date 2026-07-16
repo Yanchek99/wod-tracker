@@ -15,13 +15,6 @@ class SegmentTest < ActiveSupport::TestCase
     assert_includes segment.errors[:position], 'has already been taken'
   end
 
-  test 'rejects positions already used by top-level exercises' do
-    segment = workouts(:segmented).segments.build(position: 1)
-
-    assert_not segment.valid?
-    assert_includes segment.errors[:position], 'has already been taken'
-  end
-
   test 'rejects duplicate positions among unsaved segments in the same workout' do
     workout = Workout.new(name: 'Invalid Segment Positions', score_type: :time)
     segment = workout.segments.build(position: 1)
@@ -32,13 +25,6 @@ class SegmentTest < ActiveSupport::TestCase
     assert_includes segment.errors[:position], 'has already been taken'
   end
 
-  test 'rejects top-level exercise positions already used by segments' do
-    exercise = workouts(:segmented).exercises.build(movement: movements(:run), position: 2)
-
-    assert_not exercise.valid?
-    assert_includes exercise.errors[:position], 'has already been taken'
-  end
-
   test 'identifies emom segments by whole-minute rounds' do
     assert_predicate Segment.new(time_seconds: 600, rounds: 10), :emom?
     assert_not_predicate Segment.new(time_seconds: 630, rounds: 10), :emom?
@@ -47,6 +33,12 @@ class SegmentTest < ActiveSupport::TestCase
   test 'identifies timed rounds segments' do
     assert_predicate Segment.new(time_seconds: 1500, rounds: 4), :timed_rounds?
     assert_not_predicate Segment.new(rounds: 4), :timed_rounds?
+  end
+
+  test 'identifies timed rounds segments with a blank (not nil) submitted interval_scheme' do
+    # The builder form always submits interval_scheme now (see _segment_fields.html.slim),
+    # so an unfilled interval field persists as "" rather than the column's nil default.
+    assert_predicate Segment.new(time_seconds: 1500, rounds: 4, interval_scheme: ''), :timed_rounds?
   end
 
   test 'identifies max-rep segments by zero-rep exercises' do

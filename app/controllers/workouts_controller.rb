@@ -16,6 +16,7 @@ class WorkoutsController < ApplicationController
   # GET /workouts/new
   def new
     @workout = Workout.new
+    @workout.segments.build(position: 1)
   end
 
   # GET /workouts/1/edit
@@ -88,12 +89,10 @@ class WorkoutsController < ApplicationController
                        :distance, :female_distance, :male_distance, :distance_unit,
                        :calories, :female_calories, :male_calories, :notes]
 
-    attributes = params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
-                                         :score_type, :ladder_step, :team_size,
+    attributes = params.expect(workout: [:name, :notes, :time_cap, :score_type, :ladder_step, :team_size,
                                          { segments_attributes: [[:id, :name, :rounds, :time_seconds, :interval_scheme,
                                                                   :rest_seconds, :notes, :position, :_destroy,
-                                                                  { exercises_attributes: [exercise_params] }]] },
-                                         { exercises_attributes: [exercise_params] }])
+                                                                  { exercises_attributes: [exercise_params] }]] }])
     canonicalize_submitted_loads(attributes)
     attributes
   end
@@ -113,10 +112,6 @@ class WorkoutsController < ApplicationController
   end
 
   def submitted_exercise_attributes(attributes)
-    exercises = Array(attributes[:exercises_attributes])
-    Array(attributes[:segments_attributes]).each do |segment|
-      exercises.concat(Array(segment[:exercises_attributes]))
-    end
-    exercises
+    Array(attributes[:segments_attributes]).flat_map { |segment| Array(segment[:exercises_attributes]) }
   end
 end

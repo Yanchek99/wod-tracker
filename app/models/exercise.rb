@@ -7,7 +7,7 @@ class Exercise < ApplicationRecord
 
   belongs_to :workout
   belongs_to :movement
-  belongs_to :segment, optional: true
+  belongs_to :segment
 
   default_scope { order(:position) }
 

@@ -11,68 +11,70 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
     Warden.test_reset!
   end
 
-  test 'assigns exercise positions within each workout segment' do
+  test 'assigns exercise positions within a segment' do
     visit new_workout_url
 
-    click_on 'Add Exercise'
-    assert_hidden_position all('#workout-parts > .fields > .exercise').last, '1'
-
-    click_on 'Add Segment'
-    within all('#workout-parts > .fields > .nested-fields').last do
-      assert_equal '2', find('input[name$="[position]"]', visible: false).value
-
+    default_segment = all('#workout-parts > .fields > .workout-part').last
+    within default_segment do
       click_on 'Add Exercise'
       assert_hidden_position all('.exercise').last, '1'
 
       click_on 'Add Exercise'
       positions = all('.exercise input[name$="[position]"]', visible: false).map(&:value)
-      assert_equal %w[1 2], positions, "expected 2 exercises positions, got #{positions.inspect}"
+      assert_equal %w[1 2], positions, "expected 2 exercise positions, got #{positions.inspect}"
 
       within all('.exercise').last do
         find('[aria-label="Delete exercise"]').click
       end
       assert_equal 1, all('.exercise').size
     end
-
-    within '.workout-builder-toolbar' do
-      click_on 'Add Exercise'
-    end
-    assert_equal %w[1 3], all(
-      '#workout-parts > .fields > .exercise input[name$="[position]"]',
-      visible: false
-    ).map(&:value)
   end
 
-  test 'normalizes positions after removed workout parts' do
+  test 'assigns sequential positions to segments as they are added' do
     visit new_workout_url
 
-    click_on 'Add Exercise'
-    assert_hidden_position all('#workout-parts > .fields > .exercise').last, '1'
+    default_segment = all('#workout-parts > .fields > .workout-part').last
+    assert_segment_position default_segment, '1'
 
     click_on 'Add Segment'
-    within all('#workout-parts > .fields > .nested-fields').last do
-      assert_equal '2', find('input[name$="[position]"]', visible: false).value
+    second_segment = all('#workout-parts > .fields > .workout-part').last
+    assert_segment_position second_segment, '2'
+
+    click_on 'Add Segment'
+    third_segment = all('#workout-parts > .fields > .workout-part').last
+    assert_segment_position third_segment, '3'
+  end
+
+  test 'normalizes segment positions after a segment is removed' do
+    visit new_workout_url
+
+    click_on 'Add Segment'
+    click_on 'Add Segment'
+    segments = all('#workout-parts > .fields > .workout-part')
+    assert_equal(%w[1 2 3], segments.map { |segment| segment_position(segment) })
+
+    within segments[1] do
+      find('[aria-label="Delete segment"]').click
     end
 
-    within '.workout-builder-toolbar' do
-      click_on 'Add Exercise'
-    end
-    assert_hidden_position all('#workout-parts > .fields > .exercise').last, '3'
-
-    find('[aria-label="Delete segment"]').click
-
-    within '.workout-builder-toolbar' do
-      click_on 'Add Exercise'
-    end
-    assert_equal %w[1 2 3], all(
-      '#workout-parts > .fields > .exercise:not([hidden]) input[name$="[position]"]',
-      visible: false
-    ).map(&:value)
+    remaining = all('#workout-parts > .fields > .workout-part:not([hidden])')
+    assert_equal(%w[1 2], remaining.map { |segment| segment_position(segment) })
   end
 
   private
 
   def assert_hidden_position(scope, value)
     assert_equal value, scope.find('input[name$="[position]"]', visible: false).value
+  end
+
+  # A `>` direct-child lookup, unlike assert_hidden_position: a segment's own hidden
+  # position field must be distinguished from any exercise nested inside it, whose
+  # position field also matches a bare `input[name$="[position]"]` descendant search.
+  def assert_segment_position(scope, value)
+    assert_equal value, segment_position(scope)
+  end
+
+  def segment_position(scope)
+    scope.find(:css, ':scope > input[name$="[position]"]', visible: false).value
   end
 end

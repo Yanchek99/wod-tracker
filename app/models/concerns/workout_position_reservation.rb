@@ -2,7 +2,6 @@ module WorkoutPositionReservation
   extend ActiveSupport::Concern
 
   def reserve_submitted_positions!(attributes)
-    reserve_records(existing_top_level_exercises(attributes))
     reserve_records(existing_segments(attributes))
 
     nested_attribute_values(attributes[:segments_attributes]).each do |segment_attributes|
@@ -14,11 +13,6 @@ module WorkoutPositionReservation
   end
 
   private
-
-  def existing_top_level_exercises(attributes)
-    exercise_ids = nested_attribute_ids(attributes[:exercises_attributes])
-    Exercise.unscoped.where(workout_id: id, segment_id: nil, id: exercise_ids)
-  end
 
   def existing_segments(attributes)
     segment_ids = nested_attribute_ids(attributes[:segments_attributes])

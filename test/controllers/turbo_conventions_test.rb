@@ -67,18 +67,16 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
       assert_select '.workout-builder-toolbar__actions'
       assert_select 'button[type="submit"]', text: 'Save Workout'
       assert_select 'a[href=?]', workouts_path, text: 'Cancel Workout'
-      assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="exercise"]', text: 'Add Exercise'
       assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="segment"]', text: 'Add Segment'
       assert_select '.fa-floppy-disk'
       assert_select '.fa-xmark'
-      assert_select '.fa-dumbbell'
       assert_select '.fa-layer-group'
       assert_select 'a[data-turbo-method="delete"]', false
     end
     assert_select '.form-actions', false
-    assert_select '[data-controller~="nested-form"][data-nested-form-position-exercises-value="true"]'
+    assert_select '[data-controller~="nested-form"][data-nested-form-position-segments-value="true"]'
     assert_select 'template[data-nested-form-target="template"]'
-    assert_select 'a[data-action="click->nested-form#add"]'
+    assert_select 'a[data-action="click->nested-form#add"]', text: 'Add Exercise'
   end
 
   test 'workout edit form cancels to the workout show page' do

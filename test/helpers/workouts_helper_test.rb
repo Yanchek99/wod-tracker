@@ -8,6 +8,12 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'For Time', workout_objective(workout)
   end
 
+  test 'renders a segment-less workout with a generic fallback objective' do
+    workout = Workout.new(name: 'Empty Workout', score_type: :time)
+
+    assert_equal 'For time', workout_objective(workout)
+  end
+
   test 'renders set-based lifting workouts as sets for load' do
     workout = Workout.new(name: 'Back Squat 5x5', score_type: :weight)
     segment = workout.segments.build(rounds: 5, position: 1)

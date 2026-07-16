@@ -1,6 +1,8 @@
 - if workout.segments.any? { |segment| segment.exercises.any? }
   - workout.segments.each_with_index do |segment, index|
-    - objective = segment_objective(segment, then_prefix: index.positive?)
+    - # The governing segment's own scheme is already conveyed by workout_objective
+    - # wherever this partial is rendered; showing it again here would be redundant.
+    - objective = segment == workout.governing_segment ? nil : segment_objective(segment, then_prefix: index.positive?)
     - if objective
       li = objective
     - segment.exercises.each do |exercise|

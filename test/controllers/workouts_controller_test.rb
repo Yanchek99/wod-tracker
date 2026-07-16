@@ -76,6 +76,13 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'does not repeat the governing segment scheme as its own header line' do
+    get workout_url(@workout)
+
+    assert_select 'p', text: '21-15-9 for time'
+    assert_select 'li', text: '21-15-9 of', count: 0
+  end
+
   test 'should get edit' do
     get edit_workout_url(@workout)
     assert_response :success

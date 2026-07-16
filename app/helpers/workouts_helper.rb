@@ -13,6 +13,7 @@ module WorkoutsHelper
     return amrap_objective(workout) if workout.amrap?
     return "EMOM #{workout.governing_segment.time_seconds / 60}" if workout.emom?
     return timed_rounds_objective(workout) if workout.timed_rounds?
+    return "For #{workout.score_measurement}" if workout.governing_segment.blank?
 
     "#{workout.governing_segment.interval_scheme} for #{workout.score_measurement}"
   end

@@ -1,6 +1,6 @@
 module MeasurableHelper
   def measurable_message(measurable)
-    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable)].compact.join(' ')
+    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable), measurable_notes(measurable)].compact.join(' ')
   end
 
   def measurable_movement_msg(measurable)
@@ -48,6 +48,12 @@ module MeasurableHelper
     return "(#{sex_specific_metrics_msg(metrics)})" if grouped_sex_specific_metrics?(metrics)
 
     "(#{metrics.map { |metric| metric_unit_msg(metric) }.join(' / ')})"
+  end
+
+  def measurable_notes(measurable)
+    return unless measurable.respond_to?(:notes) && measurable.notes.present?
+
+    "(#{measurable.notes})"
   end
 
   def additional_metrics(measurable)

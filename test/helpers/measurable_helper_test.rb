@@ -14,6 +14,15 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal 'Pull Up (♀65lb / ♂95lb)', measurable_message(exercise)
   end
 
+  test 'renders exercise notes after the prescription' do
+    exercise = workouts(:murph).segments.first.exercises.create!(movement: movements(:run), position: 6, reps: 1,
+                                                                 distance: 400, distance_unit: :meter,
+                                                                 load_unit: :lb, female_load: 25, male_load: 45,
+                                                                 notes: 'Carry a plate.')
+
+    assert_equal '400 meter Run (♀25lb / ♂45lb) (Carry a plate.)', measurable_message(exercise)
+  end
+
   test 'renders multi-implement dumbbell load with a count prefix' do
     thruster = Movement.create!(name: 'Dumbbell Thruster')
     exercise = workouts(:fran).segments.first.exercises.create!(movement: thruster, position: 3, reps: 10,

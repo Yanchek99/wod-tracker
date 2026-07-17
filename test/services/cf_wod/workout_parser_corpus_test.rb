@@ -33,7 +33,7 @@ module CfWod
       assert workout.valid?
       assert_equal 'CF-180110', workout.name
       assert_equal 'rep', workout.score_type
-      assert_equal 10, workout.time
+      assert_equal 600, workout.governing_segment.time_seconds
       assert_equal 3, workout_exercises(workout).length
 
       snatch, lunge, rope_climb = workout_exercises(workout).sort_by(&:position)
@@ -69,7 +69,7 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'rep', workout.score_type
-      assert_equal 10, workout.time
+      assert_equal 600, workout.governing_segment.time_seconds
       assert_equal 3, workout.ladder_step
       assert_equal 2, workout_exercises(workout).length
 
@@ -108,7 +108,7 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'time', workout.score_type
-      assert_equal '21-15-9', workout.interval
+      assert_equal '21-15-9', workout.governing_segment.interval_scheme
       thruster, pull_up = workout_exercises(workout).sort_by(&:position)
       assert_equal movements(:thruster), thruster.movement
       assert_equal [1, 65, 95], [thruster.reps, thruster.female_load, thruster.male_load]
@@ -124,8 +124,8 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'rep', workout.score_type
-      assert_equal 10, workout.time
-      assert_equal 10, workout.rounds
+      assert_equal 600, workout.governing_segment.time_seconds
+      assert_equal 10, workout.governing_segment.rounds
       burpee, squat = workout_exercises(workout).sort_by(&:position)
       assert_equal [movements(:burpee), 5], [burpee.movement, burpee.reps]
       assert_equal [movements(:squat), 10], [squat.movement, squat.reps]

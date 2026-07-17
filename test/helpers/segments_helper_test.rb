@@ -52,7 +52,7 @@ class SegmentsHelperTest < ActionView::TestCase
   end
 
   test 'suppresses objectives for scheme-backed implicit workout-part segment wrappers' do
-    workout = Workout.create!(name: 'Back Squat 5x5', rounds: 5, score_type: :weight)
+    workout = Workout.create!(name: 'Back Squat 5x5', score_type: :weight)
     segment = workout.segments.create!(position: 1, rounds: 5)
 
     assert_not segment_objective?(segment)

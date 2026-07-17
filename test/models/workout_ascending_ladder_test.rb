@@ -2,7 +2,7 @@ require 'test_helper'
 
 class WorkoutAscendingLadderTest < ActiveSupport::TestCase
   def ladder_workout(step: 3)
-    Workout.new(name: 'Ladder', score_type: :rep, time: 7, ladder_step: step)
+    Workout.new(name: 'Ladder', score_type: :rep, ladder_step: step)
   end
 
   test 'ascending_ladder? follows the workout step' do
@@ -22,7 +22,7 @@ class WorkoutAscendingLadderTest < ActiveSupport::TestCase
   test 'an exercise rides the ladder from its own reps as the round-1 start' do
     workout = ladder_workout
     segment = workout.segments.build(position: 1)
-    exercise = segment.exercises.build(workout:, movement: movements(:thruster), position: 1, reps: 3)
+    exercise = segment.exercises.build(movement: movements(:thruster), position: 1, reps: 3)
 
     assert_predicate exercise, :ladder_participant?
     reps = (1..4).map { |round| exercise.ladder_reps(round) }
@@ -32,7 +32,7 @@ class WorkoutAscendingLadderTest < ActiveSupport::TestCase
   test 'ladder_step_every holds the reps for several rounds before incrementing' do
     workout = ladder_workout
     segment = workout.segments.build(position: 1)
-    exercise = segment.exercises.build(workout:, movement: movements(:thruster), position: 1, reps: 3, ladder_step_every: 3)
+    exercise = segment.exercises.build(movement: movements(:thruster), position: 1, reps: 3, ladder_step_every: 3)
 
     reps = (1..7).map { |round| exercise.ladder_reps(round) }
     assert_equal [3, 3, 3, 6, 6, 6, 9], reps
@@ -41,7 +41,7 @@ class WorkoutAscendingLadderTest < ActiveSupport::TestCase
   test 'a ladder-exempt exercise stays constant' do
     workout = ladder_workout
     segment = workout.segments.build(position: 1)
-    exercise = segment.exercises.build(workout:, movement: movements(:run), position: 1, reps: 10, ladder_exempt: true)
+    exercise = segment.exercises.build(movement: movements(:run), position: 1, reps: 10, ladder_exempt: true)
 
     assert_not exercise.ladder_participant?
     assert_nil exercise.ladder_reps(1)

@@ -8,6 +8,7 @@ class BackfillRolelessSubscriptions < ActiveRecord::Migration[8.1]
     MigrationSubscription.where(role: nil).in_batches.update_all(role: 2)
     # rubocop:enable Rails/SkipsModelValidations
 
+    # New subscriptions without an explicit role should behave like a normal follow.
     change_column_default :subscriptions, :role, from: nil, to: 2
   end
 

@@ -3,7 +3,9 @@
 one:
   program: crossfit
   user: mathew
+  role: athlete
 
 two:
   program: local_gym
   user: brooke
+  role: athlete

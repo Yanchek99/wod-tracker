@@ -44,6 +44,17 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?][data-turbo-method="delete"]', program_path(programs(:crossfit))
   end
 
+  test 'program actions allow legacy roleless subscribers to unsubscribe' do
+    # rubocop:disable Rails/SkipsModelValidations
+    subscriptions(:one).update_column(:role, nil)
+    # rubocop:enable Rails/SkipsModelValidations
+
+    get program_url(programs(:crossfit))
+
+    assert_response :success
+    assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit))
+  end
+
   test 'log deletion uses turbo method' do
     get log_url(logs(:matt_murph))
 

@@ -50,9 +50,10 @@ module WorkoutExtraction
 
         Rules (when "extractable" is true):
         - "score_type" must be exactly one of: #{Metric.workout_measurements.join(', ')}. Use "time" for
-          for-time workouts, "rep" for AMRAP/max-rep workouts scored by total reps, "round" for
-          rounds-for-time or max-rounds workouts, "weight" for max-load workouts, "calorie" for
-          calorie-based workouts.
+          for-time workouts, including rounds-for-time (e.g. "5 RFT") -- these are scored by elapsed
+          time, not round count. Use "rep" for AMRAP/max-rep workouts scored by total reps, "round"
+          only for AMRAP-style workouts actually scored by rounds completed, "weight" for max-load
+          workouts, "calorie" for calorie-based workouts.
         - "interval" holds a rep scheme like "21-15-9" when the workout is an ascending or descending
           rep ladder across rounds; leave it out otherwise.
         - For an exercise driven by an interval scheme (the workout's own "interval", or its

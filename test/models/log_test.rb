@@ -23,7 +23,7 @@ class LogTest < ActiveSupport::TestCase
 
   test 'builds timed round movement recordings with per-round prescribed reps' do
     workout = workouts(:back_squat_5x5)
-    workout.update!(time: 3, score_type: :rep)
+    workout.update!(score_type: :rep)
 
     log = workout.logs.build(user: users(:mathew), score_type: :rep)
     log.build_movement_logs

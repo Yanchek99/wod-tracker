@@ -30,7 +30,7 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
   test 'excludes exercises marked for destruction from the fingerprint' do
     workout = build_fran('Trimmed')
     workout.save!
-    remaining = Workout.new(name: 'Remaining', score_type: :time, interval: '21-15-9')
+    remaining = Workout.new(name: 'Remaining', score_type: :time)
     remaining_segment = remaining.segments.build(interval_scheme: '21-15-9', position: 1)
     remaining_segment.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95, load_unit: :lb)
 
@@ -131,7 +131,7 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
   private
 
   def build_fran(name)
-    Workout.new(name:, score_type: :time, interval: '21-15-9').tap do |workout|
+    Workout.new(name:, score_type: :time).tap do |workout|
       segment = workout.segments.build(interval_scheme: '21-15-9', position: 1)
       segment.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95, load_unit: :lb)
       segment.exercises.build(movement: movements(:pullup), position: 2, reps: 1)

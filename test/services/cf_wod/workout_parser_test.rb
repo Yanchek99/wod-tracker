@@ -109,7 +109,7 @@ module CfWod
 
       assert workout.valid?
       assert_equal 'weight', workout.score_type
-      assert_equal 5, workout.rounds
+      assert_equal 5, workout.governing_segment.rounds
       exercise = workout_exercises(workout).first
       assert_equal front_squat, exercise.movement
       assert_equal 3, exercise.reps
@@ -117,7 +117,7 @@ module CfWod
     end
 
     test 'returns an existing named workout directly instead of re-parsing its prose' do
-      named = Workout.create!(name: 'Test Named Hero', score_type: :time, rounds: 5, team_size: 2)
+      named = Workout.create!(name: 'Test Named Hero', score_type: :time, team_size: 2)
       body = "Test Named Hero\n\nWith a partner, 5 rounds for time of:\n99 completely unparseable gibberish (each)"
       page = wod_page(slug: '300105', body_text: body)
 

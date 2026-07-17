@@ -33,7 +33,7 @@ class Ability
     can [:create, :subscribe], Program
     can [:update, :destroy], Program, subscriptions: { user_id: user.id, role: :owner }
     cannot :subscribe, Program, subscriptions: { user_id: user.id }
-    can :unsubscribe, Program, subscriptions: { user_id: user.id, role: [:athlete, :coach] }
+    can(:unsubscribe, Program) { |program| unsubscribable_program?(program, user) }
 
     can :create, Schedule do |schedule|
       user.programs.manageable.include?(schedule.program)
@@ -48,5 +48,18 @@ class Ability
     cannot :subscribe, Program do |program|
       program.subscriptions.any? { |s| s.user_id == user.id }
     end
+  end
+
+  private
+
+  def unsubscribable_program?(program, user)
+    program.subscriptions.any? do |subscription|
+      subscription.user_id == user.id && unsubscribable_role?(subscription)
+    end
+  end
+
+  def unsubscribable_role?(subscription)
+    # role.nil? supports legacy rows until the backfill has run everywhere.
+    subscription.athlete? || subscription.coach? || subscription.role.nil?
   end
 end

@@ -11,7 +11,7 @@
     "build:css": "sass ./app/assets/stylesheets/application.bootstrap.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^7.3.0",
+    "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/free-regular-svg-icons": "^7.3.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@hotwired/stimulus": "^3.2.2",

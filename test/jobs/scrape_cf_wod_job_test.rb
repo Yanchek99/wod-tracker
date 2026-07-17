@@ -18,6 +18,18 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_equal 0, WorkoutImport.count
   end
 
+  test 'passing :heuristic uses CfWod::WorkoutParser instead of the LLM parser' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10), :heuristic) }
+
+    workout = Workout.find_by!(name: 'CF-180110')
+    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    assert_equal workout, schedule.workout
+    assert_equal 0, WorkoutImport.count
+  end
+
   test 're-running the same date is idempotent: no duplicate Schedule or Workout' do
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
@@ -122,7 +134,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       assert_raises(CfWod::Fetcher::FetchError) { job.perform }
     end
 
-    assert_equal [Date.new(2026, 1, 16)], job.arguments
+    assert_equal [Date.new(2026, 1, 16), :llm], job.arguments
 
     travel_to Time.utc(2026, 1, 17, 12, 0, 0) do # two days later -- a freshly recomputed default would be Jan 18
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/01/16})

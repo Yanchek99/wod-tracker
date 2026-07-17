@@ -180,7 +180,22 @@ module WorkoutExtraction
     def build_exercises(segment, exercises)
       exercises.each_with_index do |exercise_attrs, index|
         movement = lookup_movement!(exercise_attrs[:movement_name])
-        segment.exercises.build(exercise_attrs.except(:movement_name).merge(movement: movement, position: index + 1))
+        attrs = normalize_sex_paired_attrs(exercise_attrs.except(:movement_name))
+        segment.exercises.build(attrs.merge(movement: movement, position: index + 1))
+      end
+    end
+
+    # Despite the prompt's instruction, the LLM occasionally attaches a stray one-sided
+    # female_X/male_X alongside a plain value it also (correctly) set for the same dimension --
+    # most often the reps/calories interval placeholder. Drop the sex-specific companions when a
+    # plain value is present, matching the prompt's own precedence: "a single number applies to
+    # both sexes equally".
+    def normalize_sex_paired_attrs(attrs)
+      Exercise::SEX_PAIRED_DIMENSIONS.each_with_object(attrs.dup) do |dimension, normalized|
+        next if normalized[dimension].blank?
+
+        normalized.delete(:"female_#{dimension}")
+        normalized.delete(:"male_#{dimension}")
       end
     end
 

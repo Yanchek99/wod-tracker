@@ -117,6 +117,20 @@ module WorkoutExtraction
       assert_equal @movement, workout_exercises(workout).first.movement
     end
 
+    test 'drops a stray sex-specific companion when a plain value is also set for the same dimension' do
+      stub_llm_response(
+        extractable: true, name: 'Row Ladder', score_type: 'time', segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, calories: 1, female_calories: 21)]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('21-15-9 Calorie Row', date: DATE)
+
+      exercise = workout_exercises(workout).first
+      assert_equal 1, exercise.calories
+      assert_nil exercise.female_calories
+      assert_nil exercise.male_calories
+    end
+
     private
 
     def stub_llm_response(payload)

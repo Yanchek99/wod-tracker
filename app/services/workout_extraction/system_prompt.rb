@@ -55,6 +55,13 @@ module WorkoutExtraction
           calorie-based workouts.
         - "interval" holds a rep scheme like "21-15-9" when the workout is an ascending or descending
           rep ladder across rounds; leave it out otherwise.
+        - For an exercise driven by an interval scheme (the workout's own "interval", or its
+          segment's "interval_scheme"), set that exercise's plain "reps" -- or plain "calories" for
+          a calorie-scored movement like a Calorie Row -- to 1, a structural placeholder, never the
+          literal first-round number (e.g. not 21 for "21-15-9"), and never as "female_calories"/
+          "male_calories" -- a placeholder is never sex-specific, even if the workout has
+          sex-specific values elsewhere (e.g. a load on a different movement). The real per-round
+          values come from the interval scheme itself, not from a stored count on the exercise.
         - "rounds" is a fixed round count (e.g. "5 rounds for time"); leave it out for AMRAPs, single-round
           workouts, or interval-ladder workouts (use "interval" instead).
         - "time" is a time cap or AMRAP duration in seconds; "time_cap" is a "MM:SS" string cap on a

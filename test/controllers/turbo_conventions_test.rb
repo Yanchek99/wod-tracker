@@ -55,6 +55,18 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit))
   end
 
+  test 'program unsubscribe redirects to reload action buttons' do
+    delete unsubscribe_program_url(programs(:crossfit))
+
+    assert_response :see_other
+    assert_redirected_to program_url(programs(:crossfit))
+
+    follow_redirect!
+
+    assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit)), false
+    assert_select 'a[href=?][data-turbo-method="post"]', subscribe_program_path(programs(:crossfit))
+  end
+
   test 'log deletion uses turbo method' do
     get log_url(logs(:matt_murph))
 

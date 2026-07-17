@@ -1,5 +1,7 @@
 class DropWorkoutSchemeAndExerciseWorkoutId < ActiveRecord::Migration[8.1]
   def up
+    guard_against_orphaned_exercises!
+
     change_column_null :exercises, :segment_id, false
 
     remove_index :exercises, name: 'index_exercises_on_position_and_workout_id'
@@ -37,5 +39,17 @@ class DropWorkoutSchemeAndExerciseWorkoutId < ActiveRecord::Migration[8.1]
     say 'workouts.rounds/time/interval and exercises.workout_id are restored as empty columns -- ' \
         'historical values are not recoverable (they were already migrated into segments by ' \
         'BackfillSegmentsForTopLevelExercises in Task 1, whose own #down is likewise a no-op).'
+  end
+
+  private
+
+  def guard_against_orphaned_exercises!
+    orphaned_count = Exercise.unscoped.where(segment_id: nil).count
+    return if orphaned_count.zero?
+
+    raise "#{orphaned_count} exercise(s) still have a nil segment_id (inspect via " \
+          '`Exercise.unscoped.where(segment_id: nil)`). BackfillSegmentsForTopLevelExercises does not ' \
+          'backfill exercises that also have no workout_id (legacy/malformed data it deliberately ' \
+          'ignores) -- investigate and resolve these rows manually before re-running this migration.'
   end
 end

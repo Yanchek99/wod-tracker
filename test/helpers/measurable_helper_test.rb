@@ -9,9 +9,9 @@ class MeasurableHelperTest < ActionView::TestCase
 
   test 'renders sex-specific additional exercise metrics' do
     exercise = exercises(:fran_pullup)
-    exercise.update!(load_unit: :lb, female_load: 65, male_load: 95)
+    exercise.update!(load_unit: :lb, female_load: 65, male_load: 95, notes: 'Carry a plate.')
 
-    assert_equal 'Pull Up (♀65lb / ♂95lb)', measurable_message(exercise)
+    assert_equal 'Pull Up (♀65lb / ♂95lb) ** Carry a plate.', measurable_message(exercise)
   end
 
   test 'renders multi-implement dumbbell load with a count prefix' do

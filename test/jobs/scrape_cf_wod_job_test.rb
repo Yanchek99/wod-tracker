@@ -9,11 +9,12 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    end
 
-    workout = Workout.find_by!(name: 'CF-180110')
     schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
-    assert_equal workout, schedule.workout
+    assert_equal workouts(:fran), schedule.workout
     assert_equal 0, WorkoutImport.count
   end
 
@@ -21,10 +22,14 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    2.times { perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) } }
+    assert_no_difference('Workout.count') do
+      stub_llm_parser(workouts(:fran)) do
+        2.times { perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) } }
+      end
+    end
 
     assert_equal 1, @program.schedules.where(posted_at: Date.new(2018, 1, 10)).count
-    assert_equal 1, Workout.where(name: 'CF-180110').count
+    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10)).workout
   end
 
   test 'a rest day is skipped: no Workout, Schedule, or WorkoutImport row' do
@@ -43,11 +48,13 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
       .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
 
-    perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20)) }
+    stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'unable to parse workout' }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20)) }
+    end
 
     workout_import = WorkoutImport.find_by!(workout_date: Date.new(2026, 6, 20))
     assert workout_import.failed?
-    assert_includes workout_import.error_message, 'Any time you stop'
+    assert_includes workout_import.error_message, 'unable to parse workout'
     assert_includes workout_import.raw_text, 'sled drag'
     assert_equal 0, @program.schedules.count
   end
@@ -85,7 +92,9 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    end
 
     workout_import = WorkoutImport.find_by!(workout_date: Date.new(2018, 1, 10))
     assert workout_import.failed?
@@ -97,7 +106,9 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-    perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    end
 
     assert_equal 0, WorkoutImport.count
   end
@@ -117,9 +128,25 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/01/16})
         .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
 
-      job.perform(*job.arguments)
+      stub_llm_parser(workouts(:fran)) { job.perform(*job.arguments) }
     end
 
-    assert Workout.exists?(name: 'CF-260116')
+    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: Date.new(2026, 1, 16)).workout
+  end
+
+  private
+
+  # Object#stub (from minitest/mock) isn't available here -- minitest 6 dropped mock.rb into a
+  # separate minitest-mock gem this app doesn't depend on -- so stub WorkoutExtraction::LlmParser.call
+  # by hand: swap in a replacement singleton method for the duration of the block, then restore the
+  # original. `result` may be a plain value to return (e.g. a persisted Workout fixture) or a
+  # callable (e.g. a lambda that raises) to invoke with the same arguments the job passes.
+  def stub_llm_parser(result)
+    original_call = WorkoutExtraction::LlmParser.method(:call)
+    responder = result.respond_to?(:call) ? result : ->(*) { result }
+    WorkoutExtraction::LlmParser.define_singleton_method(:call) { |*args, **kwargs| responder.call(*args, **kwargs) }
+    yield
+  ensure
+    WorkoutExtraction::LlmParser.define_singleton_method(:call, original_call)
   end
 end

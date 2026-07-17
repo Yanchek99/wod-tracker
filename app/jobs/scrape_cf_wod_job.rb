@@ -30,13 +30,15 @@ class ScrapeCfWodJob < ApplicationJob
     page = CfWod::Fetcher.call(date)
     return if page.rest_day?
 
-    workout = CfWod::WorkoutParser.call(page)
+    workout = WorkoutExtraction::LlmParser.call(page.body_text, date: date)
     workout = persist(workout)
     Program.find_by!(name: 'Crossfit.com')
            .schedules.find_or_initialize_by(posted_at: date)
            .update!(workout: workout)
     WorkoutImport.clear!(date)
-  rescue CfWod::WorkoutParser::UnparseableError, ActiveRecord::ActiveRecordError => e
+  rescue WorkoutExtraction::LlmParser::ExtractionError,
+         WorkoutExtraction::LlmParser::UnrepresentableWorkoutError,
+         ActiveRecord::ActiveRecordError => e
     WorkoutImport.log_failure!(date, e.message, raw_text: page&.body_text)
   end
 

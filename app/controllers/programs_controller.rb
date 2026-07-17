@@ -40,12 +40,12 @@ class ProgramsController < ApplicationController
 
   def subscribe
     @program.subscriptions.create(user: current_user, role: :athlete).save
-    render :show
+    redirect_to @program, status: :see_other
   end
 
   def unsubscribe
     @program.subscriptions.find_by(user: current_user).destroy
-    render :show
+    redirect_to @program, status: :see_other
   end
 
   private

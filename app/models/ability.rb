@@ -59,6 +59,7 @@ class Ability
   end
 
   def unsubscribable_role?(subscription)
+    # role.nil? supports legacy rows until the backfill has run everywhere.
     subscription.athlete? || subscription.coach? || subscription.role.nil?
   end
 end

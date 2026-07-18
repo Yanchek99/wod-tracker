@@ -14,9 +14,26 @@ class WorkoutsController < ApplicationController
   def show; end
 
   # GET /workouts/new
+  # Textarea entry point -- the primary way to start creating a Workout. @workout stays blank;
+  # the view renders a textarea, not the nested-fields form.
   def new
     @workout = Workout.new
-    @workout.segments.build(position: 1)
+  end
+
+  # GET /workouts/new_manual
+  # Escape hatch: the old blank nested-fields form, for when extraction fails or isn't wanted.
+  def new_manual
+    @workout = Workout.new
+  end
+
+  # POST /workouts/extract
+  def extract
+    @workout = WorkoutExtraction::LlmParser.call(params.expect(:wod_text), date: Date.current)
+    render :new_manual
+  rescue WorkoutExtraction::LlmParser::ExtractionError => e
+    @workout = Workout.new
+    flash.now[:alert] = t('.extraction_failed', error: e.message)
+    render :new, status: :unprocessable_content
   end
 
   # GET /workouts/1/edit

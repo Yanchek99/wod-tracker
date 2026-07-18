@@ -17,6 +17,11 @@ module WodTracker
 
     config.active_storage.variant_processor = :disabled
 
+    # Primary strategy for ScrapeCfWodJob to extract a Workout from a fetched CF WOD page.
+    # The other strategy (:heuristic <-> :llm) is used as an automatic fallback if this one fails
+    # to extract a workout -- see ScrapeCfWodJob::FALLBACKS.
+    config.workout_parser = :llm
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.

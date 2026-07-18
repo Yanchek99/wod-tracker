@@ -30,6 +30,34 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_equal 0, WorkoutImport.count
   end
 
+  test 'falls back to the heuristic parser when the primary llm parser fails' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'llm boom' }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    end
+
+    workout = Workout.find_by!(name: 'CF-180110')
+    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    assert_equal workout, schedule.workout
+    assert_equal 0, WorkoutImport.count
+  end
+
+  test 'falls back to the llm parser when the primary heuristic parser fails' do
+    stub_cf_wod_redirect('2026/06/20', '260620')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
+      .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
+
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20), :heuristic) }
+    end
+
+    schedule = @program.schedules.find_by!(posted_at: Date.new(2026, 6, 20))
+    assert_equal workouts(:fran), schedule.workout
+    assert_equal 0, WorkoutImport.count
+  end
+
   test 're-running the same date is idempotent: no duplicate Schedule or Workout' do
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
@@ -55,18 +83,18 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_equal 0, WorkoutImport.count
   end
 
-  test 'an unparseable workout logs a WorkoutImport failure with the raw body text' do
+  test 'logs a WorkoutImport failure with the raw body text when both the primary and fallback parser fail' do
     stub_cf_wod_redirect('2026/06/20', '260620')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
       .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
 
-    stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'unable to parse workout' }) do
+    stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'llm boom' }) do
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20)) }
     end
 
     workout_import = WorkoutImport.find_by!(workout_date: Date.new(2026, 6, 20))
     assert workout_import.failed?
-    assert_includes workout_import.error_message, 'unable to parse workout'
+    assert_includes workout_import.error_message, 'unrecognized exercise line'
     assert_includes workout_import.raw_text, 'sled drag'
     assert_equal 0, @program.schedules.count
   end

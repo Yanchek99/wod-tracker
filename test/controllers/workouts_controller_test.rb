@@ -18,6 +18,18 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'renders the textarea when the workout cannot be represented' do
+    error = WorkoutExtraction::LlmParser::UnrepresentableWorkoutError.new('unsupported workout')
+
+    WorkoutExtraction::LlmParser.stub(:call, ->(_text, date:) { raise error }) do
+      post extract_workouts_url, params: { wod_text: 'unsupported workout' }
+    end
+
+    assert_response :unprocessable_content
+    assert_equal "Couldn't understand that workout text (unsupported workout). Try rephrasing, or enter it manually.",
+                 flash[:alert]
+  end
+
   test 'should create workout' do
     assert_difference(['Workout.count', 'ActionText::RichText.count']) do
       post workouts_url, params: { workout: {

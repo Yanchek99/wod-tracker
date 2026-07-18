@@ -30,7 +30,8 @@ class WorkoutsController < ApplicationController
   def extract
     @workout = WorkoutExtraction::LlmParser.call(params.expect(:wod_text), date: Date.current)
     render :new_manual
-  rescue WorkoutExtraction::LlmParser::ExtractionError => e
+  rescue WorkoutExtraction::LlmParser::ExtractionError,
+         WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e
     @workout = Workout.new
     flash.now[:alert] = t('.extraction_failed', error: e.message)
     render :new, status: :unprocessable_content

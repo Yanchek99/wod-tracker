@@ -12,7 +12,7 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   end
 
   test 'allows typing into fields inside sortable cards' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     fill_in 'Name *', with: 'Typed Card Fields'
     select 'time', from: 'For'
@@ -74,7 +74,7 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   end
 
   test 'shows segment drag handles only while collapsed' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     fill_in 'Name *', with: 'Segment Handles'
     select 'time', from: 'For'
@@ -91,7 +91,7 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   end
 
   test 'shows nested exercise summaries when a segment collapses' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     fill_in 'Name *', with: 'Segment Exercise Summaries'
     select 'time', from: 'For'

@@ -83,7 +83,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
   end
 
   test 'workout form uses nested form controller' do
-    get new_workout_url
+    get new_manual_workouts_url
 
     assert_response :success
     assert_select '.workout-builder-toolbar[role="toolbar"]' do

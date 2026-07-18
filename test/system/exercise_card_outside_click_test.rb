@@ -34,7 +34,7 @@ class ExerciseCardOutsideClickTest < ApplicationSystemTestCase
   end
 
   test 'clicking outside is blocked when the current exercise cannot be saved' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     click_on 'Add Exercise'
     find_field('Name').click

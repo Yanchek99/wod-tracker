@@ -12,7 +12,7 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
   end
 
   test 'assigns exercise positions within a segment' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     default_segment = all('#workout-parts > .fields > .workout-part').last
     within default_segment do
@@ -31,7 +31,7 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
   end
 
   test 'assigns sequential positions to segments as they are added' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     default_segment = all('#workout-parts > .fields > .workout-part').last
     assert_segment_position default_segment, '1'
@@ -46,7 +46,7 @@ class WorkoutSegmentPositionsTest < ApplicationSystemTestCase
   end
 
   test 'normalizes segment positions after a segment is removed' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     click_on 'Add Segment'
     click_on 'Add Segment'

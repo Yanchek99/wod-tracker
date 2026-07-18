@@ -33,7 +33,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
   end
 
   test 'edits a segment exercise through a summary card' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     click_on 'Add Segment'
 
@@ -83,7 +83,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
   test 'shows the implements field only for dumbbell and kettlebell movements' do
     Movement.create!(name: 'Dumbbell Thruster')
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     click_on 'Add Exercise'
 
@@ -101,7 +101,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
   end
 
   test 'opening another card is blocked when the current exercise cannot be saved' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     click_on 'Add Exercise'
 

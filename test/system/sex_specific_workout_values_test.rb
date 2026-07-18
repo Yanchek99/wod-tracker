@@ -12,7 +12,7 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
   end
 
   test 'creates a workout with sex-specific exercise values' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     fill_in 'Name *', with: 'Sex Specific System Test Workout'
     select 'time', from: 'For'

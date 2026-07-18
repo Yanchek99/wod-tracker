@@ -13,7 +13,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
   end
 
   test 'renders distance before movement with load after local save' do
-    visit new_workout_url
+    visit new_manual_workouts_url
     click_on 'Add Exercise'
 
     within '.exercise' do
@@ -29,7 +29,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
   end
 
   test 'renders sex-specific distance before movement with sex-specific load after local save' do
-    visit new_workout_url
+    visit new_manual_workouts_url
     click_on 'Add Exercise'
 
     within '.exercise' do
@@ -47,7 +47,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
   end
 
   test 'renders sex-specific distance before movement after local save' do
-    visit new_workout_url
+    visit new_manual_workouts_url
     click_on 'Add Exercise'
 
     within '.exercise' do
@@ -63,7 +63,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
   end
 
   test 'renders distance before movement for loaded lunges after local save' do
-    visit new_workout_url
+    visit new_manual_workouts_url
     click_on 'Add Exercise'
 
     within '.exercise' do
@@ -80,7 +80,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
   end
 
   test 'renders sex-specific foot distance before movement for loaded lunges after local save' do
-    visit new_workout_url
+    visit new_manual_workouts_url
     click_on 'Add Exercise'
 
     within '.exercise' do
@@ -109,7 +109,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
   end
 
   test 'renders max calories before movement after local save' do
-    visit new_workout_url
+    visit new_manual_workouts_url
     click_on 'Add Exercise'
 
     within '.exercise' do

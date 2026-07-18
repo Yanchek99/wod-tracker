@@ -12,7 +12,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
   end
 
   test 'keeps workout builder toolbar fixed to the bottom while scrolling' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     8.times { click_on 'Add Exercise', match: :first }
     execute_script('window.scrollTo(0, Math.floor(document.body.scrollHeight / 2))')
@@ -27,7 +27,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
 
   test 'lays out workout builder toolbar on mobile' do
     page.driver.browser.manage.window.resize_to(390, 900)
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     assert_selector '.workout-builder-toolbar'
     overflowing_buttons = evaluate_script(<<~JS)
@@ -44,7 +44,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
 
   test 'uses a full-width toolbar bar with container-width actions' do
     page.driver.browser.manage.window.resize_to(1400, 900)
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     assert_selector '.workout-builder-toolbar__actions'
     layout = evaluate_script(<<~JS)
@@ -71,7 +71,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
   end
 
   test 'stacks movement dropdowns above the workout builder toolbar' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     click_on 'Add Exercise', match: :first
     find('.ts-control').click

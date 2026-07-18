@@ -12,7 +12,7 @@ class WorkoutSortableKeyboardTest < ApplicationSystemTestCase
   end
 
   test 'reorders collapsed workout cards with keyboard handles' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     fill_in 'Name *', with: 'Keyboard Ordered Parts'
     select 'time', from: 'For'

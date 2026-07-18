@@ -12,7 +12,7 @@ class ExerciseCardDeletionTest < ApplicationSystemTestCase
   end
 
   test 'deletes a collapsed exercise card from the summary row' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     click_on 'Add Exercise'
 

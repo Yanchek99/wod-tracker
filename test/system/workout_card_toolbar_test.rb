@@ -12,7 +12,7 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
   end
 
   test 'renders expanded card actions in inline toolbars' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     fill_in 'Name *', with: 'Inline Card Toolbars'
     select 'time', from: 'For'
@@ -45,7 +45,7 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
   end
 
   test 'renders expanded exercise movement row actions inline' do
-    visit new_workout_url
+    visit new_manual_workouts_url
 
     fill_in 'Name *', with: 'Inline Exercise Movement Row'
     select 'time', from: 'For'

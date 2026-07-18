@@ -24,6 +24,7 @@ class WorkoutsController < ApplicationController
   # Escape hatch: the old blank nested-fields form, for when extraction fails or isn't wanted.
   def new_manual
     @workout = Workout.new
+    @workout.segments.build(position: 1)
   end
 
   # POST /workouts/extract
@@ -50,7 +51,7 @@ class WorkoutsController < ApplicationController
         format.html { redirect_to @workout, notice: t('.notice') }
         format.json { render :show, status: :created, location: @workout }
       else
-        format.html { render :new, status: :unprocessable_content }
+        format.html { render :new_manual, status: :unprocessable_content }
         format.json { render json: @workout.errors, status: :unprocessable_content }
       end
     end

@@ -28,6 +28,13 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
                  flash[:alert]
   end
 
+  test 'renders the manual builder when a manual workout submission is invalid' do
+    post workouts_url, params: { workout: { name: '', score_type: '' } }
+
+    assert_response :unprocessable_content
+    assert_select 'form.workout-form'
+  end
+
   test 'should create workout' do
     assert_difference(['Workout.count', 'ActionText::RichText.count']) do
       post workouts_url, params: { workout: {

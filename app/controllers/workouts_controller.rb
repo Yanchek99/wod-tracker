@@ -33,6 +33,7 @@ class WorkoutsController < ApplicationController
     render :new_manual
   rescue WorkoutExtraction::LlmParser::ExtractionError,
          WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e
+    @wod_text = params[:wod_text]
     @workout = Workout.new
     flash.now[:alert] = t('.extraction_failed', error: e.message)
     render :new, status: :unprocessable_content

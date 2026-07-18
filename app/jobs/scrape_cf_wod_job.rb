@@ -11,7 +11,9 @@ class ScrapeCfWodJob < ApplicationJob
   }.freeze
 
   # Each parser's own "couldn't extract a workout" exception class(es) -- extract_workout
-  # rescues exactly these for the primary strategy before retrying with its fallback.
+  # rescues exactly these for the primary strategy before retrying with its fallback, and
+  # `perform`'s own rescue clause (below) rescues the flattened set of all of them, so a fallback
+  # that also fails still lands as a WorkoutImport failure instead of an unhandled job error.
   PARSER_ERRORS = {
     llm: [WorkoutExtraction::LlmParser::ExtractionError, WorkoutExtraction::LlmParser::UnrepresentableWorkoutError].freeze,
     heuristic: [CfWod::WorkoutParser::UnparseableError].freeze
@@ -57,10 +59,7 @@ class ScrapeCfWodJob < ApplicationJob
            .schedules.find_or_initialize_by(posted_at: date)
            .update!(workout: workout)
     WorkoutImport.clear!(date)
-  rescue CfWod::WorkoutParser::UnparseableError,
-         WorkoutExtraction::LlmParser::ExtractionError,
-         WorkoutExtraction::LlmParser::UnrepresentableWorkoutError,
-         ActiveRecord::ActiveRecordError => e
+  rescue *PARSER_ERRORS.values.flatten, ActiveRecord::ActiveRecordError => e
     WorkoutImport.log_failure!(date, e.message, raw_text: page&.body_text)
   end
 

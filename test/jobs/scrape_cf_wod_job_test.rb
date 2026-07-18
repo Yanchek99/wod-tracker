@@ -18,6 +18,24 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_equal 0, WorkoutImport.count
   end
 
+  test 'calls the LLM parser with the page body text and the resolved date' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    received_args = nil
+    responder = lambda do |text, date:|
+      received_args = [text, date]
+      workouts(:fran)
+    end
+    stub_llm_parser(responder) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+    end
+
+    text, date = received_args
+    assert_includes text, 'power snatches'
+    assert_equal Date.new(2018, 1, 10), date
+  end
+
   test 'passing :heuristic uses CfWod::WorkoutParser instead of the LLM parser' do
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))

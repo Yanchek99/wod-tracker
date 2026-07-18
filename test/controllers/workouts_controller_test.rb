@@ -19,11 +19,9 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'renders the textarea when the workout cannot be represented' do
-    error = WorkoutExtraction::LlmParser::UnrepresentableWorkoutError.new('unsupported workout')
+    stub_unrepresentable_workout_response('unsupported workout')
 
-    WorkoutExtraction::LlmParser.stub(:call, ->(_text, date:) { raise error }) do
-      post extract_workouts_url, params: { wod_text: 'unsupported workout' }
-    end
+    post extract_workouts_url, params: { wod_text: 'unsupported workout' }
 
     assert_response :unprocessable_content
     assert_equal "Couldn't understand that workout text (unsupported workout). Try rephrasing, or enter it manually.",
@@ -138,5 +136,30 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to workouts_url
+  end
+
+  private
+
+  def stub_unrepresentable_workout_response(reason)
+    stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(
+      status: 200,
+      headers: { 'Content-Type' => 'application/json' },
+      body: {
+        id: 'msg_stub_001',
+        type: 'message',
+        role: 'assistant',
+        model: 'claude-haiku-4-5',
+        content: [{ type: 'text', text: unrepresentable_workout_payload(reason).to_json }],
+        stop_reason: 'end_turn',
+        usage: { input_tokens: 100, output_tokens: 50 }
+      }.to_json
+    )
+  end
+
+  def unrepresentable_workout_payload(reason)
+    {
+      extractable: false, gap_reason: reason, name: nil, score_type: nil, rounds: nil, time: nil,
+      interval: nil, time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, segments: [], exercises: []
+    }
   end
 end

@@ -45,14 +45,16 @@ class CfWodRakeTest < ActiveSupport::TestCase
   end
 
   test 'scrape persists a Workout and Schedule for a given date' do
-    Program.create!(name: 'Crossfit.com')
+    program = Program.create!(name: 'Crossfit.com')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: Rails.root.join('test/fixtures/cf_wod/legacy_with_scaling.html').read)
 
-    output = capture_io { Rake::Task['cf_wod:scrape'].invoke('2018-01-10') }.join
+    output = stub_llm_parser(workouts(:fran)) do
+      capture_io { Rake::Task['cf_wod:scrape'].invoke('2018-01-10') }.join
+    end
 
     assert_includes output, 'Scraped 2018-01-10 successfully'
-    assert Workout.exists?(name: 'CF-180110')
+    assert_equal workouts(:fran), program.schedules.find_by!(posted_at: Date.new(2018, 1, 10)).workout
   end
 
   test 'scrape aborts with a usage message when no date is given' do
@@ -68,7 +70,9 @@ class CfWodRakeTest < ActiveSupport::TestCase
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
       .to_return(status: 200, body: Rails.root.join('test/fixtures/cf_wod/modern_multi_part.html').read)
 
-    error = assert_raises(SystemExit) { Rake::Task['cf_wod:scrape'].invoke('2026-06-20') }
+    error = stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'unable to parse workout' }) do
+      assert_raises(SystemExit) { Rake::Task['cf_wod:scrape'].invoke('2026-06-20') }
+    end
 
     assert_equal 1, error.status
   end

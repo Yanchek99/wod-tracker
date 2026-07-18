@@ -145,20 +145,4 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
 
     assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: Date.new(2026, 1, 16)).workout
   end
-
-  private
-
-  # Object#stub (from minitest/mock) isn't available here -- minitest 6 dropped mock.rb into a
-  # separate minitest-mock gem this app doesn't depend on -- so stub WorkoutExtraction::LlmParser.call
-  # by hand: swap in a replacement singleton method for the duration of the block, then restore the
-  # original. `result` may be a plain value to return (e.g. a persisted Workout fixture) or a
-  # callable (e.g. a lambda that raises) to invoke with the same arguments the job passes.
-  def stub_llm_parser(result)
-    original_call = WorkoutExtraction::LlmParser.method(:call)
-    responder = result.respond_to?(:call) ? result : ->(*) { result }
-    WorkoutExtraction::LlmParser.define_singleton_method(:call) { |*args, **kwargs| responder.call(*args, **kwargs) }
-    yield
-  ensure
-    WorkoutExtraction::LlmParser.define_singleton_method(:call, original_call)
-  end
 end

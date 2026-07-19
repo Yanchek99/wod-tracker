@@ -24,7 +24,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     get new_unstructured_workouts_url
     assert_response :success
     assert_select 'textarea[name="wod_text"]'
-    assert_select 'form[action=?]', extract_workouts_path
+    assert_select 'form[action=?][data-turbo="false"]', extract_workouts_path
   end
 
   test 'renders the textarea when the workout cannot be represented' do

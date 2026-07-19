@@ -18,7 +18,6 @@ import { faTrashAlt } from "@fortawesome/free-solid-svg-icons/faTrashAlt"
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser"
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark"
 import { faCheckSquare } from "@fortawesome/free-regular-svg-icons/faCheckSquare"
-import { faSquare } from "@fortawesome/free-regular-svg-icons/faSquare"
 
 LocalTime.start()
 library.add(
@@ -30,7 +29,6 @@ library.add(
   faGripVertical,
   faLayerGroup,
   faPlus,
-  faSquare,
   faTrashAlt,
   faUser,
   faXmark

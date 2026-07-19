@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
     collection do
       post :extract
-      get :new_manual
+      get :new_unstructured
     end
   end
 

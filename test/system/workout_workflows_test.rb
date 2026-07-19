@@ -12,7 +12,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
   end
 
   test 'creates a workout with an exercise' do
-    visit new_manual_workouts_url
+    visit new_workout_url
 
     fill_in 'Name *', with: 'System Test Workout'
     select 'time', from: 'For'
@@ -45,7 +45,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
   end
 
   test 'shows distance units per rep only for distance metrics' do
-    visit new_manual_workouts_url
+    visit new_workout_url
 
     fill_in 'Name *', with: 'Distance Scored Workout'
     select 'rep', from: 'For'

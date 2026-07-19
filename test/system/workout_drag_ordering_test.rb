@@ -81,7 +81,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
   end
 
   test 'creates a workout with reordered exercises in the default segment' do
-    visit new_manual_workouts_url
+    visit new_workout_url
 
     fill_required_workout_fields('Dragged Exercises')
     default_segment = all('#workout-parts > .fields > .nested-fields').last
@@ -99,7 +99,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
   end
 
   test 'creates a workout with reordered segments' do
-    visit new_manual_workouts_url
+    visit new_workout_url
 
     fill_required_workout_fields('Dragged Segments')
     default_segment = all('#workout-parts > .fields > .nested-fields').last
@@ -121,7 +121,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
   end
 
   test 'creates a workout with reordered segment exercises' do
-    visit new_manual_workouts_url
+    visit new_workout_url
 
     fill_required_workout_fields('Dragged Segment Exercises')
     segment = add_segment
@@ -163,7 +163,7 @@ class WorkoutDragOrderingTest < ApplicationSystemTestCase
   end
 
   test 'normalizes positions after reorder and delete' do
-    visit new_manual_workouts_url
+    visit new_workout_url
 
     fill_required_workout_fields('Dragged Deleted Exercise')
     default_segment = all('#workout-parts > .fields > .nested-fields').last

@@ -13,7 +13,7 @@ class ExerciseCardMetricDisplayTest < ApplicationSystemTestCase
 
   test 'renders the local summary in kilograms for a metric athlete' do
     users(:mathew).update!(unit_system: :metric)
-    visit new_manual_workouts_url
+    visit new_workout_url
     click_on 'Add Exercise'
 
     within '.exercise' do

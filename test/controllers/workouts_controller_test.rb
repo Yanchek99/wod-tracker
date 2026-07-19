@@ -16,6 +16,13 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   test 'should get new' do
     get new_workout_url
     assert_response :success
+    assert_select 'form.workout-form'
+    assert_select 'textarea[name="wod_text"]', count: 0
+  end
+
+  test 'should get new unstructured' do
+    get new_unstructured_workouts_url
+    assert_response :success
     assert_select 'textarea[name="wod_text"]'
     assert_select 'form[action=?]', extract_workouts_path
   end

@@ -2,9 +2,9 @@
   - if @schedules.empty?
     .my-2.alert.alert-warning No schedules
   - else
-    .row
+    .row.flex-nowrap
       .col.text-start = link_to_next_page @dates, '<', class: 'btn btn-primary'
-      h3.col-auto.text-center = local_time(@date, '%A %B %e, %Y')
+      h3.col.text-center = local_time(@date, '%A %B %e, %Y')
       .col.text-end = link_to_prev_page @dates, '>', class: 'btn btn-primary'
     - @schedules.each do |schedule|
       .row.my-3.pt-3.border-top

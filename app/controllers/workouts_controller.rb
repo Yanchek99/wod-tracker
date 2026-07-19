@@ -19,6 +19,23 @@ class WorkoutsController < ApplicationController
     @workout.segments.build(position: 1)
   end
 
+  # GET /workouts/new_unstructured
+  def new_unstructured
+    @workout = Workout.new
+  end
+
+  # POST /workouts/extract
+  def extract
+    @workout = WorkoutExtraction::LlmParser.call(params.expect(:wod_text), date: Date.current)
+    render :new
+  rescue WorkoutExtraction::LlmParser::ExtractionError,
+         WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e
+    @wod_text = params[:wod_text]
+    @workout = Workout.new
+    flash.now[:alert] = t('.extraction_failed', error: e.message)
+    render :new_unstructured, status: :unprocessable_content
+  end
+
   # GET /workouts/1/edit
   def edit; end
 

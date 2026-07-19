@@ -4,7 +4,9 @@ module WorkoutExtraction
   module SystemPrompt
     PRESCRIPTION_CHEAT_SHEET = <<~CHEATSHEET.freeze
       Common notation:
-      - "21-15-9" = an ascending/descending rep ladder across rounds (interval).
+      - "21-15-9 reps for time" = an ascending/descending rep ladder across rounds (interval).
+      - Load-scored lifting schemes like "Power clean 3-3-2-2-1-1-1-1 reps" are sets for load,
+        not intervals; each set needs its own logged load.
       - "5 RFT" = 5 rounds for time (rounds: 5, score_type: "round" is wrong here -- use "time").
       - "AMRAP 20" = as many rounds/reps as possible in 20 minutes (time: 1200; score_type "round" if
         scored by full rounds, "rep" if scored by total reps including partial rounds).
@@ -55,7 +57,12 @@ module WorkoutExtraction
           only for AMRAP-style workouts actually scored by rounds completed, "weight" for max-load
           workouts, "calorie" for calorie-based workouts.
         - "interval" holds a rep scheme like "21-15-9" when the workout is an ascending or descending
-          rep ladder across rounds; leave it out otherwise.
+          conditioning rep ladder across rounds; leave it out otherwise.
+        - For load-scored lifting set schemes (e.g. "Back squat 5-5-5-5-5 reps" or
+          "Power clean 3-3-2-2-1-1-1-1 reps"), use "score_type": "weight" and do not set
+          "interval". When all sets use the same reps, set top-level "rounds" to the set count and
+          include one exercise with that reps value. When reps vary by set, omit "rounds" and list
+          one exercise per set in order, each with that set's reps.
         - For an exercise driven by an interval scheme (the workout's own "interval", or its
           segment's "interval_scheme"), set that exercise's plain "reps" -- or plain "calories" for
           a calorie-scored movement like a Calorie Row -- to 1, a structural placeholder, never the

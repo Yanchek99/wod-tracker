@@ -74,6 +74,29 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 145, log.score_value
   end
 
+  test 'builds and scores one movement recording per variable lifting set' do
+    workout = Workout.create!(name: 'Power Clean Heavy Day', score_type: :weight)
+    segment = workout.segments.create!(position: 1)
+    movement = Movement.find_or_create_by!(name: 'Power Clean')
+    [3, 3, 2, 2, 1, 1, 1, 1].each.with_index do |reps, index|
+      segment.exercises.create!(movement: movement, position: index + 1, reps: reps)
+    end
+
+    log = workout.logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    assert_equal [3, 3, 2, 2, 1, 1, 1, 1], log.movement_logs.map(&:reps)
+
+    [135, 155, 175, 185, 195, 205, 215, 225].each.with_index do |load, index|
+      log.movement_logs[index].load = load
+    end
+    log.movement_logs.last.reps = 0
+
+    assert log.valid?
+    assert_equal 'lb', log.score_type
+    assert_equal 215, log.score_value
+  end
+
   test 'calculates single max-finding score from a successful logged load' do
     workout = Workout.create!(name: 'Back Squat Max', score_type: :weight)
     segment = workout.segments.create!(position: 1)

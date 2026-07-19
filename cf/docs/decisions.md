@@ -202,6 +202,15 @@ prescribed reps at a recorded load within that exercise's time window. It also
 keeps workouts such as Dragon seedable before the app has a richer multi-component
 score model.
 
+## 2026-07-18: Variable Heavy-Day Set Schemes Are Per-Set Load Rows
+
+Load-scored lifting prescriptions such as `Power clean 3-3-2-2-1-1-1-1 reps`
+are not interval ladders. The dash-separated numbers are the reps for separate
+sets, and each set needs its own logged load. A fixed-rep sequence can use one
+exercise with segment `rounds`; a variable-rep sequence is modeled as one
+exercise per set in order. The workout score remains load-based and is derived
+from the heaviest successful set.
+
 ## 2026-06-17: Document Programming Concepts Before Modeling Them
 
 The app will add programming concepts in this order: intended stimulus, time

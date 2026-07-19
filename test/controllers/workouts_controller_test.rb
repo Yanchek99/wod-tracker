@@ -16,6 +16,43 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   test 'should get new' do
     get new_workout_url
     assert_response :success
+    assert_select 'form.workout-form'
+    assert_select 'textarea[name="wod_text"]', count: 0
+  end
+
+  test 'should get new unstructured' do
+    get new_unstructured_workouts_url
+    assert_response :success
+    assert_select 'textarea[name="wod_text"]'
+    assert_select 'form[action=?][data-turbo="false"]', extract_workouts_path
+  end
+
+  test 'renders the textarea when the workout cannot be represented' do
+    stub_unrepresentable_workout_response('unsupported workout')
+
+    post extract_workouts_url, params: { wod_text: 'unsupported workout' }
+
+    assert_response :unprocessable_content
+    assert_equal "Couldn't understand that workout text (unsupported workout). Try rephrasing, or enter it manually.",
+                 flash[:alert]
+    assert_select 'textarea[name="wod_text"]', text: 'unsupported workout'
+  end
+
+  test 'renders manual form after extracting workout text' do
+    stub_extractable_workout_response(name: 'Extracted Workout', movement_name: movements(:pullup).name)
+
+    post extract_workouts_url, params: { wod_text: '10 pull-ups for time' }
+
+    assert_response :success
+    assert_select 'form.workout-form'
+    assert_select 'input[name="workout[name]"][value="Extracted Workout"]'
+  end
+
+  test 'renders manual form when manual workout submission is invalid' do
+    post workouts_url, params: { workout: { name: '', score_type: '' } }
+
+    assert_response :unprocessable_content
+    assert_select 'form.workout-form'
   end
 
   test 'should create workout' do
@@ -126,5 +163,51 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to workouts_url
+  end
+
+  private
+
+  def stub_extractable_workout_response(name:, movement_name:)
+    stub_llm_response(
+      extractable: true, gap_reason: nil, name: name, score_type: 'time', rounds: nil, time: nil,
+      interval: nil, time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, segments: [],
+      exercises: [exercise_payload(movement_name: movement_name, reps: 10)]
+    )
+  end
+
+  def stub_unrepresentable_workout_response(reason)
+    stub_llm_response(unrepresentable_workout_payload(reason))
+  end
+
+  def stub_llm_response(payload)
+    stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(
+      status: 200,
+      headers: { 'Content-Type' => 'application/json' },
+      body: {
+        id: 'msg_stub_001',
+        type: 'message',
+        role: 'assistant',
+        model: 'claude-haiku-4-5',
+        content: [{ type: 'text', text: payload.to_json }],
+        stop_reason: 'end_turn',
+        usage: { input_tokens: 100, output_tokens: 50 }
+      }.to_json
+    )
+  end
+
+  def unrepresentable_workout_payload(reason)
+    {
+      extractable: false, gap_reason: reason, name: nil, score_type: nil, rounds: nil, time: nil,
+      interval: nil, time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, segments: [], exercises: []
+    }
+  end
+
+  def exercise_payload(overrides)
+    {
+      movement_name: nil, reps: nil, duration_seconds: nil, load: nil, female_load: nil, male_load: nil,
+      implement_count: nil, distance: nil, female_distance: nil, male_distance: nil, distance_unit: nil,
+      distance_units_per_rep: nil, calories: nil, female_calories: nil, male_calories: nil,
+      ladder_step_every: nil, ladder_exempt: nil
+    }.merge(overrides)
   end
 end

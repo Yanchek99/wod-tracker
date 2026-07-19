@@ -22,6 +22,17 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal '5 sets for load', workout_objective(workout)
   end
 
+  test 'renders variable set-based lifting workouts as sets for load' do
+    workout = Workout.new(name: 'Power Clean Heavy Day', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    movement = Movement.find_or_create_by!(name: 'Power Clean')
+    [3, 3, 2, 2, 1, 1, 1, 1].each.with_index do |reps, index|
+      segment.exercises.build(movement: movement, position: index + 1, reps: reps)
+    end
+
+    assert_equal '8 sets for load', workout_objective(workout)
+  end
+
   test 'renders weight-scored rounds as sets for load without a prescribed load' do
     workout = Workout.create!(name: 'Back Squat 5x5', score_type: :weight)
     segment = workout.segments.create!(rounds: 5, position: 1)

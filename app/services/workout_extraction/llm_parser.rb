@@ -73,6 +73,7 @@ module WorkoutExtraction
       attrs = logged_fetch
       raise_unrepresentable!(attrs) unless attrs[:extractable]
 
+      attrs = normalize_lifting_set_interval(attrs)
       workout = build_workout(attrs)
       validate_workout!(workout)
       workout
@@ -145,6 +146,33 @@ module WorkoutExtraction
       build_named_segments(workout, segments)
       build_top_level_exercises(workout, attrs, position: segments.size + 1)
       workout
+    end
+
+    def normalize_lifting_set_interval(attrs)
+      return attrs unless attrs[:score_type].to_s == 'weight'
+      return attrs unless set_scheme?(attrs[:interval])
+      return attrs unless (attrs[:exercises] || []).one?
+
+      reps_per_set = attrs[:interval].split('-').map(&:to_i)
+      exercise = attrs[:exercises].first
+      attrs.merge(rounds: fixed_reps_per_set(reps_per_set), interval: nil,
+                  exercises: lifting_set_exercises(exercise, reps_per_set))
+    end
+
+    def set_scheme?(scheme)
+      scheme.to_s.match?(/\A\d+(?:-\d+)+\z/)
+    end
+
+    def fixed_reps_per_set(reps_per_set)
+      reps_per_set.uniq.one? ? reps_per_set.length : nil
+    end
+
+    def lifting_set_exercises(exercise, reps_per_set)
+      if reps_per_set.uniq.one?
+        [exercise.merge(reps: reps_per_set.first)]
+      else
+        reps_per_set.map { |reps| exercise.merge(reps: reps) }
+      end
     end
 
     # Matches CfWod::WorkoutParser's convention for unnamed scraped workouts (same slug format).

@@ -131,6 +131,22 @@ module WorkoutExtraction
       assert_nil exercise.male_calories
     end
 
+    test 'treats load-scored rep schemes as lifting sets, not intervals' do
+      movement = Movement.find_or_create_by!(name: 'Power Clean')
+      stub_llm_response(
+        extractable: true, name: 'Power Clean Heavy Day', score_type: 'weight',
+        rounds: nil, time: nil, interval: '3-3-2-2-1-1-1-1', segments: [],
+        exercises: [exercise_payload(movement_name: movement.name, reps: 1)]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('Power clean 3-3-2-2-1-1-1-1 reps', date: DATE)
+
+      segment = workout.segments.first
+      assert_nil segment.interval_scheme
+      assert_equal [3, 3, 2, 2, 1, 1, 1, 1], segment.exercises.map(&:reps)
+      assert_equal [movement], segment.exercises.map(&:movement).uniq
+    end
+
     private
 
     def stub_llm_response(payload)

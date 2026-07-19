@@ -2,7 +2,7 @@ module WorkoutsHelper
   def workout_objective(workout)
     return ascending_ladder_objective(workout) if workout.ascending_ladder?
     return max_finding_objective(workout) if workout.max_finding?
-    return "#{pluralize workout.governing_segment.rounds, 'set'} for load" if workout.set_based_lifting?
+    return "#{pluralize workout.set_based_lifting_set_count, 'set'} for load" if workout.set_based_lifting?
     return for_time_objective(workout) if workout.rounds_for_time?
 
     clock_objective(workout)

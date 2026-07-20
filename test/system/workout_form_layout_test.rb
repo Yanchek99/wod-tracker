@@ -54,6 +54,21 @@ module WorkoutFormLayoutSystemHelpers
   def exercise_form_layout
     evaluate_script(EXERCISE_FORM_LAYOUT_SCRIPT)
   end
+
+  def assert_optional_group_state(name, state)
+    expanded = state == :shown
+    label = expanded ? 'Shown' : 'Hidden'
+
+    assert_selector format('.exercise-editor__optional-toggle[aria-expanded="%<expanded>s"]',
+                           expanded: expanded),
+                    text: /#{Regexp.escape(name)}\s+#{label}/
+  end
+
+  def assert_optional_groups_hidden
+    assert_optional_group_state 'Load', :hidden
+    assert_optional_group_state 'Distance', :hidden
+    assert_optional_group_state 'Calories', :hidden
+  end
 end
 
 class WorkoutFormLayoutTest < ApplicationSystemTestCase
@@ -96,21 +111,25 @@ class WorkoutFormLayoutTest < ApplicationSystemTestCase
     click_on 'Add Exercise', match: :first
 
     within '.exercise' do
-      assert_field 'Duration', placeholder: '1:30'
+      assert_field 'Duration', placeholder: 'MM:SS'
+      assert_optional_groups_hidden
       assert_no_field 'Load (lb)'
       assert_no_field 'Female load (lb)'
       assert_no_field 'Distance'
       assert_no_field 'Calories'
 
       click_on 'Load'
+      assert_optional_group_state 'Load', :shown
       assert_field 'Load (lb)'
       assert_field 'Female load (lb)'
 
       click_on 'Distance'
+      assert_optional_group_state 'Distance', :shown
       assert_field 'Distance'
       assert_field 'Female distance'
 
       click_on 'Calories'
+      assert_optional_group_state 'Calories', :shown
       assert_field 'Calories'
       assert_field 'Female calories'
     end
@@ -127,6 +146,9 @@ class WorkoutFormLayoutTest < ApplicationSystemTestCase
     within exercise do
       find('.exercise-summary__button').click
 
+      assert_optional_group_state 'Load', :shown
+      assert_optional_group_state 'Distance', :hidden
+      assert_optional_group_state 'Calories', :hidden
       assert_field 'Load (lb)', with: '95'
       assert_no_field 'Distance'
       assert_no_field 'Calories'

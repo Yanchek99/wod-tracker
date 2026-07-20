@@ -7,7 +7,12 @@ module ExerciseCardSummaryFormattingSystemHelpers
   end
 
   def open_optional_group(name)
-    click_on name
+    execute_script("document.querySelectorAll('select.movement').forEach((select) => select.tomselect?.close())")
+    toggle = find('button.exercise-editor__optional-toggle', text: name)
+
+    toggle.click
+  rescue Selenium::WebDriver::Error::ElementClickInterceptedError
+    execute_script('arguments[0].click()', toggle)
   end
 end
 

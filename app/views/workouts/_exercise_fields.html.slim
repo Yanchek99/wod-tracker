@@ -10,10 +10,9 @@
 - calories_collapse_id = "exercise-#{exercise_key}-calories"
 - tooltip_button = ->(title) do
   - content_tag(:button, '?', type: 'button', class: 'exercise-editor__help', data: { controller: 'tooltip', 'bs-toggle': 'tooltip', 'bs-title': title }, aria: { label: title })
-- reps_label = safe_join(['Reps ', tooltip_button.call('0 = max reps; for a ladder, the round-1 reps')])
-- load_label = safe_join(["Load (#{load_display_unit}) ", tooltip_button.call('0 = find-a-max (no fixed load)')])
-- calories_label = safe_join(['Calories ', tooltip_button.call('0 = max calories')])
-- implements_label = safe_join(['Implements ', tooltip_button.call('e.g. 2 = double dumbbell')])
+- field_label = ->(attribute, label, title) do
+  - safe_join([f.label(attribute, label, class: 'form-label mb-0'), tooltip_button.call(title)], ' ')
+- editor_title = f.object.persisted? ? 'Editing Exercise' : 'New exercise'
 
 .exercise.nested-fields.mb-3.segment-exercise data-controller="exercise-form exercise-card implement-count ladder-step" data-action="input->exercise-form#toggleDistanceUnits change->exercise-form#toggleDistanceUnits change->exercise-card#clearMovementError change->implement-count#toggle ladder-fields:change@document->ladder-step#toggle" data-exercise-card-expanded-value=expanded data-exercise-card-load-unit-value=load_display_unit data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
   = f.hidden_field :_destroy
@@ -29,7 +28,7 @@
           i.fas.fa-trash-alt aria-hidden="true"
       .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
         .exercise-editor__header
-          span.exercise-editor__eyebrow Editing Exercise
+          span.exercise-editor__eyebrow = editor_title
           = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
             i.fas.fa-trash-alt aria-hidden="true"
         .card-body
@@ -37,8 +36,12 @@
             .exercise-editor__movement
               = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect', 'implement-count-target': 'movementSelect' } }
           .row.g-2
-            .col-6.col-md-3 = f.input :reps, label: reps_label, input_html: { data: { 'exercise-card-target': 'repsInput' } }
-            .col-6.col-md-3 = f.input :duration_seconds, as: :string, label: 'Duration', placeholder: 'MM:SS', input_html: { value: f.object.duration, data: { 'exercise-card-target': 'durationInput' } }
+            .col-6.col-md-3
+              .exercise-editor__field-label = field_label.call(:reps, 'Reps', '0 = max reps; for a ladder, the round-1 reps')
+              = f.input :reps, label: false, input_html: { data: { 'exercise-card-target': 'repsInput' } }
+            .col-6.col-md-3
+              .exercise-editor__field-label = f.label :duration_seconds, 'Duration', class: 'form-label mb-0'
+              = f.input :duration_seconds, as: :string, label: false, placeholder: 'MM:SS', input_html: { value: f.object.duration, data: { 'exercise-card-target': 'durationInput' } }
             .col-6.col-md-3 data-ladder-step-target="exemptField" hidden=(!@workout&.ascending_ladder?)
               = f.input :ladder_exempt, as: :boolean, label: 'Constant (no ladder)', input_html: { data: { 'ladder-step-target': 'exempt', action: 'change->ladder-step#toggle' } }
             .col-6.col-md-3 data-ladder-step-target="stepEveryField" hidden=(!(@workout&.ascending_ladder? && !f.object.ladder_exempt))
@@ -50,11 +53,14 @@
             .collapse class=('show' if has_load) id=load_collapse_id
               .exercise-editor__optional-panel
                 .row.g-2
-                  .col-6.col-md-3 = f.input :load, label: load_label, input_html: { value: load_input_value(f.object.load), data: { 'exercise-card-target': 'loadInput' } }
+                  .col-6.col-md-3
+                    .exercise-editor__field-label = field_label.call(:load, "Load (#{load_display_unit})", '0 = find-a-max (no fixed load)')
+                    = f.input :load, label: false, input_html: { value: load_input_value(f.object.load), data: { 'exercise-card-target': 'loadInput' } }
                   .col-6.col-md-3 = f.input :female_load, label: "Female load (#{load_display_unit})", input_html: { value: load_input_value(f.object.female_load), data: { 'exercise-card-target': 'femaleLoadInput' } }
                   .col-6.col-md-3 = f.input :male_load, label: "Male load (#{load_display_unit})", input_html: { value: load_input_value(f.object.male_load), data: { 'exercise-card-target': 'maleLoadInput' } }
                   .col-6.col-md-3 data-implement-count-target="field" hidden=(!f.object.movement&.supports_implement_count?)
-                    = f.input :implement_count, label: implements_label
+                    .exercise-editor__field-label = field_label.call(:implement_count, 'Implements', 'e.g. 2 = double dumbbell')
+                    = f.input :implement_count, label: false
             button.btn.btn-outline-secondary.exercise-editor__optional-toggle class=('collapsed' unless has_distance) type="button" data-bs-toggle="collapse" data-bs-target="##{distance_collapse_id}" aria-expanded=has_distance.to_s aria-controls=distance_collapse_id
               span Distance
               span.exercise-editor__optional-toggle-meta aria-hidden="true"
@@ -73,7 +79,9 @@
             .collapse class=('show' if has_calories) id=calories_collapse_id
               .exercise-editor__optional-panel
                 .row.g-2
-                  .col-4.col-md-3 = f.input :calories, label: calories_label, input_html: { data: { 'exercise-card-target': 'caloriesInput' } }
+                  .col-4.col-md-3
+                    .exercise-editor__field-label = field_label.call(:calories, 'Calories', '0 = max calories')
+                    = f.input :calories, label: false, input_html: { data: { 'exercise-card-target': 'caloriesInput' } }
                   .col-4.col-md-3 = f.input :female_calories, input_html: { data: { 'exercise-card-target': 'femaleCaloriesInput' } }
                   .col-4.col-md-3 = f.input :male_calories, input_html: { data: { 'exercise-card-target': 'maleCaloriesInput' } }
           .row.g-2

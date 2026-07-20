@@ -56,7 +56,7 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
 
     within all('.exercise').last do
       within '.exercise-editor__header' do
-        assert_text 'EDITING EXERCISE'
+        assert_text 'NEW EXERCISE'
         assert_selector '[aria-label="Delete exercise"]'
       end
 

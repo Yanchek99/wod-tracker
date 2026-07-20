@@ -71,8 +71,21 @@ module WorkoutFormLayoutSystemHelpers
 
   def assert_help_text_is_tooltipped
     assert_no_text '0 = max reps'
-    assert_no_text 'Shown'
-    assert_no_text 'Hidden'
+    assert_equal 0, evaluate_script("document.querySelectorAll('label .exercise-editor__help').length")
+  end
+
+  def assert_help_targets_are_large_enough
+    sizes = evaluate_script(<<~JS)
+      Array.from(document.querySelectorAll('.exercise-editor__help')).map((button) => {
+        const rect = button.getBoundingClientRect()
+
+        return { width: Math.round(rect.width), height: Math.round(rect.height) }
+      }).filter((size) => size.width > 0 && size.height > 0)
+    JS
+
+    assert_not_empty sizes, 'Expected at least one visible help target'
+    assert sizes.all? { |size| size['width'] >= 24 && size['height'] >= 24 },
+           "Expected help targets to be at least 24x24px, got #{sizes.inspect}"
   end
 
   def assert_optional_group_reveals_fields(name, fields)
@@ -125,6 +138,7 @@ class WorkoutFormLayoutTest < ApplicationSystemTestCase
     within '.exercise' do
       assert_field 'Duration', placeholder: 'MM:SS'
       assert_help_text_is_tooltipped
+      assert_help_targets_are_large_enough
       assert_optional_groups_hidden
       assert_no_field 'Load (lb)'
       assert_no_field 'Female load (lb)'
@@ -135,6 +149,8 @@ class WorkoutFormLayoutTest < ApplicationSystemTestCase
       assert_no_text '0 = find-a-max'
       assert_optional_group_reveals_fields 'Distance', ['Distance', 'Female distance']
       assert_optional_group_reveals_fields 'Calories', ['Calories', 'Female calories']
+      assert_help_text_is_tooltipped
+      assert_help_targets_are_large_enough
     end
   ensure
     page.driver.browser.manage.window.resize_to(1400, 1400)

@@ -189,4 +189,34 @@ class WorkoutTest < ActiveSupport::TestCase
 
     assert_predicate workout, :valid?
   end
+
+  test 'replace_with_extraction! replaces attributes and segments in memory without persisting' do
+    workout = Workout.create!(name: 'Old Name', score_type: :time)
+    segment = workout.segments.create!(position: 1)
+    segment.exercises.create!(movement: movements(:pullup), position: 1, reps: 10)
+
+    # Loaded the same way WorkoutsController#set_workout loads @workout, so the segments
+    # association is already eager-loaded before replace_with_extraction! touches it.
+    workout = Workout.includes(segments: :exercises).find(workout.id)
+    old_segment = workout.segments.sole
+
+    extracted = Workout.new(name: 'New Name', score_type: :rep, notes: 'extracted notes')
+    new_segment = extracted.segments.build(position: 1)
+    new_segment.exercises.build(movement: movements(:run), position: 1, reps: 5)
+
+    workout.replace_with_extraction!(extracted)
+
+    assert_equal 'New Name', workout.name
+    assert_equal 'rep', workout.score_type
+    assert_equal 'extracted notes', workout.notes.to_plain_text.strip
+
+    assert_predicate old_segment, :marked_for_destruction?
+
+    built_segment = workout.segments.reject(&:marked_for_destruction?).sole
+    assert_predicate built_segment, :new_record?
+    assert_equal movements(:run), built_segment.exercises.sole.movement
+
+    workout.reload
+    assert_equal 'Old Name', workout.name
+  end
 end

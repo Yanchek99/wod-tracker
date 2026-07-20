@@ -125,4 +125,29 @@ class Workout < ApplicationRecord
       self.time_cap_seconds = time_cap
     end
   end
+
+  # Replaces this workout's attributes and every segment/exercise with the equivalent data from a
+  # freshly LlmParser-built (unsaved) workout, entirely in memory -- nothing persists until the
+  # caller saves. Full replace, not merge: re-pasting text redefines the whole workout, matching
+  # how WorkoutExtraction::LlmParser already behaves for a brand-new workout.
+  def replace_with_extraction!(extracted)
+    assign_attributes(
+      name: extracted.name, notes: extracted.notes.to_s, score_type: extracted.score_type,
+      time_cap_seconds: extracted.time_cap_seconds, ladder_step: extracted.ladder_step,
+      team_size: extracted.team_size
+    )
+    segments.each(&:mark_for_destruction)
+    self.segments_attributes = extracted.segments.map { |segment| segment_attributes_for(segment) }
+  end
+
+  private
+
+  def segment_attributes_for(segment)
+    segment.attributes.except('id', 'workout_id', 'position', 'created_at', 'updated_at')
+           .merge('exercises_attributes' => segment.exercises.map { |exercise| exercise_attributes_for(exercise) })
+  end
+
+  def exercise_attributes_for(exercise)
+    exercise.attributes.except('id', 'segment_id', 'created_at', 'updated_at')
+  end
 end

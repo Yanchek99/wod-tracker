@@ -23,8 +23,9 @@
             = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
               i.fas.fa-trash-alt aria-hidden="true"
           .row.g-2
-            .col-6.col-md-3 = f.input :reps, hint: '0 = max reps; for a ladder, the round-1 reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
-            .col-6.col-md-3 = f.input :duration_seconds, label: 'Duration (s)', input_html: { data: { 'exercise-card-target': 'durationInput' } }
+            .col-4.col-md-3 = f.input :reps, hint: '0 = max reps; for a ladder, the round-1 reps', input_html: { data: { 'exercise-card-target': 'repsInput' } }
+            .col-4.col-md-3 = f.input :duration_seconds, label: 'Duration (s)', input_html: { data: { 'exercise-card-target': 'durationInput' } }
+            .col-4.col-md-3 = f.input :calories, hint: '0 = max calories', input_html: { data: { 'exercise-card-target': 'caloriesInput' } }
             .col-6.col-md-3 data-ladder-step-target="exemptField" hidden=(!@workout&.ascending_ladder?)
               = f.input :ladder_exempt, as: :boolean, label: 'Constant (no ladder)', input_html: { data: { 'ladder-step-target': 'exempt', action: 'change->ladder-step#toggle' } }
             .col-6.col-md-3 data-ladder-step-target="stepEveryField" hidden=(!(@workout&.ascending_ladder? && !f.object.ladder_exempt))
@@ -41,7 +42,6 @@
             .col-6.col-md-3 = f.input :male_distance, input_html: { class: 'distance-value', data: { 'exercise-form-target': 'distanceValue', 'exercise-card-target': 'maleDistanceInput' } }
             .col-6.col-md-3 = f.input :distance_unit, collection: Exercise.distance_units.keys, prompt: 'Distance unit', input_html: { data: { 'exercise-form-target': 'distanceUnitSelect', 'exercise-card-target': 'distanceUnitSelect' } }
           .row.g-2
-            .col-6.col-md-3 = f.input :calories, hint: '0 = max calories', input_html: { data: { 'exercise-card-target': 'caloriesInput' } }
             .col-6.col-md-3 = f.input :female_calories, input_html: { data: { 'exercise-card-target': 'femaleCaloriesInput' } }
             .col-6.col-md-3 = f.input :male_calories, input_html: { data: { 'exercise-card-target': 'maleCaloriesInput' } }
             .col-12.col-md-4 data-exercise-form-target="distanceUnits" hidden=distance_units_hidden

@@ -105,6 +105,40 @@
 }
 
 @media (max-width: 575.98px) {
+  .workout-form .form-label {
+    font-size: 0.875rem;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+
+  .workout-form .form-text {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    margin-top: 0.25rem;
+  }
+
+  .workout-form .form-control,
+  .workout-form .form-select,
+  .workout-form .ts-control {
+    min-height: 2.5rem;
+    padding-block: 0.375rem;
+  }
+
+  .workout-form trix-toolbar {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .workout-form trix-toolbar .trix-button-row {
+    flex-wrap: nowrap;
+  }
+
+  .workout-form trix-editor {
+    min-height: 7rem;
+  }
+
   .workout-card-toolbar .btn {
     flex: 1 1 8rem;
   }

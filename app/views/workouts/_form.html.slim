@@ -6,11 +6,11 @@
   = f.error_notification
   .form-inputs.row.g-2
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
-    .col-sm-4 data-ladder-fields-target="row" hidden=ladder_hidden
+    .col-4.col-md-3 data-ladder-fields-target="row" hidden=ladder_hidden
       = f.input :ladder_step, label: 'Ascending ladder step', hint: "reps added each round (start is each exercise's reps)", input_html: { data: { 'ladder-fields-target': 'step input', action: 'input->ladder-fields#toggle' } }
-    .col-12 = f.input :score_type, collection: Metric.workout_measurements, label: 'For'
-    .col-sm-4 = f.input :team_size, label: 'Athletes (team size)', hint: 'leave blank for an individual workout'
-    .col-12 = f.input :time_cap
+    .col-4.col-md-3 = f.input :score_type, collection: Metric.workout_measurements, label: 'For'
+    .col-4.col-md-3 = f.input :team_size, label: 'Athletes', hint: 'team size'
+    .col-4.col-md-3 = f.input :time_cap
     .col-12
       = f.label :notes, class: 'form-label'
       = f.rich_text_area :notes

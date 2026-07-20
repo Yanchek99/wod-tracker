@@ -104,6 +104,20 @@
   margin-top: 2rem;
 }
 
+.exercise-editor__optional-groups {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.exercise-editor__optional-groups > .btn-group {
+  justify-content: flex-start;
+}
+
+.exercise-editor__optional-panel {
+  padding-top: 0.5rem;
+}
+
 @media (max-width: 575.98px) {
   .workout-form .form-label {
     font-size: 0.875rem;

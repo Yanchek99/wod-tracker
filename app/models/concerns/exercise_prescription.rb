@@ -1,6 +1,8 @@
 module ExercisePrescription
   extend ActiveSupport::Concern
 
+  SEX_PAIRED_DIMENSIONS = %i[load distance calories].freeze
+
   included do
     enum :distance_unit, { meter: 0, foot: 1, inch: 2 }, prefix: :distance_unit
 
@@ -66,6 +68,20 @@ module ExercisePrescription
     %i[load female_load male_load].each do |attribute|
       value = self[attribute]
       self[attribute] = LoadEquivalence.to_lb(value, @load_unit) if value.present?
+    end
+  end
+
+  def prescription_values_are_unambiguous
+    SEX_PAIRED_DIMENSIONS.each do |dimension|
+      value = self[dimension]
+      female = self[:"female_#{dimension}"]
+      male = self[:"male_#{dimension}"]
+
+      if value.present? && (female.present? || male.present?)
+        errors.add(dimension, 'cannot be set with sex-specific values')
+      elsif female.blank? != male.blank?
+        errors.add(:base, "#{dimension} requires both female and male values")
+      end
     end
   end
 

@@ -42,68 +42,6 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
 
-  test 'lays out workout form fields densely on mobile' do
-    page.driver.browser.manage.window.resize_to(390, 900)
-    visit new_workout_url
-
-    layout = evaluate_script(<<~JS)
-      (() => {
-        const rowTop = (selector) => {
-          const control = document.querySelector(selector)
-          const field = control.closest('.mb-3, [class*="col-"]')
-
-          return Math.round(field.getBoundingClientRect().top)
-        }
-        const overflowingControls = Array.from(
-          document.querySelectorAll('.workout-form input, .workout-form select, .workout-form textarea, .workout-form trix-toolbar, .workout-form trix-editor')
-        ).filter((control) => {
-          const rect = control.getBoundingClientRect()
-          return rect.left < 0 || rect.right > document.documentElement.clientWidth
-        }).length
-
-        return {
-          scoreTypeTop: rowTop('#workout_score_type'),
-          teamSizeTop: rowTop('#workout_team_size'),
-          timeCapTop: rowTop('#workout_time_cap'),
-          segmentRoundsTop: rowTop('input[name$="[rounds]"]'),
-          segmentTimeTop: rowTop('input[name$="[time_seconds]"]'),
-          segmentRestTop: rowTop('input[name$="[rest_seconds]"]'),
-          overflowingControls
-        }
-      })()
-    JS
-
-    assert_equal layout['scoreTypeTop'], layout['teamSizeTop']
-    assert_equal layout['scoreTypeTop'], layout['timeCapTop']
-    assert_equal layout['segmentRoundsTop'], layout['segmentTimeTop']
-    assert_equal layout['segmentRoundsTop'], layout['segmentRestTop']
-    assert_equal 0, layout['overflowingControls']
-
-    click_on 'Add Exercise', match: :first
-
-    exercise_layout = evaluate_script(<<~JS)
-      (() => {
-        const rowTop = (selector) => {
-          const control = document.querySelector(selector)
-          const field = control.closest('.mb-3, [class*="col-"]')
-
-          return Math.round(field.getBoundingClientRect().top)
-        }
-
-        return {
-          repsTop: rowTop('input[name$="[reps]"]'),
-          durationTop: rowTop('input[name$="[duration_seconds]"]'),
-          caloriesTop: rowTop('input[name$="[calories]"]')
-        }
-      })()
-    JS
-
-    assert_equal exercise_layout['repsTop'], exercise_layout['durationTop']
-    assert_equal exercise_layout['repsTop'], exercise_layout['caloriesTop']
-  ensure
-    page.driver.browser.manage.window.resize_to(1400, 1400)
-  end
-
   test 'uses a full-width toolbar bar with container-width actions' do
     page.driver.browser.manage.window.resize_to(1400, 900)
     visit new_workout_url

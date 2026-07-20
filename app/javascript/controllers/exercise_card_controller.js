@@ -321,7 +321,7 @@ export default class extends Controller {
   }
 
   durationText(value) {
-    const totalSeconds = parseInt(value, 10)
+    const totalSeconds = this.durationInSeconds(value)
     if (Number.isNaN(totalSeconds)) return value.trim()
 
     const hours = Math.floor(totalSeconds / 3600)
@@ -331,6 +331,17 @@ export default class extends Controller {
     if (hours > 0) return `${hours}:${this.pad(minutes)}:${this.pad(seconds)}`
 
     return `${minutes}:${this.pad(seconds)}`
+  }
+
+  durationInSeconds(value) {
+    const cleanValue = value.trim()
+    if (!cleanValue.includes(":")) return parseInt(cleanValue, 10)
+
+    return cleanValue
+      .split(":")
+      .map((part) => parseInt(part, 10))
+      .reverse()
+      .reduce((total, part, index) => total + (part * (60 ** index)), 0)
   }
 
   loadUnit() {

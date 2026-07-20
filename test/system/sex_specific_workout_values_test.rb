@@ -26,6 +26,7 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
       find('.ts-dropdown .option', text: 'Thruster').click
 
       fill_in 'Reps', with: '1'
+      click_on 'Load'
       fill_in 'Female load (lb)', with: '65'
       fill_in 'Male load (lb)', with: '95'
       click_on 'Done'

@@ -44,6 +44,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
         assert_equal '1', find('input[name$="[position]"]', visible: false).value
         find('.ts-control input').set('Run')
         find('.ts-dropdown .option', text: 'Run').click
+        click_on 'Distance'
         fill_in 'Distance', with: '400', exact: true
         select 'meter', from: 'Distance unit'
         click_on 'Done'
@@ -89,6 +90,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
     within first('.exercise') do
       assert_no_field 'Implements'
+      click_on 'Load'
 
       find('.ts-control input').set('Pull')
       find('.ts-dropdown .option', text: 'Pull Up').click

@@ -37,8 +37,11 @@ module WorkoutDragOrderingSystemHelpers
       find('.ts-control input').set(movement)
       find('.ts-dropdown .option', exact_text: movement).click
       fill_in 'Reps', with: reps if reps.present?
-      fill_in 'Distance', with: distance, exact: true if distance.present?
-      select 'meter', from: 'Distance unit' if distance.present?
+      if distance.present?
+        click_on 'Distance'
+        fill_in 'Distance', with: distance, exact: true
+        select 'meter', from: 'Distance unit'
+      end
       done_button = find_button('Done')
       scroll_to done_button, align: :center
       done_button.click

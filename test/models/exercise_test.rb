@@ -119,6 +119,18 @@ class ExerciseTest < ActiveSupport::TestCase
     assert_includes exercise.errors[:distance_units_per_rep], 'must divide the prescribed distance evenly'
   end
 
+  test 'parses duration strings into duration seconds' do
+    assert_equal 90, fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: '1:30').duration_seconds
+    assert_equal 3630, fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: '1:00:30').duration_seconds
+    assert_equal 90, fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: '90').duration_seconds
+  end
+
+  test 'formats duration seconds for form input' do
+    assert_equal '1:30', fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: 90).duration
+    assert_equal '1:00:30', fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: 3630).duration
+    assert_nil fran_segment.exercises.build(movement: movements(:pullup)).duration
+  end
+
   private
 
   # An unsaved segment for exercising Exercise validations/prescriptions in isolation,

@@ -1,9 +1,8 @@
 class Exercise < ApplicationRecord
+  include ExerciseDuration
   include ExercisePositionValidation
   include ExercisePrescription
   include RefreshesWorkoutContentKey
-
-  SEX_PAIRED_DIMENSIONS = %i[load distance calories].freeze
 
   belongs_to :movement
   belongs_to :segment
@@ -105,20 +104,6 @@ class Exercise < ApplicationRecord
 
   def scorable_metric?(metric)
     metric&.value.present? && metric.value.positive?
-  end
-
-  def prescription_values_are_unambiguous
-    SEX_PAIRED_DIMENSIONS.each do |dimension|
-      value = self[dimension]
-      female = self[:"female_#{dimension}"]
-      male = self[:"male_#{dimension}"]
-
-      if value.present? && (female.present? || male.present?)
-        errors.add(dimension, 'cannot be set with sex-specific values')
-      elsif female.blank? != male.blank?
-        errors.add(:base, "#{dimension} requires both female and male values")
-      end
-    end
   end
 
   def implement_count_requires_load

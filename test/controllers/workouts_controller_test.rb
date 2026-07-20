@@ -18,6 +18,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'form.workout-form'
     assert_select 'textarea[name="wod_text"]', count: 0
+    assert_select 'a[href=?]', new_unstructured_workouts_path
   end
 
   test 'should get new unstructured' do
@@ -25,6 +26,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'textarea[name="wod_text"]'
     assert_select 'form[action=?][data-turbo="false"]', extract_workouts_path
+    assert_select 'a[href=?]', new_workout_path
   end
 
   test 'renders the textarea when the workout cannot be represented' do
@@ -155,6 +157,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     get edit_workout_url(@workout)
     assert_response :success
     assert_select 'trix-editor'
+    assert_select 'a[href=?]', edit_unstructured_workout_path(@workout)
   end
 
   test 'should update workout' do

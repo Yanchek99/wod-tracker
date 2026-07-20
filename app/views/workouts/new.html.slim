@@ -1,3 +1,4 @@
 .container
   h1 New Workout
   = render 'form', workout: @workout
+  = link_to 'Paste text instead', new_unstructured_workouts_path, class: 'btn btn-outline-secondary mt-2'

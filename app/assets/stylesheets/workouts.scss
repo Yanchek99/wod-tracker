@@ -91,6 +91,42 @@
   min-width: 0;
 }
 
+.exercise-editor.card {
+  background: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.exercise-editor__header,
+.exercise-editor__footer {
+  align-items: center;
+  background: var(--bs-tertiary-bg);
+  display: flex;
+  justify-content: space-between;
+}
+
+.exercise-editor__header {
+  border-bottom: 1px solid var(--bs-border-color);
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.exercise-editor__footer {
+  border-top: 1px solid var(--bs-border-color);
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem 0.75rem;
+}
+
+.exercise-editor__eyebrow {
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .exercise-editor__delete {
   align-items: center;
   display: inline-flex;
@@ -100,16 +136,8 @@
   min-width: 2.25rem;
 }
 
-.exercise-editor__delete {
-  margin-top: 2rem;
-}
-
-.exercise-editor.card {
-  border: 0;
-}
-
 .exercise-editor.card > .card-body {
-  padding-inline: 0;
+  padding: 0.75rem;
 }
 
 .exercise-editor__help {

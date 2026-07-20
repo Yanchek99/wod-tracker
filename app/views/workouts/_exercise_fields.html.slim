@@ -28,12 +28,14 @@
         = link_to '#', class: 'exercise-summary__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
           i.fas.fa-trash-alt aria-hidden="true"
       .exercise-editor.card data-exercise-card-target="editor" hidden=(!expanded)
+        .exercise-editor__header
+          span.exercise-editor__eyebrow Editing Exercise
+          = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
+            i.fas.fa-trash-alt aria-hidden="true"
         .card-body
           .exercise-editor__movement-row
             .exercise-editor__movement
               = f.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'exercise-card-target': 'movementSelect', 'implement-count-target': 'movementSelect' } }
-            = link_to '#', class: 'exercise-editor__delete btn btn-sm btn-outline-danger', data: { action: 'click->nested-form#remove' }, aria: { label: 'Delete exercise' } do
-              i.fas.fa-trash-alt aria-hidden="true"
           .row.g-2
             .col-6.col-md-3 = f.input :reps, label: reps_label, input_html: { data: { 'exercise-card-target': 'repsInput' } }
             .col-6.col-md-3 = f.input :duration_seconds, as: :string, label: 'Duration', placeholder: 'MM:SS', input_html: { value: f.object.duration, data: { 'exercise-card-target': 'durationInput' } }
@@ -76,5 +78,5 @@
                   .col-4.col-md-3 = f.input :male_calories, input_html: { data: { 'exercise-card-target': 'maleCaloriesInput' } }
           .row.g-2
             .col = f.input :notes
-          .workout-card-toolbar.mt-2
-            button.btn.btn-sm.btn-primary type="button" data-action="click->exercise-card#save" Done
+        .exercise-editor__footer
+          button.btn.btn-sm.btn-primary type="button" data-action="click->exercise-card#save" Done

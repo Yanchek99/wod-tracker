@@ -22,7 +22,7 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
     click_on 'Add Exercise'
 
     within all('.exercise').last do
-      within '.workout-card-toolbar' do
+      within '.exercise-editor__footer' do
         assert_button 'Done'
         assert_no_link 'Delete Exercise'
       end
@@ -44,7 +44,7 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
     end
   end
 
-  test 'renders expanded exercise movement row actions inline' do
+  test 'renders expanded exercise editor actions in header and footer' do
     visit new_workout_url
 
     fill_in 'Name *', with: 'Inline Exercise Movement Row'
@@ -55,10 +55,19 @@ class WorkoutCardToolbarTest < ApplicationSystemTestCase
     click_on 'Add Exercise'
 
     within all('.exercise').last do
+      within '.exercise-editor__header' do
+        assert_text 'EDITING EXERCISE'
+        assert_selector '[aria-label="Delete exercise"]'
+      end
+
       within '.exercise-editor__movement-row' do
         assert_no_selector '[aria-label="Drag exercise"]'
         assert_field 'Movement'
-        assert_selector '[aria-label="Delete exercise"]'
+        assert_no_selector '[aria-label="Delete exercise"]'
+      end
+
+      within '.exercise-editor__footer' do
+        assert_button 'Done'
       end
     end
   end

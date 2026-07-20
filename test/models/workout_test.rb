@@ -219,4 +219,25 @@ class WorkoutTest < ActiveSupport::TestCase
     workout.reload
     assert_equal 'Old Name', workout.name
   end
+
+  test 'replace_with_extraction! persists the replacement when saved' do
+    workout = Workout.create!(name: 'Old Name', score_type: :time)
+    segment = workout.segments.create!(position: 1)
+    segment.exercises.create!(movement: movements(:pullup), position: 1, reps: 10)
+    old_segment_id = segment.id
+
+    workout = Workout.includes(segments: :exercises).find(workout.id)
+
+    extracted = Workout.new(name: 'New Name', score_type: :rep)
+    new_segment = extracted.segments.build(position: 1)
+    new_segment.exercises.build(movement: movements(:run), position: 1, reps: 5)
+
+    workout.replace_with_extraction!(extracted)
+    assert workout.save
+
+    workout.reload
+    assert_equal 'New Name', workout.name
+    assert_not Segment.exists?(old_segment_id)
+    assert_equal [movements(:run)], workout.segments.sole.exercises.map(&:movement)
+  end
 end

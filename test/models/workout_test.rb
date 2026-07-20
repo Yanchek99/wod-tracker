@@ -229,8 +229,10 @@ class WorkoutTest < ActiveSupport::TestCase
     workout = Workout.includes(segments: :exercises).find(workout.id)
 
     extracted = Workout.new(name: 'New Name', score_type: :rep)
-    new_segment = extracted.segments.build(position: 1)
-    new_segment.exercises.build(movement: movements(:run), position: 1, reps: 5)
+    first_segment = extracted.segments.build(name: 'Part 1', position: 1)
+    first_segment.exercises.build(movement: movements(:run), position: 1, reps: 5)
+    second_segment = extracted.segments.build(name: 'Part 2', position: 2)
+    second_segment.exercises.build(movement: movements(:pushup), position: 1, reps: 8)
 
     workout.replace_with_extraction!(extracted)
     assert workout.save
@@ -238,6 +240,11 @@ class WorkoutTest < ActiveSupport::TestCase
     workout.reload
     assert_equal 'New Name', workout.name
     assert_not Segment.exists?(old_segment_id)
-    assert_equal [movements(:run)], workout.segments.sole.exercises.map(&:movement)
+    # Not [1, 2]: see the comment on replace_with_extraction! -- Segment's uniqueness validator
+    # would reject reusing the old (not-yet-destroyed) segment's position, so the replacement
+    # segments land above it instead. Order and contiguity-of-existence are what matter, not the
+    # numeric value.
+    assert_equal [2, 3], workout.segments.map(&:position)
+    assert_equal [movements(:run), movements(:pushup)], workout.segments.flat_map(&:exercises).map(&:movement)
   end
 end

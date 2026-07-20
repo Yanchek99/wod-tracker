@@ -144,7 +144,7 @@
   align-items: center;
   display: flex;
   gap: 0.25rem;
-  min-height: 1.5rem;
+  min-height: 1.75rem;
 }
 
 .exercise-editor__help {
@@ -154,13 +154,14 @@
   border-radius: 50%;
   color: var(--bs-secondary-color);
   display: inline-flex;
+  flex: 0 0 1.75rem;
   font-size: 0.625rem;
   font-weight: 700;
-  height: 1.5rem;
+  height: 1.75rem;
   justify-content: center;
   line-height: 1;
   padding: 0;
-  width: 1.5rem;
+  width: 1.75rem;
 }
 
 .exercise-editor__help:focus,

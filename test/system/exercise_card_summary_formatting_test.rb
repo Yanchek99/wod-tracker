@@ -10,6 +10,11 @@ module ExerciseCardSummaryFormattingSystemHelpers
     execute_script("document.querySelectorAll('select.movement').forEach((select) => select.tomselect?.close())")
     toggle = find('button.exercise-editor__optional-toggle', text: name)
 
+    click_optional_group_toggle(toggle) if toggle['aria-expanded'] == 'false'
+    assert_selector 'button.exercise-editor__optional-toggle[aria-expanded="true"]', text: name
+  end
+
+  def click_optional_group_toggle(toggle)
     toggle.click
   rescue Selenium::WebDriver::Error::ElementClickInterceptedError
     execute_script('arguments[0].click()', toggle)

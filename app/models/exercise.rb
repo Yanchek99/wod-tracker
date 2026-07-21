@@ -1,13 +1,18 @@
 class Exercise < ApplicationRecord
+  include ExerciseDuration
   include ExercisePositionValidation
   include ExercisePrescription
   include RefreshesWorkoutContentKey
 
-  SEX_PAIRED_DIMENSIONS = %i[load distance calories].freeze
-
-  belongs_to :workout
   belongs_to :movement
-  belongs_to :segment, optional: true
+  belongs_to :segment
+
+  # No direct workout_id column or association anymore -- segment is the sole owner of workout
+  # membership. Kept private since it's an implementation detail for ladder_participant?,
+  # ladder_reps, ExercisePrescription#max_load_test?, and the shared RefreshesWorkoutContentKey
+  # concern; callers that want the workout for prescription purposes should read exercise.segment
+  # directly instead (see #reps_defined_by_interval? and Log#movement_log_metric_value).
+  delegate :workout, to: :segment, private: true
 
   default_scope { order(:position) }
 
@@ -59,6 +64,15 @@ class Exercise < ApplicationRecord
     reps + (rung * workout.ladder_step)
   end
 
+  # True when reps: 1 is a structural placeholder for a round-by-round count set by the workout's
+  # (or segment's) interval scheme, e.g. Fran's "21-15-9" -- the same distinction
+  # Metric#calculated_value uses to multiply out total work for interval ladders. False for a bare
+  # movement line with no interval scheme (e.g. a chipper's standalone "Rope Climb"), where reps: 1
+  # is a real, displayable count.
+  def reps_defined_by_interval?
+    segment.interval?
+  end
+
   def distance_score_component
     distance = distance_metric
     return nil unless scorable_metric?(distance) && distance_units_per_rep.positive?
@@ -90,20 +104,6 @@ class Exercise < ApplicationRecord
 
   def scorable_metric?(metric)
     metric&.value.present? && metric.value.positive?
-  end
-
-  def prescription_values_are_unambiguous
-    SEX_PAIRED_DIMENSIONS.each do |dimension|
-      value = self[dimension]
-      female = self[:"female_#{dimension}"]
-      male = self[:"male_#{dimension}"]
-
-      if value.present? && (female.present? || male.present?)
-        errors.add(dimension, 'cannot be set with sex-specific values')
-      elsif female.blank? != male.blank?
-        errors.add(:base, "#{dimension} requires both female and male values")
-      end
-    end
   end
 
   def implement_count_requires_load

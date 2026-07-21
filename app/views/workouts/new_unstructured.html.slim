@@ -1,0 +1,9 @@
+.container
+  h1 New Workout
+  = form_with url: extract_workouts_path, method: :post, local: true, data: { turbo: false } do |form|
+    .mb-3
+      = form.label :wod_text, 'Paste workout text', class: 'form-label'
+      = form.text_area :wod_text, value: @wod_text, class: 'form-control', rows: 12
+
+    = form.submit 'Extract Workout', class: 'btn btn-primary'
+  = link_to 'Enter manually instead', new_workout_path, class: 'btn btn-outline-secondary mt-2'

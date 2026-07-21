@@ -7,6 +7,9 @@ import { application } from "./application"
 import WorkoutSearchController from "./workout_search_controller.js"
 application.register("workout-search", WorkoutSearchController)
 
+import TooltipController from "./tooltip_controller.js"
+application.register("tooltip", TooltipController)
+
 import MovementSelectController from "./movement_select_controller.js"
 application.register("movement-select", MovementSelectController)
 

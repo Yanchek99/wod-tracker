@@ -1,6 +1,6 @@
 # Decisions
 
-## 2026-07-03: CrossFit.com WOD Pages Require Cache-Busting And A Retry, Not A Headless Browser
+## 2026-07-03: CrossFit.com Workout Pages Require Cache-Busting And A Retry, Not A Headless Browser
 
 The epic's "Key findings" note (#1679) said plain HTTP GET + Nokogiri is enough to scrape
 crossfit.com — true, but two non-obvious behaviors of the live site had to be confirmed
@@ -17,7 +17,7 @@ the issue text literally would intermittently fetch an empty page:
   across repeated requests — there is no WAF/anti-bot signature involved, just an
   unreliable server-render). The same URL, requested twice, can return either a full
   page (400-600KB, containing `<article><span class="_text-block_HASH...">` with the
-  real WOD body/description/scaling as sequential `<p>` tags) or a content-less
+  real workout body/description/scaling as sequential `<p>` tags) or a content-less
   client-rendered shell (~130KB, no `<article>` at all) depending on the origin's
   own SSR success for that request — independent of any header or User-Agent
   difference. A fresh, unique cache-busting query parameter (plus `Cache-Control:
@@ -37,7 +37,7 @@ the issue text literally would intermittently fetch an empty page:
   and Strategy:</strong>` / `<strong>Scaling:</strong>` respectively.
 
 Rationale: without the cache-busting-on-every-hop behavior, a scheduled daily scrape
-job (#1677) fetching "today's" WOD — always the newest, most redirect-prone date —
+job (#1677) fetching "today's" workout — always the newest, most redirect-prone date —
 would intermittently import an empty workout, silently degrading the whole epic's
 data quality. Documented here rather than only in code comments because it is a
 durable fact about the external source, not an implementation detail, per this file's
@@ -62,7 +62,7 @@ alternating/"one works one rests" stations, buddy carries — is **not** modeled
 new structured columns. It lives in `Segment#name`/`Segment#notes` and
 `Exercise#notes` and renders through the existing name/notes fallbacks, mirroring
 the event-triggered-penalty decision below. Seeded rep counts transcribe the
-published Hero-WOD numbers as written; `team_size` plus notes convey whether a
+published Hero-workout numbers as written; `team_size` plus notes convey whether a
 count is shared, per-athlete, or synchronized.
 
 Logging is unchanged: a partner/team workout is logged once as the team's combined
@@ -202,10 +202,19 @@ prescribed reps at a recorded load within that exercise's time window. It also
 keeps workouts such as Dragon seedable before the app has a richer multi-component
 score model.
 
+## 2026-07-18: Variable Heavy-Day Set Schemes Are Per-Set Load Rows
+
+Load-scored lifting prescriptions such as `Power clean 3-3-2-2-1-1-1-1 reps`
+are not interval ladders. The dash-separated numbers are the reps for separate
+sets, and each set needs its own logged load. A fixed-rep sequence can use one
+exercise with segment `rounds`; a variable-rep sequence is modeled as one
+exercise per set in order. The workout score remains load-based and is derived
+from the heaviest successful set.
+
 ## 2026-06-20: Store Movement Taxonomy On Movements
 
 Movement metadata is stored on `Movement` using one primary family, one
-equipment class, one skill level, and role-based movement function assignments.
+equipment class, one skill level, and role-based movement functions.
 Substitutions live in a directed join table with an easier/harder/lateral
 direction.
 

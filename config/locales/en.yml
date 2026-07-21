@@ -38,6 +38,10 @@ en:
             position:
               taken: only used once per workout
   workouts:
+    extract:
+      extraction_failed: "Couldn't understand that workout text (%{error}). Try rephrasing, or enter it manually."
+    re_extract:
+      extraction_failed: "Couldn't understand that workout text (%{error}). Try rephrasing, or enter it manually."
     create:
       notice: Workout was successfully created.
     update:

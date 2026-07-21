@@ -13,7 +13,7 @@ module WorkoutFingerprint
   # prescription field, and bodyweight/percentage loads currently parked in notes are
   # tracked for proper modeling separately (see cf/docs/decisions.md, #1684).
   def content_fingerprint
-    parts = ordered_parts.reject(&:marked_for_destruction?)
+    parts = segments.reject(&:marked_for_destruction?)
     return if parts.empty?
 
     Digest::SHA256.hexdigest(canonical_content(parts).to_json)
@@ -79,18 +79,11 @@ module WorkoutFingerprint
   def canonical_content(parts)
     {
       score_type:,
-      rounds:,
-      time:,
-      interval:,
       time_cap_seconds:,
       ladder_step:,
       team_size:,
-      parts: parts.map { |part| canonical_part(part) }
+      parts: parts.map { |segment| canonical_segment(segment) }
     }
-  end
-
-  def canonical_part(part)
-    part.is_a?(Segment) ? canonical_segment(part) : { exercise: canonical_exercise(part) }
   end
 
   def canonical_segment(segment)

@@ -4,5 +4,7 @@ class Subscription < ApplicationRecord
   belongs_to :program
   belongs_to :user
 
+  # Existing nil roles are repaired by BackfillRolelessSubscriptions before this validation matters.
+  validates :role, presence: true
   validates :program, uniqueness: { scope: :user }
 end

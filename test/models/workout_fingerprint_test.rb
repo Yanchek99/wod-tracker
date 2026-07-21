@@ -15,14 +15,14 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
 
   test 'different prescribed content fingerprints differently' do
     heavier = build_fran('Heavier')
-    heavier.exercises.first.load = 135
+    heavier.segments.first.exercises.first.load = 135
 
     assert_not_equal build_fran('Base').content_fingerprint, heavier.content_fingerprint
   end
 
   test 'notes do not change the fingerprint' do
     noted = build_fran('Noted')
-    noted.exercises.first.notes = '1 1/2 body weight'
+    noted.segments.first.exercises.first.notes = '1 1/2 body weight'
 
     assert_equal build_fran('Plain').content_fingerprint, noted.content_fingerprint
   end
@@ -30,10 +30,11 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
   test 'excludes exercises marked for destruction from the fingerprint' do
     workout = build_fran('Trimmed')
     workout.save!
-    remaining = Workout.new(name: 'Remaining', score_type: :time, interval: '21-15-9')
-    remaining.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95, load_unit: :lb)
+    remaining = Workout.new(name: 'Remaining', score_type: :time)
+    remaining_segment = remaining.segments.build(interval_scheme: '21-15-9', position: 1)
+    remaining_segment.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95, load_unit: :lb)
 
-    workout.exercises.find { |exercise| exercise.movement == movements(:pullup) }.mark_for_destruction
+    workout.segments.flat_map(&:exercises).find { |exercise| exercise.movement == movements(:pullup) }.mark_for_destruction
 
     assert_equal remaining.content_fingerprint, workout.content_fingerprint
   end
@@ -54,8 +55,9 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
 
   test 'refreshes the content key when a part is added to an empty workout' do
     workout = Workout.create!(name: 'Grows', score_type: :time)
+    segment = workout.segments.create!(position: 1)
 
-    workout.exercises.create!(movement: movements(:pullup), position: 1, reps: 21)
+    segment.exercises.create!(movement: movements(:pullup), position: 1, reps: 21)
 
     assert workout.reload.content_key.present?
   end
@@ -129,9 +131,10 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
   private
 
   def build_fran(name)
-    Workout.new(name:, score_type: :time, interval: '21-15-9').tap do |workout|
-      workout.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95, load_unit: :lb)
-      workout.exercises.build(movement: movements(:pullup), position: 2, reps: 1)
+    Workout.new(name:, score_type: :time).tap do |workout|
+      segment = workout.segments.build(interval_scheme: '21-15-9', position: 1)
+      segment.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95, load_unit: :lb)
+      segment.exercises.build(movement: movements(:pullup), position: 2, reps: 1)
     end
   end
 end

@@ -19,6 +19,16 @@ Rails.application.routes.draw do
 
   resources :workouts do
     resources :logs
+
+    member do
+      get :edit_unstructured
+      patch :re_extract
+    end
+
+    collection do
+      post :extract
+      get :new_unstructured
+    end
   end
 
   resources :programs do

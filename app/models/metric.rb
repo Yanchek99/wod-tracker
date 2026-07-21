@@ -49,8 +49,8 @@ class Metric
   end
 
   def calculated_value(workout)
-    return default_value unless rep?
-    return calculated_rep_value(workout) if value.present?
+    return default_value unless rep? || calorie?
+    return calculated_interval_value(workout) if value.present?
 
     default_value
   end
@@ -71,8 +71,9 @@ class Metric
 
   private
 
-  def calculated_rep_value(workout)
-    # Interval ladders (e.g. 21-15-9) record total work; everything else records one round's reps.
+  def calculated_interval_value(workout)
+    # Interval ladders (e.g. 21-15-9) record total work; everything else records one round's reps
+    # or calories.
     return value * workout.reps_from_interval if workout.interval?
 
     value

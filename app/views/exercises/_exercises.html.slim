@@ -1,8 +1,9 @@
-- if exercises.any?
-  - exercises.first.workout.ordered_parts.each_with_index do |part, index|
-    - if part.is_a?(Segment)
-      li = segment_objective(part, then_prefix: index.positive?)
-      - part.exercises.each do |exercise|
-        li.ms-4 #{measurable_message(exercise)}
-    - else
-      li #{measurable_message(part)}
+- if workout.segments.any? { |segment| segment.exercises.any? }
+  - workout.segments.each_with_index do |segment, index|
+    - # The governing segment's own scheme is already conveyed by workout_objective
+    - # wherever this partial is rendered; showing it again here would be redundant.
+    - objective = segment == workout.governing_segment ? nil : segment_objective(segment, then_prefix: index.positive?)
+    - if objective
+      li = objective
+    - segment.exercises.each do |exercise|
+      li class=(objective ? 'ms-4' : nil) #{measurable_message(exercise)}

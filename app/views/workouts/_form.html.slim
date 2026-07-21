@@ -1,18 +1,26 @@
 - cancel_path = @workout.persisted? ? workout_path(@workout) : workouts_path
+- toggle_path = @workout.persisted? ? edit_unstructured_workout_path(@workout) : new_unstructured_workouts_path
+- ladder_segment = @workout.segments.first
+- ladder_hidden = ladder_segment.blank? || ladder_segment.time_seconds.blank? || ladder_segment.rounds.present? || ladder_segment.interval_scheme.present?
 
-= simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form' } do |f|
+= simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form', data: { controller: 'ladder-fields' } } do |f|
+  - tooltip_button = ->(title) { content_tag(:button, content_tag(:i, '', class: 'fa-solid fa-circle-info', aria: { hidden: true }), type: 'button', class: 'workout-form__help', data: { controller: 'tooltip', 'bs-animation': false, 'bs-toggle': 'tooltip', 'bs-title': title }, aria: { label: title }) }
+  - field_label = ->(attribute, label, title) do
+    - safe_join([f.label(attribute, label, class: 'form-label mb-0'), tooltip_button.call(title)], ' ')
   = f.error_notification
-  - ladder_hidden = f.object.time.blank? || f.object.rounds.present? || f.object.interval.present?
-  .form-inputs.row.g-2 data-controller="ladder-fields"
+  .form-inputs.row.g-2
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
-    .col-sm-4 = f.input :rounds, input_html: { data: { 'ladder-fields-target': 'rounds', action: 'input->ladder-fields#toggle' } }
-    .col-sm-4 = f.input :time, as: :group, append: 'minutes', input_html: { data: { 'ladder-fields-target': 'time', action: 'input->ladder-fields#toggle' } }
-    .col-sm-4 = f.input :interval, placeholder: '21-15-9...', input_html: { data: { 'ladder-fields-target': 'interval', action: 'input->ladder-fields#toggle' } }
-    .col-sm-4 data-ladder-fields-target="row" hidden=ladder_hidden
+    .col-4.col-md-3 data-ladder-fields-target="row" hidden=ladder_hidden
       = f.input :ladder_step, label: 'Ascending ladder step', hint: "reps added each round (start is each exercise's reps)", input_html: { data: { 'ladder-fields-target': 'step input', action: 'input->ladder-fields#toggle' } }
-    .col-12 = f.input :score_type, collection: Metric.workout_measurements, label: 'For'
-    .col-sm-4 = f.input :team_size, label: 'Athletes (team size)', hint: 'leave blank for an individual workout'
-    .col-12 = f.input :time_cap
+    .col-4.col-md-3
+      .workout-form__field-label = f.label :score_type, 'For', class: 'form-label mb-0'
+      = f.input :score_type, collection: Metric.workout_measurements, label: false
+    .col-4.col-md-3
+      .workout-form__field-label = field_label.call(:team_size, 'Athletes', 'blank = individual')
+      = f.input :team_size, label: false, hint: false
+    .col-4.col-md-3
+      .workout-form__field-label = f.label :time_cap, 'Time cap', class: 'form-label mb-0'
+      = f.input :time_cap, label: false
     .col-12
       = f.label :notes, class: 'form-label'
       = f.rich_text_area :notes
@@ -27,27 +35,20 @@
         = link_to cancel_path, class: 'btn btn-secondary' do
           i.fa-solid.fa-xmark aria-hidden="true"
           span Cancel Workout
-        = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'exercise' } do
-          i.fa-solid.fa-dumbbell aria-hidden="true"
-          span Add Exercise
         = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' } do
           i.fa-solid.fa-layer-group aria-hidden="true"
           span Add Segment
+        = link_to toggle_path, class: 'btn btn-outline-primary' do
+          i.fa-solid.fa-clipboard aria-hidden="true"
+          span Paste Text Instead
         - if @workout.persisted?
           = link_to workout_path(@workout), class: 'btn btn-danger', data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } do
             i.fa-solid.fa-trash-can aria-hidden="true"
             span Delete Workout
     .fields data-nested-form-target="container" data-sortable-list-target="container"
-      - @workout.ordered_parts.each do |part|
-        - if part.is_a?(Segment)
-          = f.simple_fields_for :segments, part do |segment_form|
-            = render 'segment_fields', f: segment_form
-        - else
-          = f.simple_fields_for :exercises, part do |exercise_form|
-            = render 'exercise_fields', f: exercise_form, workout_part: true
-    template data-nested-form-template="exercise" data-placeholder-value="NEW_EXERCISE"
-      = f.simple_fields_for :exercises, Exercise.new, child_index: 'NEW_EXERCISE' do |exercise_form|
-        = render 'exercise_fields', f: exercise_form, workout_part: true
+      - @workout.segments.each do |segment|
+        = f.simple_fields_for :segments, segment do |segment_form|
+          = render 'segment_fields', f: segment_form
     template data-nested-form-template="segment" data-placeholder-value="NEW_SEGMENT"
       = f.simple_fields_for :segments, Segment.new, child_index: 'NEW_SEGMENT' do |segment_form|
         = render 'segment_fields', f: segment_form

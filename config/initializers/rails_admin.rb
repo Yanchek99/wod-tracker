@@ -39,4 +39,13 @@ RailsAdmin.config do |config|
     # history_index
     # history_show
   end
+
+  config.model 'WorkoutImport' do
+    list do
+      field :workout_date
+      field :status
+      field :error_message
+      field :created_at
+    end
+  end
 end

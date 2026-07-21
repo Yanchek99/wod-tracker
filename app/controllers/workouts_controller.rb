@@ -1,7 +1,7 @@
 class WorkoutsController < ApplicationController
   LOAD_FIELDS = %i[load female_load male_load].freeze
 
-  before_action :set_workout, only: [:show, :edit, :update, :destroy]
+  before_action :set_workout, only: [:show, :edit, :edit_unstructured, :re_extract, :update, :destroy]
 
   # GET /workouts
   # GET /workouts.json
@@ -16,10 +16,43 @@ class WorkoutsController < ApplicationController
   # GET /workouts/new
   def new
     @workout = Workout.new
+    @workout.segments.build(position: 1)
+  end
+
+  # GET /workouts/new_unstructured
+  def new_unstructured
+    @workout = Workout.new
+  end
+
+  # POST /workouts/extract
+  def extract
+    @workout = WorkoutExtraction::LlmParser.call(params.expect(:wod_text), date: Date.current)
+    render :new
+  rescue WorkoutExtraction::LlmParser::ExtractionError,
+         WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e
+    @wod_text = params[:wod_text]
+    @workout = Workout.new
+    flash.now[:alert] = t('.extraction_failed', error: e.message)
+    render :new_unstructured, status: :unprocessable_content
   end
 
   # GET /workouts/1/edit
   def edit; end
+
+  # GET /workouts/1/edit_unstructured
+  def edit_unstructured; end
+
+  # PATCH /workouts/1/re_extract
+  def re_extract
+    extracted = WorkoutExtraction::LlmParser.call(params.expect(:wod_text), date: Date.current)
+    @workout.replace_with_extraction!(extracted)
+    render :edit
+  rescue WorkoutExtraction::LlmParser::ExtractionError,
+         WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e
+    @wod_text = params[:wod_text]
+    flash.now[:alert] = t('.extraction_failed', error: e.message)
+    render :edit_unstructured, status: :unprocessable_content
+  end
 
   # POST /workouts
   # POST /workouts.json
@@ -77,7 +110,7 @@ class WorkoutsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_workout
-    @workout = Workout.includes(:exercises).find(params.expect(:id))
+    @workout = Workout.includes(segments: :exercises).find(params.expect(:id))
   end
 
   # Only allow a list of trusted parameters through.
@@ -88,12 +121,10 @@ class WorkoutsController < ApplicationController
                        :distance, :female_distance, :male_distance, :distance_unit,
                        :calories, :female_calories, :male_calories, :notes]
 
-    attributes = params.expect(workout: [:name, :rounds, :time, :interval, :notes, :time_cap,
-                                         :score_type, :ladder_step, :team_size,
+    attributes = params.expect(workout: [:name, :notes, :time_cap, :score_type, :ladder_step, :team_size,
                                          { segments_attributes: [[:id, :name, :rounds, :time_seconds, :interval_scheme,
                                                                   :rest_seconds, :notes, :position, :_destroy,
-                                                                  { exercises_attributes: [exercise_params] }]] },
-                                         { exercises_attributes: [exercise_params] }])
+                                                                  { exercises_attributes: [exercise_params] }]] }])
     canonicalize_submitted_loads(attributes)
     attributes
   end
@@ -113,10 +144,6 @@ class WorkoutsController < ApplicationController
   end
 
   def submitted_exercise_attributes(attributes)
-    exercises = Array(attributes[:exercises_attributes])
-    Array(attributes[:segments_attributes]).each do |segment|
-      exercises.concat(Array(segment[:exercises_attributes]))
-    end
-    exercises
+    Array(attributes[:segments_attributes]).flat_map { |segment| Array(segment[:exercises_attributes]) }
   end
 end

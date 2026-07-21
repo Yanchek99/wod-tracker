@@ -14,7 +14,7 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   test 'allows typing into fields inside sortable cards' do
     visit new_workout_url
 
-    fill_in 'Name', with: 'Typed Card Fields'
+    fill_in 'Name *', with: 'Typed Card Fields'
     select 'time', from: 'For'
     click_on 'Add Segment'
 
@@ -36,7 +36,9 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   test 'collapses existing segment cards and updates their summaries' do
     visit edit_workout_url(workouts(:segmented))
 
-    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]')
+    # `segmented` now has 3 segments (segmented_before, test, segmented_after) --
+    # scope to the schemed "test" one specifically by its exercise content.
+    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]', text: 'Handstand Push Up')
     within segment do
       assert_text '10 rounds of'
       assert_text 'Handstand Push Up'
@@ -57,7 +59,8 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   test 'preserves max reps segment summaries after expanding and collapsing' do
     visit edit_workout_url(workouts(:segmented_total_reps))
 
-    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]')
+    # `segmented_total_reps` now has 2 timed-block segments -- scope to the first one.
+    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]', text: '0:00-5:00')
     within segment do
       assert_text '0:00-5:00: max reps in 5 minutes'
 
@@ -73,7 +76,7 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   test 'shows segment drag handles only while collapsed' do
     visit new_workout_url
 
-    fill_in 'Name', with: 'Segment Handles'
+    fill_in 'Name *', with: 'Segment Handles'
     select 'time', from: 'For'
     click_on 'Add Segment'
 
@@ -90,7 +93,7 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
   test 'shows nested exercise summaries when a segment collapses' do
     visit new_workout_url
 
-    fill_in 'Name', with: 'Segment Exercise Summaries'
+    fill_in 'Name *', with: 'Segment Exercise Summaries'
     select 'time', from: 'For'
     click_on 'Add Segment'
 
@@ -113,10 +116,27 @@ class WorkoutSortableCardInputsTest < ApplicationSystemTestCase
     end
   end
 
+  test 'allows setting a scheme on a flat, unschemed persisted segment' do
+    # Murph's sole segment is unschemed and unnamed -- the shape that used to be
+    # unconditionally hidden from editing (implicit_workout_part?), back when the
+    # now-removed workout-level rounds/time/interval fields were the only way to
+    # give a flat, migrated workout a scheme.
+    visit edit_workout_url(workouts(:murph))
+    find('.segment-summary__button').click
+
+    assert_field 'Rounds'
+    fill_in 'Rounds', with: '3'
+    click_on 'Done'
+
+    assert_text '3 rounds of'
+  end
+
   test 'collapses an open segment when clicking outside it' do
     visit edit_workout_url(workouts(:segmented))
 
-    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]')
+    # `segmented` now has 3 segments (segmented_before, test, segmented_after) --
+    # scope to the schemed "test" one specifically by its exercise content.
+    segment = find('#workout-parts > .fields > .workout-part[data-controller~="segment-card"]', text: 'Handstand Push Up')
     within segment do
       find('.segment-summary__button').click
       assert_field 'Rounds'

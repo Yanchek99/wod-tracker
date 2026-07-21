@@ -1,8 +1,6 @@
 module MeasurableHelper
-  include MeasurablePrescribedWorkHelper
-
   def measurable_message(measurable)
-    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable)].compact.join(' ')
+    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable), measurable_notes(measurable)].compact.join(' ')
   end
 
   def measurable_movement_msg(measurable)
@@ -11,10 +9,7 @@ module MeasurableHelper
     return max_load_test_msg(measurable, rep_metric, duration_metric) if measurable.respond_to?(:max_load_test?) && measurable.max_load_test?
     return duration_movement_msg(measurable, rep_metric, duration_metric) if duration_metric
 
-    work_metric = prescribed_work_metric(measurable)
-    return prescribed_work_movement_msg(measurable, work_metric) if work_metric
-
-    rep_movement_msg(measurable, rep_metric)
+    leading_movement_msg(measurable, rep_metric) || rep_movement_msg(measurable, rep_metric)
   end
 
   def rep_movement_msg(measurable, rep_metric)
@@ -23,7 +18,23 @@ module MeasurableHelper
     movement_name = measurable.movement.name
     return "max reps #{movement_name}" if max_rep_metric?(rep_metric)
 
-    [metric_unit_msg(rep_metric), movement_name_for_rep_metric(movement_name, rep_metric)].compact_blank.join(' ')
+    [rep_movement_count_msg(measurable, rep_metric), movement_name_for_rep_metric(movement_name, rep_metric)]
+      .compact_blank.join(' ')
+  end
+
+  # A bare movement line with no interval-defined rep scheme (e.g. a chipper's standalone "Rope
+  # Climb") means the athlete truly does one rep -- show it, unlike a Fran-style ladder movement
+  # where reps: 1 is a structural placeholder (see Exercise#reps_defined_by_interval?).
+  def rep_movement_count_msg(measurable, rep_metric)
+    return rep_metric.value.to_s if literal_single_rep?(measurable, rep_metric)
+
+    metric_unit_msg(rep_metric)
+  end
+
+  def literal_single_rep?(measurable, rep_metric)
+    rep_metric.value == 1 &&
+      measurable.respond_to?(:reps_defined_by_interval?) &&
+      !measurable.reps_defined_by_interval?
   end
 
   def measurable_reps_msg(measurable)
@@ -39,14 +50,25 @@ module MeasurableHelper
     "(#{metrics.map { |metric| metric_unit_msg(metric) }.join(' / ')})"
   end
 
-  def additional_metrics(measurable)
-    work_metric = prescribed_work_metric(measurable)
+  def measurable_notes(measurable)
+    return unless measurable.respond_to?(:notes) && measurable.notes.present?
 
-    measurable.prescription_metrics.reject(&:rep?)
-              .reject { |metric| metric == work_metric }
-              .reject { |metric| duration_metric?(metric) }
-              .select { |metric| visible_metric?(metric) }
-              .sort_by { |metric| additional_metric_display_order(metric) }
+    "** #{measurable.notes}"
+  end
+
+  def additional_metrics(measurable)
+    metrics = leading_prescription(measurable)&.additional_metrics ||
+              measurable.prescription_metrics.reject(&:rep?)
+                        .reject { |metric| duration_metric?(metric) }
+                        .select { |metric| visible_metric?(metric) }
+
+    metrics.sort_by { |metric| additional_metric_display_order(metric) }
+  end
+
+  def leading_prescription(measurable)
+    return unless measurable.is_a?(Exercise)
+
+    Measurable::LeadingPrescription.new(measurable.prescription_metrics)
   end
 
   def grouped_sex_specific_metrics?(metrics)
@@ -65,6 +87,14 @@ module MeasurableHelper
 
   def movement_name_for_rep_metric(movement_name, metric)
     pluralize_movement?(metric) ? movement_name.pluralize : movement_name
+  end
+
+  def leading_movement_msg(measurable, rep_metric)
+    leading = leading_prescription(measurable)
+    return unless leading&.metric
+    return rep_movement_msg(measurable, rep_metric) if leading.metric.rep?
+
+    [leading.text, measurable.movement.name].compact_blank.join(' ')
   end
 
   def sex_specific_metrics_msg(metrics)

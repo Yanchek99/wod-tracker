@@ -69,7 +69,7 @@ class Log < ApplicationRecord
   def movement_log_metric_value(metric, exercise)
     return metric.default_value if workout&.set_based_lifting?
 
-    metric.calculated_value(exercise.segment.presence || exercise.workout)
+    metric.calculated_value(exercise.segment)
   end
 
   def metrics_for_movement_log(exercise)

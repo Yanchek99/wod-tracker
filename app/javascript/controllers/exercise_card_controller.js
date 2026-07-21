@@ -202,30 +202,10 @@ export default class extends Controller {
     const durationMetric = metrics.find((metric) => this.durationMetric(metric) && metric.value !== "")
     if (durationMetric) return { metric: durationMetric, text: this.durationText(durationMetric.value) }
 
-    const workMetric = this.prescribedWorkMetric(metrics)
-    if (workMetric) {
-      return { metric: workMetric, text: this.prescribedWorkMetricText(workMetric) }
-    }
+    const leading = new LeadingPrescription(metrics, this)
+    if (leading.metric) return { metric: leading.metric, text: leading.text }
 
-    const repMetric = metrics.find((metric) => metric.kind === "rep")
-    if (!repMetric) return { metric: null, text: "" }
-    if (repMetric.value === "" && !repMetric.sexSpecific) return { metric: repMetric, text: "max reps" }
-
-    return { metric: repMetric, text: this.metricUnitText(repMetric) }
-  }
-
-  prescribedWorkMetric(metrics) {
-    const candidate = metrics.find((metric) => this.visibleMetric(metric) && this.prescribedWorkMetricKind(metric))
-    if (!candidate) return null
-
-    return metrics.every((metric) => (
-      !this.visibleMetric(metric) ||
-      metric === candidate ||
-      this.structuralSingleRepMetric(metric) ||
-      this.loadDetailForPrescribedWork(candidate, metric, metrics)
-    ))
-      ? candidate
-      : null
+    return { metric: null, text: "" }
   }
 
   additionalMetrics(metrics, summaryMetric) {
@@ -303,20 +283,6 @@ export default class extends Controller {
     return metric.kind === "duration"
   }
 
-  prescribedWorkMetricKind(metric) {
-    return metric.kind === "calorie" || metric.kind === "distance"
-  }
-
-  structuralSingleRepMetric(metric) {
-    return metric.kind === "rep" && metric.value === "1"
-  }
-
-  loadDetailForPrescribedWork(candidate, metric, metrics) {
-    return this.prescribedWorkMetricKind(candidate) &&
-      metric.kind === "load" &&
-      (candidate.value !== "" || metrics.some((otherMetric) => this.structuralSingleRepMetric(otherMetric)))
-  }
-
   additionalMetricDisplayOrder(metric) {
     if (metric.kind === "calorie" || metric.kind === "distance") return [0, 1]
     if (metric.kind === "load") return [1, 0]
@@ -355,7 +321,7 @@ export default class extends Controller {
   }
 
   durationText(value) {
-    const totalSeconds = parseInt(value, 10)
+    const totalSeconds = this.durationInSeconds(value)
     if (Number.isNaN(totalSeconds)) return value.trim()
 
     const hours = Math.floor(totalSeconds / 3600)
@@ -365,6 +331,17 @@ export default class extends Controller {
     if (hours > 0) return `${hours}:${this.pad(minutes)}:${this.pad(seconds)}`
 
     return `${minutes}:${this.pad(seconds)}`
+  }
+
+  durationInSeconds(value) {
+    const cleanValue = value.trim()
+    if (!cleanValue.includes(":")) return parseInt(cleanValue, 10)
+
+    return cleanValue
+      .split(":")
+      .map((part) => parseInt(part, 10))
+      .reverse()
+      .reduce((total, part, index) => total + (part * (60 ** index)), 0)
   }
 
   loadUnit() {
@@ -399,5 +376,99 @@ export default class extends Controller {
 
   pad(value) {
     return value.toString().padStart(2, "0")
+  }
+}
+
+class LeadingPrescription {
+  constructor(metrics, formatter) {
+    this.metrics = metrics
+    this.formatter = formatter
+    this._metric = undefined
+  }
+
+  get metric() {
+    if (this._metric !== undefined) return this._metric
+
+    this._metric = this.candidateMetrics.find((candidate) => this.candidateCanLead(candidate)) || null
+    return this._metric
+  }
+
+  get text() {
+    if (!this.metric) return ""
+    if (this.maxRep(this.metric)) return "max reps"
+    if (this.maxCalorie(this.metric)) return "max calories"
+    if (this.prescribedWorkMetric(this.metric)) return this.formatter.prescribedWorkMetricText(this.metric)
+
+    return this.metric.value === "1" ? "" : this.metric.value
+  }
+
+  additionalMetrics() {
+    return this.metrics
+      .filter((metric) => metric.kind !== "rep")
+      .filter((metric) => metric !== this.metric)
+      .filter((metric) => !this.durationMetric(metric))
+      .filter((metric) => this.visibleMetric(metric))
+  }
+
+  get candidateMetrics() {
+    return this.metrics.filter((metric) => (
+      metric.kind === "rep" || metric.kind === "calorie" || metric.kind === "distance"
+    ))
+  }
+
+  candidateCanLead(candidate) {
+    if (candidate.kind === "rep") return this.repCanLead(candidate)
+    if (this.maxCalorie(candidate)) return true
+    if (this.prescribedWorkMetric(candidate)) return this.prescribedWorkCanLead(candidate)
+
+    return false
+  }
+
+  repCanLead(candidate) {
+    if (!this.structuralSingleRepMetric(candidate)) return true
+
+    return !this.metrics.some((metric) => (
+      this.maxCalorie(metric) ||
+      this.prescribedWorkMetric(metric) && this.prescribedWorkCanLead(metric)
+    ))
+  }
+
+  prescribedWorkCanLead(candidate) {
+    return this.metrics.every((metric) => (
+      !this.visibleMetric(metric) ||
+      metric === candidate ||
+      this.structuralSingleRepMetric(metric) ||
+      this.loadDetailAllowed(candidate, metric)
+    ))
+  }
+
+  loadDetailAllowed(candidate, metric) {
+    return this.prescribedWorkMetric(candidate) &&
+      metric.kind === "load" &&
+      (candidate.value !== "" || this.metrics.some((otherMetric) => this.structuralSingleRepMetric(otherMetric)))
+  }
+
+  prescribedWorkMetric(metric) {
+    return metric.kind === "calorie" || metric.kind === "distance"
+  }
+
+  durationMetric(metric) {
+    return metric.kind === "duration"
+  }
+
+  visibleMetric(metric) {
+    return metric.value !== "" || metric.sexSpecific
+  }
+
+  structuralSingleRepMetric(metric) {
+    return metric.kind === "rep" && metric.value === "1"
+  }
+
+  maxRep(metric) {
+    return metric.kind === "rep" && metric.value === "" && !metric.sexSpecific
+  }
+
+  maxCalorie(metric) {
+    return metric.kind === "calorie" && metric.value === "" && !metric.sexSpecific
   }
 }

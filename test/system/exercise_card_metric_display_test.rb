@@ -19,6 +19,7 @@ class ExerciseCardMetricDisplayTest < ApplicationSystemTestCase
     within '.exercise' do
       select_movement 'Thruster'
       fill_in 'Reps', with: '21'
+      click_on 'Load'
       fill_in 'Load (kg)', with: '43'
       click_on 'Done'
 

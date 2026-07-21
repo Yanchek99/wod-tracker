@@ -53,3 +53,48 @@ front_squat:
   family: 2
   equipment: 0
   skill_level: 0
+
+power_snatch:
+  name: Power Snatch
+
+overhead_walking_lunge:
+  name: Overhead Walking Lunge
+
+rope_climb:
+  name: Rope Climb
+
+sled_drag:
+  name: Sled Drag
+
+pull_up:
+  name: Pull-up
+
+burpee:
+  name: Burpee
+
+handstand_push_up:
+  name: Handstand Push-up
+
+single_leg_squat:
+  name: Single-leg Squat
+
+freestanding_shoulder_tap:
+  name: Freestanding Shoulder Tap
+
+skin_the_cat:
+  name: Skin-the-cat
+
+l_pull_up:
+  name: L Pull-up
+
+deficit_push_up:
+  name: Deficit Push-up
+
+deadlift:
+  name: Deadlift
+
+# Deliberately not fixtures: "Box Jump" and "Wall-ball Shot" are created dynamically per-test
+# in test/helpers/measurable_helper_test.rb, which would collide with a permanent global
+# fixture of the same name. Tests needing these movements create them via
+# Movement.find_or_create_by instead (see prescription_clause_assigner_test.rb and
+# workout_parser_corpus_test.rb).

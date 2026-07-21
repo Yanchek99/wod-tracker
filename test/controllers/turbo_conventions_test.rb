@@ -44,6 +44,29 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?][data-turbo-method="delete"]', program_path(programs(:crossfit))
   end
 
+  test 'program actions allow legacy roleless subscribers to unsubscribe' do
+    # rubocop:disable Rails/SkipsModelValidations
+    subscriptions(:one).update_column(:role, nil)
+    # rubocop:enable Rails/SkipsModelValidations
+
+    get program_url(programs(:crossfit))
+
+    assert_response :success
+    assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit))
+  end
+
+  test 'program unsubscribe redirects to reload action buttons' do
+    delete unsubscribe_program_url(programs(:crossfit))
+
+    assert_response :see_other
+    assert_redirected_to program_url(programs(:crossfit))
+
+    follow_redirect!
+
+    assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit)), false
+    assert_select 'a[href=?][data-turbo-method="post"]', subscribe_program_path(programs(:crossfit))
+  end
+
   test 'log deletion uses turbo method' do
     get log_url(logs(:matt_murph))
 
@@ -67,18 +90,16 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
       assert_select '.workout-builder-toolbar__actions'
       assert_select 'button[type="submit"]', text: 'Save Workout'
       assert_select 'a[href=?]', workouts_path, text: 'Cancel Workout'
-      assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="exercise"]', text: 'Add Exercise'
       assert_select 'a[data-action="click->nested-form#add"][data-nested-form-template="segment"]', text: 'Add Segment'
       assert_select '.fa-floppy-disk'
       assert_select '.fa-xmark'
-      assert_select '.fa-dumbbell'
       assert_select '.fa-layer-group'
       assert_select 'a[data-turbo-method="delete"]', false
     end
     assert_select '.form-actions', false
-    assert_select '[data-controller~="nested-form"][data-nested-form-position-exercises-value="true"]'
+    assert_select '[data-controller~="nested-form"][data-nested-form-position-segments-value="true"]'
     assert_select 'template[data-nested-form-target="template"]'
-    assert_select 'a[data-action="click->nested-form#add"]'
+    assert_select 'a[data-action="click->nested-form#add"]', text: 'Add Exercise'
   end
 
   test 'workout edit form cancels to the workout show page' do

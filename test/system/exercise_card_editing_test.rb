@@ -13,6 +13,8 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
   test 'edits an existing workout exercise through a summary card' do
     visit edit_workout_url(workouts(:fran))
+    # Fran's persisted segment starts collapsed -- expand it to reach its exercises.
+    find('.segment-summary__button').click
 
     within first('.exercise') do
       assert_no_field 'Reps'
@@ -42,6 +44,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
         assert_equal '1', find('input[name$="[position]"]', visible: false).value
         find('.ts-control input').set('Run')
         find('.ts-dropdown .option', text: 'Run').click
+        click_on 'Distance'
         fill_in 'Distance', with: '400', exact: true
         select 'meter', from: 'Distance unit'
         click_on 'Done'
@@ -58,6 +61,8 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
   test 'opening another card saves and collapses the currently open exercise' do
     visit edit_workout_url(workouts(:fran))
+    # Fran's persisted segment starts collapsed -- expand it to reach its exercises.
+    find('.segment-summary__button').click
 
     cards = all('.exercise')
 
@@ -85,6 +90,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
 
     within first('.exercise') do
       assert_no_field 'Implements'
+      click_on 'Load'
 
       find('.ts-control input').set('Pull')
       find('.ts-dropdown .option', text: 'Pull Up').click

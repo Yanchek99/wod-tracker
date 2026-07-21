@@ -6,8 +6,8 @@ class ExerciseTest < ActiveSupport::TestCase
     first_segment = workout.segments.create!(position: 4)
     second_segment = workout.segments.create!(position: 5)
 
-    workout.exercises.create!(movement: movements(:pullup), segment: first_segment, position: 1)
-    exercise = workout.exercises.build(movement: movements(:pushup), segment: second_segment, position: 1)
+    first_segment.exercises.create!(movement: movements(:pullup), position: 1)
+    exercise = second_segment.exercises.build(movement: movements(:pushup), position: 1)
 
     assert exercise.valid?
   end
@@ -16,38 +16,19 @@ class ExerciseTest < ActiveSupport::TestCase
     workout = workouts(:segmented)
     segment = workout.segments.create!(position: 4)
 
-    workout.exercises.create!(movement: movements(:pullup), segment:, position: 1)
-    exercise = workout.exercises.build(movement: movements(:pushup), segment:, position: 1)
+    segment.exercises.create!(movement: movements(:pullup), position: 1)
+    exercise = segment.exercises.build(movement: movements(:pushup), position: 1)
 
     assert_not exercise.valid?
     assert_includes exercise.errors[:position], 'has already been taken'
-  end
-
-  test 'rejects duplicate positions among top-level exercises in the same workout' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:run), position: 1)
-
-    assert_not exercise.valid?
-    assert_includes exercise.errors[:position], 'has already been taken'
-  end
-
-  test 'allows segment child positions to overlap top-level positions before segment is saved' do
-    workout = Workout.new(name: 'Segmented Seed Workout', rounds: 1, score_type: :time)
-    segment = workout.segments.build(rounds: 10, position: 2)
-
-    workout.exercises.build(movement: movements(:run), position: 1)
-    workout.exercises.build(movement: movements(:pullup), segment:, position: 1)
-    workout.exercises.build(movement: movements(:pushup), segment:, position: 2)
-    workout.exercises.build(movement: movements(:run), position: 3)
-
-    assert workout.valid?
   end
 
   test 'rejects duplicate positions within the same unsaved segment' do
-    workout = Workout.new(name: 'Invalid Segmented Seed Workout', rounds: 1)
+    workout = Workout.new(name: 'Invalid Segmented Seed Workout', score_type: :time)
     segment = workout.segments.build(rounds: 10, position: 1)
-    exercise = workout.exercises.build(movement: movements(:pullup), segment:, position: 1)
+    exercise = segment.exercises.build(movement: movements(:pullup), position: 1)
 
-    workout.exercises.build(movement: movements(:pushup), segment:, position: 1)
+    segment.exercises.build(movement: movements(:pushup), position: 1)
 
     assert_not exercise.valid?
     assert_includes exercise.errors[:position], 'has already been taken'
@@ -87,7 +68,7 @@ class ExerciseTest < ActiveSupport::TestCase
   # --- direct-column prescriptions (the #1651 read path) ---
 
   test 'a load unit with no fixed value sets the find-a-max sentinel' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, load_unit: :lb)
+    exercise = fran_segment.exercises.build(movement: movements(:pullup), position: 3, load_unit: :lb)
     exercise.valid?
 
     assert_equal 0, exercise.load
@@ -95,46 +76,66 @@ class ExerciseTest < ActiveSupport::TestCase
   end
 
   test 'score_component reads the rep prescription from columns' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, reps: 21)
+    exercise = fran_segment.exercises.build(movement: movements(:pullup), position: 3, reps: 21)
 
     assert_equal 21, exercise.score_component[:score_reps]
   end
 
   test 'score_component reads the calorie prescription from columns' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:row), position: 3, reps: 1, calories: 20)
+    exercise = fran_segment.exercises.build(movement: movements(:row), position: 3, reps: 1, calories: 20)
 
     assert_equal 'calorie', exercise.score_component[:measurement]
     assert_equal 20, exercise.score_component[:score_reps]
   end
 
   test 'treats the reps zero sentinel as max and not scorable' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3, reps: 0)
+    exercise = fran_segment.exercises.build(movement: movements(:pullup), position: 3, reps: 0)
 
     assert_nil exercise.score_component
   end
 
   test 'rejects a unisex value combined with sex-specific values' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3,
-                                               load: 50, female_load: 65, male_load: 95, load_unit: :lb)
+    exercise = fran_segment.exercises.build(movement: movements(:pullup), position: 3,
+                                            load: 50, female_load: 65, male_load: 95, load_unit: :lb)
 
     assert_not exercise.valid?
     assert_includes exercise.errors[:load], 'cannot be set with sex-specific values'
   end
 
   test 'requires both sex-specific values when only one is present' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:pullup), position: 3,
-                                               female_load: 65, load_unit: :lb)
+    exercise = fran_segment.exercises.build(movement: movements(:pullup), position: 3,
+                                            female_load: 65, load_unit: :lb)
 
     assert_not exercise.valid?
     assert_includes exercise.errors[:base], 'load requires both female and male values'
   end
 
   test 'validates distance units per rep against the column distance' do
-    exercise = workouts(:fran).exercises.build(movement: movements(:run), position: 3,
-                                               reps: 1, distance: 400, distance_unit: :meter,
-                                               distance_units_per_rep: 30)
+    exercise = fran_segment.exercises.build(movement: movements(:run), position: 3,
+                                            reps: 1, distance: 400, distance_unit: :meter,
+                                            distance_units_per_rep: 30)
 
     assert_not exercise.valid?
     assert_includes exercise.errors[:distance_units_per_rep], 'must divide the prescribed distance evenly'
+  end
+
+  test 'parses duration strings into duration seconds' do
+    assert_equal 90, fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: '1:30').duration_seconds
+    assert_equal 3630, fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: '1:00:30').duration_seconds
+    assert_equal 90, fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: '90').duration_seconds
+  end
+
+  test 'formats duration seconds for form input' do
+    assert_equal '1:30', fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: 90).duration
+    assert_equal '1:00:30', fran_segment.exercises.build(movement: movements(:pullup), duration_seconds: 3630).duration
+    assert_nil fran_segment.exercises.build(movement: movements(:pullup)).duration
+  end
+
+  private
+
+  # An unsaved segment for exercising Exercise validations/prescriptions in isolation,
+  # independent of Fran's own persisted segment-less fixture exercises.
+  def fran_segment
+    workouts(:fran).segments.build(position: 1)
   end
 end

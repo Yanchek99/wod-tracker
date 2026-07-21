@@ -14,8 +14,11 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
   test 'creates a workout with sex-specific exercise values' do
     visit new_workout_url
 
-    fill_in 'Name', with: 'Sex Specific System Test Workout'
+    fill_in 'Name *', with: 'Sex Specific System Test Workout'
     select 'time', from: 'For'
+    # Filling the workout's own Name/For fields collapses the default segment
+    # (segment-card#handleDocumentClick fires on any click outside its card).
+    click_on 'New segment'
     click_on 'Add Exercise'
 
     within '.exercise' do
@@ -23,6 +26,7 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
       find('.ts-dropdown .option', text: 'Thruster').click
 
       fill_in 'Reps', with: '1'
+      click_on 'Load'
       fill_in 'Female load (lb)', with: '65'
       fill_in 'Male load (lb)', with: '95'
       click_on 'Done'

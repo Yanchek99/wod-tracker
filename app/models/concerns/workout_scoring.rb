@@ -10,8 +10,7 @@ module WorkoutScoring
   end
 
   def set_based_lifting?
-    set_based_lifting_structure? &&
-      score_measurement == 'weight'
+    score_measurement == 'weight' && (fixed_set_based_lifting_structure? || variable_set_based_lifting_structure?)
   end
 
   def max_finding?
@@ -24,8 +23,15 @@ module WorkoutScoring
 
   def exercises_for_log_recording
     return exercises unless set_based_lifting?
+    return governing_segment_exercises unless fixed_set_based_lifting_structure?
 
-    rounds.times.flat_map { top_level_exercises }
+    governing_segment.rounds.times.flat_map { governing_segment_exercises }
+  end
+
+  def set_based_lifting_set_count
+    return governing_segment_exercises.size if variable_set_based_lifting_structure?
+
+    governing_segment&.rounds.to_i
   end
 
   def lifting_score(movement_logs)
@@ -34,15 +40,15 @@ module WorkoutScoring
     end.max_by(&:value)
   end
 
-  def top_level_exercises
-    exercises.reject(&:segment_id)
+  def governing_segment_exercises
+    governing_segment&.exercises || []
   end
 
   def amrap_score_components
     return [] unless rep_scored_amrap?
     return [] if ascending_ladder? # variable reps per round; scored by raw total
 
-    top_level_exercises.map.with_index do |exercise, index|
+    governing_segment_exercises.map.with_index do |exercise, index|
       component = exercise.score_component
       next unless component
 
@@ -64,15 +70,26 @@ module WorkoutScoring
 
   private
 
-  def set_based_lifting_structure?
-    rounds.present? &&
-      rounds.positive? &&
-      time.blank? &&
-      interval.blank?
+  def fixed_set_based_lifting_structure?
+    governing_segment&.rounds? || false
+  end
+
+  def variable_set_based_lifting_structure?
+    segment = governing_segment
+    return false unless segment && !segment.schemed? && segment.rounds.blank?
+
+    exercises = segment.exercises.to_a
+    exercises.many? &&
+      exercises.all? { |exercise| lifting_set_exercise?(exercise, exercises.first.movement) }
+  end
+
+  def lifting_set_exercise?(exercise, movement)
+    exercise.movement == movement &&
+      exercise.prescription_metrics.find(&:rep?)&.value.to_i.positive?
   end
 
   def top_level_max_finding?
-    max_finding_exercises?(top_level_exercises)
+    max_finding_exercises?(governing_segment_exercises)
   end
 
   def single_max_finding?
@@ -89,9 +106,9 @@ module WorkoutScoring
 
   def fixed_amrap_reps_per_round
     return nil if ascending_ladder? # reps grow each round, so there is no fixed per-round total
-    return nil if top_level_exercises.empty?
+    return nil if governing_segment_exercises.empty?
 
-    top_level_exercises.sum do |exercise|
+    governing_segment_exercises.sum do |exercise|
       component = exercise.score_component
       return nil unless component
 

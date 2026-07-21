@@ -13,13 +13,19 @@ class ExerciseCardOutsideClickTest < ApplicationSystemTestCase
 
   test 'clicking outside saves and collapses the currently open exercise' do
     visit edit_workout_url(workouts(:fran))
+    # Fran's persisted segment starts collapsed -- expand it to reach its exercises.
+    find('.segment-summary__button').click
 
     within first('.exercise') do
       click_on 'Thruster (95 lbs)'
       fill_in 'Reps', with: '15'
     end
 
-    find_field('Name').click
+    # Clicking the workout's Name field is also outside the segment card, which
+    # collapses it too (segment-card#handleDocumentClick) -- expand it again to
+    # confirm the exercise itself saved and collapsed correctly.
+    find_by_id('workout_name').click
+    find('.segment-summary__button').click
 
     within first('.exercise') do
       assert_no_field 'Reps'

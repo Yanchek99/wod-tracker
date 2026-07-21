@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class WorkoutsHelperTest < ActionView::TestCase
+  include SegmentsHelper
+  include MeasurableHelper
+  include MetricsHelper
+
   test 'renders one round for time workouts as for time' do
     workout = Workout.new(name: 'Murph', score_type: :time)
     workout.segments.build(position: 1)
@@ -120,5 +124,24 @@ class WorkoutsHelperTest < ActionView::TestCase
 
   test 'renders a larger team workout as team of n' do
     assert_equal 'Team of 4', team_objective(Workout.new(score_type: :time, team_size: 4))
+  end
+
+  test 'renders a workout as paste-text-box text' do
+    workout = Workout.new(name: 'Fran', score_type: :time)
+    segment = workout.segments.build(interval_scheme: '21-15-9', position: 1)
+    segment.exercises.build(movement: movements(:thruster), position: 1, reps: 1, load: 95)
+    segment.exercises.build(movement: movements(:pullup), position: 2, reps: 1)
+
+    assert_equal "Fran\n21-15-9 for time\nThruster (95 lbs)\nPull Up", workout_as_text(workout)
+  end
+
+  test 'includes time cap and notes in the paste-text-box text' do
+    workout = Workout.create!(name: 'Capped Workout', score_type: :time, time_cap_seconds: 1200,
+                              notes: 'Scale as needed.')
+    workout.segments.create!(position: 1).exercises.create!(movement: movements(:run), position: 1, reps: 1,
+                                                            distance: 400, distance_unit: :meter)
+
+    assert_equal "Capped Workout\nFor Time\n400 meter Run\nTime cap: 20:00\nScale as needed.",
+                 workout_as_text(workout.reload)
   end
 end

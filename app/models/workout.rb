@@ -125,4 +125,39 @@ class Workout < ApplicationRecord
       self.time_cap_seconds = time_cap
     end
   end
+
+  # Replaces this workout's attributes and every segment/exercise with the equivalent data from a
+  # freshly LlmParser-built (unsaved) workout, entirely in memory -- nothing persists until the
+  # caller saves. Full replace, not merge: re-pasting text redefines the whole workout, matching
+  # how WorkoutExtraction::LlmParser already behaves for a brand-new workout.
+  #
+  # The replacement segments land at positions above the originals' (e.g. [2, 3] replacing a
+  # single old segment at [1]) rather than renumbered from 1 -- not a bug. Segment's own
+  # `uniqueness: { scope: :workout_id }` validator runs a live DB query and has no awareness of
+  # marked_for_destruction?, so assigning a new segment the same position as an original still
+  # sitting in the DB (nothing is destroyed until this object's own save, which validates the
+  # whole graph before writing anything) fails uniqueness and the save is rejected outright.
+  # Giving up the atomic "nothing persists until the caller saves" behavior to renumber cleanly
+  # would mean destroying the old segments immediately on re-extract, before Save/Cancel -- a
+  # worse trade than a cosmetic gap in position values, which callers never need to be contiguous.
+  def replace_with_extraction!(extracted)
+    assign_attributes(
+      name: extracted.name, notes: extracted.notes.to_s, score_type: extracted.score_type,
+      time_cap_seconds: extracted.time_cap_seconds, ladder_step: extracted.ladder_step,
+      team_size: extracted.team_size
+    )
+    segments.each(&:mark_for_destruction)
+    self.segments_attributes = extracted.segments.map { |segment| segment_attributes_for(segment) }
+  end
+
+  private
+
+  def segment_attributes_for(segment)
+    segment.attributes.except('id', 'workout_id', 'position', 'created_at', 'updated_at')
+           .merge('exercises_attributes' => segment.exercises.map { |exercise| exercise_attributes_for(exercise) })
+  end
+
+  def exercise_attributes_for(exercise)
+    exercise.attributes.except('id', 'segment_id', 'created_at', 'updated_at')
+  end
 end

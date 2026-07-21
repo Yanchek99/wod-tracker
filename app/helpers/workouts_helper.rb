@@ -30,6 +30,16 @@ module WorkoutsHelper
     "#{Current.user.email.first(2).upcase}-#{Time.current.strftime('%m%d%g-%H%M')}"
   end
 
+  # Plain-text rendering of a workout for the paste-text box, so switching to the unstructured
+  # edit view shows the current workout instead of a blank textarea. Mirrors show.html.slim's
+  # assembly of workout_objective/segment_objective/measurable_message -- the closest existing
+  # convention for describing a workout as text, just written as lines instead of HTML.
+  def workout_as_text(workout)
+    lines = [workout.name, [team_objective(workout), workout_objective(workout)].compact.join(' ')]
+    workout.segments.each_with_index { |segment, index| lines.concat(segment_as_text_lines(workout, segment, index)) }
+    lines.concat(workout_as_text_trailer(workout)).compact_blank.join("\n")
+  end
+
   def for_time_objective(workout)
     rounds = workout.governing_segment&.rounds || 1
     return 'For Time' if rounds == 1
@@ -67,5 +77,23 @@ module WorkoutsHelper
     else
       "#{segment.rounds} #{segment.time_seconds / 60}-minute rounds"
     end
+  end
+
+  private
+
+  # workout_as_text's per-segment lines: the segment's own prescription (suppressed for the
+  # governing segment, since workout_objective already conveyed its scheme) followed by each
+  # exercise's line.
+  def segment_as_text_lines(workout, segment, index)
+    objective = segment == workout.governing_segment ? nil : segment_objective(segment, then_prefix: index.positive?)
+    exercise_lines = segment.exercises.map { |exercise| measurable_message(exercise) }
+    [objective, *exercise_lines].compact
+  end
+
+  def workout_as_text_trailer(workout)
+    trailer = []
+    trailer << "Time cap: #{workout.time_cap}" if workout.time_cap_seconds.present?
+    trailer << workout.notes.to_plain_text.strip if workout.notes.present?
+    trailer
   end
 end

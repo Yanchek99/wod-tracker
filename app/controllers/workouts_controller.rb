@@ -1,7 +1,7 @@
 class WorkoutsController < ApplicationController
   LOAD_FIELDS = %i[load female_load male_load].freeze
 
-  before_action :set_workout, only: [:show, :edit, :update, :destroy]
+  before_action :set_workout, only: [:show, :edit, :edit_unstructured, :re_extract, :update, :destroy]
 
   # GET /workouts
   # GET /workouts.json
@@ -38,6 +38,21 @@ class WorkoutsController < ApplicationController
 
   # GET /workouts/1/edit
   def edit; end
+
+  # GET /workouts/1/edit_unstructured
+  def edit_unstructured; end
+
+  # PATCH /workouts/1/re_extract
+  def re_extract
+    extracted = WorkoutExtraction::LlmParser.call(params.expect(:wod_text), date: Date.current)
+    @workout.replace_with_extraction!(extracted)
+    render :edit
+  rescue WorkoutExtraction::LlmParser::ExtractionError,
+         WorkoutExtraction::LlmParser::UnrepresentableWorkoutError => e
+    @wod_text = params[:wod_text]
+    flash.now[:alert] = t('.extraction_failed', error: e.message)
+    render :edit_unstructured, status: :unprocessable_content
+  end
 
   # POST /workouts
   # POST /workouts.json

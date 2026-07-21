@@ -71,12 +71,12 @@ module WorkoutFormLayoutSystemHelpers
 
   def assert_help_text_is_tooltipped
     assert_no_text '0 = max reps'
-    assert_equal 0, evaluate_script("document.querySelectorAll('label .exercise-editor__help').length")
+    assert_equal 0, evaluate_script("document.querySelectorAll('label .workout-form__help').length")
   end
 
   def assert_help_targets_are_large_enough
     sizes = evaluate_script(<<~JS)
-      Array.from(document.querySelectorAll('.exercise-editor__help')).map((button) => {
+      Array.from(document.querySelectorAll('.workout-form__help')).map((button) => {
         const rect = button.getBoundingClientRect()
 
         return { width: Math.round(rect.width), height: Math.round(rect.height) }
@@ -119,6 +119,9 @@ class WorkoutFormLayoutTest < ApplicationSystemTestCase
     assert_equal layout['segmentRoundsTop'], layout['segmentTimeTop']
     assert_equal layout['segmentRoundsTop'], layout['segmentRestTop']
     assert_equal 0, layout['overflowingControls']
+    assert_no_text 'blank = individual'
+    assert_selector '#workout_team_size'
+    assert_selector '.workout-form__help[aria-label="blank = individual"]'
 
     click_on 'Add Exercise', match: :first
 

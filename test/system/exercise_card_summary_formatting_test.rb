@@ -19,6 +19,11 @@ module ExerciseCardSummaryFormattingSystemHelpers
   rescue Selenium::WebDriver::Error::ElementClickInterceptedError
     execute_script('arguments[0].click()', toggle)
   end
+
+  def select_movement(name)
+    find('.ts-control input').set(name)
+    find('.ts-dropdown .option', text: name).click
+  end
 end
 
 class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
@@ -148,12 +153,5 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
 
       assert_equal 'max calories Row', find('.exercise-summary__text').text
     end
-  end
-
-  private
-
-  def select_movement(name)
-    find('.ts-control input').set(name)
-    find('.ts-dropdown .option', text: name).click
   end
 end

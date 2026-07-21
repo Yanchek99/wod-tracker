@@ -80,6 +80,38 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'input[name="log[score_type]"][value="rep"]'
   end
 
+  test 'new log form only shows recording fields the workout prescribes' do
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+
+    # Fran: Thrusters (reps + load) then Pullups (reps only) — see test/fixtures/exercises.yml
+    cards = css_select('.card.mb-3')
+    thruster_card = cards[0]
+    pullup_card = cards[1]
+
+    assert_select thruster_card, "input[name$='[reps]']", 1
+    assert_select thruster_card, "input[name$='[reps]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+    assert_select thruster_card, "input[name$='[load]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+    assert_select thruster_card, "input[name$='[duration_seconds]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+    assert_select thruster_card, "input[name$='[calories]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+
+    assert_select pullup_card, "input[name$='[reps]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+    assert_select pullup_card, "input[name$='[load]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+  end
+
   test 'recording form exposes every performance dimension so scaled movements can be logged' do
     # Murph only prescribes reps and distance, but the form must still let an athlete record an
     # off-prescription dimension (e.g. calories from a scaled row) on any movement.

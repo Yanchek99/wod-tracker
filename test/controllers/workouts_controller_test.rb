@@ -165,6 +165,14 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?]', edit_unstructured_workout_path(@workout)
   end
 
+  test 'does not label collapsed nameless segments as flat sequences' do
+    get edit_workout_url(workouts(:murph))
+
+    assert_response :success
+    assert_select '.segment-summary__text', text: 'Flat sequence', count: 0
+    assert_select '.segment-summary__text', text: '', count: 1
+  end
+
   test 'should update workout' do
     patch workout_url(@workout), params: { workout: {
       name: @workout.name,

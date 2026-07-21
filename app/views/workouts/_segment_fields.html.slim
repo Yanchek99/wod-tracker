@@ -1,5 +1,5 @@
 - expanded = f.object.new_record?
-- summary = f.object.persisted? ? (segment_objective(f.object) || 'Flat sequence') : 'New segment'
+- summary = f.object.persisted? ? (segment_objective(f.object) || '') : 'New segment'
 - exercise_summaries = f.object.exercises.reject(&:marked_for_destruction?).sort_by { |exercise| exercise.position || 0 }.map { |exercise| measurable_message(exercise) }
 
 .nested-fields.card.mb-3.workout-part data-controller="segment-card" data-segment-card-expanded-value=expanded hidden=f.object.marked_for_destruction?

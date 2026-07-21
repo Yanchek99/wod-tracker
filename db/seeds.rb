@@ -57,7 +57,7 @@ bent_over_row = Movement.find_or_initialize_by(name: 'Bent-over Row').tap do |mo
   movement.save!
 end
 body_blaster = Movement.find_or_initialize_by(name: 'Body Blaster').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push, :vertical_pull] }, skill_level: :intermediate)
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push, :vertical_pull] }, skill_level: :intermediate)
   movement.save!
 end
 box_jump = Movement.find_or_initialize_by(name: 'Box Jump').tap do |movement|
@@ -245,7 +245,7 @@ dumbbell_thruster = Movement.find_or_initialize_by(name: 'Dumbbell Thruster').ta
   movement.save!
 end
 dumbbell_turkish_get_up = Movement.find_or_initialize_by(name: 'Dumbbell Turkish Get-up').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat, :vertical_push, :trunk_flexion] },
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] },
                              equipment: :dumbbell,
                              skill_level: :advanced)
   movement.save!
@@ -585,7 +585,7 @@ run = Movement.find_or_initialize_by(name: 'Run').tap do |movement|
   movement.save!
 end
 shoot_through = Movement.find_or_initialize_by(name: 'Shoot-through').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] }, skill_level: :intermediate)
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, skill_level: :intermediate)
   movement.save!
 end
 shoulder_press = Movement.find_or_initialize_by(name: 'Shoulder Press').tap do |movement|
@@ -618,7 +618,7 @@ skin_the_cat = Movement.find_or_initialize_by(name: 'Skin the Cat').tap do |move
   movement.save!
 end
 slam_ball = Movement.find_or_initialize_by(name: 'Slam Ball').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:hinge, :vertical_push] }, equipment: :medicine_ball,
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:hinge] }, equipment: :medicine_ball,
                              skill_level: :basic)
   movement.save!
 end
@@ -628,7 +628,7 @@ sled_drag = Movement.find_or_initialize_by(name: 'Sled Drag').tap do |movement|
   movement.save!
 end
 sled_pull = Movement.find_or_initialize_by(name: 'Sled Pull').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_pull] }, equipment: :sled,
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:horizontal_pull] }, equipment: :sled,
                              skill_level: :basic)
   movement.save!
 end
@@ -724,7 +724,7 @@ sumo_deadlift = Movement.find_or_initialize_by(name: 'Sumo Deadlift').tap do |mo
   movement.save!
 end
 sumo_deadlift_high_pull = Movement.find_or_initialize_by(name: 'Sumo Deadlift High Pull').tap do |movement|
-  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_pull] },
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:hinge], secondary: [:vertical_pull] },
                              equipment: :barbell,
                              skill_level: :intermediate)
   movement.save!

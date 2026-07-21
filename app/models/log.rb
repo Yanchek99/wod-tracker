@@ -61,13 +61,17 @@ class Log < ApplicationRecord
     when 'rep' then movement_log.reps = value || 0
     when 'calorie' then movement_log.calories = value || 0
     when 'seconds', 'time' then movement_log.duration_seconds = value
-    else assign_load_or_distance(movement_log, metric.measurement, value)
+    else assign_load_or_distance(movement_log, metric, value)
     end
   end
 
-  def assign_load_or_distance(movement_log, measurement, value)
+  def assign_load_or_distance(movement_log, metric, value)
+    measurement = metric.measurement
     if Metric::LOAD_MEASUREMENTS.include?(measurement)
       movement_log.load = value
+      # 1 is Metric's own default for an unprescribed count -- only a genuinely prescribed
+      # multi-implement load (e.g. double dumbbells) is worth pre-filling.
+      movement_log.implement_count = metric.implement_count if metric.implement_count > 1
     elsif Metric::DISTANCE_MEASUREMENTS.include?(measurement)
       assign_distance(movement_log, measurement, value)
     end

@@ -55,6 +55,11 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'textarea[name="wod_text"]'
     assert_select 'form[action=?][data-turbo="false"]', re_extract_workout_path(@workout)
+
+    textarea_text = css_select('textarea[name="wod_text"]').first.text
+    assert_includes textarea_text, 'Fran'
+    assert_includes textarea_text, '21-15-9'
+    assert_includes textarea_text, 'Thruster'
   end
 
   test 'renders the edit textarea when the workout cannot be represented' do

@@ -56,6 +56,7 @@ Metrics/ClassLength:
     - test/system/workout_drag_ordering_test.rb
     - test/system/workout_sortable_card_inputs_test.rb
     - test/controllers/workouts_controller_test.rb
+    - test/helpers/workouts_helper_test.rb
     - test/jobs/scrape_cf_wod_job_test.rb
 
 Metrics/MethodLength:

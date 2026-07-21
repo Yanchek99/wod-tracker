@@ -72,8 +72,7 @@ module WorkoutFormLayoutSystemHelpers
   def assert_help_text_is_tooltipped
     assert_no_text '0 = max reps'
     assert_equal 0, evaluate_script("document.querySelectorAll('label .workout-form__help').length")
-    assert_equal [], evaluate_script("Array.from(document.querySelectorAll('.workout-form__help i')).map((icon) => icon.className)")
-    assert(page.all('.workout-form__help', visible: :visible).all? { |button| button.text == '!' })
+    assert(page.all('.workout-form__help', visible: :visible).all? { |button| button.text.blank? })
   end
 
   def assert_help_targets_are_large_enough

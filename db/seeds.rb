@@ -16,7 +16,7 @@ end
 
 # Movements
 abmat_sit_up = Movement.find_or_initialize_by(name: 'AbMat Sit-up').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:hinge] }, skill_level: :basic)
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] }, skill_level: :basic)
   movement.save!
 end
 air_squat = Movement.find_or_initialize_by(name: 'Air Squat').tap do |movement|

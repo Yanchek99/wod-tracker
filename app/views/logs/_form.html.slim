@@ -23,9 +23,9 @@
     - ml = ml_form.object
     - exercise = exercises[ml_form.index]
     - relevant = @log.metrics_for_movement_log(exercise).map(&:measurement)
-    .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle change->log-exercise#reveal" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
+    .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
       .card-body
-        = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'implement-count-target': 'movementSelect' } }, label: false
+        = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', action: 'change->log-exercise#reveal', 'implement-count-target': 'movementSelect' } }, label: false
         .row.g-2
           .col data-log-exercise-target="field" hidden=(relevant & %w[rep]).empty?
             = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }

@@ -4,14 +4,23 @@
 - ladder_hidden = ladder_segment.blank? || ladder_segment.time_seconds.blank? || ladder_segment.rounds.present? || ladder_segment.interval_scheme.present?
 
 = simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form', data: { controller: 'ladder-fields' } } do |f|
+  - tooltip_button = ->(title) { content_tag(:button, content_tag(:i, '', class: 'fa-solid fa-circle-info', aria: { hidden: true }), type: 'button', class: 'workout-form__help', data: { controller: 'tooltip', 'bs-animation': false, 'bs-toggle': 'tooltip', 'bs-title': title }, aria: { label: title }) }
+  - field_label = ->(attribute, label, title) do
+    - safe_join([f.label(attribute, label, class: 'form-label mb-0'), tooltip_button.call(title)], ' ')
   = f.error_notification
   .form-inputs.row.g-2
     .col-12 = f.input :name, input_html: { value: f.object.name || generate_workout_name }
-    .col-sm-4 data-ladder-fields-target="row" hidden=ladder_hidden
+    .col-4.col-md-3 data-ladder-fields-target="row" hidden=ladder_hidden
       = f.input :ladder_step, label: 'Ascending ladder step', hint: "reps added each round (start is each exercise's reps)", input_html: { data: { 'ladder-fields-target': 'step input', action: 'input->ladder-fields#toggle' } }
-    .col-12 = f.input :score_type, collection: Metric.workout_measurements, label: 'For'
-    .col-sm-4 = f.input :team_size, label: 'Athletes (team size)', hint: 'leave blank for an individual workout'
-    .col-12 = f.input :time_cap
+    .col-4.col-md-3
+      .workout-form__field-label = f.label :score_type, 'For', class: 'form-label mb-0'
+      = f.input :score_type, collection: Metric.workout_measurements, label: false
+    .col-4.col-md-3
+      .workout-form__field-label = field_label.call(:team_size, 'Athletes', 'blank = individual')
+      = f.input :team_size, label: false, hint: false
+    .col-4.col-md-3
+      .workout-form__field-label = f.label :time_cap, 'Time cap', class: 'form-label mb-0'
+      = f.input :time_cap, label: false
     .col-12
       = f.label :notes, class: 'form-label'
       = f.rich_text_area :notes

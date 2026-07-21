@@ -57,6 +57,7 @@ class WorkoutWorkflowsTest < ApplicationSystemTestCase
     within '.exercise' do
       assert_no_field 'Distance units per rep'
 
+      click_on 'Distance'
       fill_in 'Distance', with: '400', exact: true
 
       assert_field 'Distance units per rep'

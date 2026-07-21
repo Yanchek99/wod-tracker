@@ -91,6 +91,42 @@
   min-width: 0;
 }
 
+.exercise-editor.card {
+  background: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.exercise-editor__header,
+.exercise-editor__footer {
+  align-items: center;
+  background: var(--bs-tertiary-bg);
+  display: flex;
+  justify-content: space-between;
+}
+
+.exercise-editor__header {
+  border-bottom: 1px solid var(--bs-border-color);
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.exercise-editor__footer {
+  border-top: 1px solid var(--bs-border-color);
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem 0.75rem;
+}
+
+.exercise-editor__eyebrow {
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .exercise-editor__delete {
   align-items: center;
   display: inline-flex;
@@ -100,11 +136,126 @@
   min-width: 2.25rem;
 }
 
-.exercise-editor__delete {
-  margin-top: 2rem;
+.exercise-editor.card > .card-body {
+  padding: 0.75rem;
+}
+
+.workout-form__field-label {
+  align-items: center;
+  display: flex;
+  gap: 0.125rem;
+  min-height: 1.5rem;
+}
+
+.workout-form__help {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--bs-secondary-color);
+  display: inline-flex;
+  flex: 0 0 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  height: 1.5rem;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 1.5rem;
+}
+
+.workout-form__help:focus,
+.workout-form__help:hover {
+  background: transparent;
+  color: var(--bs-primary-text-emphasis);
+}
+
+.exercise-editor__optional-groups {
+  display: grid;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.exercise-editor__optional-toggle {
+  align-items: center;
+  display: flex;
+  font-weight: 600;
+  justify-content: space-between;
+  text-align: left;
+  width: 100%;
+}
+
+.exercise-editor__optional-toggle:not(.collapsed) {
+  background: var(--bs-primary-bg-subtle);
+  border-color: var(--bs-primary-border-subtle);
+  color: var(--bs-primary-text-emphasis);
+}
+
+.exercise-editor__optional-toggle-meta {
+  align-items: center;
+  color: var(--bs-secondary-color);
+  display: inline-flex;
+  line-height: 1;
+}
+
+.exercise-editor__optional-toggle-meta::after {
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+  border-right: 0.3em solid transparent;
+  border-top: 0.3em solid currentcolor;
+  content: "";
+  display: inline-block;
+  transition: transform 0.15s ease-in-out;
+}
+
+.exercise-editor__optional-toggle:not(.collapsed) .exercise-editor__optional-toggle-meta {
+  color: inherit;
+}
+
+.exercise-editor__optional-toggle:not(.collapsed) .exercise-editor__optional-toggle-meta::after {
+  transform: rotate(180deg);
+}
+
+.exercise-editor__optional-panel {
+  margin: 0 0 0.375rem;
+  padding: 0.625rem 0 0.375rem;
 }
 
 @media (max-width: 575.98px) {
+  .workout-form .form-label {
+    font-size: 0.875rem;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+
+  .workout-form .form-text {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    margin-top: 0.25rem;
+  }
+
+  .workout-form .form-control,
+  .workout-form .form-select,
+  .workout-form .ts-control {
+    min-height: 2.5rem;
+    padding-block: 0.375rem;
+  }
+
+  .workout-form trix-toolbar {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .workout-form trix-toolbar .trix-button-row {
+    flex-wrap: nowrap;
+  }
+
+  .workout-form trix-editor {
+    min-height: 7rem;
+  }
+
   .workout-card-toolbar .btn {
     flex: 1 1 8rem;
   }

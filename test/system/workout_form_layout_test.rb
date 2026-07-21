@@ -72,6 +72,7 @@ module WorkoutFormLayoutSystemHelpers
   def assert_help_text_is_tooltipped
     assert_no_text '0 = max reps'
     assert_equal 0, evaluate_script("document.querySelectorAll('label .workout-form__help').length")
+    assert_selector '.workout-form__help[data-bs-animation="false"]'
     assert(page.all('.workout-form__help', visible: :visible).all? { |button| button.text.blank? })
   end
 

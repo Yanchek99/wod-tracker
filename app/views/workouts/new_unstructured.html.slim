@@ -6,3 +6,4 @@
       = form.text_area :wod_text, value: @wod_text, class: 'form-control', rows: 12
 
     = form.submit 'Extract Workout', class: 'btn btn-primary'
+  = link_to 'Enter manually instead', new_workout_path, class: 'btn btn-outline-secondary mt-2'

@@ -1,4 +1,5 @@
 - cancel_path = @workout.persisted? ? workout_path(@workout) : workouts_path
+- toggle_path = @workout.persisted? ? edit_unstructured_workout_path(@workout) : new_unstructured_workouts_path
 - ladder_segment = @workout.segments.first
 - ladder_hidden = ladder_segment.blank? || ladder_segment.time_seconds.blank? || ladder_segment.rounds.present? || ladder_segment.interval_scheme.present?
 
@@ -39,6 +40,9 @@
         = link_to '#', class: 'btn btn-outline-primary', data: { action: 'click->nested-form#add', nested_form_template: 'segment' } do
           i.fa-solid.fa-layer-group aria-hidden="true"
           span Add Segment
+        = link_to toggle_path, class: 'btn btn-outline-primary' do
+          i.fa-solid.fa-clipboard aria-hidden="true"
+          span Paste Text Instead
         - if @workout.persisted?
           = link_to workout_path(@workout), class: 'btn btn-danger', data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } do
             i.fa-solid.fa-trash-can aria-hidden="true"

@@ -2,7 +2,7 @@
 - summary = f.object.persisted? ? (segment_objective(f.object) || 'Flat sequence') : 'New segment'
 - exercise_summaries = f.object.exercises.reject(&:marked_for_destruction?).sort_by { |exercise| exercise.position || 0 }.map { |exercise| measurable_message(exercise) }
 
-.nested-fields.card.mb-3.workout-part data-controller="segment-card" data-segment-card-expanded-value=expanded
+.nested-fields.card.mb-3.workout-part data-controller="segment-card" data-segment-card-expanded-value=expanded hidden=f.object.marked_for_destruction?
   = f.hidden_field :_destroy
   = f.hidden_field :position
   .segment-summary.card-body data-segment-card-target="summary"

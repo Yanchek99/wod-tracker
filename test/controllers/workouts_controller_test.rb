@@ -18,6 +18,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'form.workout-form'
     assert_select 'textarea[name="wod_text"]', count: 0
+    assert_select 'a[href=?]', new_unstructured_workouts_path
   end
 
   test 'should get new unstructured' do
@@ -25,6 +26,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'textarea[name="wod_text"]'
     assert_select 'form[action=?][data-turbo="false"]', extract_workouts_path
+    assert_select 'a[href=?]', new_workout_path
   end
 
   test 'renders the textarea when the workout cannot be represented' do
@@ -46,6 +48,42 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'form.workout-form'
     assert_select 'input[name="workout[name]"][value="Extracted Workout"]'
+  end
+
+  test 'should get edit unstructured' do
+    get edit_unstructured_workout_url(@workout)
+    assert_response :success
+    assert_select 'textarea[name="wod_text"]'
+    assert_select 'form[action=?][data-turbo="false"]', re_extract_workout_path(@workout)
+
+    textarea_text = css_select('textarea[name="wod_text"]').first.text
+    assert_includes textarea_text, 'Fran'
+    assert_includes textarea_text, '21-15-9'
+    assert_includes textarea_text, 'Thruster'
+  end
+
+  test 'renders the edit textarea when the workout cannot be represented' do
+    stub_unrepresentable_workout_response('unsupported workout')
+
+    patch re_extract_workout_url(@workout), params: { wod_text: 'unsupported workout' }
+
+    assert_response :unprocessable_content
+    assert_equal "Couldn't understand that workout text (unsupported workout). Try rephrasing, or enter it manually.",
+                 flash[:alert]
+    assert_select 'textarea[name="wod_text"]', text: 'unsupported workout'
+  end
+
+  test 're_extract replaces the workout in memory and renders the edit form unsaved' do
+    original_segment_id = @workout.segments.sole.id
+    stub_extractable_workout_response(name: 'Extracted Workout', movement_name: movements(:pullup).name)
+
+    patch re_extract_workout_url(@workout), params: { wod_text: '10 pull-ups for time' }
+
+    assert_response :success
+    assert_select 'form.workout-form'
+    assert_select 'input[name="workout[name]"][value="Extracted Workout"]'
+    assert_select '.workout-part[hidden]', 1
+    assert Segment.exists?(original_segment_id)
   end
 
   test 'renders manual form when manual workout submission is invalid' do
@@ -124,6 +162,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     get edit_workout_url(@workout)
     assert_response :success
     assert_select 'trix-editor'
+    assert_select 'a[href=?]', edit_unstructured_workout_path(@workout)
   end
 
   test 'should update workout' do

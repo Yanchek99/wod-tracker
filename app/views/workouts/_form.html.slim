@@ -5,7 +5,7 @@
 = simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form', data: { controller: 'ladder-fields' } } do |f|
   - tooltip_button = ->(title) do
     - content_tag(:button, type: 'button', class: 'workout-form__help', data: { controller: 'tooltip', 'bs-toggle': 'tooltip', 'bs-title': title }, aria: { label: title }) do
-      - content_tag(:i, '', class: 'fa-solid fa-circle-info', aria: { hidden: true })
+      span aria-hidden="true" !
   - field_label = ->(attribute, label, title) do
     - safe_join([f.label(attribute, label, class: 'form-label mb-0'), tooltip_button.call(title)], ' ')
   = f.error_notification

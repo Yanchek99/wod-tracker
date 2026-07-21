@@ -10,7 +10,7 @@
 - calories_collapse_id = "exercise-#{exercise_key}-calories"
 - tooltip_button = ->(title) do
   - content_tag(:button, type: 'button', class: 'workout-form__help', data: { controller: 'tooltip', 'bs-toggle': 'tooltip', 'bs-title': title }, aria: { label: title }) do
-    - content_tag(:i, '', class: 'fa-solid fa-circle-info', aria: { hidden: true })
+    span aria-hidden="true" !
 - field_label = ->(attribute, label, title) do
   - safe_join([f.label(attribute, label, class: 'form-label mb-0'), tooltip_button.call(title)], ' ')
 - editor_title = f.object.persisted? ? 'Editing Exercise' : 'New exercise'

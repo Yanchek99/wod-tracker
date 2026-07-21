@@ -151,11 +151,11 @@
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: 50%;
   color: var(--bs-secondary-color);
   display: inline-flex;
   flex: 0 0 1.5rem;
   font-size: 0.875rem;
+  font-weight: 700;
   height: 1.5rem;
   justify-content: center;
   line-height: 1;
@@ -172,6 +172,7 @@
 .exercise-editor__optional-groups {
   display: grid;
   gap: 0.375rem;
+  margin-bottom: 0.75rem;
   margin-top: 0.5rem;
 }
 

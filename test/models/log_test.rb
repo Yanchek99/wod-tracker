@@ -128,4 +128,14 @@ class LogTest < ActiveSupport::TestCase
     assert log.valid?
     assert_nil log.score_value
   end
+
+  test 'exposes recording-relevant metrics per exercise as a public method' do
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :time)
+
+    thruster_measurements = log.metrics_for_movement_log(exercises(:fran_thruster)).map(&:measurement)
+    pullup_measurements = log.metrics_for_movement_log(exercises(:fran_pullup)).map(&:measurement)
+
+    assert_equal %w[rep lb], thruster_measurements
+    assert_equal %w[rep], pullup_measurements
+  end
 end

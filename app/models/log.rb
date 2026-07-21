@@ -31,6 +31,18 @@ class Log < ApplicationRecord
     end
   end
 
+  def metrics_for_movement_log(exercise)
+    metrics = recording_metrics_for(exercise)
+    return ordered_recording_metrics(metrics) unless workout.rep_scored_amrap?
+
+    component = exercise.score_component
+    return ordered_recording_metrics(metrics) unless component
+
+    ordered_recording_metrics(metrics.reject do |metric|
+      metric.rep? && component[:measurement] != 'rep'
+    end)
+  end
+
   private
 
   def build_movement_log_for(exercise)
@@ -70,18 +82,6 @@ class Log < ApplicationRecord
     return metric.default_value if workout&.set_based_lifting?
 
     metric.calculated_value(exercise.segment)
-  end
-
-  def metrics_for_movement_log(exercise)
-    metrics = recording_metrics_for(exercise)
-    return ordered_recording_metrics(metrics) unless workout.rep_scored_amrap?
-
-    component = exercise.score_component
-    return ordered_recording_metrics(metrics) unless component
-
-    ordered_recording_metrics(metrics.reject do |metric|
-      metric.rep? && component[:measurement] != 'rep'
-    end)
   end
 
   def ordered_recording_metrics(metrics)

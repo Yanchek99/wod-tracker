@@ -70,16 +70,16 @@ box_step_up = Movement.find_or_initialize_by(name: 'Box Step-up').tap do |moveme
   movement.save!
 end
 burpee = Movement.find_or_initialize_by(name: 'Burpee').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] }, skill_level: :basic)
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] }, skill_level: :basic)
   movement.save!
 end
 burpee_box_jump = Movement.find_or_initialize_by(name: 'Burpee Box Jump').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] }, equipment: :box,
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] }, equipment: :box,
                              skill_level: :intermediate)
   movement.save!
 end
 burpee_box_jump_over = Movement.find_or_initialize_by(name: 'Burpee Box Jump-over').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] },
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
                              equipment: :box, skill_level: :intermediate)
   movement.save!
 end
@@ -428,7 +428,7 @@ l_sit_to_shoulder_stand = Movement.find_or_initialize_by(name: 'L-sit to Shoulde
 end
 lateral_over_barbell_burpee = Movement.find_or_initialize_by(name: 'Lateral Over Barbell Burpee').tap do |movement|
   movement.assign_attributes(family: :gymnastics,
-                             function_roles: { primary: [:squat, :vertical_push] },
+                             function_roles: { primary: [:horizontal_push] },
                              equipment: :barbell,
                              skill_level: :intermediate)
   movement.save!
@@ -471,12 +471,12 @@ muscle_up = Movement.find_or_initialize_by(name: 'Muscle-up').tap do |movement|
   movement.save!
 end
 over_the_bar_burpee = Movement.find_or_initialize_by(name: 'Over the bar Burpee').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] },
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
                              equipment: :barbell, skill_level: :intermediate)
   movement.save!
 end
 over_the_medball_burpee = Movement.find_or_initialize_by(name: 'Over the medball Burpee').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] },
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
                              equipment: :medicine_ball,
                              skill_level: :intermediate)
   movement.save!
@@ -797,7 +797,7 @@ end
 
 # Movements first introduced by the Open workouts
 bar_facing_burpee = Movement.find_or_initialize_by(name: 'Bar-facing Burpee').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] },
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
                              equipment: :barbell, skill_level: :intermediate)
   movement.save!
 end
@@ -819,7 +819,7 @@ medicine_ball_box_step_over = Movement.find_or_initialize_by(name: 'Medicine-bal
   movement.save!
 end
 lateral_burpee_over_dumbbell = Movement.find_or_initialize_by(name: 'Lateral Burpee Over Dumbbell').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat, :vertical_push] },
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
                              equipment: :dumbbell, skill_level: :intermediate)
   movement.save!
 end

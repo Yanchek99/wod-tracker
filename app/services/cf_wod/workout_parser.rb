@@ -21,7 +21,8 @@ module CfWod
       header, body = extract_header_and_body(lines)
       attrs = WorkoutFormatClassifier.call(header)
       workout = Workout.new(name: "CF-#{wod_page.slug}", **attrs.except(:lift_name, :set_reps, :rounds, :time, :interval))
-      build_workout_content(workout, attrs, header_scheme(attrs), body)
+      exercise_lines = build_workout_content(workout, attrs, header_scheme(attrs), body)
+      mark_manually_scored_lifts_load_bearing(workout, exercise_lines)
       validate_workout!(workout)
       find_content_duplicate(workout) || workout
     end
@@ -76,6 +77,7 @@ module CfWod
         # branch never reaches PartSplitter), so none of it is a duplicate of parsed data -- keep
         # it as notes rather than dropping it.
         workout.notes = normalize_leftover_body(body)
+        []
       else
         build_from_body(workout, body.to_s, scheme)
       end
@@ -108,10 +110,23 @@ module CfWod
       parts = AscendingLadderPartNormalizer.call(workout, split[:parts])
       exercise_lines = build_exercise_lines(workout, parts, scheme)
       workout.notes = split[:notes]
-      return unless split[:prescription_text]
+      return exercise_lines unless split[:prescription_text]
 
       clauses = PrescriptionClauseParser.call(split[:prescription_text])
       PrescriptionClauseAssigner.call(exercise_lines, clauses)
+      exercise_lines
+    end
+
+    def mark_manually_scored_lifts_load_bearing(workout, exercise_lines)
+      return unless workout.score_type == 'weight' && !workout.calculated_lifting_score?
+
+      exercise_lines.each do |line|
+        exercise = line[:exercise]
+        next unless exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
+        next unless LoadBearingMovement.call(exercise.movement, raw_text: line[:raw_line])
+
+        exercise.load = 0
+      end
     end
 
     def normalize_leftover_body(body)

@@ -74,6 +74,20 @@ module CfWod
       assert_equal 0, exercise.load
     end
 
+    test 'marks only barbell-family movements load-bearing in a manually scored weight workout' do
+      clean = Movement.find_or_create_by!(name: 'Clean')
+      page = wod_page(slug: '300111', body_text: "For load:\n1 clean\n1 pull-up")
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'weight', workout.score_type
+      assert_not workout.calculated_lifting_score?
+      exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
+      assert_equal 0, exercises.fetch(clean.name).load
+      assert_nil exercises.fetch(movements(:pull_up).name).load
+    end
+
     test 'stores trailing text after a 1-rep-max header as notes, since nothing else models it' do
       page = wod_page(slug: '300109', body_text: "Find a 1-rep-max back squat.\n\nRest as needed between attempts.")
 

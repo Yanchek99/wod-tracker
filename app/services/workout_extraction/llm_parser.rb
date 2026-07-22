@@ -75,6 +75,7 @@ module WorkoutExtraction
 
       attrs = normalize_lifting_set_interval(attrs)
       workout = build_workout(attrs)
+      mark_manually_scored_lifts_load_bearing(workout)
       validate_workout!(workout)
       workout
     rescue Anthropic::Errors::APIStatusError, Anthropic::Errors::APIConnectionError => e
@@ -210,6 +211,19 @@ module WorkoutExtraction
         movement = lookup_movement!(exercise_attrs[:movement_name])
         attrs = normalize_sex_paired_attrs(exercise_attrs.except(:movement_name))
         segment.exercises.build(attrs.merge(movement: movement, position: index + 1))
+      end
+    end
+
+    def mark_manually_scored_lifts_load_bearing(workout)
+      return unless workout.score_type == 'weight' && !workout.calculated_lifting_score?
+
+      workout.segments.each do |segment|
+        segment.exercises.each do |exercise|
+          next unless exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
+          next unless CfWod::LoadBearingMovement.call(exercise.movement)
+
+          exercise.load = 0
+        end
       end
     end
 

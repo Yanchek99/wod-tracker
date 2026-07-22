@@ -1,18 +1,5 @@
 module CfWod
   class PrescriptionClauseAssigner
-    # Movement is genuinely load-bearing here, detected by exact name for now -- swap this for the
-    # equipment/load-bearing taxonomy (#1629) once it lands, same stopgap already used by
-    # Movement#supports_implement_count?. An exact-name allowlist (not a substring/keyword check),
-    # since a substring check on e.g. "squat" would also match the bodyweight "Air Squat".
-    BARBELL_FAMILY_MOVEMENTS = [
-      'Back Squat', 'Front Squat', 'Overhead Squat', 'Squat Clean', 'Squat Clean Thruster',
-      'Deadlift', 'Sumo Deadlift High Pull',
-      'Snatch', 'Power Snatch', 'Squat Snatch', 'Muscle Snatch',
-      'Clean', 'Power Clean', 'Hang Power Clean', 'Hang Squat Clean', 'Clean and Jerk',
-      'Jerk', 'Push Jerk', 'Split Jerk', 'Push Press', 'Thruster', 'Bench Press'
-    ].freeze
-    BARBELL_CUE_PATTERN = /overhead|front-rack|back-rack/i
-
     STOPWORDS = %w[a an the to of and or with for on at in].freeze
     LOAD_UNITS = %i[lb kg pood].freeze
     DISTANCE_UNITS = %i[inch foot meter].freeze
@@ -87,7 +74,7 @@ module CfWod
     end
 
     def barbell_family?(line)
-      BARBELL_FAMILY_MOVEMENTS.include?(line[:exercise].movement.name) || line[:raw_line].match?(BARBELL_CUE_PATTERN)
+      LoadBearingMovement.call(line[:exercise].movement, raw_text: line[:raw_line])
     end
 
     def apply_value(candidate, female_value, male_value)

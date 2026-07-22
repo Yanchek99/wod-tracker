@@ -128,4 +128,62 @@ class LogTest < ActiveSupport::TestCase
     assert log.valid?
     assert_nil log.score_value
   end
+
+  test 'fills every blank load-bearing movement_log from score_value on a manually-scored lift' do
+    exercises(:fran_thruster).update!(load: 0) # simulate the Open 21.4-style sentinel
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :weight, score_value: 225)
+    log.build_movement_logs
+    log.movement_logs.each { |ml| ml.load = nil }
+
+    log.save!
+
+    thruster_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
+    assert_equal 225, thruster_log.load
+  end
+
+  test 'does not fill a non-load-bearing movement_log' do
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :weight, score_value: 225)
+    log.build_movement_logs
+
+    log.save!
+
+    pullup_log = log.movement_logs.find { |ml| ml.movement_id == movements(:pullup).id }
+    assert_nil pullup_log.load
+  end
+
+  test 'does not override a load the athlete already entered' do
+    exercises(:fran_thruster).update!(load: 0)
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :weight, score_value: 225)
+    log.build_movement_logs
+    thruster_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
+    thruster_log.load = 205
+
+    log.save!
+
+    assert_equal 205, thruster_log.reload.load
+  end
+
+  test 'does not run for a calculated_lifting_score? workout' do
+    workout = Workout.create!(name: 'Isolated Calculated Score Workout', score_type: :weight)
+    segment = workout.segments.create!(position: 1)
+    segment.exercises.create!(movement: movements(:back_squat), position: 1, reps: 4,
+                              duration_seconds: 240, load_unit: :lb)
+    log = workout.logs.build(user: users(:mathew), score_type: :weight, score_value: 225)
+    log.build_movement_logs
+
+    log.save!
+
+    log.movement_logs.each { |ml| assert_nil ml.load }
+  end
+
+  test 'does not run when score_value is blank' do
+    exercises(:fran_thruster).update!(load: 0)
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    log.save!
+
+    thruster_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
+    assert_nil thruster_log.load
+  end
 end

@@ -112,6 +112,39 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 're-rendered new form falls back to showing all fields when a movement log has no matching exercise' do
+    # Fran only prescribes 2 exercises. Simulates the workout gaining an exercise between the user
+    # loading the form and submitting it, so the submitted movement log count no longer matches
+    # exercises_for_log_recording -- the failed create re-renders with the mismatched submission.
+    post workout_logs_url(@workout), params: { log: {
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => { movement_id: movements(:thruster).id, reps: 1, load: 95 },
+        '1' => { movement_id: movements(:pullup).id, reps: 1 },
+        '2' => { movement_id: movements(:run).id, reps: 1, distance: 400 }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    extra_card = css_select('.card.mb-3').last
+    assert_select extra_card, "input[name$='[duration_seconds]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'implement-count field stays hidden by default when a load-capable movement has no prescribed load' do
+    dumbbell_burpee = Movement.create!(name: 'Dumbbell Burpee')
+    exercises(:fran_pullup).segment.exercises.create!(movement: dumbbell_burpee, position: 3, reps: 10)
+
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+    dumbbell_card = css_select('.card.mb-3').last
+    assert_select dumbbell_card, "input[name$='[implement_count]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+  end
+
   test 'recording form exposes every performance dimension so scaled movements can be logged' do
     # Murph only prescribes reps and distance, but the form must still let an athlete record an
     # off-prescription dimension (e.g. calories from a scaled row) on any movement.

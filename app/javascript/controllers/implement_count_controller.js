@@ -2,9 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 // Shows the implement-count field only for movements that support single/double loading
 // (dumbbell, kettlebell). The supported movement ids come from the server; swap that source for
-// the equipment taxonomy once it lands.
+// the equipment taxonomy once it lands. Where a loadField target is present (the log recording
+// form), Implements only shows once Load is itself a relevant/revealed recording dimension --
+// otherwise it would be the only visible field for an unprescribed load.
 export default class extends Controller {
-  static targets = ["field", "movementSelect"]
+  static targets = ["field", "movementSelect", "loadField"]
   static values = { movementIds: Array }
 
   connect() {
@@ -15,9 +17,11 @@ export default class extends Controller {
     if (!this.hasFieldTarget || !this.hasMovementSelectTarget) return
 
     const supported = this.movementIdsValue.includes(Number(this.movementSelectTarget.value))
-    this.fieldTarget.hidden = !supported
+    const loadRelevant = !this.hasLoadFieldTarget || !this.loadFieldTarget.hidden
+    const show = supported && loadRelevant
+    this.fieldTarget.hidden = !show
 
-    if (!supported && event) this.clearInput()
+    if (!show && event) this.clearInput()
   }
 
   clearInput() {

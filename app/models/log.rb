@@ -4,7 +4,7 @@ class Log < ApplicationRecord
   belongs_to :user, default: -> { Current.user }
   belongs_to :workout
   has_many :exercises, through: :workout
-  has_many :movement_logs, dependent: :destroy
+  has_many :movement_logs, -> { order(:id) }, dependent: :destroy
 
   accepts_nested_attributes_for :movement_logs, allow_destroy: true
 

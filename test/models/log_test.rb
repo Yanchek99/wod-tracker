@@ -186,4 +186,15 @@ class LogTest < ActiveSupport::TestCase
     thruster_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
     assert_nil thruster_log.load
   end
+
+  test 'reloads movement_logs in build order, matching exercises_for_log_recording' do
+    exercises(:fran_thruster).update!(load: 0)
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :time, score_value: 330)
+    log.build_movement_logs
+    log.save!
+
+    reloaded_movement_ids = log.reload.movement_logs.map(&:movement_id)
+
+    assert_equal workouts(:fran).exercises_for_log_recording.map(&:movement_id), reloaded_movement_ids
+  end
 end

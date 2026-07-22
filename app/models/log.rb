@@ -4,13 +4,15 @@ class Log < ApplicationRecord
   belongs_to :user, default: -> { Current.user }
   belongs_to :workout
   has_many :exercises, through: :workout
-  has_many :movement_logs, dependent: :destroy
+  has_many :movement_logs, -> { order(:id) }, dependent: :destroy
 
   accepts_nested_attributes_for :movement_logs, allow_destroy: true
 
   enum :score_type, Metric.measurements, prefix: :score
 
   validates :score_type, presence: true
+
+  before_save :backfill_lifting_loads_from_score
 
   def build_movement_logs
     workout.exercises_for_log_recording.each do |exercise|
@@ -44,6 +46,26 @@ class Log < ApplicationRecord
   end
 
   private
+
+  def backfill_lifting_loads_from_score
+    return unless manually_scored_lifting_workout?
+
+    exercises = workout.exercises_for_log_recording
+    movement_logs.each_with_index do |movement_log, index|
+      exercise = exercises[index]
+      next unless fillable_lifting_load?(exercise, movement_log)
+
+      movement_log.load = score_value
+    end
+  end
+
+  def manually_scored_lifting_workout?
+    score_weight? && !workout.calculated_lifting_score? && score_value.present?
+  end
+
+  def fillable_lifting_load?(exercise, movement_log)
+    exercise&.load_bearing? && movement_log.load.blank?
+  end
 
   def build_movement_log_for(exercise)
     movement_log = movement_logs.build(movement: exercise.movement)

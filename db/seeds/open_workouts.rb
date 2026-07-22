@@ -325,7 +325,7 @@ Workout.find_or_create_by(name: 'Open 15.1a') do |workout|
   workout.notes = 'Performed immediately following 15.1. Establish a 1-rep-max clean and jerk within ' \
                   '6 minutes. Post heaviest successful load.'
   segment = workout.segments.build(position: 1)
-  segment.exercises.build(movement: clean_and_jerk, position: 1, reps: 1)
+  segment.exercises.build(movement: clean_and_jerk, position: 1, reps: 1, load_unit: :lb)
 end
 
 # 15.2 is a repeat of 14.2
@@ -571,7 +571,7 @@ Workout.find_or_create_by(name: 'Open 18.2a') do |workout|
   workout.notes = 'Performed immediately after completing 18.2, in the time remaining within the 12-minute cap. ' \
                   'Establish a 1-rep-max clean. Post heaviest successful load.'
   segment = workout.segments.build(position: 1)
-  segment.exercises.build(movement: clean, position: 1, reps: 1)
+  segment.exercises.build(movement: clean, position: 1, reps: 1, load_unit: :lb)
 end
 
 # 18.3
@@ -842,10 +842,10 @@ Workout.find_or_create_by(name: 'Open 21.4') do |workout|
   workout.notes = 'Begins immediately after 21.3. Complete the complex for max load: 1 deadlift, 1 clean, ' \
                   '1 hang clean, 1 jerk. Post the heaviest successful complex.'
   segment = workout.segments.build(position: 1)
-  segment.exercises.build(movement: deadlift, position: 1, reps: 1)
-  segment.exercises.build(movement: clean, position: 2, reps: 1)
-  segment.exercises.build(movement: hang_clean, position: 3, reps: 1)
-  segment.exercises.build(movement: jerk, position: 4, reps: 1)
+  segment.exercises.build(movement: deadlift, position: 1, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: clean, position: 2, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: hang_clean, position: 3, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: jerk, position: 4, reps: 1, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -928,7 +928,7 @@ Workout.find_or_create_by(name: 'Open 23.2B') do |workout|
   workout.notes = 'Performed immediately after 23.2A. Establish a 1-rep-max thruster taken from the floor ' \
                   'within 5 minutes. Post heaviest successful load.'
   segment = workout.segments.build(position: 1)
-  segment.exercises.build(movement: thruster, position: 1, reps: 1)
+  segment.exercises.build(movement: thruster, position: 1, reps: 1, load_unit: :lb)
 end
 
 # 23.3

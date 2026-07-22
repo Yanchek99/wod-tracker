@@ -27,4 +27,20 @@ class PwaTest < ActionDispatch::IntegrationTest
 
     assert_includes icons.pluck('purpose'), 'maskable'
   end
+
+  # Guards the exact failure already in this repo's history: an icon path that exists but is a
+  # 0-byte file. A manifest pointing at an empty icon fails installability with no error surfaced.
+  test 'every manifest icon resolves to a non-empty file in public' do
+    get pwa_manifest_url
+    icons = JSON.parse(response.body)['icons']
+
+    assert_predicate icons, :any?
+
+    icons.each do |icon|
+      path = Rails.public_path.join(icon['src'].delete_prefix('/'))
+
+      assert_path_exists path
+      assert_predicate path.size, :positive?, "#{icon['src']} is empty"
+    end
+  end
 end

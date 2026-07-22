@@ -4,7 +4,7 @@ module CfWod
       'Back Squat', 'Front Squat', 'Overhead Squat', 'Squat Clean', 'Squat Clean Thruster',
       'Deadlift', 'Sumo Deadlift High Pull',
       'Snatch', 'Power Snatch', 'Squat Snatch', 'Muscle Snatch',
-      'Clean', 'Power Clean', 'Hang Power Clean', 'Hang Squat Clean', 'Clean and Jerk',
+      'Clean', 'Power Clean', 'Hang Clean', 'Hang Power Clean', 'Hang Squat Clean', 'Clean and Jerk',
       'Jerk', 'Push Jerk', 'Split Jerk', 'Push Press', 'Thruster', 'Bench Press'
     ].freeze
     BARBELL_CUE_PATTERN = /overhead|front-rack|back-rack/i

@@ -150,6 +150,7 @@ module WorkoutExtraction
     test 'marks only barbell-family movements load-bearing in manually scored weight workouts' do
       deadlift = movements(:deadlift)
       clean = Movement.find_or_create_by!(name: 'Clean')
+      hang_clean = Movement.find_or_create_by!(name: 'Hang Clean')
       pull_up = movements(:pull_up)
       stub_llm_response(
         extractable: true, name: 'Open-style Complex', score_type: 'weight', rounds: nil, time: nil, interval: nil,
@@ -157,6 +158,7 @@ module WorkoutExtraction
         exercises: [
           exercise_payload(movement_name: deadlift.name, reps: 1),
           exercise_payload(movement_name: clean.name, reps: 1),
+          exercise_payload(movement_name: hang_clean.name, reps: 1),
           exercise_payload(movement_name: pull_up.name, reps: 1)
         ]
       )
@@ -169,6 +171,7 @@ module WorkoutExtraction
       exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
       assert_equal 0, exercises.fetch(deadlift.name).load
       assert_equal 0, exercises.fetch(clean.name).load
+      assert_equal 0, exercises.fetch(hang_clean.name).load
       assert_nil exercises.fetch(pull_up.name).load
     end
 

@@ -178,8 +178,12 @@ module WorkoutExtraction
         movements(:deadlift),
         Movement.find_or_create_by!(name: 'Clean'),
         Movement.find_or_create_by!(name: 'Hang Clean'),
+        Movement.find_or_create_by!(name: 'Hang Power Snatch'),
         Movement.find_or_create_by!(name: 'Clean and Push Jerk'),
-        Movement.find_or_create_by!(name: 'Power Clean and Split Jerk')
+        Movement.find_or_create_by!(name: 'Ground to Overhead'),
+        Movement.find_or_create_by!(name: 'Power Clean and Split Jerk'),
+        Movement.find_or_create_by!(name: 'Shoulder Press'),
+        Movement.find_or_create_by!(name: 'Snatch Balance')
       ]
     end
 

@@ -75,13 +75,10 @@ module CfWod
     end
 
     test 'marks only barbell-family movements load-bearing in a manually scored weight workout' do
-      clean = Movement.find_or_create_by!(name: 'Clean')
-      hang_clean = Movement.find_or_create_by!(name: 'Hang Clean')
-      clean_and_push_jerk = Movement.find_or_create_by!(name: 'Clean and Push Jerk')
-      power_clean_and_split_jerk = Movement.find_or_create_by!(name: 'Power Clean and Split Jerk')
+      barbell_movements = load_bearing_parser_movements
       page = wod_page(
         slug: '300111',
-        body_text: "For load:\n1 clean\n1 hang clean\n1 clean and push jerk\n1 power clean and split jerk\n1 pull-up"
+        body_text: (['For load:'] + barbell_movements.map { |movement| "1 #{movement.name.downcase}" } + ['1 pull-up']).join("\n")
       )
 
       workout = WorkoutParser.call(page)
@@ -90,10 +87,7 @@ module CfWod
       assert_equal 'weight', workout.score_type
       assert_not workout.calculated_lifting_score?
       exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
-      assert_equal 0, exercises.fetch(clean.name).load
-      assert_equal 0, exercises.fetch(hang_clean.name).load
-      assert_equal 0, exercises.fetch(clean_and_push_jerk.name).load
-      assert_equal 0, exercises.fetch(power_clean_and_split_jerk.name).load
+      barbell_movements.each { |movement| assert_equal 0, exercises.fetch(movement.name).load }
       assert_nil exercises.fetch(movements(:pull_up).name).load
     end
 
@@ -159,6 +153,21 @@ module CfWod
       workout = WorkoutParser.call(page)
 
       assert_equal existing, workout
+    end
+
+    private
+
+    def load_bearing_parser_movements
+      [
+        Movement.find_or_create_by!(name: 'Clean'),
+        Movement.find_or_create_by!(name: 'Hang Clean'),
+        Movement.find_or_create_by!(name: 'Hang Power Snatch'),
+        Movement.find_or_create_by!(name: 'Clean and Push Jerk'),
+        Movement.find_or_create_by!(name: 'Ground to Overhead'),
+        Movement.find_or_create_by!(name: 'Power Clean and Split Jerk'),
+        Movement.find_or_create_by!(name: 'Shoulder Press'),
+        Movement.find_or_create_by!(name: 'Snatch Balance')
+      ]
     end
   end
 end

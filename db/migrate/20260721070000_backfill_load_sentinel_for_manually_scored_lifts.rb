@@ -26,24 +26,31 @@ class BackfillLoadSentinelForManuallyScoredLifts < ActiveRecord::Migration[8.1]
   end
 
   def up
-    AFFECTED_PAIRS.each do |workout_name, movement_name|
-      workout = MigrationWorkout.find_by(name: workout_name)
-      raise "Affected workout not found: #{workout_name}" unless workout
+    affected_workout_ids = AFFECTED_PAIRS.map { |workout_name, movement_name| backfill_pair(workout_name, movement_name) }
 
-      movement = MigrationMovement.find_by(name: movement_name)
-      raise "Affected movement not found: #{movement_name}" unless movement
-
-      exercises = MigrationExercise
-                  .joins('INNER JOIN segments ON segments.id = exercises.segment_id')
-                  .where(segments: { workout_id: workout.id }, movement_id: movement.id)
-
-      raise "No exercise found for #{workout_name} / #{movement_name}" unless exercises.exists?
-
-      exercises.find_each { |exercise| exercise.update!(load: 0) }
-    end
+    affected_workout_ids.uniq.each { |workout_id| Workout.find(workout_id).refresh_content_key! }
   end
 
   def down
     # Data-only no-op: values set by #up cannot be distinguished from originally nil loads.
+  end
+
+  private
+
+  def backfill_pair(workout_name, movement_name)
+    workout = MigrationWorkout.find_by(name: workout_name)
+    raise "Affected workout not found: #{workout_name}" unless workout
+
+    movement = MigrationMovement.find_by(name: movement_name)
+    raise "Affected movement not found: #{movement_name}" unless movement
+
+    exercises = MigrationExercise
+                .joins('INNER JOIN segments ON segments.id = exercises.segment_id')
+                .where(segments: { workout_id: workout.id }, movement_id: movement.id)
+
+    raise "No exercise found for #{workout_name} / #{movement_name}" unless exercises.exists?
+
+    exercises.find_each { |exercise| exercise.update!(load: 0) }
+    workout.id
   end
 end

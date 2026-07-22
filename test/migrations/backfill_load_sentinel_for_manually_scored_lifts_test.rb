@@ -9,11 +9,21 @@ class BackfillLoadSentinelForManuallyScoredLiftsTest < ActiveSupport::TestCase
       [[workout_name, movement_name], create_exercise(workout_name:, movement_name:)]
     end
     unrelated = create_exercise(workout_name: 'Unrelated workout', movement_name: 'Unrelated movement', load: 135)
+    stale_content_keys = exercises.each_value.filter_map do |exercise|
+      segment = M::MigrationSegment.find(exercise.segment_id)
+      workout = Workout.find(segment.workout_id)
+      workout.update_column(:content_key, "stale-key-#{workout.id}") # rubocop:disable Rails/SkipsModelValidations
+      workout.id
+    end.uniq
 
     M.new.up
 
     exercises.each_value { |exercise| assert_equal 0, exercise.reload.load }
     assert_equal 135, unrelated.reload.load
+    stale_content_keys.each do |workout_id|
+      workout = Workout.find(workout_id)
+      assert_equal workout.content_fingerprint, workout.content_key
+    end
   end
 
   test 'raises when affected workouts are absent' do

@@ -118,15 +118,26 @@ module CfWod
     end
 
     def mark_manually_scored_lifts_load_bearing(workout, exercise_lines)
-      return unless workout.score_type == 'weight' && !workout.calculated_lifting_score?
+      return unless manually_scored_lifting_workout?(workout)
 
       exercise_lines.each do |line|
-        exercise = line[:exercise]
-        next unless exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
-        next unless LoadBearingMovement.call(exercise.movement, raw_text: line[:raw_line])
-
-        exercise.load = 0
+        mark_load_bearing_exercise(line[:exercise], line[:raw_line])
       end
+    end
+
+    def manually_scored_lifting_workout?(workout)
+      workout.score_type == 'weight' && !workout.calculated_lifting_score?
+    end
+
+    def mark_load_bearing_exercise(exercise, raw_line)
+      return unless load_missing?(exercise)
+      return unless LoadBearingMovement.call(exercise.movement, raw_text: raw_line)
+
+      exercise.load = 0
+    end
+
+    def load_missing?(exercise)
+      exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
     end
 
     def normalize_leftover_body(body)

@@ -6,7 +6,7 @@ class BackfillLoadSentinelForManuallyScoredLiftsTest < ActiveSupport::TestCase
 
   test 'backfills affected exercises without changing unrelated loads' do
     exercises = M::AFFECTED_PAIRS.to_h do |workout_name, movement_name|
-      [ [ workout_name, movement_name ], create_exercise(workout_name:, movement_name:) ]
+      [[workout_name, movement_name], create_exercise(workout_name:, movement_name:)]
     end
     unrelated = create_exercise(workout_name: 'Unrelated workout', movement_name: 'Unrelated movement', load: 135)
 

@@ -1,12 +1,12 @@
 class BackfillLoadSentinelForManuallyScoredLifts < ActiveRecord::Migration[8.1]
   AFFECTED_PAIRS = [
-    [ 'Open 15.1a', 'Clean and Jerk' ],
-    [ 'Open 18.2a', 'Clean' ],
-    [ 'Open 21.4', 'Deadlift' ],
-    [ 'Open 21.4', 'Clean' ],
-    [ 'Open 21.4', 'Hang Clean' ],
-    [ 'Open 21.4', 'Jerk' ],
-    [ 'Open 23.2B', 'Thruster' ]
+    ['Open 15.1a', 'Clean and Jerk'],
+    ['Open 18.2a', 'Clean'],
+    ['Open 21.4', 'Deadlift'],
+    ['Open 21.4', 'Clean'],
+    ['Open 21.4', 'Hang Clean'],
+    ['Open 21.4', 'Jerk'],
+    ['Open 23.2B', 'Thruster']
   ].freeze
 
   class MigrationWorkout < ActiveRecord::Base
@@ -33,12 +33,13 @@ class BackfillLoadSentinelForManuallyScoredLifts < ActiveRecord::Migration[8.1]
       movement = MigrationMovement.find_by(name: movement_name)
       raise "Affected movement not found: #{movement_name}" unless movement
 
-      exercises = MigrationExercise.joins('INNER JOIN segments ON segments.id = exercises.segment_id')
-                                    .where(segments: { workout_id: workout.id }, movement_id: movement.id)
+      exercises = MigrationExercise
+                  .joins('INNER JOIN segments ON segments.id = exercises.segment_id')
+                  .where(segments: { workout_id: workout.id }, movement_id: movement.id)
 
       raise "No exercise found for #{workout_name} / #{movement_name}" unless exercises.exists?
 
-      exercises.update_all(load: 0)
+      exercises.find_each { |exercise| exercise.update!(load: 0) }
     end
   end
 

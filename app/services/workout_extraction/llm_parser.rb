@@ -215,16 +215,28 @@ module WorkoutExtraction
     end
 
     def mark_manually_scored_lifts_load_bearing(workout)
-      return unless workout.score_type == 'weight' && !workout.calculated_lifting_score?
+      return unless manually_scored_lifting_workout?(workout)
 
       workout.segments.each do |segment|
         segment.exercises.each do |exercise|
-          next unless exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
-          next unless CfWod::LoadBearingMovement.call(exercise.movement)
-
-          exercise.load = 0
+          mark_load_bearing_exercise(exercise)
         end
       end
+    end
+
+    def manually_scored_lifting_workout?(workout)
+      workout.score_type == 'weight' && !workout.calculated_lifting_score?
+    end
+
+    def mark_load_bearing_exercise(exercise)
+      return unless load_missing?(exercise)
+      return unless CfWod::LoadBearingMovement.call(exercise.movement)
+
+      exercise.load = 0
+    end
+
+    def load_missing?(exercise)
+      exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
     end
 
     # Despite the prompt's instruction, the LLM occasionally attaches a stray one-sided

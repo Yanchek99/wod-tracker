@@ -81,7 +81,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
-    anthropic (1.56.0)
+    anthropic (1.56.1)
       cgi
       connection_pool
       standardwebhooks

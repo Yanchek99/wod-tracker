@@ -36,15 +36,23 @@ class Log < ApplicationRecord
   private
 
   def backfill_lifting_loads_from_score
-    return unless score_weight? && !workout.calculated_lifting_score? && score_value.present?
+    return unless manually_scored_lifting_workout?
 
     exercises = workout.exercises_for_log_recording
     movement_logs.each_with_index do |movement_log, index|
       exercise = exercises[index]
-      next unless exercise&.load_bearing? && movement_log.load.blank?
+      next unless fillable_lifting_load?(exercise, movement_log)
 
       movement_log.load = score_value
     end
+  end
+
+  def manually_scored_lifting_workout?
+    score_weight? && !workout.calculated_lifting_score? && score_value.present?
+  end
+
+  def fillable_lifting_load?(exercise, movement_log)
+    exercise&.load_bearing? && movement_log.load.blank?
   end
 
   def build_movement_log_for(exercise)

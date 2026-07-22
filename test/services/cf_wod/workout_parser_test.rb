@@ -77,7 +77,12 @@ module CfWod
     test 'marks only barbell-family movements load-bearing in a manually scored weight workout' do
       clean = Movement.find_or_create_by!(name: 'Clean')
       hang_clean = Movement.find_or_create_by!(name: 'Hang Clean')
-      page = wod_page(slug: '300111', body_text: "For load:\n1 clean\n1 hang clean\n1 pull-up")
+      clean_and_push_jerk = Movement.find_or_create_by!(name: 'Clean and Push Jerk')
+      power_clean_and_split_jerk = Movement.find_or_create_by!(name: 'Power Clean and Split Jerk')
+      page = wod_page(
+        slug: '300111',
+        body_text: "For load:\n1 clean\n1 hang clean\n1 clean and push jerk\n1 power clean and split jerk\n1 pull-up"
+      )
 
       workout = WorkoutParser.call(page)
 
@@ -87,6 +92,8 @@ module CfWod
       exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
       assert_equal 0, exercises.fetch(clean.name).load
       assert_equal 0, exercises.fetch(hang_clean.name).load
+      assert_equal 0, exercises.fetch(clean_and_push_jerk.name).load
+      assert_equal 0, exercises.fetch(power_clean_and_split_jerk.name).load
       assert_nil exercises.fetch(movements(:pull_up).name).load
     end
 

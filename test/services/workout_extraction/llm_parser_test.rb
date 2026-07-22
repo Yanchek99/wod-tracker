@@ -148,19 +148,12 @@ module WorkoutExtraction
     end
 
     test 'marks only barbell-family movements load-bearing in manually scored weight workouts' do
-      deadlift = movements(:deadlift)
-      clean = Movement.find_or_create_by!(name: 'Clean')
-      hang_clean = Movement.find_or_create_by!(name: 'Hang Clean')
+      barbell_movements = load_bearing_barbell_movements
       pull_up = movements(:pull_up)
       stub_llm_response(
         extractable: true, name: 'Open-style Complex', score_type: 'weight', rounds: nil, time: nil, interval: nil,
         segments: [],
-        exercises: [
-          exercise_payload(movement_name: deadlift.name, reps: 1),
-          exercise_payload(movement_name: clean.name, reps: 1),
-          exercise_payload(movement_name: hang_clean.name, reps: 1),
-          exercise_payload(movement_name: pull_up.name, reps: 1)
-        ]
+        exercises: (barbell_movements + [pull_up]).map { |movement| exercise_payload(movement_name: movement.name, reps: 1) }
       )
 
       workout = WorkoutExtraction::LlmParser.call('Open-style Complex', date: DATE)
@@ -168,14 +161,27 @@ module WorkoutExtraction
       assert workout.valid?
       assert_equal 'weight', workout.score_type
       assert_not workout.calculated_lifting_score?
-      exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
-      assert_equal 0, exercises.fetch(deadlift.name).load
-      assert_equal 0, exercises.fetch(clean.name).load
-      assert_equal 0, exercises.fetch(hang_clean.name).load
-      assert_nil exercises.fetch(pull_up.name).load
+      assert_loads_marked(workout, load_bearing: barbell_movements, non_load_bearing: [pull_up])
     end
 
     private
+
+    def assert_loads_marked(workout, load_bearing:, non_load_bearing:)
+      exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
+
+      load_bearing.each { |movement| assert_equal 0, exercises.fetch(movement.name).load }
+      non_load_bearing.each { |movement| assert_nil exercises.fetch(movement.name).load }
+    end
+
+    def load_bearing_barbell_movements
+      [
+        movements(:deadlift),
+        Movement.find_or_create_by!(name: 'Clean'),
+        Movement.find_or_create_by!(name: 'Hang Clean'),
+        Movement.find_or_create_by!(name: 'Clean and Push Jerk'),
+        Movement.find_or_create_by!(name: 'Power Clean and Split Jerk')
+      ]
+    end
 
     def stub_llm_response(payload)
       stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(anthropic_http_response(payload))

@@ -32,7 +32,7 @@ class PwaTest < ActionDispatch::IntegrationTest
   # 0-byte file. A manifest pointing at an empty icon fails installability with no error surfaced.
   test 'every manifest icon resolves to a non-empty file in public' do
     get pwa_manifest_url
-    icons = JSON.parse(response.body)['icons']
+    icons = response.parsed_body['icons']
 
     assert_predicate icons, :any?
 

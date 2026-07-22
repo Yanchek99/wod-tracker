@@ -827,28 +827,98 @@ lateral_burpee_over_dumbbell = Movement.find_or_initialize_by(name: 'Lateral Bur
 end
 
 # Movements first introduced by the Hero workouts
-bear_crawl = Movement.find_or_create_by(name: 'Bear Crawl')
-bike = Movement.find_or_create_by(name: 'Bike')
-broad_jump = Movement.find_or_create_by(name: 'Broad Jump')
-barbell_back_rack_step_up = Movement.find_or_create_by(name: 'Barbell Back-rack Step-up')
-barbell_step_up = Movement.find_or_create_by(name: 'Barbell Step-up')
-bar_hang = Movement.find_or_create_by(name: 'Bar Hang')
-burpee_bar_muscle_up = Movement.find_or_create_by(name: 'Burpee Bar Muscle-up')
-burpee_chest_to_bar_pull_up = Movement.find_or_create_by(name: 'Burpee Chest-to-bar Pull-up')
-burpee_muscle_up = Movement.find_or_create_by(name: 'Burpee Muscle-up')
-burpee_pull_up = Movement.find_or_create_by(name: 'Burpee Pull-up')
-burpee_to_target = Movement.find_or_create_by(name: 'Burpee to Target')
-box_step_over = Movement.find_or_create_by(name: 'Box Step-over')
-deficit_handstand_push_up = Movement.find_or_create_by(name: 'Deficit Handstand Push-up')
-dumbbell_burpee_deadlift = Movement.find_or_create_by(name: 'Dumbbell Burpee Deadlift')
-dumbbell_hang_split_snatch = Movement.find_or_create_by(name: 'Dumbbell Hang Split Snatch')
+bear_crawl = Movement.find_or_initialize_by(name: 'Bear Crawl').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, skill_level: :basic)
+  movement.save!
+end
+bike = Movement.find_or_initialize_by(name: 'Bike').tap do |movement|
+  movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :machine,
+                             skill_level: :basic)
+  movement.save!
+end
+broad_jump = Movement.find_or_initialize_by(name: 'Broad Jump').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, skill_level: :basic)
+  movement.save!
+end
+barbell_back_rack_step_up = Movement.find_or_initialize_by(name: 'Barbell Back-rack Step-up').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :barbell,
+                             skill_level: :intermediate)
+  movement.save!
+end
+barbell_step_up = Movement.find_or_initialize_by(name: 'Barbell Step-up').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :barbell,
+                             skill_level: :intermediate)
+  movement.save!
+end
+bar_hang = Movement.find_or_initialize_by(name: 'Bar Hang').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :pull_up_bar,
+                             skill_level: :basic)
+  movement.save!
+end
+burpee_bar_muscle_up = Movement.find_or_initialize_by(name: 'Burpee Bar Muscle-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics,
+                             function_roles: { primary: [:horizontal_push, :vertical_pull] },
+                             equipment: :pull_up_bar, skill_level: :advanced)
+  movement.save!
+end
+burpee_chest_to_bar_pull_up = Movement.find_or_initialize_by(name: 'Burpee Chest-to-bar Pull-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics,
+                             function_roles: { primary: [:horizontal_push, :vertical_pull] },
+                             equipment: :pull_up_bar, skill_level: :advanced)
+  movement.save!
+end
+burpee_muscle_up = Movement.find_or_initialize_by(name: 'Burpee Muscle-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics,
+                             function_roles: { primary: [:horizontal_push, :vertical_pull] },
+                             skill_level: :advanced)
+  movement.save!
+end
+burpee_pull_up = Movement.find_or_initialize_by(name: 'Burpee Pull-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics,
+                             function_roles: { primary: [:horizontal_push, :vertical_pull] },
+                             equipment: :pull_up_bar, skill_level: :intermediate)
+  movement.save!
+end
+burpee_to_target = Movement.find_or_initialize_by(name: 'Burpee to Target').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
+                             skill_level: :basic)
+  movement.save!
+end
+box_step_over = Movement.find_or_initialize_by(name: 'Box Step-over').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat] }, equipment: :box,
+                             skill_level: :basic)
+  movement.save!
+end
+deficit_handstand_push_up = Movement.find_or_initialize_by(name: 'Deficit Handstand Push-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_push] },
+                             skill_level: :advanced)
+  movement.save!
+end
+dumbbell_burpee_deadlift = Movement.find_or_initialize_by(name: 'Dumbbell Burpee Deadlift').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :horizontal_push] },
+                             equipment: :dumbbell, skill_level: :intermediate)
+  movement.save!
+end
+dumbbell_hang_split_snatch = Movement.find_or_initialize_by(name: 'Dumbbell Hang Split Snatch').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat],
+                                               secondary: [:vertical_pull, :vertical_push] },
+                             equipment: :dumbbell, skill_level: :advanced)
+  movement.save!
+end
 dumbbell_hang_squat_clean = Movement.find_or_initialize_by(name: 'Dumbbell Hang Squat Clean').tap do |movement|
   movement.assign_attributes(family: :weightlifting,
                              function_roles: { primary: [:hinge, :squat], secondary: [:vertical_pull] },
                              equipment: :dumbbell, skill_level: :intermediate)
   movement.save!
 end
-dumbbell_split_clean = Movement.find_or_create_by(name: 'Dumbbell Split Clean')
+dumbbell_split_clean = Movement.find_or_initialize_by(name: 'Dumbbell Split Clean').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat], secondary: [:vertical_pull] },
+                             equipment: :dumbbell, skill_level: :advanced)
+  movement.save!
+end
 dumbbell_squat_clean = Movement.find_or_initialize_by(name: 'Dumbbell Squat Clean').tap do |movement|
   movement.assign_attributes(family: :weightlifting,
                              function_roles: { primary: [:hinge, :squat], secondary: [:vertical_pull] },
@@ -862,32 +932,109 @@ dumbbell_squat_clean_thruster = Movement.find_or_initialize_by(name: 'Dumbbell S
                              equipment: :dumbbell, skill_level: :advanced)
   movement.save!
 end
-dumbbell_waiters_walk = Movement.find_or_create_by(name: 'Dumbbell Waiters Walk')
-farmers_carry = Movement.find_or_create_by(name: 'Farmers Carry')
-forward_roll = Movement.find_or_create_by(name: 'Forward Roll')
-hand_release_push_up = Movement.find_or_create_by(name: 'Hand-release Push-up')
+dumbbell_waiters_walk = Movement.find_or_initialize_by(name: 'Dumbbell Waiters Walk').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, equipment: :dumbbell,
+                             skill_level: :intermediate)
+  movement.save!
+end
+farmers_carry = Movement.find_or_initialize_by(name: 'Farmers Carry').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, skill_level: :basic)
+  movement.save!
+end
+forward_roll = Movement.find_or_initialize_by(name: 'Forward Roll').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] }, skill_level: :basic)
+  movement.save!
+end
+hand_release_push_up = Movement.find_or_initialize_by(name: 'Hand-release Push-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] }, skill_level: :basic)
+  movement.save!
+end
 hang_squat_clean = Movement.find_or_initialize_by(name: 'Hang Squat Clean').tap do |movement|
   movement.assign_attributes(family: :weightlifting,
                              function_roles: { primary: [:hinge, :squat], secondary: [:vertical_pull] },
                              equipment: :barbell, skill_level: :intermediate)
   movement.save!
 end
-hanging_hip_touch = Movement.find_or_create_by(name: 'Hanging Hip Touch')
-inverted_ring_lower = Movement.find_or_create_by(name: 'Inverted Ring Lower')
-jerk = Movement.find_or_create_by(name: 'Jerk')
-kettlebell_clean_and_jerk = Movement.find_or_create_by(name: 'Kettlebell Clean and Jerk')
-kettlebell_goblet_squat = Movement.find_or_create_by(name: 'Kettlebell Goblet Squat')
-kettlebell_thruster = Movement.find_or_create_by(name: 'Kettlebell Thruster')
-knees_to_elbows = Movement.find_or_create_by(name: 'Knees-to-elbows')
-overhead_walk = Movement.find_or_create_by(name: 'Overhead Walk')
-overhead_walking_lunge = Movement.find_or_create_by(name: 'Overhead Walking Lunge')
-parallette_handstand_push_up = Movement.find_or_create_by(name: 'Parallette Handstand Push-up')
-plate_carry = Movement.find_or_create_by(name: 'Plate Carry')
-ring_handstand_push_up = Movement.find_or_create_by(name: 'Ring Handstand Push-up')
-sandbag_carry = Movement.find_or_create_by(name: 'Sandbag Carry')
-sandbag_clean = Movement.find_or_create_by(name: 'Sandbag Clean')
-shuttle_run = Movement.find_or_create_by(name: 'Shuttle Run')
-sled_push = Movement.find_or_create_by(name: 'Sled Push')
+hanging_hip_touch = Movement.find_or_initialize_by(name: 'Hanging Hip Touch').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] },
+                             equipment: :pull_up_bar, skill_level: :intermediate)
+  movement.save!
+end
+inverted_ring_lower = Movement.find_or_initialize_by(name: 'Inverted Ring Lower').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :rings,
+                             skill_level: :advanced)
+  movement.save!
+end
+jerk = Movement.find_or_initialize_by(name: 'Jerk').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_push] },
+                             equipment: :barbell, skill_level: :intermediate)
+  movement.save!
+end
+kettlebell_clean_and_jerk = Movement.find_or_initialize_by(name: 'Kettlebell Clean and Jerk').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat, :vertical_push],
+                                               secondary: [:vertical_pull] },
+                             equipment: :kettlebell, skill_level: :advanced)
+  movement.save!
+end
+kettlebell_goblet_squat = Movement.find_or_initialize_by(name: 'Kettlebell Goblet Squat').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] },
+                             equipment: :kettlebell, skill_level: :basic)
+  movement.save!
+end
+kettlebell_thruster = Movement.find_or_initialize_by(name: 'Kettlebell Thruster').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:squat], secondary: [:vertical_push] },
+                             equipment: :kettlebell, skill_level: :intermediate)
+  movement.save!
+end
+knees_to_elbows = Movement.find_or_initialize_by(name: 'Knees-to-elbows').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] },
+                             equipment: :pull_up_bar, skill_level: :intermediate)
+  movement.save!
+end
+overhead_walk = Movement.find_or_initialize_by(name: 'Overhead Walk').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, skill_level: :intermediate)
+  movement.save!
+end
+overhead_walking_lunge = Movement.find_or_initialize_by(name: 'Overhead Walking Lunge').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] },
+                             skill_level: :intermediate)
+  movement.save!
+end
+parallette_handstand_push_up = Movement.find_or_initialize_by(name: 'Parallette Handstand Push-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_push] },
+                             skill_level: :advanced)
+  movement.save!
+end
+plate_carry = Movement.find_or_initialize_by(name: 'Plate Carry').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, skill_level: :basic)
+  movement.save!
+end
+ring_handstand_push_up = Movement.find_or_initialize_by(name: 'Ring Handstand Push-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_push] }, equipment: :rings,
+                             skill_level: :advanced)
+  movement.save!
+end
+sandbag_carry = Movement.find_or_initialize_by(name: 'Sandbag Carry').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, skill_level: :intermediate)
+  movement.save!
+end
+sandbag_clean = Movement.find_or_initialize_by(name: 'Sandbag Clean').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat], secondary: [:vertical_pull] },
+                             skill_level: :intermediate)
+  movement.save!
+end
+shuttle_run = Movement.find_or_initialize_by(name: 'Shuttle Run').tap do |movement|
+  movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, skill_level: :basic)
+  movement.save!
+end
+sled_push = Movement.find_or_initialize_by(name: 'Sled Push').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:horizontal_push] }, equipment: :sled,
+                             skill_level: :basic)
+  movement.save!
+end
 squat_clean_thruster = Movement.find_or_initialize_by(name: 'Squat Clean Thruster').tap do |movement|
   movement.assign_attributes(family: :weightlifting,
                              function_roles: { primary: [:hinge, :squat, :vertical_push],
@@ -902,23 +1049,81 @@ squat_snatch = Movement.find_or_initialize_by(name: 'Squat Snatch').tap do |move
                              equipment: :barbell, skill_level: :advanced)
   movement.save!
 end
-stiff_legged_deadlift = Movement.find_or_create_by(name: 'Stiff-legged Deadlift')
-strict_burpee_pull_up = Movement.find_or_create_by(name: 'Strict Burpee Pull-up')
-toes_to_rings = Movement.find_or_create_by(name: 'Toes-to-rings')
-triple_under = Movement.find_or_create_by(name: 'Triple-under')
-turkish_get_up = Movement.find_or_create_by(name: 'Turkish Get-up')
-wall_ball_two_for_one = Movement.find_or_create_by(name: 'Wall-ball Two-for-one')
-weighted_pull_up = Movement.find_or_create_by(name: 'Weighted Pull-up')
+stiff_legged_deadlift = Movement.find_or_initialize_by(name: 'Stiff-legged Deadlift').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:hinge] }, equipment: :barbell,
+                             skill_level: :basic)
+  movement.save!
+end
+strict_burpee_pull_up = Movement.find_or_initialize_by(name: 'Strict Burpee Pull-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics,
+                             function_roles: { primary: [:horizontal_push, :vertical_pull] },
+                             equipment: :pull_up_bar, skill_level: :intermediate)
+  movement.save!
+end
+toes_to_rings = Movement.find_or_initialize_by(name: 'Toes-to-rings').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] }, equipment: :rings,
+                             skill_level: :intermediate)
+  movement.save!
+end
+triple_under = Movement.find_or_initialize_by(name: 'Triple-under').tap do |movement|
+  movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :jump_rope,
+                             skill_level: :advanced)
+  movement.save!
+end
+turkish_get_up = Movement.find_or_initialize_by(name: 'Turkish Get-up').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, skill_level: :advanced)
+  movement.save!
+end
+wall_ball_two_for_one = Movement.find_or_initialize_by(name: 'Wall-ball Two-for-one').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:squat], secondary: [:vertical_push] },
+                             equipment: :medicine_ball, skill_level: :intermediate)
+  movement.save!
+end
+weighted_pull_up = Movement.find_or_initialize_by(name: 'Weighted Pull-up').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_pull] },
+                             equipment: :pull_up_bar, skill_level: :advanced)
+  movement.save!
+end
 
 # Movements first introduced by the partner/team Hero workouts
-barbell_carry = Movement.find_or_create_by(name: 'Barbell Carry')
-buddy_carry = Movement.find_or_create_by(name: 'Buddy Carry')
-burpee_over_rower = Movement.find_or_create_by(name: 'Burpee Over Rower')
-dumbbell_bent_over_row = Movement.find_or_create_by(name: 'Dumbbell Bent-over Row')
-dumbbell_floor_press = Movement.find_or_create_by(name: 'Dumbbell Floor Press')
-dumbbell_lunge = Movement.find_or_create_by(name: 'Dumbbell Lunge')
-flutter_kick = Movement.find_or_create_by(name: 'Flutter Kick')
-handstand_hold = Movement.find_or_create_by(name: 'Handstand Hold')
+barbell_carry = Movement.find_or_initialize_by(name: 'Barbell Carry').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, equipment: :barbell,
+                             skill_level: :basic)
+  movement.save!
+end
+buddy_carry = Movement.find_or_initialize_by(name: 'Buddy Carry').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, skill_level: :intermediate)
+  movement.save!
+end
+burpee_over_rower = Movement.find_or_initialize_by(name: 'Burpee Over Rower').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
+                             equipment: :machine, skill_level: :intermediate)
+  movement.save!
+end
+dumbbell_bent_over_row = Movement.find_or_initialize_by(name: 'Dumbbell Bent-over Row').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:horizontal_pull] },
+                             equipment: :dumbbell, skill_level: :basic)
+  movement.save!
+end
+dumbbell_floor_press = Movement.find_or_initialize_by(name: 'Dumbbell Floor Press').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:horizontal_push] },
+                             equipment: :dumbbell, skill_level: :basic)
+  movement.save!
+end
+dumbbell_lunge = Movement.find_or_initialize_by(name: 'Dumbbell Lunge').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :dumbbell,
+                             skill_level: :basic)
+  movement.save!
+end
+flutter_kick = Movement.find_or_initialize_by(name: 'Flutter Kick').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] }, skill_level: :basic)
+  movement.save!
+end
+handstand_hold = Movement.find_or_initialize_by(name: 'Handstand Hold').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, skill_level: :intermediate)
+  movement.save!
+end
 
 # Programs
 CF_PROGRAM = Program.find_or_create_by(name: 'Crossfit.com')

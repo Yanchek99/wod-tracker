@@ -28,6 +28,9 @@ application.register("ladder-fields", LadderFieldsController)
 import LadderStepController from "./ladder_step_controller.js"
 application.register("ladder-step", LadderStepController)
 
+import LogExerciseController from "./log_exercise_controller.js"
+application.register("log-exercise", LogExerciseController)
+
 import SegmentCardController from "./segment_card_controller.js"
 application.register("segment-card", SegmentCardController)
 

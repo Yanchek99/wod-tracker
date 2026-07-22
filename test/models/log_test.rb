@@ -197,4 +197,33 @@ class LogTest < ActiveSupport::TestCase
 
     assert_equal workouts(:fran).exercises_for_log_recording.map(&:movement_id), reloaded_movement_ids
   end
+
+  test 'exposes recording-relevant metrics per exercise as a public method' do
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :time)
+
+    thruster_measurements = log.metrics_for_movement_log(exercises(:fran_thruster)).map(&:measurement)
+    pullup_measurements = log.metrics_for_movement_log(exercises(:fran_pullup)).map(&:measurement)
+
+    assert_equal %w[rep lb], thruster_measurements
+    assert_equal %w[rep], pullup_measurements
+  end
+
+  test 'pre-fills implement_count when the exercise prescribes multiple implements' do
+    exercises(:fran_thruster).update!(implement_count: 2)
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :time)
+
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
+    assert_equal 2, movement_log.implement_count
+  end
+
+  test 'leaves implement_count blank when the exercise does not prescribe a count' do
+    log = workouts(:fran).logs.build(user: users(:mathew), score_type: :time)
+
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
+    assert_nil movement_log.implement_count
+  end
 end

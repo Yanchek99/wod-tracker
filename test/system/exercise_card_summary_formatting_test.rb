@@ -19,6 +19,11 @@ module ExerciseCardSummaryFormattingSystemHelpers
   rescue Selenium::WebDriver::Error::ElementClickInterceptedError
     execute_script('arguments[0].click()', toggle)
   end
+
+  def select_movement(name)
+    find('.ts-control input').set(name)
+    find('.ts-dropdown .option', text: name).click
+  end
 end
 
 class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
@@ -127,7 +132,9 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       open_optional_group 'Load'
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
-
+      assert_field 'Female distance', with: '30'
+      assert_field 'Male distance', with: '40'
+      assert_select 'Distance unit', selected: 'foot'
       click_on 'Done'
 
       assert_text '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
@@ -146,12 +153,5 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
 
       assert_equal 'max calories Row', find('.exercise-summary__text').text
     end
-  end
-
-  private
-
-  def select_movement(name)
-    find('.ts-control input').set(name)
-    find('.ts-dropdown .option', text: name).click
   end
 end

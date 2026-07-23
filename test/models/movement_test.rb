@@ -6,6 +6,11 @@ class MovementTest < ActiveSupport::TestCase
     assert_predicate Movement.new(name: 'kettlebell swing'), :supports_implement_count?
   end
 
+  test 'supports implement count from equipment taxonomy' do
+    assert_predicate Movement.new(name: 'Thruster', equipment: :dumbbell), :supports_implement_count?
+    assert_predicate Movement.new(name: 'Swing', equipment: :kettlebell), :supports_implement_count?
+  end
+
   test 'does not support implement count for other movements' do
     assert_not Movement.new(name: 'Back Squat').supports_implement_count?
     assert_not Movement.new(name: 'Pull Up').supports_implement_count?
@@ -14,11 +19,55 @@ class MovementTest < ActiveSupport::TestCase
   test 'scopes movements that support implement count' do
     dumbbell = Movement.create!(name: 'Dumbbell Snatch')
     kettlebell = Movement.create!(name: 'Kettlebell Clean')
+    equipment_only = Movement.create!(name: 'Renegade Row', equipment: :dumbbell)
 
     supported = Movement.supporting_implement_count
 
     assert_includes supported, dumbbell
     assert_includes supported, kettlebell
+    assert_includes supported, equipment_only
     assert_not_includes supported, movements(:back_squat)
+  end
+
+  test 'stores structured movement taxonomy' do
+    thruster = movements(:thruster)
+
+    assert thruster.family_weightlifting?
+    assert thruster.function_squat?
+    assert thruster.function_vertical_push?
+    assert_equal 'primary', thruster.function_role(:squat)
+    assert_equal 'secondary', thruster.function_role(:vertical_push)
+    assert thruster.equipment_barbell?
+    assert thruster.skill_level_intermediate?
+  end
+
+  test 'queries movements by component function' do
+    assert_includes Movement.with_function(:vertical_push), movements(:thruster)
+    assert_includes Movement.with_function(:squat), movements(:thruster)
+    assert_not_includes Movement.with_function(:vertical_pull), movements(:thruster)
+  end
+
+  test 'queries movements by component function role' do
+    assert_includes Movement.with_function_role(:squat, :primary), movements(:thruster)
+    assert_includes Movement.with_function_role(:vertical_push, :secondary), movements(:thruster)
+    assert_not_includes Movement.with_function_role(:vertical_push, :primary), movements(:thruster)
+  end
+
+  test 'does not rewrite function roles when other attributes change' do
+    movement = movements(:thruster)
+    function_role_ids = movement.movement_function_roles.ids
+
+    movement.update!(name: 'Barbell Thruster')
+
+    assert_equal function_role_ids, movement.movement_function_roles.reload.ids
+  end
+
+  test 'does not rewrite function roles when assigned roles are unchanged' do
+    movement = movements(:thruster)
+    function_role_ids = movement.movement_function_roles.ids
+
+    movement.update!(function_roles: { primary: [:squat], secondary: [:vertical_push] })
+
+    assert_equal function_role_ids, movement.movement_function_roles.reload.ids
   end
 end

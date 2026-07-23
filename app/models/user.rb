@@ -42,6 +42,18 @@ class User < ApplicationRecord
     workouts.find_by(id: workout.id).present?
   end
 
+  def movement_history_for(movement)
+    movement_logs.for_movement(movement)
+  end
+
+  def movement_family_history_for(movement_or_family)
+    movement_logs.for_movement_family(movement_or_family)
+  end
+
+  def similar_movement_history_for(movement)
+    movement_logs.for_similar_movement(movement)
+  end
+
   def personal_records
     movement_logs
       .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \

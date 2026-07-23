@@ -23,7 +23,7 @@
     "bootstrap": "^5.3.8",
     "esbuild": "^0.28.1",
     "local-time": "^3.0.3",
-    "sass": "^1.101.3",
+    "sass": "^1.101.6",
     "sortablejs": "^1.15.7",
     "tom-select": "^2.6.2",
     "trix": "^2.1.19"

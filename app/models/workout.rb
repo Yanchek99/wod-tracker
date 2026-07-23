@@ -32,8 +32,8 @@ class Workout < ApplicationRecord
   end
 
   # The one segment that determines the workout's overall scheme: the sole segment when there's
-  # exactly one, or the sole schemed one when there are several but only one carries an actual
-  # scheme. nil when no single segment dominates (a genuine multi-part chipper).
+  # exactly one, or the sole schemed one when the remaining parts are named context/penalty
+  # segments. nil when no single segment dominates (a genuine multi-part chipper).
   #
   # Segments are loaded into an Array before checking one?/many? here: CollectionProxy#one?/
   # #many?/#count run a SQL query rather than counting the in-memory target, which returns 0 for
@@ -44,7 +44,10 @@ class Workout < ApplicationRecord
     return parts.sole if parts.one?
 
     schemed = parts.select(&:schemed?)
-    schemed.sole if schemed.one?
+    return unless schemed.one?
+
+    candidate = schemed.sole
+    candidate if parts.all? { |part| part == candidate || part.name.present? }
   end
 
   def rounds_for_time?

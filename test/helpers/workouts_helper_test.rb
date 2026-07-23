@@ -5,6 +5,18 @@ class WorkoutsHelperTest < ActionView::TestCase
   include MeasurableHelper
   include MetricsHelper
 
+  def cfj_181202_workout
+    Workout.new(name: 'CFJ-181202', score_type: :time).tap do |workout|
+      before = workout.segments.build(position: 1)
+      before.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 800, distance_unit: :meter)
+      couplet = workout.segments.build(rounds: 10, position: 2)
+      couplet.exercises.build(movement: movements(:handstand_push_up), position: 1, reps: 10)
+      couplet.exercises.build(movement: movements(:single_leg_squat), position: 2, reps: 10)
+      after = workout.segments.build(position: 3)
+      after.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 800, distance_unit: :meter)
+    end
+  end
+
   test 'renders one round for time workouts as for time' do
     workout = Workout.new(name: 'Murph', score_type: :time)
     workout.segments.build(position: 1)
@@ -92,6 +104,10 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'On a 10-minute clock for total reps', workout_objective(workout)
   end
 
+  test 'renders a sequential workout with one inner rounds segment as for time' do
+    assert_equal 'For Time', workout_objective(cfj_181202_workout)
+  end
+
   test 'renders timed rep-scored rounds as round amraps' do
     workout = Workout.new(name: 'Back Squat 5x5', score_type: :rep)
     segment = workout.segments.build(rounds: 5, time_seconds: 180, position: 1)
@@ -133,6 +149,12 @@ class WorkoutsHelperTest < ActionView::TestCase
     segment.exercises.build(movement: movements(:pullup), position: 2, reps: 1)
 
     assert_equal "Fran\n21-15-9 for time\nThruster (95 lbs)\nPull Up", workout_as_text(workout)
+  end
+
+  test 'renders sequential workout text without lifting an inner rounds segment to the objective' do
+    assert_equal "CFJ-181202\nFor Time\n800 meter Run\nThen, 10 rounds of\n10 Handstand Push-ups\n" \
+                 "10 Single-leg Squats\n800 meter Run",
+                 workout_as_text(cfj_181202_workout)
   end
 
   test 'includes time cap and notes in the paste-text-box text' do

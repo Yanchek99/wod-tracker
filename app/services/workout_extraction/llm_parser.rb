@@ -75,7 +75,7 @@ module WorkoutExtraction
 
       attrs = normalize_lifting_set_interval(attrs)
       workout = build_workout(attrs)
-      mark_manually_scored_lifts_load_bearing(workout)
+      ManuallyScoredLiftingLoadMarker.call(workout)
       validate_workout!(workout)
       workout
     rescue Anthropic::Errors::APIStatusError, Anthropic::Errors::APIConnectionError => e
@@ -212,31 +212,6 @@ module WorkoutExtraction
         attrs = normalize_sex_paired_attrs(exercise_attrs.except(:movement_name))
         segment.exercises.build(attrs.merge(movement: movement, position: index + 1))
       end
-    end
-
-    def mark_manually_scored_lifts_load_bearing(workout)
-      return unless manually_scored_lifting_workout?(workout)
-
-      workout.segments.each do |segment|
-        segment.exercises.each do |exercise|
-          mark_load_bearing_exercise(exercise)
-        end
-      end
-    end
-
-    def manually_scored_lifting_workout?(workout)
-      workout.score_type == 'weight' && !workout.calculated_lifting_score?
-    end
-
-    def mark_load_bearing_exercise(exercise)
-      return unless load_missing?(exercise)
-      return unless CfWod::LoadBearingMovement.call(exercise.movement)
-
-      exercise.load = 0
-    end
-
-    def load_missing?(exercise)
-      exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
     end
 
     # Despite the prompt's instruction, the LLM occasionally attaches a stray one-sided

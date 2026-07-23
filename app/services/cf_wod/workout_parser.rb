@@ -22,7 +22,7 @@ module CfWod
       attrs = WorkoutFormatClassifier.call(header)
       workout = Workout.new(name: "CF-#{wod_page.slug}", **attrs.except(:lift_name, :set_reps, :rounds, :time, :interval))
       exercise_lines = build_workout_content(workout, attrs, header_scheme(attrs), body)
-      mark_manually_scored_lifts_load_bearing(workout, exercise_lines)
+      ManuallyScoredLiftingLoadMarker.call(workout, exercise_lines: exercise_lines)
       validate_workout!(workout)
       find_content_duplicate(workout) || workout
     end
@@ -115,29 +115,6 @@ module CfWod
       clauses = PrescriptionClauseParser.call(split[:prescription_text])
       PrescriptionClauseAssigner.call(exercise_lines, clauses)
       exercise_lines
-    end
-
-    def mark_manually_scored_lifts_load_bearing(workout, exercise_lines)
-      return unless manually_scored_lifting_workout?(workout)
-
-      exercise_lines.each do |line|
-        mark_load_bearing_exercise(line[:exercise], line[:raw_line])
-      end
-    end
-
-    def manually_scored_lifting_workout?(workout)
-      workout.score_type == 'weight' && !workout.calculated_lifting_score?
-    end
-
-    def mark_load_bearing_exercise(exercise, raw_line)
-      return unless load_missing?(exercise)
-      return unless LoadBearingMovement.call(exercise.movement, raw_text: raw_line)
-
-      exercise.load = 0
-    end
-
-    def load_missing?(exercise)
-      exercise.load.blank? && exercise.female_load.blank? && exercise.male_load.blank?
     end
 
     def normalize_leftover_body(body)

@@ -6,6 +6,10 @@ module CfWod
       assert_equal({ score_type: :time }, WorkoutFormatClassifier.call('For time:'))
     end
 
+    test 'classifies a for-load header' do
+      assert_equal({ score_type: :weight }, WorkoutFormatClassifier.call('For load:'))
+    end
+
     test 'classifies an AMRAP header, extracting the time cap' do
       result = WorkoutFormatClassifier.call('Complete as many rounds as possible in 10 minutes of:')
       assert_equal({ score_type: :rep, time: 10 }, result)

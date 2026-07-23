@@ -74,7 +74,7 @@ module CfWod
     end
 
     def barbell_family?(line)
-      LoadBearingMovement.call(line[:exercise].movement, raw_text: line[:raw_line])
+      ::LoadBearingMovement.call(line[:exercise].movement, raw_text: line[:raw_line])
     end
 
     def apply_value(candidate, female_value, male_value)

@@ -22,7 +22,7 @@ class ManuallyScoredLiftingLoadMarker
   end
 
   def mark_candidates
-    workout.segments.flat_map(&:exercises).filter_map do |exercise|
+    segment_exercises.filter_map do |exercise|
       mark_load_bearing_exercise(exercise)
     end
   end
@@ -44,10 +44,13 @@ class ManuallyScoredLiftingLoadMarker
   end
 
   def calculated_lifting_score_after_marking?
+    # Parser-built workouts are unsaved, so Workout#calculated_lifting_score? cannot see
+    # has_many-through exercises yet. Check the segment exercises directly before keeping a
+    # sentinel that would turn a manually scored workout into a max-finding workout.
     workout.calculated_lifting_score? || (segment_exercises.one? && segment_exercises.first.max_load_prescription?)
   end
 
   def segment_exercises
-    workout.segments.flat_map(&:exercises)
+    @segment_exercises ||= workout.segments.flat_map(&:exercises)
   end
 end

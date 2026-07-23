@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class PwaTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   # No `sign_in` here on purpose. Browsers fetch the manifest without credentials, so if
   # ApplicationController's `authenticate_user!` ever applied to this route the app would become
   # silently uninstallable -- no exception, no log line, just a browser that stops offering
@@ -42,5 +44,22 @@ class PwaTest < ActionDispatch::IntegrationTest
       assert_path_exists path
       assert_predicate path.size, :positive?, "#{icon['src']} is empty"
     end
+  end
+
+  test 'signed-in pages link the manifest' do
+    sign_in users(:mathew)
+    get root_url
+
+    assert_response :success
+    assert_select 'link[rel="manifest"][href=?]', pwa_manifest_path
+    assert_select 'link[rel="apple-touch-icon"]'
+  end
+
+  test 'the signed-out sign-in page links the manifest' do
+    get new_user_session_url
+
+    assert_response :success
+    assert_select 'link[rel="manifest"][href=?]', pwa_manifest_path
+    assert_select 'link[rel="apple-touch-icon"]'
   end
 end

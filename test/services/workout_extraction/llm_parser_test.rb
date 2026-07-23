@@ -147,7 +147,45 @@ module WorkoutExtraction
       assert_equal [movement], segment.exercises.map(&:movement).uniq
     end
 
+    test 'marks only barbell-family movements load-bearing in manually scored weight workouts' do
+      barbell_movements = load_bearing_barbell_movements
+      pull_up = movements(:pull_up)
+      stub_llm_response(
+        extractable: true, name: 'Open-style Complex', score_type: 'weight', rounds: nil, time: nil, interval: nil,
+        segments: [],
+        exercises: (barbell_movements + [pull_up]).map { |movement| exercise_payload(movement_name: movement.name, reps: 1) }
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('Open-style Complex', date: DATE)
+
+      assert workout.valid?
+      assert_equal 'weight', workout.score_type
+      assert_not workout.calculated_lifting_score?
+      assert_loads_marked(workout, load_bearing: barbell_movements, non_load_bearing: [pull_up])
+    end
+
     private
+
+    def assert_loads_marked(workout, load_bearing:, non_load_bearing:)
+      exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
+
+      load_bearing.each { |movement| assert_equal 0, exercises.fetch(movement.name).load }
+      non_load_bearing.each { |movement| assert_nil exercises.fetch(movement.name).load }
+    end
+
+    def load_bearing_barbell_movements
+      [
+        movements(:deadlift),
+        Movement.find_or_create_by!(name: 'Clean'),
+        Movement.find_or_create_by!(name: 'Hang Clean'),
+        Movement.find_or_create_by!(name: 'Hang Power Snatch'),
+        Movement.find_or_create_by!(name: 'Clean and Push Jerk'),
+        Movement.find_or_create_by!(name: 'Ground to Overhead'),
+        Movement.find_or_create_by!(name: 'Power Clean and Split Jerk'),
+        Movement.find_or_create_by!(name: 'Shoulder Press'),
+        Movement.find_or_create_by!(name: 'Snatch Balance')
+      ]
+    end
 
     def stub_llm_response(payload)
       stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(anthropic_http_response(payload))

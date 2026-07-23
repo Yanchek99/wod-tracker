@@ -75,6 +75,7 @@ module WorkoutExtraction
 
       attrs = normalize_lifting_set_interval(attrs)
       workout = build_workout(attrs)
+      ManuallyScoredLiftingLoadMarker.call(workout)
       validate_workout!(workout)
       workout
     rescue Anthropic::Errors::APIStatusError, Anthropic::Errors::APIConnectionError => e

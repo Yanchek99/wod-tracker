@@ -1,6 +1,7 @@
 module CfWod
   class WorkoutFormatClassifier
     FOR_TIME = /\Afor time:?\z/i
+    FOR_LOAD = /\Afor load:?\z/i
     AMRAP = /\A(?:complete )?as many (?:rounds(?: and reps)?|reps) as possible in (\d+) minutes? of:?\z/i
     EVERY_MINUTE = /\Aevery minute on the minute for (\d+) minutes?:?\z/i
     REP_LADDER = /\A(\d+(?:-\d+)+) reps for time of:?\z/i
@@ -12,6 +13,7 @@ module CfWod
 
     FORMATS = [
       [FOR_TIME, :for_time_attributes],
+      [FOR_LOAD, :for_load_attributes],
       [AMRAP, :amrap_attributes],
       [EVERY_MINUTE, :emom_attributes],
       [REP_LADDER, :rep_ladder_attributes],
@@ -43,6 +45,10 @@ module CfWod
 
     def for_time_attributes
       { score_type: :time }
+    end
+
+    def for_load_attributes
+      { score_type: :weight }
     end
 
     def amrap_attributes

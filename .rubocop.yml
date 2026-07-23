@@ -47,6 +47,7 @@ Metrics/ClassLength:
   Exclude:
     - app/controllers/workouts_controller.rb
     - app/services/cf_wod/workout_parser.rb
+    - test/services/cf_wod/workout_parser_test.rb
     - test/services/cf_wod/workout_parser_corpus_test.rb
     - app/services/workout_extraction/llm_parser.rb
     - test/services/workout_extraction/llm_parser_test.rb

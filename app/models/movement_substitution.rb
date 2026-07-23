@@ -13,7 +13,7 @@ class MovementSubstitution < ApplicationRecord
   validates :direction, presence: true
   validates :substitute_movement_id, uniqueness: { scope: :movement_id }
   validate :substitute_is_different_movement
-  validate :inverse_direction_is_consistent
+  validate :inverse_pair_is_absent
 
   private
 
@@ -23,23 +23,22 @@ class MovementSubstitution < ApplicationRecord
     errors.add(:substitute_movement, 'must be different from movement') if movement_id == substitute_movement_id
   end
 
-  def inverse_direction_is_consistent
-    return if movement_id.blank? || substitute_movement_id.blank? || direction.blank?
+  def inverse_pair_is_absent
+    return if movement_id.blank? || substitute_movement_id.blank?
 
-    errors.add(:direction, 'contradicts inverse substitution') if contradictory_inverse_substitution?
+    errors.add(:substitute_movement, 'already has an inverse substitution') if inverse_substitution?
   end
 
-  def contradictory_inverse_substitution?
+  def inverse_substitution?
     inverse_substitution_scope.exists?
   end
 
   def inverse_substitution_scope
-    # Reverse lateral rows are semantically redundant, and reverse easier/harder rows are
-    # contradictory, so a single directed row owns each movement pair.
+    # One directed row owns each movement pair. Reverse rows are either redundant
+    # for lateral substitutions or contradictory for easier/harder substitutions.
     scope = self.class.where(
       movement_id: substitute_movement_id,
-      substitute_movement_id: movement_id,
-      direction: self.class.directions.fetch(direction)
+      substitute_movement_id: movement_id
     )
     persisted? ? scope.where.not(id:) : scope
   end

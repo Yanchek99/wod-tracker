@@ -5,15 +5,13 @@ class MovementLog < ApplicationRecord
   belongs_to :movement
 
   scope :for_movement, ->(movement) { where(movement:) }
-  scope :for_movement_family, lambda { |movement_or_family|
-    unless movement_or_family.is_a?(Movement)
-      family = movement_or_family
-      return none if family.blank?
+  scope :for_movement_family, lambda { |family|
+    family = family.family if family.is_a?(Movement)
+    return none if family.blank?
 
-      return joins(:movement).where(movements: { family: })
-    end
-
-    movement = movement_or_family
+    joins(:movement).where(movements: { family: })
+  }
+  scope :for_similar_movement, lambda { |movement|
     family = movement.family
     return none if family.blank?
 

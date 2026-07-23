@@ -52,7 +52,13 @@ class UserTest < ActiveSupport::TestCase
     family_history = mathew.movement_family_history_for(movements(:pullup))
     assert_includes family_history, pullup_log
     assert_includes family_history, strict_pullup_log
-    assert_not_includes family_history, pushup_log
+    assert_includes family_history, pushup_log
     assert_not_includes family_history, brooke_pullup_log
+
+    similar_history = mathew.similar_movement_history_for(movements(:pullup))
+    assert_includes similar_history, pullup_log
+    assert_includes similar_history, strict_pullup_log
+    assert_not_includes similar_history, pushup_log
+    assert_not_includes similar_history, brooke_pullup_log
   end
 end

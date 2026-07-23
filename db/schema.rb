@@ -127,7 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_120000) do
     t.bigint "movement_id", null: false
     t.bigint "substitute_movement_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["movement_id", "substitute_movement_id"], name: "idx_movement_substitutions_unique_pair", unique: true
+    t.index "LEAST(movement_id, substitute_movement_id), GREATEST(movement_id, substitute_movement_id)", name: "idx_movement_substitutions_unique_unordered_pair", unique: true
     t.index ["movement_id"], name: "index_movement_substitutions_on_movement_id"
     t.index ["substitute_movement_id"], name: "index_movement_substitutions_on_substitute_movement_id"
   end

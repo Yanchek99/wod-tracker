@@ -7,14 +7,21 @@ class WorkoutsHelperTest < ActionView::TestCase
 
   def cfj_181202_workout
     Workout.new(name: 'CFJ-181202', score_type: :time).tap do |workout|
-      before = workout.segments.build(position: 1)
-      before.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 800, distance_unit: :meter)
-      couplet = workout.segments.build(rounds: 10, position: 2)
-      couplet.exercises.build(movement: movements(:handstand_push_up), position: 1, reps: 10)
-      couplet.exercises.build(movement: movements(:single_leg_squat), position: 2, reps: 10)
-      after = workout.segments.build(position: 3)
-      after.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 800, distance_unit: :meter)
+      build_run_segment(workout, position: 1)
+      build_cfj_181202_couplet(workout)
+      build_run_segment(workout, position: 3)
     end
+  end
+
+  def build_run_segment(workout, position:)
+    segment = workout.segments.build(position: position)
+    segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 800, distance_unit: :meter)
+  end
+
+  def build_cfj_181202_couplet(workout)
+    segment = workout.segments.build(rounds: 10, position: 2)
+    segment.exercises.build(movement: movements(:handstand_push_up), position: 1, reps: 10)
+    segment.exercises.build(movement: movements(:single_leg_squat), position: 2, reps: 10)
   end
 
   test 'renders one round for time workouts as for time' do

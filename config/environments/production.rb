@@ -57,7 +57,12 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: 'example.com' }
+  # RAILWAY_PUBLIC_DOMAIN is set per-environment by Railway (production, staging, and
+  # each PR environment all get their own correct value), so this needs no per-environment override.
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch('RAILWAY_PUBLIC_DOMAIN', 'cf.mattyanchek.com'),
+    protocol: 'https'
+  }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {

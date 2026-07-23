@@ -18,23 +18,30 @@
     - else
       .col = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false
   h2.mt-3 Exercise Recordings
+  - exercises = @workout.exercises_for_log_recording
   = f.simple_fields_for :movement_logs do |ml_form|
     - ml = ml_form.object
-    .card.mb-3 data-controller="implement-count" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
+    - exercise = exercises[ml_form.index]
+    - relevant = exercise && @log.metrics_for_movement_log(exercise).map(&:measurement)
+    - load_hidden = relevant && (relevant & %w[lb kg weight]).empty?
+    .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
       .card-body
-        = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', 'implement-count-target': 'movementSelect' } }, label: false
-        / Always render every recording dimension so a scaled movement (e.g. rowing calories in
-        / place of a prescribed run) can be logged, not only the prescribed dimensions.
+        = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', action: 'change->log-exercise#reveal', 'implement-count-target': 'movementSelect' } }, label: false
         .row.g-2
-          .col = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }
-          .col = ml_form.input :duration_seconds, label: 'Duration (s)', input_html: { class: 'recording-value' }
-          .col
+          .col data-log-exercise-target="field" hidden=(relevant && (relevant & %w[rep]).empty?)
+            = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }
+          .col data-log-exercise-target="field" hidden=(relevant && (relevant & %w[seconds time]).empty?)
+            = ml_form.input :duration_seconds, label: 'Duration (s)', input_html: { class: 'recording-value' }
+          .col data-log-exercise-target="field" data-implement-count-target="loadField" hidden=load_hidden
             = ml_form.input :load, label: "Load (#{load_display_unit})", input_html: { class: 'recording-value', value: load_input_value(ml.load) }
-          .col data-implement-count-target="field" hidden=(!ml.movement&.supports_implement_count?)
+          .col data-implement-count-target="field" hidden=(!ml.movement&.supports_implement_count? || load_hidden)
             = ml_form.input :implement_count, label: 'Implements'
-          .col
+          .col data-log-exercise-target="field" hidden=(relevant && (relevant & %w[distance foot inch meter]).empty?)
             = ml_form.input :distance, label: "Distance (#{ml.distance_unit || 'meter'})", input_html: { class: 'recording-value' }
             = ml_form.hidden_field :distance_unit, value: ml.distance_unit || 'meter'
-          .col = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
+          .col data-log-exercise-target="field" hidden=(relevant && (relevant & %w[calorie]).empty?)
+            = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
+        .workout-card-toolbar.mt-2
+          button.btn.btn-sm.btn-outline-secondary type="button" data-log-exercise-target="editButton" data-action="click->log-exercise#reveal click->implement-count#toggle" Edit
   .form-actions.d-grid
     = f.button :submit, 'Save', class: 'btn btn-primary'

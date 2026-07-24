@@ -38,7 +38,7 @@ Verification commands:
 
 CI loads the test schema, runs `bundle exec rails test:all`, and runs RuboCop through reviewdog. Keep local changes compatible with those checks.
 
-Production app (for reproducing reported bugs, especially UI/rendering issues): https://wod-tracker-production.herokuapp.com
+Production app (for reproducing reported bugs, especially UI/rendering issues): https://cf.mattyanchek.com
 
 ## Rails Engineering Guidelines
 

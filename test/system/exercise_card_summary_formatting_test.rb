@@ -41,9 +41,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       select 'meter', from: 'Distance unit'
       open_optional_group 'Load'
       fill_in 'Load (lb)', with: '95'
-      click_on 'Done'
-
-      assert_text '10 meter Run (95 lbs)'
+      save_exercise_card '10 meter Run (95 lbs)'
     end
   end
 
@@ -61,9 +59,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
-      click_on 'Done'
-
-      assert_text '100/80 meter Run (♀65lb / ♂95lb)'
+      save_exercise_card '100/80 meter Run (♀65lb / ♂95lb)'
     end
   end
 
@@ -78,9 +74,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
-      click_on 'Done'
-
-      assert_text '100/80 meter Run'
+      save_exercise_card '100/80 meter Run'
     end
   end
 
@@ -97,9 +91,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       open_optional_group 'Load'
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
-      click_on 'Done'
-
-      assert_text '80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+      save_exercise_card '80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
     end
   end
 
@@ -128,9 +120,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
 
-      click_on 'Done'
-
-      assert_text '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+      save_exercise_card '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
     end
   end
 
@@ -142,9 +132,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       select_movement 'Row'
       open_optional_group 'Calories'
       fill_in 'Calories', with: '0'
-      click_on 'Done'
-
-      assert_equal 'max calories Row', find('.exercise-summary__text').text
+      save_exercise_card 'max calories Row'
     end
   end
 

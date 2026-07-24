@@ -38,7 +38,7 @@ An open source webapp to track your workout of the day capturing key points of d
 ## CrossFit.com Workout Fetcher
 - Fetch and parse a single day's workout from crossfit.com into a structured `Workout` and print it (does not persist anything):
   ```
-  bin/rails "cf_wod:fetch[2026-06-20]"
+  rails "cf_wod:fetch[2026-06-20]"
   ```
 - Scrape and persist a single day's workout and schedule:
   ```

@@ -64,6 +64,10 @@ Rails.application.configure do
     protocol: 'https'
   }
 
+  # Deliver via Resend's HTTPS API (see config/initializers/resend.rb for the API key).
+  # Raw SMTP isn't usable here: the hosting platform blocks outbound SMTP on this plan tier.
+  config.action_mailer.delivery_method = :resend
+
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
   #   user_name: Rails.application.credentials.dig(:smtp, :user_name),

@@ -54,6 +54,9 @@ gem 'sassc-rails' # Requred by rails_admin
 gem 'cancancan'
 gem 'devise'
 
+# ActionMailer delivery method for transactional email (password resets, etc.)
+gem 'resend'
+
 gem 'kaminari' # Pagination
 
 # Reduces boot times through caching; required in config/boot.rb

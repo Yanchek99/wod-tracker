@@ -66,6 +66,13 @@ Metrics/MethodLength:
   CountComments: false
   Max: 20
 
+Metrics/ModuleLength:
+  Exclude:
+    # SystemPrompt is deliberately all prose (the LLM extraction prompt held in
+    # heredocs), not logic -- its length tracks how much guidance the model needs,
+    # not module complexity.
+    - app/services/workout_extraction/system_prompt.rb
+
 Performance/AncestorsInclude:
   Enabled: false
 

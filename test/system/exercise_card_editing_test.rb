@@ -25,10 +25,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
       assert_no_text 'Thruster (95 lbs)'
       assert_field 'Reps', with: '1'
       fill_in 'Reps', with: '15'
-      click_on 'Done'
-
-      assert_no_field 'Reps'
-      assert_text '15 Thrusters'
+      save_exercise_card '15 Thrusters'
     end
   end
 
@@ -47,10 +44,7 @@ class ExerciseCardEditingTest < ApplicationSystemTestCase
         click_on 'Distance'
         fill_in 'Distance', with: '400', exact: true
         select 'meter', from: 'Distance unit'
-        click_on 'Done'
-
-        assert_no_field 'Distance'
-        assert_text '400 meter Run'
+        save_exercise_card '400 meter Run'
 
         click_on '400 meter Run'
         assert_no_text '400 meter Run'

@@ -19,7 +19,7 @@ module CfWod
       assert_nil MovementLookup.call('a completely unrecognized movement phrase')
     end
 
-    test 'keeps connector words lowercase except as the first word' do
+    test 'matches connector-word names case insensitively' do
       clean_and_jerk = Movement.find_or_create_by(name: 'Clean and Jerk')
       assert_equal clean_and_jerk, MovementLookup.call('clean and jerks')
     end
@@ -27,6 +27,11 @@ module CfWod
     test 'falls back to treating a hyphenated compound as space-separated words' do
       toes_to_bar = Movement.find_or_create_by(name: 'Toes to Bar')
       assert_equal toes_to_bar, MovementLookup.call('toes-to-bars')
+    end
+
+    test 'matches catalog acronyms case insensitively' do
+      ghd_sit_up = Movement.find_or_create_by(name: 'GHD Sit-up')
+      assert_equal ghd_sit_up, MovementLookup.call('GHD sit-ups')
     end
   end
 end

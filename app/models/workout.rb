@@ -1,5 +1,6 @@
 class Workout < ApplicationRecord
   include WorkoutFingerprint
+  include WorkoutGoverningSegment
   include WorkoutPositionReservation
   include WorkoutScoring
 
@@ -29,19 +30,6 @@ class Workout < ApplicationRecord
       q.nil? ? arel_table[:name].matches("%#{word}%") : q.and(arel_table[:name].matches("%#{word}%"))
     end
     where(query)
-  end
-
-  # Segments are loaded into an Array before checking one?/many?: CollectionProxy#count returns 0 for
-  # an unsaved workout with only just-built (unpersisted) segments -- e.g. CfWod::WorkoutParser's
-  # freshly parsed, not-yet-saved Workout. Array#one?/#many? don't have that problem.
-  def governing_segment
-    parts = segments.to_a
-    return parts.sole if parts.one?
-
-    schemed = parts.select(&:schemed?)
-    return unless schemed.one?
-
-    schemed.sole if parts.all? { |part| part == schemed.sole || part.name.present? }
   end
 
   def rounds_for_time?

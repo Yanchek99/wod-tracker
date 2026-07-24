@@ -61,6 +61,18 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_predicate workout, :rounds_for_time?
   end
 
+  test 'a lone schemed segment after unnamed top-level work does not govern the whole workout' do
+    workout = Workout.create!(name: 'Buy-in Then Couplet', score_type: :time)
+    buy_in = workout.segments.create!(position: 1)
+    buy_in.exercises.create!(movement: movements(:run), position: 1, reps: 1, distance: 800, distance_unit: :meter)
+    couplet = workout.segments.create!(interval_scheme: '21-15-9', position: 2)
+    couplet.exercises.create!(movement: movements(:thruster), position: 1, reps: 1)
+    couplet.exercises.create!(movement: movements(:pullup), position: 2, reps: 1)
+
+    assert_nil workout.governing_segment
+    assert_predicate workout, :rounds_for_time?
+  end
+
   test 'multiple schemed segments have no governing segment (Alec)' do
     workout = Workout.create!(name: 'Alec', score_type: :time)
     triplet = workout.segments.create!(rounds: 3, position: 1)

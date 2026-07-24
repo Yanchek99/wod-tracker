@@ -1,5 +1,6 @@
 class Workout < ApplicationRecord
   include WorkoutFingerprint
+  include WorkoutGoverningSegment
   include WorkoutPositionReservation
   include WorkoutScoring
 
@@ -29,22 +30,6 @@ class Workout < ApplicationRecord
       q.nil? ? arel_table[:name].matches("%#{word}%") : q.and(arel_table[:name].matches("%#{word}%"))
     end
     where(query)
-  end
-
-  # The one segment that determines the workout's overall scheme: the sole segment when there's
-  # exactly one, or the sole schemed one when there are several but only one carries an actual
-  # scheme. nil when no single segment dominates (a genuine multi-part chipper).
-  #
-  # Segments are loaded into an Array before checking one?/many? here: CollectionProxy#one?/
-  # #many?/#count run a SQL query rather than counting the in-memory target, which returns 0 for
-  # an unsaved workout with only just-built (unpersisted) segments -- e.g. CfWod::WorkoutParser's
-  # freshly parsed, not-yet-saved Workout. Array#one?/#many? don't have that problem.
-  def governing_segment
-    parts = segments.to_a
-    return parts.sole if parts.one?
-
-    schemed = parts.select(&:schemed?)
-    schemed.sole if schemed.one?
   end
 
   def rounds_for_time?

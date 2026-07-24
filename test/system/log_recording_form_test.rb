@@ -49,23 +49,38 @@ class LogRecordingFormTest < ApplicationSystemTestCase
       click_on 'Edit'
     end
 
-    layout = page.evaluate_script(<<~JS)
-      (() => {
-      const card = document.querySelectorAll('.card.mb-3')[1]
-      const inputs = Array.from(card.querySelectorAll('.recording-value')).filter((input) => input.offsetParent !== null)
-      return inputs.map((input) => ({
-        columnTop: Math.round(input.closest('.col').getBoundingClientRect().top),
-        inputTop: Math.round(input.getBoundingClientRect().top)
-      }))
-      })()
-    JS
+    layout = recording_field_layout(pullup_card)
 
-    layout.group_by { |field| field['columnTop'] }.each_value do |row|
+    assert layout.all? { |field| field['fieldWidth'] >= 130 }, layout.inspect
+    assert layout.none? { |field| field['inputOverflows'] || field['overflowsViewport'] }, layout.inspect
+    assert_recording_inputs_align_by_row(layout)
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
+
+  private
+
+  def recording_field_layout(card)
+    card.evaluate_script(<<~JS)
+      Array.from(this.querySelectorAll('[data-log-exercise-target~="field"]:not([hidden])')).map((field) => {
+        const rect = field.getBoundingClientRect()
+        const input = field.querySelector('.recording-value')
+        return {
+          fieldWidth: rect.width,
+          fieldTop: Math.round(rect.top),
+          inputTop: Math.round(input.getBoundingClientRect().top),
+          inputOverflows: input.scrollWidth > input.clientWidth,
+          overflowsViewport: rect.left < 0 || rect.right > window.innerWidth
+        }
+      })
+    JS
+  end
+
+  def assert_recording_inputs_align_by_row(layout)
+    layout.group_by { |field| field['fieldTop'] }.each_value do |row|
       input_tops = row.map { |field| field['inputTop'] }
 
       assert_equal 1, input_tops.uniq.size, "expected mobile recording inputs in each row to align, got: #{layout.inspect}"
     end
-  ensure
-    page.driver.browser.manage.window.resize_to(1400, 1400)
   end
 end

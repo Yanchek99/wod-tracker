@@ -42,6 +42,55 @@ module WorkoutExtraction
       assert_equal 'CF-260115', workout.name
     end
 
+    test 'falls back to a date-based name when the LLM uses the first prescription line as the name' do
+      stub_llm_response(
+        extractable: true, name: '1,600-meter run x2', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: movements(:run).name, distance: 1600, distance_unit: 'meter')]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('For time: 1,600-meter run x2', date: Date.new(2026, 7, 27))
+
+      assert_equal 'CF-260727', workout.name
+    end
+
+    test 'falls back when the leaked prescription line uses other common CrossFit formats' do
+      deadlift = movements(:deadlift)
+      examples = {
+        '95-lb Thruster x21' => exercise_payload(movement_name: @movement.name, reps: 21, load: 95),
+        '225-pound Deadlift x5' => exercise_payload(movement_name: deadlift.name, reps: 5, load: 225),
+        '800m Run x4' => exercise_payload(movement_name: movements(:run).name, distance: 800, distance_unit: 'meter'),
+        '4 x 400m Run' => exercise_payload(movement_name: movements(:run).name, distance: 400, distance_unit: 'meter'),
+        '21-15-9' => exercise_payload(movement_name: @movement.name, reps: 1)
+      }
+
+      examples.each do |name, exercise|
+        stub_llm_response(
+          extractable: true, name: name, score_type: 'time', rounds: nil, time: nil, interval: nil,
+          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+          exercises: [exercise]
+        )
+
+        workout = WorkoutExtraction::LlmParser.call(name, date: Date.new(2026, 7, 27))
+
+        assert_equal 'CF-260727', workout.name, "#{name.inspect} should use the date fallback"
+      end
+    end
+
+    test 'preserves legitimate short names with leading numbers' do
+      ['Open 26.1', '5K Gone Bad'].each do |name|
+        stub_llm_response(
+          extractable: true, name: name, score_type: 'time', rounds: nil, time: nil, interval: nil,
+          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+          exercises: [exercise_payload(movement_name: @movement.name, reps: 1)]
+        )
+
+        workout = WorkoutExtraction::LlmParser.call(name, date: DATE)
+
+        assert_equal name, workout.name
+      end
+    end
+
     test 'wraps a flat workout in one implicit unnamed segment carrying its scheme' do
       stub_llm_response(
         extractable: true, name: 'Cindy', score_type: 'round', rounds: nil, time: 1200, interval: nil,

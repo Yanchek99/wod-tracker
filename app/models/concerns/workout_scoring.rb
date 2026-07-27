@@ -28,12 +28,6 @@ module WorkoutScoring
     governing_segment.rounds.times.flat_map { governing_segment_exercises }
   end
 
-  def set_based_lifting_set_count
-    return governing_segment_exercises.size if variable_set_based_lifting_structure?
-
-    governing_segment&.rounds.to_i
-  end
-
   def lifting_score(movement_logs)
     exercises_for_log_recording.zip(movement_logs).filter_map do |exercise, movement_log|
       successful_set_load(exercise, movement_log)

@@ -22,7 +22,7 @@ module CfWod
       attrs = WorkoutFormatClassifier.call(header)
       workout = Workout.new(name: "CF-#{wod_page.slug}", **attrs.except(:lift_name, :set_reps, :rounds, :time, :interval))
       exercise_lines = build_workout_content(workout, attrs, header_scheme(attrs), body)
-      ManuallyScoredLiftingLoadMarker.call(workout, exercise_lines: exercise_lines)
+      LiftingLoadSentinelMarker.call(workout, exercise_lines: exercise_lines)
       validate_workout!(workout)
       find_content_duplicate(workout) || workout
     end

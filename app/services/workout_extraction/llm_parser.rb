@@ -70,6 +70,15 @@ module WorkoutExtraction
         interval: { type: 'string' }
       }
     end
+    private_class_method :workout_schema_overrides
+
+    PRESCRIPTION_VALUE_PATTERN = [
+      '\d[\d,]*(?:\.\d+)?',
+      '\s*(?:-| )?\s*',
+      '(?:m|meters?|ft|feet|foot|in|inches?|mi|miles?|cal|cals|calories?|lb|lbs|pounds?|kg|pood)?'
+    ].join.freeze
+    LEADING_PRESCRIPTION_LINE = /\A#{PRESCRIPTION_VALUE_PATTERN}\s+.+\s+x\s*\d+\z/i
+    REORDERED_PRESCRIPTION_LINE = /\A\d+\s*x\s*#{PRESCRIPTION_VALUE_PATTERN}\s+.+\z/i
 
     # logger is opt-in and silent by default (nil) so normal callers don't get unexpected output;
     # pass one (e.g. Logger.new($stdout)) to see progress or where a failure occurred.
@@ -196,7 +205,11 @@ module WorkoutExtraction
     end
 
     def prescription_line_name?(name)
-      name.to_s.match?(/\A[\d,]+(?:\.\d+)?[\s-](?:meters?|feet|foot|inches?|miles?|calories?)\b.+\sx\d+\z/i)
+      value = name.to_s.strip
+
+      set_scheme?(value) ||
+        value.match?(LEADING_PRESCRIPTION_LINE) ||
+        value.match?(REORDERED_PRESCRIPTION_LINE)
     end
 
     # Matches CfWod::WorkoutParser's convention for unnamed scraped workouts (same slug format).
@@ -218,7 +231,7 @@ module WorkoutExtraction
     # Every Exercise belongs to a Segment now, so a "flat" workout (no named parts) is a single
     # unnamed segment wrapping the top-level exercises -- the same shape CfWod::WorkoutParser
     # already builds for its own flat/no-header case. The workout's own rounds/time/interval (see
-    # WORKOUT_SCHEMA) land on this segment's rounds/time_seconds/interval_scheme.
+    # workout_schema) land on this segment's rounds/time_seconds/interval_scheme.
     def build_top_level_exercises(workout, attrs, position:)
       exercises = attrs[:exercises] || []
       return if exercises.empty?

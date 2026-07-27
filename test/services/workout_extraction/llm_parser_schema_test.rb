@@ -24,6 +24,7 @@ module WorkoutExtraction
       assert_respond_to LlmParser, :exercise_schema
       assert_respond_to LlmParser, :segment_schema
       assert_respond_to LlmParser, :workout_schema
+      assert_not_respond_to LlmParser, :workout_schema_overrides
 
       assert_not_includes LlmParser.constants(false), :EXERCISE_SCHEMA
       assert_not_includes LlmParser.constants(false), :SEGMENT_SCHEMA

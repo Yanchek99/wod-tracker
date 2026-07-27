@@ -335,7 +335,7 @@ GEM
     simple_form (5.4.1)
       actionpack (>= 7.0)
       activemodel (>= 7.0)
-    simplecov (1.0.2)
+    simplecov (1.0.3)
     slim (5.2.2)
       temple (~> 0.10.0)
       tilt (>= 2.1.0)
@@ -419,7 +419,7 @@ DEPENDENCIES
   sassc-rails
   selenium-webdriver
   simple_form
-  simplecov (= 1.0.2)
+  simplecov (= 1.0.3)
   slim
   solid_queue
   sprockets-rails

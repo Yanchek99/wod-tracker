@@ -62,6 +62,12 @@ Metrics/ClassLength:
     - test/helpers/workouts_helper_test.rb
     - test/jobs/scrape_cf_wod_job_test.rb
 
+Metrics/ModuleLength:
+  Exclude:
+    # Almost entirely a single prose heredoc (the LLM extraction prompt): its length tracks the
+    # amount of extraction guidance, not any code complexity, the same shape as the excludes above.
+    - app/services/workout_extraction/system_prompt.rb
+
 Metrics/MethodLength:
   CountComments: false
   Max: 20

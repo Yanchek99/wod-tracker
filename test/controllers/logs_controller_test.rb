@@ -76,6 +76,26 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'turbo-frame[loading="lazy"]', count: 0
   end
 
+  test 'index paginates same-timestamp logs in descending ID order' do
+    logs = 26.times.map do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    end
+    Log.where(id: logs).update_all(created_at: Time.zone.parse('2100-01-01 12:00:00'))
+
+    get logs_url
+
+    assert_response :success
+    logs.last(25).reverse_each do |log|
+      assert_select "a[href='#{log_path(log)}']"
+    end
+    assert_select "a[href='#{log_path(logs.first)}']", count: 0
+
+    get logs_url(page: 2)
+
+    assert_response :success
+    assert_select "a[href='#{log_path(logs.first)}']"
+  end
+
   test 'turbo frame request renders only the page frame without the heading' do
     get logs_url, headers: { 'Turbo-Frame' => 'logs_page_1' }
 

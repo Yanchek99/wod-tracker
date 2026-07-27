@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   end
 
   resources :workouts do
-    resources :logs
+    resources :logs, except: [:index]
 
     member do
       get :edit_unstructured

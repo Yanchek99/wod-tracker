@@ -2,4 +2,7 @@
   .list-group
     = render workouts
   - if workouts.next_page
-    = turbo_frame_tag "workouts_page_#{workouts.next_page}", loading: :lazy, src: workouts_path(page: workouts.next_page, query: query)
+    = turbo_frame_tag "workouts_page_#{workouts.next_page}", loading: :lazy, src: workouts_path(page: workouts.next_page, query: query) do
+      .d-flex.justify-content-center.my-3
+        .spinner-border.text-primary role="status"
+          span.visually-hidden Loading…

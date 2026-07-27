@@ -32,6 +32,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'turbo-frame#workouts_page_1'
     assert_select 'turbo-frame#workouts_page_2[loading="lazy"][src=?]', workouts_path(page: 2)
+    assert_select 'turbo-frame#workouts_page_2 .spinner-border'
   end
 
   test 'index last page renders no further lazy frame' do

@@ -33,6 +33,8 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select 'a[href=?]', log_path(logs(:matt_murph))
     assert_select 'a[href=?]', log_path(logs(:matt_amrap))
+    assert_select '.fw-semibold', text: '01:00:00'
+    assert_select '.fw-semibold', text: '8 + 2 (202 reps)'
   end
 
   test 'index shows an empty state when the user has no logs' do

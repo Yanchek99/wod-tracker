@@ -22,14 +22,19 @@
   .row
     .col
       ul.list-unstyled.mb-3
+        - set_based_line = lifting_sets_line(@workout)
         - @workout.segments.each_with_index do |segment, index|
+          - governing = segment == @workout.governing_segment
           - # The governing segment's own scheme is already conveyed by workout_objective above;
           - # showing it again here would be redundant (e.g. Fran: "21-15-9 for time" then "21-15-9 of").
-          - objective = segment == @workout.governing_segment ? nil : segment_objective(segment, then_prefix: index.positive?)
+          - objective = governing ? nil : segment_objective(segment, then_prefix: index.positive?)
           - if objective
             li = objective
-          - segment.exercises.each do |exercise|
-            li class=(objective ? 'ms-4' : nil) #{measurable_message(exercise)}
+          - if governing && set_based_line
+            li = set_based_line
+          - else
+            - segment.exercises.each do |exercise|
+              li class=(objective ? 'ms-4' : nil) #{measurable_message(exercise)}
       - if @workout.time_cap_seconds.present?
         p
           b Time cap:

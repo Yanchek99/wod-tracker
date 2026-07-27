@@ -2,7 +2,7 @@ module WorkoutsHelper
   def workout_objective(workout)
     return ascending_ladder_objective(workout) if workout.ascending_ladder?
     return max_finding_objective(workout) if workout.max_finding?
-    return "#{pluralize workout.set_based_lifting_set_count, 'set'} for load" if workout.set_based_lifting?
+    return 'For load' if workout.set_based_lifting?
     return for_time_objective(workout) if workout.rounds_for_time?
 
     clock_objective(workout)
@@ -66,6 +66,20 @@ module WorkoutsHelper
     'For load'
   end
 
+  # Collapses a single-movement set-based lifting workout's sets into one rep-scheme line
+  # ("10-10-7-7-3-3-3 Deadlift") in place of one identical line per set. Returns nil -- so the
+  # caller falls back to rendering each exercise -- when the workout isn't a single-movement
+  # find-a-max scheme, or when the sets carry prescribed loads worth showing per set.
+  def lifting_sets_line(workout)
+    return unless workout.set_based_lifting?
+
+    sets = workout.exercises_for_log_recording
+    return unless sets.map(&:movement).uniq.one?
+    return if sets.any? { |exercise| prescribed_load?(exercise) }
+
+    "#{sets.map(&:reps).join('-')} #{sets.first.movement.name}"
+  end
+
   def total_reps_clock_objective(workout)
     "On a #{workout.segments.sum(&:time_seconds) / 60}-minute clock for total reps"
   end
@@ -81,12 +95,19 @@ module WorkoutsHelper
 
   private
 
+  # A load worth showing per set: a real prescribed weight, not the load: 0 find-a-max sentinel.
+  def prescribed_load?(exercise)
+    exercise.female_load.present? || exercise.male_load.present? || exercise.load.to_i.positive?
+  end
+
   # workout_as_text's per-segment lines: the segment's own prescription (suppressed for the
   # governing segment, since workout_objective already conveyed its scheme) followed by each
   # exercise's line.
   def segment_as_text_lines(workout, segment, index)
-    objective = segment == workout.governing_segment ? nil : segment_objective(segment, then_prefix: index.positive?)
-    exercise_lines = segment.exercises.map { |exercise| measurable_message(exercise) }
+    governing = segment == workout.governing_segment
+    objective = governing ? nil : segment_objective(segment, then_prefix: index.positive?)
+    set_based_line = lifting_sets_line(workout) if governing
+    exercise_lines = set_based_line ? [set_based_line] : segment.exercises.map { |exercise| measurable_message(exercise) }
     [objective, *exercise_lines].compact
   end
 

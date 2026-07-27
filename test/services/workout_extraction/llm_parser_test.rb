@@ -145,6 +145,8 @@ module WorkoutExtraction
       assert_nil segment.interval_scheme
       assert_equal [3, 3, 2, 2, 1, 1, 1, 1], segment.exercises.map(&:reps)
       assert_equal [movement], segment.exercises.map(&:movement).uniq
+      # Every set carries the find-a-max load sentinel so the log form shows a Load field per set.
+      assert_equal [0] * 8, segment.exercises.map(&:load)
     end
 
     test 'marks only barbell-family movements load-bearing in manually scored weight workouts' do

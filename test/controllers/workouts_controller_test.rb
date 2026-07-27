@@ -158,6 +158,14 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'li', text: '21-15-9 of', count: 0
   end
 
+  test 'collapses a set-based lifting workout into a for-load rep-scheme line' do
+    get workout_url(workouts(:back_squat_5x5))
+
+    assert_select 'p', text: 'For load'
+    assert_select 'li', text: '5-5-5-5-5 Back Squat'
+    assert_select 'li', text: '5 Back Squat', count: 0
+  end
+
   test 'should get edit' do
     get edit_workout_url(@workout)
     assert_response :success

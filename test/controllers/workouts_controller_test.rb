@@ -13,6 +13,35 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index page one renders a lazy frame chaining to the next page' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    get workouts_url
+
+    assert_response :success
+    assert_select 'turbo-frame#workouts_page_1'
+    assert_select 'turbo-frame#workouts_page_2[loading="lazy"][src=?]', workouts_path(page: 2)
+  end
+
+  test 'index last page renders no further lazy frame' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    last_page = (Workout.count.to_f / Kaminari.config.default_per_page).ceil
+    get workouts_url(page: last_page)
+
+    assert_response :success
+    assert_select 'turbo-frame[loading="lazy"]', count: 0
+  end
+
+  test 'search carries the query into the next-page lazy frame' do
+    30.times { |i| Workout.create!(name: "Cindy Variant #{i}", score_type: :round) }
+
+    get workouts_url(query: 'Cindy')
+
+    assert_response :success
+    assert_select 'turbo-frame#workouts_page_2[src=?]', workouts_path(page: 2, query: 'Cindy')
+  end
+
   test 'should get new' do
     get new_workout_url
     assert_response :success

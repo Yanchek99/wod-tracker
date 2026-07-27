@@ -74,6 +74,12 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
+
+      # Typing into the sex-specific distance fields toggles derived distance UI before the
+      # card can be saved. Wait for the final field value to settle so the Done click is not
+      # racing the exercise-form controller update in CI.
+      assert_field 'Male distance', with: '100'
+
       save_exercise_card '100/80 meter Run'
     end
   end

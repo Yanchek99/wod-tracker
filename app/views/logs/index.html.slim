@@ -1,6 +1,6 @@
 .container
   h1 History
   - if @logs.any?
-    = render @logs
+    = render 'page', logs: @logs
   - else
     p.text-muted.my-3 No workouts logged yet.

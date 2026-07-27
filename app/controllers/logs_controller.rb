@@ -5,7 +5,7 @@ class LogsController < ApplicationController
   # GET /logs
   # GET /logs.json
   def index
-    @logs = Current.user.logs.includes(:workout).order(created_at: :desc)
+    @logs = Current.user.logs.includes(:workout).order(created_at: :desc).page(params[:page])
   end
 
   # GET /logs/1

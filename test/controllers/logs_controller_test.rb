@@ -52,6 +52,38 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'nav a[href=?]', logs_path, text: 'History'
   end
 
+  test 'index page one renders a lazy frame chaining to the next page' do
+    30.times do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    end
+
+    get logs_url
+
+    assert_response :success
+    assert_select 'turbo-frame#logs_page_1'
+    assert_select 'turbo-frame#logs_page_2[loading="lazy"][src=?]', logs_path(page: 2)
+  end
+
+  test 'index last page renders no further lazy frame' do
+    30.times do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    end
+
+    get logs_url(page: 2)
+
+    assert_response :success
+    assert_select 'turbo-frame#logs_page_2'
+    assert_select 'turbo-frame[loading="lazy"]', count: 0
+  end
+
+  test 'turbo frame request renders only the page frame without the heading' do
+    get logs_url, headers: { 'Turbo-Frame' => 'logs_page_1' }
+
+    assert_response :success
+    assert_select 'h1', count: 0
+    assert_select 'turbo-frame#logs_page_1'
+  end
+
   test 'should create log with direct movement recordings' do
     assert_difference(['Log.count', 'MovementLog.count'], 1) do
       post workout_logs_url(@workout), params: { log: {

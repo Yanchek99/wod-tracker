@@ -1,0 +1,4 @@
+= turbo_frame_tag "logs_page_#{logs.current_page}" do
+  = render logs
+  - if logs.next_page
+    = turbo_frame_tag "logs_page_#{logs.next_page}", loading: :lazy, src: logs_path(page: logs.next_page)

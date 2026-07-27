@@ -42,6 +42,18 @@ module WorkoutExtraction
       assert_equal 'CF-260115', workout.name
     end
 
+    test 'falls back to a date-based name when the LLM uses the first prescription line as the name' do
+      stub_llm_response(
+        extractable: true, name: '1,600-meter run x2', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: movements(:run).name, distance: 1600, distance_unit: 'meter')]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('For time: 1,600-meter run x2', date: Date.new(2026, 7, 27))
+
+      assert_equal 'CF-260727', workout.name
+    end
+
     test 'wraps a flat workout in one implicit unnamed segment carrying its scheme' do
       stub_llm_response(
         extractable: true, name: 'Cindy', score_type: 'round', rounds: nil, time: 1200, interval: nil,

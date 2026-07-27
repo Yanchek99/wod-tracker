@@ -140,7 +140,7 @@ module WorkoutExtraction
 
     def build_workout(attrs)
       workout_attrs = attrs.slice(:name, :score_type, :time_cap, :ladder_step, :team_size, :notes).compact
-      workout_attrs[:name] = default_name if workout_attrs[:name].blank?
+      workout_attrs[:name] = normalized_name(workout_attrs[:name])
       workout = Workout.new(workout_attrs)
 
       segments = attrs[:segments] || []
@@ -174,6 +174,17 @@ module WorkoutExtraction
       else
         reps_per_set.map { |reps| exercise.merge(reps: reps) }
       end
+    end
+
+    def normalized_name(name)
+      return default_name if name.blank?
+      return default_name if prescription_line_name?(name)
+
+      name
+    end
+
+    def prescription_line_name?(name)
+      name.to_s.match?(/\A[\d,]+(?:\.\d+)?[\s-](?:meters?|feet|foot|inches?|miles?|calories?)\b.+\sx\d+\z/i)
     end
 
     # Matches CfWod::WorkoutParser's convention for unnamed scraped workouts (same slug format).

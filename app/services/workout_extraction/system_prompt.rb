@@ -112,16 +112,16 @@ module WorkoutExtraction
     end
 
     def self.exercise_field_lines
-      field_lines(WorkoutExtraction::LlmParser::EXERCISE_SCHEMA[:properties].except(:movement_name))
+      field_lines(WorkoutExtraction::LlmParser.exercise_schema[:properties].except(:movement_name))
     end
 
     def self.workout_field_lines
-      field_lines(WorkoutExtraction::LlmParser::WORKOUT_SCHEMA[:properties]
+      field_lines(WorkoutExtraction::LlmParser.workout_schema[:properties]
         .except(:extractable, :gap_reason, :segments, :exercises))
     end
 
     def self.segment_field_lines
-      field_lines(WorkoutExtraction::LlmParser::SEGMENT_SCHEMA[:properties].except(:name, :exercises))
+      field_lines(WorkoutExtraction::LlmParser.segment_schema[:properties].except(:name, :exercises))
     end
   end
 end

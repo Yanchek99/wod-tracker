@@ -9,55 +9,67 @@ module WorkoutExtraction
     # Extraction is a single call: neither this nor the prior two-call version enforces its schema
     # via output_config/json_schema (both triggered Anthropic structured-outputs compiler errors
     # regardless of shape), so there's no longer a compiler-imposed reason to keep the workout's
-    # shape and its exercises' details as two separate calls. These constants exist only so
+    # shape and its exercises' details as two separate calls. These methods exist only so
     # SystemPrompt's field descriptions can be derived programmatically instead of hand-written, so
-    # they can't silently drift from the Workout/Segment/Exercise models.
-    EXERCISE_SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(
-        Exercise,
-        except: %w[id workout_id movement_id segment_id created_at updated_at position notes],
-        overrides: { movement_name: { type: 'string' } }
-      ),
-      required: %w[movement_name],
-      additionalProperties: false
-    }.freeze
+    # they can't silently drift from the Workout/Segment/Exercise models. Keep them lazy because
+    # deriving model-backed properties queries table metadata, and worker boot can eager-load this
+    # class before a new environment's database has been migrated.
+    def self.exercise_schema
+      @exercise_schema ||= {
+        type: 'object',
+        properties: ModelSchema.properties_for(
+          Exercise,
+          except: %w[id workout_id movement_id segment_id created_at updated_at position notes],
+          overrides: { movement_name: { type: 'string' } }
+        ),
+        required: %w[movement_name],
+        additionalProperties: false
+      }.freeze
+    end
 
-    SEGMENT_SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
-                             .merge(exercises: { type: 'array', items: EXERCISE_SCHEMA }),
-      required: %w[name],
-      additionalProperties: false
-    }.freeze
+    def self.segment_schema
+      @segment_schema ||= {
+        type: 'object',
+        properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
+                               .merge(exercises: { type: 'array', items: exercise_schema }),
+        required: %w[name],
+        additionalProperties: false
+      }.freeze
+    end
 
-    WORKOUT_SCHEMA = {
-      type: 'object',
-      properties: ModelSchema.properties_for(
-        Workout,
-        except: %w[id created_at updated_at content_key time_cap_seconds],
-        overrides: {
-          # Narrower than Workout's full score_type enum: only these 5 values are valid workout scores.
-          score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
-          time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
-          notes: { type: 'string' }, # Workout#notes is ActionText, not a plain column
-          # Workout no longer stores its own scheme -- every Exercise belongs to a Segment, and a
-          # "flat" (no named parts) workout is represented as one implicit segment wrapping its
-          # top-level "exercises" (see build_workout). These three route to that segment's
-          # rounds/time_seconds/interval_scheme rather than to a Workout column.
-          rounds: { type: 'integer' },
-          time: { type: 'integer' },
-          interval: { type: 'string' }
-        }
-      ).merge(
-        segments: { type: 'array', items: SEGMENT_SCHEMA },
-        exercises: { type: 'array', items: EXERCISE_SCHEMA },
-        extractable: { type: 'boolean' },
-        gap_reason: { type: 'string' }
-      ),
-      required: %w[extractable],
-      additionalProperties: false
-    }.freeze
+    def self.workout_schema
+      @workout_schema ||= {
+        type: 'object',
+        properties: ModelSchema.properties_for(
+          Workout,
+          except: %w[id created_at updated_at content_key time_cap_seconds],
+          overrides: workout_schema_overrides
+        ).merge(
+          segments: { type: 'array', items: segment_schema },
+          exercises: { type: 'array', items: exercise_schema },
+          extractable: { type: 'boolean' },
+          gap_reason: { type: 'string' }
+        ),
+        required: %w[extractable],
+        additionalProperties: false
+      }.freeze
+    end
+
+    def self.workout_schema_overrides
+      {
+        # Narrower than Workout's full score_type enum: only these 5 values are valid workout scores.
+        score_type: { type: 'string', enum: Metric.workout_measurements.map(&:to_s) },
+        time_cap: { type: 'string' }, # virtual setter (accepts "MM:SS"), not the time_cap_seconds column
+        notes: { type: 'string' }, # Workout#notes is ActionText, not a plain column
+        # Workout no longer stores its own scheme -- every Exercise belongs to a Segment, and a
+        # "flat" (no named parts) workout is represented as one implicit segment wrapping its
+        # top-level "exercises" (see build_workout). These three route to that segment's
+        # rounds/time_seconds/interval_scheme rather than to a Workout column.
+        rounds: { type: 'integer' },
+        time: { type: 'integer' },
+        interval: { type: 'string' }
+      }
+    end
 
     # logger is opt-in and silent by default (nil) so normal callers don't get unexpected output;
     # pass one (e.g. Logger.new($stdout)) to see progress or where a failure occurred.

@@ -7,6 +7,7 @@ class WorkoutsController < ApplicationController
   # GET /workouts.json
   def index
     @workouts = Workout.search_by_name(params[:query]).order(created_at: :desc).page(params[:page])
+    @logged_workout_ids = logged_workout_ids_for(@workouts)
   end
 
   # GET /workouts/1
@@ -111,6 +112,10 @@ class WorkoutsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_workout
     @workout = Workout.includes(segments: :exercises).find(params.expect(:id))
+  end
+
+  def logged_workout_ids_for(workouts)
+    Current.user.logs.where(workout_id: workouts.map(&:id)).distinct.pluck(:workout_id)
   end
 
   # Only allow a list of trusted parameters through.

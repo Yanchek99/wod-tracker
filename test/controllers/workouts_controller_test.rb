@@ -13,6 +13,17 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index batches logged workout lookup for rendered workouts' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    query_counts = count_matching_queries(logs: /FROM "logs"/) do
+      get workouts_url
+    end
+
+    assert_response :success
+    assert_equal 1, query_counts[:logs]
+  end
+
   test 'index page one renders a lazy frame chaining to the next page' do
     30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
 
@@ -293,5 +304,18 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       distance_units_per_rep: nil, calories: nil, female_calories: nil, male_calories: nil,
       ladder_step_every: nil, ladder_exempt: nil
     }.merge(overrides)
+  end
+
+  def count_matching_queries(patterns, &)
+    counts = patterns.transform_values { 0 }
+    callback = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == 'SCHEMA'
+
+      patterns.each { |name, pattern| counts[name] += 1 if payload[:sql].match?(pattern) }
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, 'sql.active_record', &)
+
+    counts
   end
 end

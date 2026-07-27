@@ -1,5 +1,5 @@
 = turbo_frame_tag "workouts_page_#{workouts.current_page}" do
-  .list-group.my-3
+  .list-group
     = render workouts
   - if workouts.next_page
-    = turbo_frame_tag "workouts_page_#{workouts.next_page}", loading: :lazy, src: workouts_path(page: workouts.next_page, query: params[:query])
+    = turbo_frame_tag "workouts_page_#{workouts.next_page}", loading: :lazy, src: workouts_path(page: workouts.next_page, query: query)

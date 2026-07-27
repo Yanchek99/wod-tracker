@@ -26,7 +26,8 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
   test 'index last page renders no further lazy frame' do
     30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
 
-    get workouts_url(page: 2)
+    last_page = (Workout.count.to_f / Kaminari.config.default_per_page).ceil
+    get workouts_url(page: last_page)
 
     assert_response :success
     assert_select 'turbo-frame[loading="lazy"]', count: 0

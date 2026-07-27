@@ -31,6 +31,9 @@ application.register("ladder-step", LadderStepController)
 import LogExerciseController from "./log_exercise_controller.js"
 application.register("log-exercise", LogExerciseController)
 
+import LiftingScoreController from "./lifting_score_controller.js"
+application.register("lifting-score", LiftingScoreController)
+
 import SegmentCardController from "./segment_card_controller.js"
 application.register("segment-card", SegmentCardController)
 

@@ -1,4 +1,5 @@
-= simple_form_for [@workout, @log], wrapper: :input_group do |f|
+- form_data = @workout.calculated_lifting_score? ? { controller: 'lifting-score' } : {}
+= simple_form_for [@workout, @log], wrapper: :input_group, html: { data: form_data } do |f|
   = f.error_notification
   .row.mt-3.g-2
     .col
@@ -13,7 +14,8 @@
   .row.g-2
     = f.input :score_type, as: :hidden
     - if @workout.calculated_lifting_score?
-      .col
+      .col aria-live="polite"
+        = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false, disabled: true, input_html: { value: load_input_value(@log.score_value), data: { 'lifting-score-target': 'score' }, aria: { label: 'Calculated score' } }
         p.form-text Score will be calculated from the heaviest successful load.
     - else
       .col = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false
@@ -24,18 +26,19 @@
     - exercise = exercises[ml_form.index]
     - relevant = exercise && @log.metrics_for_movement_log(exercise).map(&:measurement)
     - load_hidden = relevant && (relevant & %w[lb kg weight]).empty?
+    - prescribed_reps = exercise&.prescription_metrics&.find(&:rep?)&.value
     - distance_unit = ml.distance_unit || 'meter'
     - distance_unit_label = { 'meter' => 'm', 'foot' => 'ft', 'inch' => 'in' }.fetch(distance_unit, distance_unit)
-    .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json
+    .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json data-lifting-score-target=(@workout.calculated_lifting_score? ? 'set' : nil) data-lifting-score-prescribed-reps=prescribed_reps
       .card-body
         = ml_form.input :movement_id, collection: Movement.all, prompt: 'Select Movement', input_html: { class: 'movement', data: { controller: 'movement-select', action: 'change->log-exercise#reveal', 'implement-count-target': 'movementSelect' } }, label: false
         .row.g-2
           .col-6.col-md data-log-exercise-target="field" hidden=(relevant && (relevant & %w[rep]).empty?)
-            = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value' }
+            = ml_form.input :reps, label: 'Reps', input_html: { class: 'recording-value', data: { 'lifting-score-target': ('reps' if @workout.calculated_lifting_score?), action: ('input->lifting-score#update' if @workout.calculated_lifting_score?) } }
           .col-6.col-md data-log-exercise-target="field" hidden=(relevant && (relevant & %w[seconds time]).empty?)
             = ml_form.input :duration_seconds, as: :group, label: 'Duration', append: 's', input_html: { class: 'recording-value' }
           .col-6.col-md data-log-exercise-target="field" data-implement-count-target="loadField" hidden=load_hidden
-            = ml_form.input :load, as: :group, label: 'Load', append: load_display_unit, input_html: { class: 'recording-value', value: load_input_value(ml.load) }
+            = ml_form.input :load, as: :group, label: 'Load', append: load_display_unit, input_html: { class: 'recording-value', value: load_input_value(ml.load), data: { 'lifting-score-target': ('load' if @workout.calculated_lifting_score?), action: ('input->lifting-score#update' if @workout.calculated_lifting_score?) } }
           .col-6.col-md data-implement-count-target="field" hidden=(!ml.movement&.supports_implement_count? || load_hidden)
             = ml_form.input :implement_count, label: 'Implements'
           .col-6.col-md data-log-exercise-target="field" hidden=(relevant && (relevant & %w[distance foot inch meter]).empty?)

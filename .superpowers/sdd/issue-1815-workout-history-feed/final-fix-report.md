@@ -32,3 +32,36 @@ Output:
 ```text
 2 runs, 4 assertions, 0 failures, 0 errors, 0 skips
 ```
+
+## RuboCop Fix Wave
+
+### Changes
+
+- Replaced `26.times.map` with `Array.new(26)` in the same-timestamp pagination regression.
+- Created each test log with the shared timestamp through `create!`, preserving validations and the 26-log pagination coverage.
+
+### Tests
+
+Command:
+
+```sh
+rvm 4.0.5@wod-tracker do bin/rails test test/controllers/logs_controller_test.rb
+```
+
+Output:
+
+```text
+23 runs, 162 assertions, 0 failures, 0 errors, 0 skips
+```
+
+Command:
+
+```sh
+rvm 4.0.5@wod-tracker do bundle exec rubocop --parallel
+```
+
+Output:
+
+```text
+174 files inspected, no offenses detected
+```

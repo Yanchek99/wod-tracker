@@ -77,10 +77,11 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'index paginates same-timestamp logs in descending ID order' do
-    logs = 26.times.map do
-      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    timestamp = Time.zone.parse('2100-01-01 12:00:00')
+    logs = Array.new(26) do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200,
+                  created_at: timestamp)
     end
-    Log.where(id: logs).update_all(created_at: Time.zone.parse('2100-01-01 12:00:00'))
 
     get logs_url
 

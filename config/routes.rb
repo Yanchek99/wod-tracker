@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   root to: 'workouts#index'
 
+  get 'logs', to: 'logs#index'
   resources :logs, only: [:show, :destroy]
 
   resources :movements, only: [:index, :create]

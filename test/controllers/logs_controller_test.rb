@@ -8,6 +8,48 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:mathew)
   end
 
+  test 'index shows only the current user logs' do
+    get logs_url
+
+    assert_response :success
+    assert_select 'a[href=?]', workout_path(workouts(:murph))
+    assert_select 'a[href=?]', workout_path(workouts(:amrap_couplet))
+    assert_select 'a[href=?]', workout_path(workouts(:fran)), count: 0
+  end
+
+  test 'index orders history newest first' do
+    logs(:matt_murph).update!(created_at: 2.days.ago)
+    logs(:matt_amrap).update!(created_at: 1.day.ago)
+
+    get logs_url
+
+    assert_operator response.body.index(workout_path(workouts(:amrap_couplet))),
+                    :<,
+                    response.body.index(workout_path(workouts(:murph)))
+  end
+
+  test 'index row links to the log show page and shows the score' do
+    get logs_url
+
+    assert_select 'a[href=?]', log_path(logs(:matt_murph))
+    assert_select 'a[href=?]', log_path(logs(:matt_amrap))
+  end
+
+  test 'index shows an empty state when the user has no logs' do
+    Log.where(user: users(:mathew)).destroy_all
+
+    get logs_url
+
+    assert_response :success
+    assert_select 'p', text: 'No workouts logged yet.'
+  end
+
+  test 'nav links to the workout history' do
+    get logs_url
+
+    assert_select 'nav a[href=?]', logs_path, text: 'History'
+  end
+
   test 'should create log with direct movement recordings' do
     assert_difference(['Log.count', 'MovementLog.count'], 1) do
       post workout_logs_url(@workout), params: { log: {

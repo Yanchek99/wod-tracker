@@ -9,7 +9,7 @@
           = link_to '+Unfollow', unsubscribe_program_path(@program), class: 'btn btn-warning', data: { turbo_method: :delete } if can? :unsubscribe, @program
           = link_to 'Delete', program_path(@program), class: 'btn btn-danger', data: { turbo_method: :delete } if can? :destroy, @program
   - @program.schedules.order(posted_at: :desc).each do |schedule|
-    h4.mb-3.border-bottom = local_time(schedule.posted_at.to_date, '%B %e, %Y')
+    h4.mb-3.border-bottom = local_time(schedule.posted_at, '%B %e, %Y')
     .row
       .col
         b #{schedule.workout.name}

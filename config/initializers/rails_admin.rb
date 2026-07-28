@@ -48,4 +48,10 @@ RailsAdmin.config do |config|
       field :created_at
     end
   end
+
+  config.model 'Log' do
+    list do
+      scopes [nil, :orphaned]
+    end
+  end
 end

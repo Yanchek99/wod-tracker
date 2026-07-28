@@ -40,6 +40,32 @@ class UserTest < ActiveSupport::TestCase
     assert_equal [[185, 52], [275, 5]], records.map { |pr| [pr.load, pr.reps] }.sort
   end
 
+  test 'workout_records keeps the lowest score for a time-scored workout' do
+    workout = workouts(:fran)
+    users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: 400)
+    fast = users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: 330)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_equal [fast], records
+  end
+
+  test 'workout_records keeps the highest score for a rep-scored workout' do
+    workout = workouts(:segmented_total_reps)
+    users(:mathew).logs.create!(workout: workout, score_type: :rep, score_value: 100)
+    more = users(:mathew).logs.create!(workout: workout, score_type: :rep, score_value: 150)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_equal [more], records
+  end
+
+  test 'workout_records shows a workout logged only once' do
+    records = users(:mathew).workout_records
+
+    assert_includes records, logs(:matt_murph)
+  end
+
   test 'requires sex on user profiles' do
     user = User.new(
       email: 'test@example.com',

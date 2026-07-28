@@ -49,4 +49,11 @@ class User < ApplicationRecord
                  .reorder(nil)
     MovementRecordSet.new(candidates).records
   end
+
+  def workout_records
+    logs
+      .group_by(&:workout_id)
+      .values
+      .map { |workout_logs| workout_logs.max_by { |log| log.score_time? ? -log.score_value : log.score_value } }
+  end
 end

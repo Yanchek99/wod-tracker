@@ -67,11 +67,11 @@ class ScrapeCfWodJob < ApplicationJob
 
   # The app's Time.zone (and therefore ActiveRecord's datetime casting) is UTC, so assigning a
   # bare Date to posted_at would land at midnight UTC on that date -- an instant that falls on the
-  # *previous* calendar day once a US-timezone browser localizes it for display. Anchoring to noon
-  # Pacific instead keeps the stored instant safely within the intended calendar day for any US
-  # timezone.
+  # *previous* calendar day once a US-timezone browser localizes it for display. Anchoring to 6pm
+  # Pacific instead -- CrossFit.com's own daily posting time -- keeps the stored instant safely
+  # within the intended calendar day for any continental US timezone.
   def posted_at_for(date)
-    ActiveSupport::TimeZone['America/Los_Angeles'].local(date.year, date.month, date.day, 12)
+    ActiveSupport::TimeZone['America/Los_Angeles'].local(date.year, date.month, date.day, 18)
   end
 
   # Try the primary parser; if it fails with its own "couldn't extract a workout" error, retry

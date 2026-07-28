@@ -27,6 +27,14 @@ module ActiveSupport
         .to_return(status: 301, headers: { 'Location' => "/#{slug}" })
     end
 
+    # ScrapeCfWodJob anchors Schedule#posted_at to 6pm Pacific on the target date (see
+    # posted_at_for), not midnight UTC, so a UTC-calendar-day range (Date#all_day) doesn't
+    # reliably contain it -- during PST (UTC-8) 6pm Pacific falls after midnight UTC, i.e. on the
+    # *next* UTC calendar day. Match against the Pacific calendar day instead.
+    def posted_at_range_for(date)
+      ActiveSupport::TimeZone['America/Los_Angeles'].local(date.year, date.month, date.day).all_day
+    end
+
     # Object#stub (from minitest/mock) isn't available here -- minitest 6 dropped mock.rb into a
     # separate minitest-mock gem this app doesn't depend on -- so stub WorkoutExtraction::LlmParser.call
     # by hand: swap in a replacement singleton method for the duration of the block, then restore the

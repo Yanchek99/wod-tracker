@@ -1,9 +1,13 @@
-- if workout.segments.any? { |segment| segment.exercises.any? }
-  - workout.segments.each_with_index do |segment, index|
-    - # The governing segment's own scheme is already conveyed by workout_objective
-    - # wherever this partial is rendered; showing it again here would be redundant.
-    - objective = segment == workout.governing_segment ? nil : segment_objective(segment, then_prefix: index.positive?)
-    - if objective
-      li = objective
+- set_based_line = lifting_sets_line(workout)
+- workout.segments.each_with_index do |segment, index|
+  - governing = segment == workout.governing_segment
+  - # The governing segment's own scheme is already conveyed by workout_objective
+  - # wherever this partial is rendered; showing it again here would be redundant.
+  - objective = governing ? nil : segment_objective(segment, then_prefix: index.positive?)
+  - if objective
+    li = objective
+  - if governing && set_based_line
+    li = set_based_line
+  - else
     - segment.exercises.each do |exercise|
       li class=(objective ? 'ms-4' : nil) #{measurable_message(exercise)}

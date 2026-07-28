@@ -22,26 +22,12 @@
   .row
     .col
       ul.list-unstyled.mb-3
-        - set_based_line = lifting_sets_line(@workout)
-        - @workout.segments.each_with_index do |segment, index|
-          - governing = segment == @workout.governing_segment
-          - # The governing segment's own scheme is already conveyed by workout_objective above;
-          - # showing it again here would be redundant (e.g. Fran: "21-15-9 for time" then "21-15-9 of").
-          - objective = governing ? nil : segment_objective(segment, then_prefix: index.positive?)
-          - if objective
-            li = objective
-          - if governing && set_based_line
-            li = set_based_line
-          - else
-            - segment.exercises.each do |exercise|
-              li class=(objective ? 'ms-4' : nil) #{measurable_message(exercise)}
+        = render partial: 'exercises/exercises', locals: { workout: @workout }
       - if @workout.time_cap_seconds.present?
         p
           b Time cap:
           span  #{@workout.time_cap}
-      - if @workout.notes.present?
-        b Notes
-        .notes = @workout.notes
+      = render 'notes', workout: @workout
       .d-grid.gap-2
         = link_to 'Schedule', nil, class: 'btn btn-secondary', "data-bs-toggle": "modal", "data-bs-target": "#scheduleModal" if can? :create, Schedule
         = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-outline-primary'

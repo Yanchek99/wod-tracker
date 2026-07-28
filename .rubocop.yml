@@ -33,6 +33,17 @@ Metrics/AbcSize:
   Max: 20
   Exclude:
     - app/models/ability.rb
+    # candidate_for is a straight-line dispatch over the PR rule table -- its
+    # length tracks the number of rule-table rows, not incidental complexity.
+    - app/models/movement_record_set.rb
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - app/models/movement_record_set.rb
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - app/models/movement_record_set.rb
 
 Metrics/BlockLength:
   CountComments: false

@@ -43,10 +43,10 @@ class User < ApplicationRecord
   end
 
   def personal_records
-    movement_logs
-      .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \
-             'OR calories IS NOT NULL OR duration_seconds IS NOT NULL')
-      .reorder(Arel.sql('COALESCE(load, distance, calories, duration_seconds, reps) DESC'))
-      .uniq(&:movement_id)
+    candidates = movement_logs
+                 .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \
+                        'OR calories IS NOT NULL OR duration_seconds IS NOT NULL')
+                 .reorder(nil)
+    MovementRecordSet.new(candidates).records
   end
 end

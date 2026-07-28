@@ -18,16 +18,26 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :kg, brooke.load_display_unit
   end
 
-  test 'personal_records picks the best value for a movement, not the first one logged' do
+  test 'personal_records keeps the heaviest load within the same rep count, regardless of log order' do
     deadlift = movements(:deadlift)
     log = logs(:matt_amrap)
-    log.movement_logs.create!(movement: deadlift, load: 95, reps: 5)
+    log.movement_logs.create!(movement: deadlift, load: 225, reps: 5)
+    log.movement_logs.create!(movement: deadlift, load: 275, reps: 5)
+
+    records = users(:mathew).personal_records.select { |pr| pr.movement == deadlift }
+
+    assert_equal [275], records.map(&:load)
+  end
+
+  test 'personal_records shows a separate record per rep count for the same movement' do
+    deadlift = movements(:deadlift)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: deadlift, load: 275, reps: 5)
     log.movement_logs.create!(movement: deadlift, load: 185, reps: 52)
 
-    record = users(:mathew).personal_records.find { |pr| pr.movement == deadlift }
+    records = users(:mathew).personal_records.select { |pr| pr.movement == deadlift }
 
-    assert_equal 185, record.load
-    assert_equal 52, record.reps
+    assert_equal [[185, 52], [275, 5]], records.map { |pr| [pr.load, pr.reps] }.sort
   end
 
   test 'requires sex on user profiles' do

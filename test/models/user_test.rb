@@ -18,6 +18,18 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :kg, brooke.load_display_unit
   end
 
+  test 'personal_records picks the best value for a movement, not the first one logged' do
+    deadlift = movements(:deadlift)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: deadlift, load: 95, reps: 5)
+    log.movement_logs.create!(movement: deadlift, load: 185, reps: 52)
+
+    record = users(:mathew).personal_records.find { |pr| pr.movement == deadlift }
+
+    assert_equal 185, record.load
+    assert_equal 52, record.reps
+  end
+
   test 'requires sex on user profiles' do
     user = User.new(
       email: 'test@example.com',

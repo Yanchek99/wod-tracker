@@ -226,4 +226,13 @@ class LogTest < ActiveSupport::TestCase
     movement_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
     assert_nil movement_log.implement_count
   end
+
+  test 'the workouts foreign key blocks deleting a workout that still has logs' do
+    workout = Workout.create!(name: 'Constrained Workout', score_type: :time)
+    workout.logs.create!(user: users(:mathew), score_type: :time, score_value: 200)
+
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      Workout.where(id: workout.id).delete_all
+    end
+  end
 end

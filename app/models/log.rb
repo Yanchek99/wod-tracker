@@ -8,8 +8,6 @@ class Log < ApplicationRecord
 
   accepts_nested_attributes_for :movement_logs, allow_destroy: true
 
-  scope :orphaned, -> { where.missing(:workout) }
-
   enum :score_type, Metric.measurements, prefix: :score
 
   validates :score_type, presence: true

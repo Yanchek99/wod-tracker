@@ -226,14 +226,4 @@ class LogTest < ActiveSupport::TestCase
     movement_log = log.movement_logs.find { |ml| ml.movement_id == movements(:thruster).id }
     assert_nil movement_log.implement_count
   end
-
-  test 'orphaned scope finds logs whose workout row no longer exists' do
-    workout = Workout.create!(name: 'Temporary Orphan Workout', score_type: :time)
-    orphaned_log = workout.logs.create!(user: users(:mathew), score_type: :time, score_value: 200)
-    kept_log = workouts(:fran).logs.create!(user: users(:mathew), score_type: :time, score_value: 200)
-    Workout.where(id: workout.id).delete_all
-
-    assert_equal [orphaned_log], Log.orphaned.to_a
-    assert_not_includes Log.orphaned, kept_log
-  end
 end

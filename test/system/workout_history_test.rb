@@ -18,4 +18,13 @@ class WorkoutHistoryTest < ApplicationSystemTestCase
     assert_selector '.card', text: workouts(:murph).name
     assert_link workouts(:murph).name, href: workout_path(workouts(:murph))
   end
+
+  test 'clicking a history item navigates to the log instead of showing a missing turbo frame' do
+    visit logs_url
+
+    find(%(a[aria-label="View #{workouts(:murph).name} log"])).click
+
+    assert_current_path log_path(logs(:matt_murph))
+    assert_no_text 'Content missing'
+  end
 end

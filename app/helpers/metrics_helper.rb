@@ -87,14 +87,14 @@ module MetricsHelper
 
   def sex_specific_metric_unit_msg(metric)
     if load_metric?(metric)
-      return "♀#{load_input_value(metric.female_value)}#{load_display_unit} / " \
-             "♂#{load_input_value(metric.male_value)}#{load_display_unit}"
+      return "♀︎#{load_input_value(metric.female_value)}#{load_display_unit} / " \
+             "♂︎#{load_input_value(metric.male_value)}#{load_display_unit}"
     end
 
     unit = metric.measurement.singularize
     separator = Metric::LOAD_MEASUREMENTS.include?(unit) ? '' : '-'
 
-    "♀#{metric.female_value}#{separator}#{unit} / ♂#{metric.male_value}#{separator}#{unit}"
+    "♀︎#{metric.female_value}#{separator}#{unit} / ♂︎#{metric.male_value}#{separator}#{unit}"
   end
 
   def additional_metric_display_order(metric)

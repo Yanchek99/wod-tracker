@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   root to: 'workouts#index'
 
-  resources :logs, only: [:show, :destroy]
+  resources :logs, only: [:index, :show, :destroy]
 
   resources :movements, only: [:index, :create]
 
@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   end
 
   resources :workouts do
-    resources :logs
+    resources :logs, except: [:index]
 
     member do
       get :edit_unstructured

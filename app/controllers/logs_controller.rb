@@ -1,11 +1,11 @@
 class LogsController < ApplicationController
-  before_action :set_workout, only: [:index, :new, :create]
+  before_action :set_workout, only: [:new, :create]
   before_action :set_log, only: [:show, :edit, :update, :destroy]
 
   # GET /logs
   # GET /logs.json
   def index
-    @logs = Current.user.logs
+    @logs = Current.user.logs.includes(:workout).order(created_at: :desc, id: :desc).page(params[:page])
   end
 
   # GET /logs/1

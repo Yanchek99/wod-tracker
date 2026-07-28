@@ -16,6 +16,7 @@ Rails.application.routes.draw do
         get :personal_records
       end
     end
+    resources :workout_records, only: [:index]
   end
 
   resources :workouts do

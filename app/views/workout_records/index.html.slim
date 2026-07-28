@@ -1,0 +1,13 @@
+.container
+  h1.mt-3 Workout Records
+  table.table.table-hover
+    thead
+      tr
+        th scope="col" Workout
+        th scope="col" Record
+    tbody
+      - @logs.each do |log|
+        tr
+          th scope="row" #{log.workout.name}
+          td = link_to log
+            span = log_score_msg(log)

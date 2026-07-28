@@ -12,14 +12,13 @@
           = schedule.workout.name
         i.col.text-end
           = link_to schedule.program.name, schedule.program
-      - if schedule.workout.notes.present?
-        .row
-          .col = schedule.workout.notes
       .row
         p.col #{workout_objective schedule.workout}
       .row
         ul.list-unstyled.col
           = render partial: 'exercises/exercises', locals: { workout: schedule.workout }
+      .row
+        .col = render partial: 'workouts/notes', locals: { workout: schedule.workout }
       .row
         .col-12
           .d-grid

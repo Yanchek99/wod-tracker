@@ -104,7 +104,7 @@ module MeasurableHelper
     female_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.female_value) }
     male_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.male_value) }
 
-    "♀#{female_values.join(' + ')} / ♂#{male_values.join(' + ')}"
+    "♀︎#{female_values.join(' + ')} / ♂︎#{male_values.join(' + ')}"
   end
 
   def sex_specific_metric_value_msg(metric, value)

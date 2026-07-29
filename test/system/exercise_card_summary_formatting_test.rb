@@ -59,7 +59,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
-      save_exercise_card '100/80 meter Run (♀65lb / ♂95lb)'
+      save_exercise_card '100/80 meter Run (♀︎65lb / ♂︎95lb)'
     end
   end
 
@@ -97,7 +97,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       open_optional_group 'Load'
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
-      save_exercise_card '80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+      save_exercise_card '80ft Dumbbell Overhead Walking Lunge (♀︎35lb / ♂︎50lb)'
     end
   end
 
@@ -126,7 +126,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
 
-      save_exercise_card '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+      save_exercise_card '40/30ft Dumbbell Overhead Walking Lunge (♀︎35lb / ♂︎50lb)'
     end
   end
 

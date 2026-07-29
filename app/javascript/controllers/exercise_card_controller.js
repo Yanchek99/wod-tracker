@@ -232,7 +232,7 @@ export default class extends Controller {
     const femaleValues = orderedMetrics.map((metric) => this.sexSpecificMetricValueText(metric, metric.femaleValue))
     const maleValues = orderedMetrics.map((metric) => this.sexSpecificMetricValueText(metric, metric.maleValue))
 
-    return `♀${femaleValues.join(" + ")} / ♂${maleValues.join(" + ")}`
+    return `♀︎${femaleValues.join(" + ")} / ♂︎${maleValues.join(" + ")}`
   }
 
   metricUnitText(metric) {
@@ -248,7 +248,7 @@ export default class extends Controller {
     const unit = this.singularUnit(metric.measurement)
     const separator = this.loadMeasurement(unit) ? "" : "-"
 
-    return `♀${metric.femaleValue}${separator}${unit} / ♂${metric.maleValue}${separator}${unit}`
+    return `♀︎${metric.femaleValue}${separator}${unit} / ♂︎${metric.maleValue}${separator}${unit}`
   }
 
   sexSpecificMetricValueText(metric, value) {

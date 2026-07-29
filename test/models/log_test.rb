@@ -227,13 +227,12 @@ class LogTest < ActiveSupport::TestCase
     assert_nil movement_log.implement_count
   end
 
-  test 'orphaned scope finds logs whose workout row no longer exists' do
-    workout = Workout.create!(name: 'Temporary Orphan Workout', score_type: :time)
-    orphaned_log = workout.logs.create!(user: users(:mathew), score_type: :time, score_value: 200)
-    kept_log = workouts(:fran).logs.create!(user: users(:mathew), score_type: :time, score_value: 200)
-    Workout.where(id: workout.id).delete_all
+  test 'the workouts foreign key blocks deleting a workout that still has logs' do
+    workout = Workout.create!(name: 'Constrained Workout', score_type: :time)
+    workout.logs.create!(user: users(:mathew), score_type: :time, score_value: 200)
 
-    assert_equal [orphaned_log], Log.orphaned.to_a
-    assert_not_includes Log.orphaned, kept_log
+    assert_raises(ActiveRecord::InvalidForeignKey) do
+      Workout.where(id: workout.id).delete_all
+    end
   end
 end

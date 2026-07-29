@@ -1,11 +1,18 @@
 module WorkoutsHelper
   def workout_objective(workout)
+    return weight_objective(workout) if workout.score_measurement == 'weight'
     return ascending_ladder_objective(workout) if workout.ascending_ladder?
-    return max_finding_objective(workout) if workout.max_finding?
-    return 'For load' if workout.set_based_lifting?
     return for_time_objective(workout) if workout.rounds_for_time?
 
     clock_objective(workout)
+  end
+
+  # Weight-scored workouts are always "for load" -- the only exception is a find-a-max
+  # prescription with a time window, which gets its own "in N minutes" phrasing.
+  def weight_objective(workout)
+    return max_finding_objective(workout) if workout.max_finding?
+
+    'For load'
   end
 
   def clock_objective(workout)

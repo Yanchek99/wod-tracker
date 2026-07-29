@@ -1,7 +1,7 @@
 module WorkoutsHelper
   def workout_objective(workout)
-    return ascending_ladder_objective(workout) if workout.ascending_ladder?
     return weight_objective(workout) if workout.score_measurement == 'weight'
+    return ascending_ladder_objective(workout) if workout.ascending_ladder?
     return for_time_objective(workout) if workout.rounds_for_time?
 
     clock_objective(workout)

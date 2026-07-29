@@ -11,7 +11,7 @@ class MeasurableHelperTest < ActionView::TestCase
     exercise = exercises(:fran_pullup)
     exercise.update!(load_unit: :lb, female_load: 65, male_load: 95, notes: 'Carry a plate.')
 
-    assert_equal 'Pull Up (♀65lb / ♂95lb) ** Carry a plate.', measurable_message(exercise)
+    assert_equal 'Pull Up (♀︎65lb / ♂︎95lb) ** Carry a plate.', measurable_message(exercise)
   end
 
   test 'renders multi-implement dumbbell load with a count prefix' do
@@ -20,7 +20,7 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                 load_unit: :lb, female_load: 35, male_load: 50,
                                                                 implement_count: 2)
 
-    assert_equal '10 Dumbbell Thrusters (2×♀35lb / ♂50lb)', measurable_message(exercise)
+    assert_equal '10 Dumbbell Thrusters (2×♀︎35lb / ♂︎50lb)', measurable_message(exercise)
   end
 
   test 'renders 30 Box Jumps (♀20-inch / ♂24-inch)' do
@@ -28,7 +28,7 @@ class MeasurableHelperTest < ActionView::TestCase
     exercise = workouts(:fran).segments.first.exercises.create!(movement: box_jump, position: 3, reps: 30,
                                                                 female_distance: 20, male_distance: 24, distance_unit: :inch)
 
-    assert_equal '30 Box Jumps (♀20-inch / ♂24-inch)', measurable_message(exercise)
+    assert_equal '30 Box Jumps (♀︎20-inch / ♂︎24-inch)', measurable_message(exercise)
   end
 
   test 'groups multiple sex-specific additional exercise metrics by sex' do
@@ -37,7 +37,7 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                 load_unit: :lb, female_load: 14, male_load: 20,
                                                                 distance_unit: :foot, female_distance: 9, male_distance: 10)
 
-    assert_equal 'Wall-ball Shot (♀14lb + 9ft / ♂20lb + 10ft)', measurable_message(exercise)
+    assert_equal 'Wall-ball Shot (♀︎14lb + 9ft / ♂︎20lb + 10ft)', measurable_message(exercise)
   end
 
   test 'renders timed max-rep station movements with duration prefix' do
@@ -47,7 +47,7 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                 load_unit: :lb, female_load: 14, male_load: 20,
                                                                 distance_unit: :foot, female_distance: 9, male_distance: 10)
 
-    assert_equal '1:00 Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)', measurable_message(exercise)
+    assert_equal '1:00 Wall-ball Shots (♀︎14lb + 9ft / ♂︎20lb + 10ft)', measurable_message(exercise)
   end
 
   test 'renders untimed max-rep station movements with max reps prefix' do

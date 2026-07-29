@@ -1,7 +1,7 @@
 # Groups a user's movement logs into "the same test attempted more than once" and keeps the best
 # attempt per group. Which dimension counts as the group ("what was fixed") versus the ranked
 # outcome ("what you were trying to beat") depends on which columns the log recorded -- see the
-# rule table in docs/superpowers/plans/2026-07-28-pr-view-redesign.md.
+# rule table in https://github.com/Yanchek99/wod-tracker/issues/1829.
 class MovementRecordSet
   Candidate = Struct.new(:movement_log, :group_key, :rank_value)
 
@@ -20,21 +20,10 @@ class MovementRecordSet
   private
 
   def candidate_for(movement_log)
-    if movement_log.load.present?
-      load_candidate(movement_log)
-    elsif movement_log.distance.present? && movement_log.duration_seconds.present?
-      distance_duration_candidate(movement_log)
-    elsif movement_log.distance.present?
-      nil
-    elsif movement_log.duration_seconds.present? && movement_log.reps.present?
-      duration_reps_candidate(movement_log)
-    elsif movement_log.duration_seconds.present? && movement_log.calories.present?
-      duration_calories_candidate(movement_log)
-    elsif movement_log.calories.present?
-      Candidate.new(movement_log, :calories, movement_log.calories)
-    elsif movement_log.reps.present?
-      Candidate.new(movement_log, :reps, movement_log.reps)
-    end
+    return load_candidate(movement_log) if movement_log.load.present?
+    return distance_or_duration_candidate(movement_log) if movement_log.distance.present? || movement_log.duration_seconds.present?
+
+    bare_metric_candidate(movement_log)
   end
 
   def load_candidate(movement_log)
@@ -42,8 +31,25 @@ class MovementRecordSet
     Candidate.new(movement_log, group_key, movement_log.load)
   end
 
+  # Distance without load is either a for-time test (paired with duration) or a bare, unranked
+  # distance number -- the latter isn't a meaningful record on its own, so it's skipped.
+  def distance_or_duration_candidate(movement_log)
+    return distance_duration_candidate(movement_log) if movement_log.distance.present? && movement_log.duration_seconds.present?
+    return if movement_log.distance.present?
+
+    duration_secondary_candidate(movement_log)
+  end
+
   def distance_duration_candidate(movement_log)
     Candidate.new(movement_log, [:distance, movement_log.distance], -movement_log.duration_seconds)
+  end
+
+  # A fixed-duration test (e.g. "max double-unders in 60 seconds") is ranked by whichever
+  # secondary metric it recorded.
+  def duration_secondary_candidate(movement_log)
+    return duration_reps_candidate(movement_log) if movement_log.reps.present?
+
+    duration_calories_candidate(movement_log) if movement_log.calories.present?
   end
 
   def duration_reps_candidate(movement_log)
@@ -52,5 +58,11 @@ class MovementRecordSet
 
   def duration_calories_candidate(movement_log)
     Candidate.new(movement_log, [:duration_calories, movement_log.duration_seconds], movement_log.calories)
+  end
+
+  def bare_metric_candidate(movement_log)
+    return Candidate.new(movement_log, :calories, movement_log.calories) if movement_log.calories.present?
+
+    Candidate.new(movement_log, :reps, movement_log.reps) if movement_log.reps.present?
   end
 end

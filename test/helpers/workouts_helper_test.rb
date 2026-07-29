@@ -105,6 +105,14 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'For load', workout_objective(workout)
   end
 
+  test 'renders a bare untimed single-lift weight workout as for load, not for time' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 1, load: 0)
+
+    assert_equal 'For load', workout_objective(workout)
+  end
+
   test 'renders fixed-rep amraps as rounds and reps' do
     workout = Workout.new(name: 'AMRAP Couplet', score_type: :rep)
     segment = workout.segments.build(time_seconds: 600, position: 1)

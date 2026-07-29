@@ -19,10 +19,10 @@ class WorkoutRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?]', log_path(fast)
   end
 
-  test 'index shows a workout logged only once' do
+  test 'index excludes a workout logged only once' do
     get user_workout_records_url(users(:mathew))
 
     assert_response :success
-    assert_select 'th', text: 'Murph'
+    assert_select 'th', text: 'Murph', count: 0
   end
 end

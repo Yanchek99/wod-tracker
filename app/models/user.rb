@@ -54,12 +54,25 @@ class User < ApplicationRecord
     logs
       .group_by(&:workout_id)
       .values
-      .map do |workout_logs|
-        workout_logs.max_by do |log|
-          next -Float::INFINITY if log.score_value.nil?
+      .select { |workout_logs| repeated_metcon?(workout_logs) }
+      .map { |workout_logs| best_log(workout_logs) }
+  end
 
-          log.score_time? ? -log.score_value : log.score_value
-        end
-      end
+  private
+
+  # Lift workouts are already represented on the movement PR page (grouped by rep count), and a
+  # workout logged only once has nothing to be a "record" against.
+  def repeated_metcon?(workout_logs)
+    workout_logs.size > 1 && !workout_logs.first.workout.score_weight?
+  end
+
+  def best_log(workout_logs)
+    workout_logs.max_by { |log| log_rank_value(log) }
+  end
+
+  def log_rank_value(log)
+    return -Float::INFINITY if log.score_value.nil?
+
+    log.score_time? ? -log.score_value : log.score_value
   end
 end

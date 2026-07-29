@@ -54,6 +54,12 @@ class User < ApplicationRecord
     logs
       .group_by(&:workout_id)
       .values
-      .map { |workout_logs| workout_logs.max_by { |log| log.score_time? ? -log.score_value : log.score_value } }
+      .map do |workout_logs|
+        workout_logs.max_by do |log|
+          next -Float::INFINITY if log.score_value.nil?
+
+          log.score_time? ? -log.score_value : log.score_value
+        end
+      end
   end
 end

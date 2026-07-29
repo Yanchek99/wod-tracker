@@ -66,6 +66,24 @@ class UserTest < ActiveSupport::TestCase
     assert_includes records, logs(:matt_murph)
   end
 
+  test 'workout_records ignores an unscored log when a real score exists for the same workout' do
+    workout = workouts(:fran)
+    users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: nil)
+    scored = users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: 330)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_equal [scored], records
+  end
+
+  test 'workout_records does not raise when a workout is logged only with an unscored log' do
+    unscored = users(:mathew).logs.create!(workout: workouts(:segmented_total_reps), score_type: :rep, score_value: nil)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == unscored.workout }
+
+    assert_equal [unscored], records
+  end
+
   test 'requires sex on user profiles' do
     user = User.new(
       email: 'test@example.com',

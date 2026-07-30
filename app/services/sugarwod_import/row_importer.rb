@@ -13,8 +13,9 @@ class SugarwodImport
 
     def import
       return Result.new(status: :skipped, reason: 'not a workout score type') if disregard?
+      return Result.new(status: :skipped, reason: 'no score recorded') if row[:best_result_raw].blank?
 
-      create_log(resolve_workout)
+      ActiveRecord::Base.transaction { create_log(resolve_workout) }
     rescue CfWod::WorkoutParser::UnparseableError, WorkoutExtraction::LlmParser::ExtractionError,
            WorkoutExtraction::LlmParser::UnrepresentableWorkoutError, ActiveRecord::ActiveRecordError => e
       Result.new(status: :skipped, reason: e.message)
@@ -38,6 +39,8 @@ class SugarwodImport
       text = BarbellLiftHeader.call(row)
       page = WodPageBuilder.call(row.merge(description: text), date: row[:date])
       persist(CfWod::WorkoutParser.call(page))
+    rescue CfWod::WorkoutParser::UnparseableError
+      nil
     end
 
     def build_from_heuristic_or_llm

@@ -93,6 +93,35 @@ class SugarwodImport
       assert_equal 'llm boom', result.reason
     end
 
+    test 'falls through to the heuristic parser when the barbell_lift name is not in the movement catalog' do
+      row = { date: Date.new(2020, 5, 2), title: 'Row Burpee Chipper', description: 'For time:•50 Calorie Row•50 Push-ups',
+              best_result_raw: '600', barbell_lift: 'Nonexistent Lift' }
+      result = RowImporter.call(row, user: @user)
+
+      assert_equal :imported, result.status
+      workout = @user.logs.last.workout
+      assert_equal 'time', workout.score_type
+    end
+
+    test 'skips a row with a blank best_result_raw without creating a Log' do
+      row = { date: Date.new(2020, 6, 1), title: 'Fran', best_result_raw: '' }
+      result = RowImporter.call(row, user: @user)
+
+      assert_equal :skipped, result.status
+      assert_equal 'no score recorded', result.reason
+      assert_not @user.logs.exists?(workout: workouts(:fran))
+    end
+
+    test 'rolls back a newly persisted Workout when create_log raises after resolve_workout succeeds' do
+      row = { date: Date.new(2020, 7, 1), title: 'Totally Novel Max Pullup AMRAP',
+              description: 'As many rounds and reps as possible in 12 minutes of:•Max Pull-ups', best_result_raw: '6.054',
+              best_result_display: '6+54' }
+
+      assert_no_difference -> { Workout.count } do
+        assert_equal :skipped, RowImporter.call(row, user: @user).status
+      end
+    end
+
     test 'is idempotent: re-importing the same user/workout/date does not create a duplicate Log' do
       row = { date: Date.new(2018, 1, 2), title: 'Fran', description: '21-15-9 reps for time of:• Thruster 95/65#• Pull-ups',
               best_result_raw: '378', best_result_display: '6:18', score_type: '', barbell_lift: nil, notes: nil }

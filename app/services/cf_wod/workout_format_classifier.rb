@@ -6,10 +6,13 @@ module CfWod
     ROUNDS_AMRAP = /\Afor (\d+) rounds,\s*(?:complete )?as many (?:rounds(?: and reps)?|reps) as possible in (\d+) minutes? of:?\z/i
     EVERY_MINUTE = /\Aevery minute on the minute for (\d+) minutes?:?\z/i
     REP_LADDER = /\A(\d+(?:-\d+)+) reps for time of:?\z/i
-    FIND_MAX = /\Afind a 1-rep-max (.+?)\.?\z/i
+    FIND_MAX = /\Afind a (\d+)-rep-max (.+?)\.?\z/i
     TIME_WINDOWED = /\Aon a (\d+)-minute clock for total reps:?\z/i
     ROUNDS_FOR_TIME = /\A(\d+) rounds? for time(?: of)?:?\z/i
     SET_BASED_LIFTING = /\A(.+?) (\d+(?:-\d+)+)\s+reps\z/i
+    EMOM_SHORT = /\Aemom (\d+)\z/i
+    ON_THE_CLOCK_ROUNDS = /\A(?:on|every) the (\d+):00 x (\d+) rounds?:?\z/i
+    PLAIN_ROUNDS = /\A(\d+) rounds?:?\z/i
     PARTNER_PREFIX = /\Awith a partner,\s*/i
 
     FORMATS = [
@@ -22,7 +25,10 @@ module CfWod
       [FIND_MAX, :find_max_attributes],
       [TIME_WINDOWED, :time_windowed_attributes],
       [ROUNDS_FOR_TIME, :rounds_for_time_attributes],
-      [SET_BASED_LIFTING, :set_based_lifting_attributes]
+      [SET_BASED_LIFTING, :set_based_lifting_attributes],
+      [EMOM_SHORT, :emom_short_attributes],
+      [ON_THE_CLOCK_ROUNDS, :on_the_clock_rounds_attributes],
+      [PLAIN_ROUNDS, :plain_rounds_attributes]
     ].freeze
 
     def self.call(header_line) = new(header_line).classify
@@ -72,7 +78,8 @@ module CfWod
     end
 
     def find_max_attributes
-      { score_type: :weight, lift_name: header_line.match(FIND_MAX)[1] }
+      reps, lift_name = header_line.match(FIND_MAX).captures
+      { score_type: :weight, lift_name: lift_name, set_reps: reps.to_i }
     end
 
     def time_windowed_attributes
@@ -93,6 +100,20 @@ module CfWod
       raise WorkoutParser::UnparseableError, "unsupported varying rep scheme: #{scheme.inspect}" unless reps_per_set.uniq.one?
 
       { score_type: :weight, rounds: reps_per_set.length, lift_name: lift_name, set_reps: reps_per_set.first }
+    end
+
+    def emom_short_attributes
+      minutes = header_line.match(EMOM_SHORT)[1].to_i
+      { score_type: :rep, time: minutes, rounds: minutes }
+    end
+
+    def on_the_clock_rounds_attributes
+      minutes_per_round, rounds = header_line.match(ON_THE_CLOCK_ROUNDS).captures
+      { score_type: :rep, time: minutes_per_round.to_i * rounds.to_i, rounds: rounds.to_i }
+    end
+
+    def plain_rounds_attributes
+      { score_type: :time, rounds: header_line.match(PLAIN_ROUNDS)[1].to_i }
     end
   end
 end

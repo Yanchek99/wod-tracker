@@ -10,8 +10,8 @@ module CfWod
     TIME_WINDOWED = /\Aon a (\d+)-minute clock for total reps:?\z/i
     ROUNDS_FOR_TIME = /\A(\d+) rounds? for time(?: of)?:?\z/i
     SET_BASED_LIFTING = /\A(.+?) (\d+(?:-\d+)+)\s+reps\z/i
-    EMOM_SHORT = /\Aemom (\d+)\z/i
-    ON_THE_CLOCK_ROUNDS = /\A(?:on|every) the (\d+):00 x (\d+) rounds?:?\z/i
+    EMOM_SHORT = /\Aemom (\d+):?\z/i
+    ON_THE_CLOCK_ROUNDS = /\A(?:on|every)(?: the)? (\d+):00 x (\d+) rounds?:?\z/i
     PLAIN_ROUNDS = /\A(\d+) rounds?:?\z/i
     PARTNER_PREFIX = /\Awith a partner,\s*/i
 

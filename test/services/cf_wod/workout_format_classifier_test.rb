@@ -91,5 +91,15 @@ module CfWod
       result = WorkoutFormatClassifier.call('5 Rounds:')
       assert_equal({ score_type: :time, rounds: 5 }, result)
     end
+
+    test 'classifies an every-N:00-x-rounds header with no literal "the"' do
+      result = WorkoutFormatClassifier.call('Every 3:00 x 6 Rounds')
+      assert_equal({ score_type: :rep, time: 18, rounds: 6 }, result)
+    end
+
+    test 'classifies short EMOM shorthand with a trailing colon' do
+      result = WorkoutFormatClassifier.call('EMOM 30:')
+      assert_equal({ score_type: :rep, time: 30, rounds: 30 }, result)
+    end
   end
 end

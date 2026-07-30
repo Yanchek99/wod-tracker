@@ -13,7 +13,7 @@ module CfWod
     def burpee_box_jump_over = Movement.find_or_create_by(name: 'Burpee Box Jump-over')
     def wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
     def muscle_up = Movement.find_or_create_by(name: 'Muscle-up')
-    def bike = Movement.find_or_create_by(name: 'Bike')
+    def bike = Movement.find_or_create_by(name: 'Air Bike')
     def alternating_dumbbell_hang_snatch = Movement.find_or_create_by(name: 'Alternating Dumbbell Hang Snatch')
     def dumbbell_facing_burpee = Movement.find_or_create_by(name: 'Dumbbell-facing Burpee')
 

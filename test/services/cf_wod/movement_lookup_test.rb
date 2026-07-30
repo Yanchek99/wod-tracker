@@ -33,5 +33,27 @@ module CfWod
       ghd_sit_up = Movement.find_or_create_by(name: 'GHD Sit-up')
       assert_equal ghd_sit_up, MovementLookup.call('GHD sit-ups')
     end
+
+    test 'aliases bike brand names to the canonical Air Bike movement' do
+      air_bike = Movement.find_or_create_by(name: 'Air Bike')
+      assert_equal air_bike, MovementLookup.call('bike')
+      assert_equal air_bike, MovementLookup.call('Assault Bike')
+      assert_equal air_bike, MovementLookup.call('echo bike')
+    end
+
+    test 'matches an inherently-plural compound name without singularizing it away' do
+      knees_to_elbows = Movement.find_or_create_by(name: 'Knees-to-elbows')
+      assert_equal knees_to_elbows, MovementLookup.call('knees-to-elbows')
+    end
+
+    test 'matches a space-separated input against a hyphenated catalog entry' do
+      hand_release_push_up = Movement.find_or_create_by(name: 'Hand-release Push-up')
+      assert_equal hand_release_push_up, MovementLookup.call('hand release push ups')
+    end
+
+    test 'matches past a trailing parenthetical annotation on the catalog entry' do
+      pistol_squat = Movement.find_or_create_by(name: 'Pistol Squat (Single-leg)')
+      assert_equal pistol_squat, MovementLookup.call('pistol squats')
+    end
   end
 end

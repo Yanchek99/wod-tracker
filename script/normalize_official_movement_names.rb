@@ -4,12 +4,10 @@ class OfficialMovementNameNormalizer
     'Kettlebell Swings' => 'Kettlebell Swing',
     'Pistol' => 'Single-leg Squat (Pistol)',
     'Strict Toes to Bar' => 'Strict Toes-to-bar',
-    # Assault Bike and Echo Bike are both air bikes, scored identically (calories/distance); "Bike"
-    # alone was ambiguous with a road/spin bike.
     'Bike' => 'Air Bike'
   }.freeze
 
-  BAD_MOVEMENTS = ['Press Jerk'].freeze
+  BAD_MOVEMENTS = ['Press Jerk', 'Butterfly Sit-up', 'Inchworm Push-up', 'Suitcase Deadlift', 'Wall Climb'].freeze
 
   def initialize(output: $stdout)
     @output = output

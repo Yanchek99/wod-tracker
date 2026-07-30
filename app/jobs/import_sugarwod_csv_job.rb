@@ -8,7 +8,12 @@ class ImportSugarwodCsvJob < ApplicationJob
     skipped_rows = []
 
     rows.each do |row|
-      result = SugarwodImport::RowImporter.call(symbolize_row(row), user: sugarwod_import.user)
+      result = begin
+        SugarwodImport::RowImporter.call(symbolize_row(row), user: sugarwod_import.user)
+      rescue StandardError => e
+        SugarwodImport::RowImporter::Result.new(status: :skipped, reason: e.message)
+      end
+
       case result.status
       when :imported then imported += 1
       when :already_imported then already_imported += 1

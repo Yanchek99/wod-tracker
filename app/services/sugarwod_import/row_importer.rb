@@ -37,9 +37,7 @@ class SugarwodImport
 
       text = BarbellLiftHeader.call(row)
       page = WodPageBuilder.call(row.merge(description: text), date: row[:date])
-      workout = persist(CfWod::WorkoutParser.call(page))
-      @built_from_barbell_lift = true
-      workout
+      persist(CfWod::WorkoutParser.call(page))
     end
 
     def build_from_heuristic_or_llm
@@ -66,13 +64,7 @@ class SugarwodImport
       log = workout.logs.build(ScoreMapper.call(workout, row, user: user).merge(user: user))
       log.created_at = row[:date]
       log.save!
-      # Not workout.single_max_finding? (workout_scoring.rb): that predicate requires
-      # Exercise#max_load_prescription? which additionally requires duration_seconds to be
-      # present, and CfWod::WorkoutParser#build_max_finding_exercise never sets it for the
-      # "Find a N-rep-max <lift>" header BarbellLiftHeader synthesizes -- so it is never true for
-      # a workout built via build_from_barbell_lift. Track that this row actually resolved through
-      # that path instead, which is the real signal for "this is a single-lift PR row."
-      build_movement_log(workout, log) if @built_from_barbell_lift
+      build_movement_log(workout, log) if single_weight_exercise?(workout)
       Result.new(status: :imported)
     end
 
@@ -80,9 +72,16 @@ class SugarwodImport
       user.logs.where(workout: workout).exists?(created_at: row[:date].all_day)
     end
 
+    # Weight-scored workouts that record more than one exercise (e.g. "CrossFit Total" =
+    # back squat + shoulder press + deadlift, summed) represent a combined total across
+    # different movements. Building a MovementLog from just the first exercise would
+    # misattribute that total to the wrong movement, so those are skipped.
+    def single_weight_exercise?(workout)
+      workout.score_weight? && workout.exercises_for_log_recording.one?
+    end
+
     def build_movement_log(workout, log)
       exercise = workout.exercises_for_log_recording.first
-      return unless exercise
 
       log.movement_logs.create!(movement: exercise.movement, load: log.score_value, reps: exercise.reps)
     end

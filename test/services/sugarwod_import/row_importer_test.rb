@@ -34,6 +34,19 @@ class SugarwodImport
       assert_equal 205, movement_log.load
     end
 
+    test 'skips the PR-tracking MovementLog for a weight-scored workout that totals more than one exercise' do
+      row = { date: Date.new(2020, 4, 1), title: 'Total Test', description: 'For load:•Back Squat•Deadlift',
+              best_result_raw: '500', best_result_display: '500', score_type: 'Load', barbell_lift: nil, notes: nil }
+
+      result = RowImporter.call(row, user: @user)
+
+      assert_equal :imported, result.status
+      log = @user.logs.last
+      assert_equal 'weight', log.workout.score_type
+      assert_equal 2, log.workout.exercises_for_log_recording.size
+      assert_empty log.movement_logs
+    end
+
     test 'parses a workout via the heuristic parser when no catalog name matches' do
       row = { date: Date.new(2020, 3, 1), title: 'Row Burpee Chipper', description: 'For time:•50 Calorie Row•50 Push-ups',
               best_result_raw: '600', best_result_display: '10:00', score_type: '', barbell_lift: nil, notes: nil }

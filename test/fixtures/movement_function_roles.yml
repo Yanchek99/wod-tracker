@@ -1,0 +1,49 @@
+hspu_vertical_push:
+  movement: hspu
+  movement_function: vertical_push
+  role: primary
+
+pistol_squat:
+  movement: pistol
+  movement_function: squat
+  role: primary
+
+pullup_vertical_pull:
+  movement: pullup
+  movement_function: vertical_pull
+  role: primary
+
+pushup_horizontal_push:
+  movement: pushup
+  movement_function: horizontal_push
+  role: primary
+
+row_horizontal_pull:
+  movement: row
+  movement_function: horizontal_pull
+  role: primary
+
+squat_squat:
+  movement: squat
+  movement_function: squat
+  role: primary
+
+thruster_squat:
+  movement: thruster
+  movement_function: squat
+  role: primary
+
+thruster_vertical_push:
+  movement: thruster
+  movement_function: vertical_push
+  role: secondary
+
+back_squat_squat:
+  movement: back_squat
+  movement_function: squat
+  role: primary
+
+front_squat_squat:
+  movement: front_squat
+  movement_function: squat
+  role: primary

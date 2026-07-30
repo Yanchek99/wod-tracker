@@ -33,7 +33,10 @@ class Movement < ApplicationRecord
     machine: 8,
     jump_rope: 9,
     sled: 10,
-    mixed: 11
+    mixed: 11,
+    sandbag: 12,
+    vest: 13,
+    plate: 14
   }.freeze
 
   SKILL_LEVELS = {

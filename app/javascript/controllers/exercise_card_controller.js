@@ -428,7 +428,6 @@ class LeadingPrescription {
     if (!this.structuralSingleRepMetric(candidate)) return true
 
     return !this.metrics.some((metric) => (
-      this.maxCalorie(metric) ||
       this.prescribedWorkMetric(metric) && this.prescribedWorkCanLead(metric)
     ))
   }

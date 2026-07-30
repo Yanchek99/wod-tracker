@@ -31,6 +31,16 @@ class SugarwodImportsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/missing required columns/, flash[:alert])
   end
 
+  test 'uploading a malformed, non-CSV file re-renders the form with an error instead of a 500' do
+    file = Rack::Test::UploadedFile.new(StringIO.new(%(not "valid csv at all)), 'text/csv',
+                                        original_filename: 'bad.xlsx')
+
+    post sugarwod_imports_path, params: { file: file }
+
+    assert_response :unprocessable_content
+    assert_match(/Could not read that file as CSV/, flash[:alert])
+  end
+
   test 'show renders the results once the import completes' do
     sugarwod_import = users(:mathew).sugarwod_imports.create!(
       status: :completed, imported_count: 3, already_imported_count: 1, skipped_count: 1,

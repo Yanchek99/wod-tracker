@@ -13,7 +13,7 @@ class SugarwodImport
     end
 
     def parse
-      table = CSV.parse(file_content, headers: true, encoding: 'utf-8')
+      table = CSV.parse(bom_stripped_content, headers: true, encoding: 'utf-8')
       validate_headers!(table.headers)
       table.map(&:to_h)
     end
@@ -21,6 +21,10 @@ class SugarwodImport
     private
 
     attr_reader :file_content
+
+    def bom_stripped_content
+      file_content.to_s.delete_prefix('﻿')
+    end
 
     def validate_headers!(headers)
       missing = REQUIRED_HEADERS - headers

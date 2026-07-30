@@ -17,5 +17,12 @@ class SugarwodImport
       error = assert_raises(CsvParser::InvalidHeadersError) { CsvParser.call(csv) }
       assert_match(/description/, error.message)
     end
+
+    test 'parses a valid CSV prefixed with a UTF-8 BOM' do
+      rows = CsvParser.call("﻿#{VALID_CSV}")
+
+      assert_equal 1, rows.size
+      assert_equal 'Fran', rows.first['title']
+    end
   end
 end

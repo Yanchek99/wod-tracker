@@ -10,11 +10,17 @@ class SugarwodImportsController < ApplicationController
     ImportSugarwodCsvJob.perform_later(sugarwod_import.id, rows)
     redirect_to sugarwod_import_path(sugarwod_import)
   rescue SugarwodImport::CsvParser::InvalidHeadersError => e
-    flash.now[:alert] = e.message
-    render :new, status: :unprocessable_content
+    render_upload_error(e.message)
+  rescue CSV::MalformedCSVError => e
+    render_upload_error("Could not read that file as CSV: #{e.message}")
   end
 
   private
+
+  def render_upload_error(message)
+    flash.now[:alert] = message
+    render :new, status: :unprocessable_content
+  end
 
   def set_sugarwod_import
     @sugarwod_import = Current.user.sugarwod_imports.find(params.expect(:id))

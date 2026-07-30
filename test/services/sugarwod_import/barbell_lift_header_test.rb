@@ -22,5 +22,11 @@ class SugarwodImport
       row = { title: 'Deadlift', description: 'Build to a heavy deadlift for the day', barbell_lift: 'Deadlift' }
       assert_equal 'Find a 1-rep-max Deadlift', BarbellLiftHeader.call(row)
     end
+
+    test 'extracts the rep count from an "AxB" scheme in the title despite trailing whitespace' do
+      row = { title: 'Back Squat 3x5 ', description: 'Back Squat for load: #1: 5 reps #2: 5 reps #3: 5 reps',
+              barbell_lift: 'Back Squat' }
+      assert_equal 'Find a 5-rep-max Back Squat', BarbellLiftHeader.call(row)
+    end
   end
 end

@@ -24,7 +24,7 @@ class SugarwodImport
     end
 
     def from_title_set_scheme
-      match = row[:title].to_s.match(SET_SCHEME_IN_TITLE)
+      match = row[:title].to_s.strip.match(SET_SCHEME_IN_TITLE)
       match && match[2].to_i
     end
 

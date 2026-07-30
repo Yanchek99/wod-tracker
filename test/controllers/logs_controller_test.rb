@@ -8,6 +8,103 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:mathew)
   end
 
+  test 'index shows only the current user logs' do
+    get logs_url
+
+    assert_response :success
+    assert_select 'a[href=?]', workout_path(workouts(:murph))
+    assert_select 'a[href=?]', workout_path(workouts(:amrap_couplet))
+    assert_select 'a[href=?]', workout_path(workouts(:fran)), count: 0
+  end
+
+  test 'index orders history newest first' do
+    logs(:matt_murph).update!(created_at: 2.days.ago)
+    logs(:matt_amrap).update!(created_at: 1.day.ago)
+
+    get logs_url
+
+    assert_operator response.body.index(workout_path(workouts(:amrap_couplet))),
+                    :<,
+                    response.body.index(workout_path(workouts(:murph)))
+  end
+
+  test 'index row links to the log show page and shows the score' do
+    get logs_url
+
+    assert_select 'a[href=?]', log_path(logs(:matt_murph))
+    assert_select 'a[href=?]', log_path(logs(:matt_amrap))
+    assert_select '.fw-semibold', text: '01:00:00'
+    assert_select '.fw-semibold', text: '8 + 2 (202 reps)'
+  end
+
+  test 'index shows an empty state when the user has no logs' do
+    Log.where(user: users(:mathew)).destroy_all
+
+    get logs_url
+
+    assert_response :success
+    assert_select 'p', text: 'No workouts logged yet.'
+  end
+
+  test 'nav links to the workout history' do
+    get logs_url
+
+    assert_select 'nav a[href=?]', logs_path, text: 'History'
+  end
+
+  test 'index page one renders a lazy frame chaining to the next page' do
+    30.times do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    end
+
+    get logs_url
+
+    assert_response :success
+    assert_select 'turbo-frame#logs_page_1'
+    assert_select 'turbo-frame#logs_page_2[loading="lazy"][src=?]', logs_path(page: 2)
+  end
+
+  test 'index last page renders no further lazy frame' do
+    30.times do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    end
+
+    get logs_url(page: 2)
+
+    assert_response :success
+    assert_select 'turbo-frame#logs_page_2'
+    assert_select 'turbo-frame[loading="lazy"]', count: 0
+  end
+
+  test 'index paginates same-timestamp logs in descending ID order' do
+    timestamp = Time.zone.parse('2100-01-01 12:00:00')
+    logs = Array.new(26) do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200,
+                  created_at: timestamp)
+    end
+
+    get logs_url
+
+    assert_response :success
+    logs.last(25).reverse_each do |log|
+      assert_select "a[href='#{log_path(log)}']"
+    end
+    assert_select "a[href='#{log_path(logs.first)}']", count: 0
+
+    get logs_url(page: 2)
+
+    assert_response :success
+    assert_select "a[href='#{log_path(logs.first)}']"
+  end
+
+  test 'turbo frame request renders only the page frame without the heading' do
+    get logs_url, headers: { 'Turbo-Frame' => 'logs_page_1' }
+
+    assert_response :success
+    assert_select 'h1', count: 0
+    assert_select 'turbo-frame#logs_page_1'
+  end
+
   test 'should create log with direct movement recordings' do
     assert_difference(['Log.count', 'MovementLog.count'], 1) do
       post workout_logs_url(@workout), params: { log: {

@@ -56,7 +56,7 @@ class ScrapeCfWodJob < ApplicationJob
     workout = extract_workout(page, date, parser)
     workout = persist(workout)
     Program.find_by!(name: 'Crossfit.com')
-           .schedules.find_or_initialize_by(posted_at: date)
+           .schedules.find_or_initialize_by(posted_at: posted_at_for(date))
            .update!(workout: workout)
     WorkoutImport.clear!(date)
   rescue *PARSER_ERRORS.values.flatten, ActiveRecord::ActiveRecordError => e
@@ -64,6 +64,15 @@ class ScrapeCfWodJob < ApplicationJob
   end
 
   private
+
+  # The app's Time.zone (and therefore ActiveRecord's datetime casting) is UTC, so assigning a
+  # bare Date to posted_at would land at midnight UTC on that date -- an instant that falls on the
+  # *previous* calendar day once a US-timezone browser localizes it for display. Anchoring to 6pm
+  # Pacific instead -- CrossFit.com's own daily posting time -- keeps the stored instant safely
+  # within the intended calendar day for any continental US timezone.
+  def posted_at_for(date)
+    ActiveSupport::TimeZone['America/Los_Angeles'].local(date.year, date.month, date.day, 18)
+  end
 
   # Try the primary parser; if it fails with its own "couldn't extract a workout" error, retry
   # once with the other parser instead of failing the job outright. A failure from the fallback

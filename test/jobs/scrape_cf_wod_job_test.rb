@@ -13,9 +13,22 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
     end
 
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
     assert_equal workouts(:fran), schedule.workout
     assert_equal 0, WorkoutImport.count
+  end
+
+  test "posted_at doesn't roll back a day when localized to a US timezone" do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/07/28})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 7, 28)) }
+    end
+
+    posted_at = @program.schedules.find_by!(workout: workouts(:fran)).posted_at
+    assert_equal Date.new(2026, 7, 28), posted_at.in_time_zone('America/Los_Angeles').to_date
+    assert_equal Date.new(2026, 7, 28), posted_at.in_time_zone('America/New_York').to_date
   end
 
   test 'calls the LLM parser with the page body text and the resolved date' do
@@ -43,7 +56,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10), :heuristic) }
 
     workout = Workout.find_by!(name: 'CF-180110')
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
     assert_equal workout, schedule.workout
     assert_equal 0, WorkoutImport.count
   end
@@ -57,7 +70,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     end
 
     workout = Workout.find_by!(name: 'CF-180110')
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
     assert_equal workout, schedule.workout
     assert_equal 0, WorkoutImport.count
   end
@@ -71,7 +84,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20), :heuristic) }
     end
 
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2026, 6, 20))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2026, 6, 20)))
     assert_equal workouts(:fran), schedule.workout
     assert_equal 0, WorkoutImport.count
   end
@@ -86,8 +99,8 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       end
     end
 
-    assert_equal 1, @program.schedules.where(posted_at: Date.new(2018, 1, 10)).count
-    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10)).workout
+    assert_equal 1, @program.schedules.where(posted_at: posted_at_range_for(Date.new(2018, 1, 10))).count
+    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10))).workout
   end
 
   test 'a rest day is skipped: no Workout, Schedule, or WorkoutImport row' do
@@ -189,6 +202,6 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       stub_llm_parser(workouts(:fran)) { job.perform(*job.arguments) }
     end
 
-    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: Date.new(2026, 1, 16)).workout
+    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2026, 1, 16))).workout
   end
 end

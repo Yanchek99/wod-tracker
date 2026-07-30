@@ -1,1 +1,8 @@
-p You completed #{log_score_msg(log)}
+.card.mb-2.position-relative
+  .card-body.d-flex.justify-content-between.align-items-start.py-2
+    div
+      = link_to log.workout.name, log.workout, class: 'fw-semibold text-decoration-none position-relative', style: 'z-index: 1', data: { turbo_frame: '_top' }
+      .text-muted.small = local_time log.created_at, '%b %-d, %Y'
+    .text-end.ms-3
+      .fw-semibold = log_score_msg(log)
+      = link_to 'View log', log_path(log), class: 'stretched-link', 'aria-label': "View #{log.workout.name} log", data: { turbo_frame: '_top' }

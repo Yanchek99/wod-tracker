@@ -24,6 +24,16 @@ module CfWod
       assert_nil rope_climb[:exercise].female_load
     end
 
+    test 'binds a bare no-noun clause to newly cataloged load-bearing movements' do
+      shoulder_to_overhead = Movement.find_or_create_by(name: 'Shoulder to Overhead')
+      line = exercise_line(shoulder_to_overhead, '5 shoulder-to-overheads')
+      clauses = { female: [[{ value: 75, unit: :lb, implement: '' }]], male: [[{ value: 115, unit: :lb, implement: '' }]] }
+
+      PrescriptionClauseAssigner.call([line], clauses)
+
+      assert_equal [75, 115], [line[:exercise].female_load, line[:exercise].male_load]
+    end
+
     test 'binds a shared-token clause to every occurrence of a repeated movement' do
       first_box_jump = exercise_line(box_jump, '40 box jumps')
       second_box_jump = exercise_line(box_jump, '40 box jumps')

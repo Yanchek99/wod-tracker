@@ -831,7 +831,7 @@ bear_crawl = Movement.find_or_initialize_by(name: 'Bear Crawl').tap do |movement
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, skill_level: :basic)
   movement.save!
 end
-bike = Movement.find_or_initialize_by(name: 'Bike').tap do |movement|
+bike = Movement.find_or_initialize_by(name: 'Air Bike').tap do |movement|
   movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :machine,
                              skill_level: :basic)
   movement.save!
@@ -1122,6 +1122,132 @@ flutter_kick = Movement.find_or_initialize_by(name: 'Flutter Kick').tap do |move
 end
 handstand_hold = Movement.find_or_initialize_by(name: 'Handstand Hold').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, skill_level: :intermediate)
+  movement.save!
+end
+
+three_position_power_snatch = Movement.find_or_initialize_by(name: '3-Position Power Snatch').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat],
+                                               secondary: [:vertical_pull, :vertical_push] },
+                             equipment: :barbell, skill_level: :advanced)
+  movement.save!
+end
+bike_erg = Movement.find_or_initialize_by(name: 'Bike Erg').tap do |movement|
+  movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :machine,
+                             skill_level: :basic)
+  movement.save!
+end
+box_squat = Movement.find_or_initialize_by(name: 'Box Squat').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :barbell,
+                             skill_level: :basic)
+  movement.save!
+end
+bulgarian_split_squat = Movement.find_or_initialize_by(name: 'Bulgarian Split Squat').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat] }, skill_level: :intermediate)
+  movement.save!
+end
+clean_pull = Movement.find_or_initialize_by(name: 'Clean Pull').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge], secondary: [:vertical_pull] },
+                             equipment: :barbell, skill_level: :intermediate)
+  movement.save!
+end
+devil_press = Movement.find_or_initialize_by(name: 'Devil Press').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :horizontal_push], secondary: [:vertical_push] },
+                             equipment: :dumbbell, skill_level: :advanced)
+  movement.save!
+end
+dumbbell_goblet_squat = Movement.find_or_initialize_by(name: 'Dumbbell Goblet Squat').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :dumbbell,
+                             skill_level: :basic)
+  movement.save!
+end
+dumbbell_shoulder_press = Movement.find_or_initialize_by(name: 'Dumbbell Shoulder Press').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_push] },
+                             equipment: :dumbbell, skill_level: :basic)
+  movement.save!
+end
+dumbbell_shoulder_to_overhead = Movement.find_or_initialize_by(name: 'Dumbbell Shoulder to Overhead').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_push] },
+                             equipment: :dumbbell, skill_level: :intermediate)
+  movement.save!
+end
+dumbbell_snatch = Movement.find_or_initialize_by(name: 'Dumbbell Snatch').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat],
+                                               secondary: [:vertical_pull, :vertical_push] },
+                             equipment: :dumbbell, skill_level: :advanced)
+  movement.save!
+end
+front_box_squat = Movement.find_or_initialize_by(name: 'Front Box Squat').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :barbell,
+                             skill_level: :intermediate)
+  movement.save!
+end
+front_pause_squat = Movement.find_or_initialize_by(name: 'Front Pause Squat').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :barbell,
+                             skill_level: :intermediate)
+  movement.save!
+end
+front_rack_lunges = Movement.find_or_initialize_by(name: 'Front Rack Lunges').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] }, equipment: :barbell,
+                             skill_level: :intermediate)
+  movement.save!
+end
+glute_bridge = Movement.find_or_initialize_by(name: 'Glute Bridge').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:hinge] }, skill_level: :basic)
+  movement.save!
+end
+hang_squat_snatch = Movement.find_or_initialize_by(name: 'Hang Squat Snatch').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat],
+                                               secondary: [:vertical_pull, :vertical_push] },
+                             equipment: :barbell, skill_level: :advanced)
+  movement.save!
+end
+muscle_clean = Movement.find_or_initialize_by(name: 'Muscle Clean').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge], secondary: [:vertical_pull] },
+                             equipment: :barbell, skill_level: :intermediate)
+  movement.save!
+end
+power_clean_and_jerk = Movement.find_or_initialize_by(name: 'Power Clean and Jerk').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge, :squat, :vertical_push],
+                                               secondary: [:vertical_pull] },
+                             equipment: :barbell, skill_level: :advanced)
+  movement.save!
+end
+reverse_burpee = Movement.find_or_initialize_by(name: 'Reverse Burpee').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] },
+                             skill_level: :basic)
+  movement.save!
+end
+seated_press = Movement.find_or_initialize_by(name: 'Seated Press').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_push] },
+                             equipment: :barbell, skill_level: :basic)
+  movement.save!
+end
+single_leg_deadlift = Movement.find_or_initialize_by(name: 'Single-leg Deadlift').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:hinge] },
+                             skill_level: :intermediate)
+  movement.save!
+end
+ski_erg = Movement.find_or_initialize_by(name: 'Ski Erg').tap do |movement|
+  movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :machine,
+                             skill_level: :basic)
+  movement.save!
+end
+snatch_grip_push_press = Movement.find_or_initialize_by(name: 'Snatch Grip Push Press').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:vertical_push] },
+                             equipment: :barbell, skill_level: :intermediate)
+  movement.save!
+end
+snatch_pull = Movement.find_or_initialize_by(name: 'Snatch Pull').tap do |movement|
+  movement.assign_attributes(family: :weightlifting,
+                             function_roles: { primary: [:hinge], secondary: [:vertical_pull] },
+                             equipment: :barbell, skill_level: :intermediate)
   movement.save!
 end
 

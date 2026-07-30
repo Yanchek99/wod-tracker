@@ -42,6 +42,55 @@ module WorkoutExtraction
       assert_equal 'CF-260115', workout.name
     end
 
+    test 'falls back to a date-based name when the LLM uses the first prescription line as the name' do
+      stub_llm_response(
+        extractable: true, name: '1,600-meter run x2', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: movements(:run).name, distance: 1600, distance_unit: 'meter')]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('For time: 1,600-meter run x2', date: Date.new(2026, 7, 27))
+
+      assert_equal 'CF-260727', workout.name
+    end
+
+    test 'falls back when the leaked prescription line uses other common CrossFit formats' do
+      deadlift = movements(:deadlift)
+      examples = {
+        '95-lb Thruster x21' => exercise_payload(movement_name: @movement.name, reps: 21, load: 95),
+        '225-pound Deadlift x5' => exercise_payload(movement_name: deadlift.name, reps: 5, load: 225),
+        '800m Run x4' => exercise_payload(movement_name: movements(:run).name, distance: 800, distance_unit: 'meter'),
+        '4 x 400m Run' => exercise_payload(movement_name: movements(:run).name, distance: 400, distance_unit: 'meter'),
+        '21-15-9' => exercise_payload(movement_name: @movement.name, reps: 1)
+      }
+
+      examples.each do |name, exercise|
+        stub_llm_response(
+          extractable: true, name: name, score_type: 'time', rounds: nil, time: nil, interval: nil,
+          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+          exercises: [exercise]
+        )
+
+        workout = WorkoutExtraction::LlmParser.call(name, date: Date.new(2026, 7, 27))
+
+        assert_equal 'CF-260727', workout.name, "#{name.inspect} should use the date fallback"
+      end
+    end
+
+    test 'preserves legitimate short names with leading numbers' do
+      ['Open 26.1', '5K Gone Bad'].each do |name|
+        stub_llm_response(
+          extractable: true, name: name, score_type: 'time', rounds: nil, time: nil, interval: nil,
+          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+          exercises: [exercise_payload(movement_name: @movement.name, reps: 1)]
+        )
+
+        workout = WorkoutExtraction::LlmParser.call(name, date: DATE)
+
+        assert_equal name, workout.name
+      end
+    end
+
     test 'wraps a flat workout in one implicit unnamed segment carrying its scheme' do
       stub_llm_response(
         extractable: true, name: 'Cindy', score_type: 'round', rounds: nil, time: 1200, interval: nil,
@@ -145,9 +194,49 @@ module WorkoutExtraction
       assert_nil segment.interval_scheme
       assert_equal [3, 3, 2, 2, 1, 1, 1, 1], segment.exercises.map(&:reps)
       assert_equal [movement], segment.exercises.map(&:movement).uniq
+      # Every set carries the find-a-max load sentinel so the log form shows a Load field per set.
+      assert_equal [0] * 8, segment.exercises.map(&:load)
+    end
+
+    test 'marks only barbell-family movements load-bearing in manually scored weight workouts' do
+      barbell_movements = load_bearing_barbell_movements
+      pull_up = movements(:pull_up)
+      stub_llm_response(
+        extractable: true, name: 'Open-style Complex', score_type: 'weight', rounds: nil, time: nil, interval: nil,
+        segments: [],
+        exercises: (barbell_movements + [pull_up]).map { |movement| exercise_payload(movement_name: movement.name, reps: 1) }
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('Open-style Complex', date: DATE)
+
+      assert workout.valid?
+      assert_equal 'weight', workout.score_type
+      assert_not workout.calculated_lifting_score?
+      assert_loads_marked(workout, load_bearing: barbell_movements, non_load_bearing: [pull_up])
     end
 
     private
+
+    def assert_loads_marked(workout, load_bearing:, non_load_bearing:)
+      exercises = workout_exercises(workout).index_by { |exercise| exercise.movement.name }
+
+      load_bearing.each { |movement| assert_equal 0, exercises.fetch(movement.name).load }
+      non_load_bearing.each { |movement| assert_nil exercises.fetch(movement.name).load }
+    end
+
+    def load_bearing_barbell_movements
+      [
+        movements(:deadlift),
+        Movement.find_or_create_by!(name: 'Clean'),
+        Movement.find_or_create_by!(name: 'Hang Clean'),
+        Movement.find_or_create_by!(name: 'Hang Power Snatch'),
+        Movement.find_or_create_by!(name: 'Clean and Push Jerk'),
+        Movement.find_or_create_by!(name: 'Ground to Overhead'),
+        Movement.find_or_create_by!(name: 'Power Clean and Split Jerk'),
+        Movement.find_or_create_by!(name: 'Shoulder Press'),
+        Movement.find_or_create_by!(name: 'Snatch Balance')
+      ]
+    end
 
     def stub_llm_response(payload)
       stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(anthropic_http_response(payload))

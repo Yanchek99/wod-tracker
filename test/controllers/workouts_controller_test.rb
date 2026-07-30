@@ -13,6 +13,47 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index batches logged workout lookup for rendered workouts' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    query_counts = count_matching_queries(logs: /FROM "logs"/) do
+      get workouts_url
+    end
+
+    assert_response :success
+    assert_equal 1, query_counts[:logs]
+  end
+
+  test 'index page one renders a lazy frame chaining to the next page' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    get workouts_url
+
+    assert_response :success
+    assert_select 'turbo-frame#workouts_page_1'
+    assert_select 'turbo-frame#workouts_page_2[loading="lazy"][src=?]', workouts_path(page: 2)
+    assert_select 'turbo-frame#workouts_page_2 .spinner-border'
+  end
+
+  test 'index last page renders no further lazy frame' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    last_page = (Workout.count.to_f / Kaminari.config.default_per_page).ceil
+    get workouts_url(page: last_page)
+
+    assert_response :success
+    assert_select 'turbo-frame[loading="lazy"]', count: 0
+  end
+
+  test 'search carries the query into the next-page lazy frame' do
+    30.times { |i| Workout.create!(name: "Cindy Variant #{i}", score_type: :round) }
+
+    get workouts_url(query: 'Cindy')
+
+    assert_response :success
+    assert_select 'turbo-frame#workouts_page_2[src=?]', workouts_path(page: 2, query: 'Cindy')
+  end
+
   test 'should get new' do
     get new_workout_url
     assert_response :success
@@ -158,6 +199,14 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'li', text: '21-15-9 of', count: 0
   end
 
+  test 'collapses a set-based lifting workout into a for-load rep-scheme line' do
+    get workout_url(workouts(:back_squat_5x5))
+
+    assert_select 'p', text: 'For load'
+    assert_select 'li', text: '5-5-5-5-5 Back Squat'
+    assert_select 'li', text: '5 Back Squat', count: 0
+  end
+
   test 'should get edit' do
     get edit_workout_url(@workout)
     assert_response :success
@@ -256,5 +305,18 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       distance_units_per_rep: nil, calories: nil, female_calories: nil, male_calories: nil,
       ladder_step_every: nil, ladder_exempt: nil
     }.merge(overrides)
+  end
+
+  def count_matching_queries(patterns, &)
+    counts = patterns.transform_values { 0 }
+    callback = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == 'SCHEMA'
+
+      patterns.each { |name, pattern| counts[name] += 1 if payload[:sql].match?(pattern) }
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, 'sql.active_record', &)
+
+    counts
   end
 end

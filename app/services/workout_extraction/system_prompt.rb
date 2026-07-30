@@ -15,6 +15,10 @@ module WorkoutExtraction
         symbol/label, not position, to assign female_load/male_load. A bare, unlabeled split like
         "65/95" is female/male (female_load/male_load) -- female value first, male value second.
         A single number applies to both sexes equally via "load".
+      - A box height for box jumps or box step-ups (e.g. "♀ 20-inch box / ♂ 24-inch box", or a bare
+        "24/20 in") is a distance in inches, never a load: use female_distance/male_distance (or a
+        single "distance") with distance_unit "inch". Do not put box height in female_load/male_load
+        even though it looks like a sex-split load pattern.
     CHEATSHEET
 
     def self.text
@@ -108,16 +112,16 @@ module WorkoutExtraction
     end
 
     def self.exercise_field_lines
-      field_lines(WorkoutExtraction::LlmParser::EXERCISE_SCHEMA[:properties].except(:movement_name))
+      field_lines(WorkoutExtraction::LlmParser.exercise_schema[:properties].except(:movement_name))
     end
 
     def self.workout_field_lines
-      field_lines(WorkoutExtraction::LlmParser::WORKOUT_SCHEMA[:properties]
+      field_lines(WorkoutExtraction::LlmParser.workout_schema[:properties]
         .except(:extractable, :gap_reason, :segments, :exercises))
     end
 
     def self.segment_field_lines
-      field_lines(WorkoutExtraction::LlmParser::SEGMENT_SCHEMA[:properties].except(:name, :exercises))
+      field_lines(WorkoutExtraction::LlmParser.segment_schema[:properties].except(:name, :exercises))
     end
   end
 end

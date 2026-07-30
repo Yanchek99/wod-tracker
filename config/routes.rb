@@ -2,10 +2,11 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   devise_for :users
+  get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest, defaults: { format: :json }
 
   root to: 'workouts#index'
 
-  resources :logs, only: [:show, :destroy]
+  resources :logs, only: [:index, :show, :destroy]
 
   resources :movements, only: [:index, :create]
 
@@ -18,7 +19,7 @@ Rails.application.routes.draw do
   end
 
   resources :workouts do
-    resources :logs
+    resources :logs, except: [:index]
 
     member do
       get :edit_unstructured

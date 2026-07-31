@@ -25,7 +25,7 @@ class SugarwodImport
     def bom_stripped_content
       content = file_content.to_s
       content = content.dup.force_encoding(Encoding::UTF_8) if content.encoding == Encoding::ASCII_8BIT
-      content = content.encode('UTF-8', invalid: :replace, undef: :replace, replace: '') unless content.valid_encoding?
+      content = content.encode('UTF-8', invalid: :replace, undef: :replace) unless content.valid_encoding?
       content.delete_prefix('﻿')
     end
 

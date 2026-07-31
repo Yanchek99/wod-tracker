@@ -42,6 +42,16 @@ class SugarwodImport
       assert_equal 'Thruster•Pull-ups', rows.first['description']
     end
 
+    test 'replaces genuinely invalid byte sequences with a visible marker instead of silently dropping them' do
+      csv = "date,title,description,best_result_raw,best_result_display,score_type,barbell_lift,notes\n" \
+            "01/02/2018,Fran,caf\xE9 diner,378,6:18,,,\n"
+
+      rows = CsvParser.call(binary_upload_content(csv))
+
+      assert_equal 1, rows.size
+      assert_equal 'caf� diner', rows.first['description']
+    end
+
     private
 
     def binary_upload_content(csv_text)

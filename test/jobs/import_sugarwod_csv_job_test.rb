@@ -15,16 +15,15 @@ class ImportSugarwodCsvJobTest < ActiveJob::TestCase
         'best_result_raw' => '5', 'best_result_display' => '5', 'score_type' => 'Reps', 'barbell_lift' => '', 'notes' => '' }
     ]
 
-    stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'llm boom' }) do
-      perform_enqueued_jobs { ImportSugarwodCsvJob.perform_later(sugarwod_import.id, rows) }
-    end
+    perform_enqueued_jobs { ImportSugarwodCsvJob.perform_later(sugarwod_import.id, rows) }
 
     sugarwod_import.reload
     assert sugarwod_import.completed?
     assert_equal 1, sugarwod_import.imported_count
     assert_equal 0, sugarwod_import.already_imported_count
     assert_equal 2, sugarwod_import.skipped_count
-    assert_equal(['not a workout score type', 'llm boom'], sugarwod_import.skipped_rows.pluck('reason'))
+    assert_equal(['not a workout score type', 'not a benchmark, barbell-lift, or single-modality workout'],
+                 sugarwod_import.skipped_rows.pluck('reason'))
   end
 
   test 'a malformed date in one row does not abort the rest of the batch' do

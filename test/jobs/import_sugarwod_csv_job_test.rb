@@ -54,4 +54,26 @@ class ImportSugarwodCsvJobTest < ActiveJob::TestCase
     checkin_row = sugarwod_import.skipped_rows.find { |r| r['title'] == 'Daily Check-in' }
     assert_equal 'not a workout score type', checkin_row['reason']
   end
+
+  test 'passes set_details through to RowImporter so a barbell-lift row is actually imported' do
+    sugarwod_import = SugarwodImport.create!(user: @user, status: :pending)
+    rows = [
+      { 'date' => '02/10/2020', 'title' => 'Back Squat', 'description' => 'Build to Heavy Single',
+        'best_result_raw' => '205', 'best_result_display' => '205', 'score_type' => 'Load', 'barbell_lift' => 'Back Squat',
+        'set_details' => '[{"success":true,"load":205}]', 'notes' => '' }
+    ]
+
+    perform_enqueued_jobs { ImportSugarwodCsvJob.perform_later(sugarwod_import.id, rows) }
+
+    sugarwod_import.reload
+    assert sugarwod_import.completed?
+    assert_equal 1, sugarwod_import.imported_count
+    assert_equal 0, sugarwod_import.skipped_count
+
+    log = @user.logs.last
+    assert_equal 205, log.score_value
+    movement_log = log.movement_logs.sole
+    assert_equal movements(:back_squat), movement_log.movement
+    assert_equal 205, movement_log.load
+  end
 end

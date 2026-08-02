@@ -33,7 +33,8 @@ class ImportSugarwodCsvJob < ApplicationJob
     {
       date: Date.strptime(row['date'], '%m/%d/%Y'), title: row['title'], description: row['description'],
       best_result_raw: row['best_result_raw'], best_result_display: row['best_result_display'],
-      score_type: row['score_type'], barbell_lift: row['barbell_lift'], notes: row['notes']
+      score_type: row['score_type'], barbell_lift: row['barbell_lift'], set_details: row['set_details'],
+      notes: row['notes']
     }
   end
 end

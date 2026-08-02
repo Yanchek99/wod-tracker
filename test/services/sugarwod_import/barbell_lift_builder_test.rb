@@ -51,5 +51,15 @@ class SugarwodImport
 
       assert_nil BarbellLiftBuilder.call(row)
     end
+
+    test 'builds a workout that can actually be persisted' do
+      row = { title: 'Deadlift', description: 'Build to a heavy deadlift for the day', barbell_lift: 'Deadlift',
+              set_details: '[{"success":true,"load":315}]' }
+
+      workout = BarbellLiftBuilder.call(row)
+
+      assert workout.valid?, workout.errors.full_messages.join(', ')
+      assert_equal 'Deadlift 1', workout.name
+    end
   end
 end

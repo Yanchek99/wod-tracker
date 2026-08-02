@@ -17,10 +17,10 @@ class SugarwodImport
       assert_equal Date.new(2018, 1, 2), log.created_at.to_date
     end
 
-    test 'builds a single-exercise workout and a PR-tracking MovementLog for a barbell-lift row' do
+    test 'builds a single-exercise workout and one PR-tracking MovementLog for a simple barbell-lift row' do
       row = { date: Date.new(2020, 2, 10), title: 'Back Squat', description: 'Build to Heavy Single',
               best_result_raw: '205', best_result_display: '205', score_type: 'Load', barbell_lift: 'Back Squat',
-              notes: nil }
+              set_details: '[{"success":true,"load":205}]', notes: nil }
 
       result = RowImporter.call(row, user: @user)
 
@@ -28,47 +28,71 @@ class SugarwodImport
       log = @user.logs.last
       assert_equal 205, log.score_value
       exercise = log.workout.exercises_for_log_recording.sole
+      assert_equal 1, exercise.reps
       assert_equal movements(:back_squat), exercise.movement
       movement_log = log.movement_logs.sole
       assert_equal movements(:back_squat), movement_log.movement
       assert_equal 205, movement_log.load
     end
 
-    test 'skips the PR-tracking MovementLog for a weight-scored workout that totals more than one exercise' do
-      row = { date: Date.new(2020, 4, 1), title: 'Total Test', description: 'For load:•Back Squat•Deadlift',
-              best_result_raw: '500', best_result_display: '500', score_type: 'Load', barbell_lift: nil, notes: nil }
+    test 'builds one MovementLog per successful set for a varying pyramid scheme' do
+      row = { date: Date.new(2020, 2, 11), title: 'Front Squat 3-1-3-1-3-1-12', description: '',
+              best_result_raw: '185', best_result_display: '185', score_type: 'Load', barbell_lift: 'Front Squat',
+              set_details: '[{"success":true,"load":155},{"success":true,"load":165},{"success":true,"load":155},' \
+                           '{"success":true,"load":175},{"success":true,"load":155},{"success":true,"load":185},' \
+                           '{"success":true,"load":125}]', notes: nil }
 
       result = RowImporter.call(row, user: @user)
 
       assert_equal :imported, result.status
       log = @user.logs.last
-      assert_equal 'weight', log.workout.score_type
-      assert_equal 2, log.workout.exercises_for_log_recording.size
-      assert_empty log.movement_logs
+      assert_equal 185, log.score_value
+      assert_equal 7, log.movement_logs.size
+      assert_equal [3, 1, 3, 1, 3, 1, 12], log.movement_logs.map(&:reps)
+      assert_equal [155, 165, 155, 175, 155, 185, 125], log.movement_logs.map(&:load)
     end
 
-    test 'parses a workout via the heuristic parser when no catalog name matches' do
-      row = { date: Date.new(2020, 3, 1), title: 'Row Burpee Chipper', description: 'For time:•50 Calorie Row•50 Push-ups',
-              best_result_raw: '600', best_result_display: '10:00', score_type: '', barbell_lift: nil, notes: nil }
+    test 'excludes a failed attempt from the recorded MovementLogs' do
+      row = { date: Date.new(2020, 2, 12), title: 'Power Clean 1-1-1-1-1', description: '',
+              best_result_raw: '215', best_result_display: '215', score_type: 'Load', barbell_lift: 'Power Clean',
+              set_details: '[{"success":true,"load":175},{"success":true,"load":185},{"success":true,"load":205},' \
+                           '{"success":true,"load":215},{"success":false,"load":225}]', notes: nil }
 
       result = RowImporter.call(row, user: @user)
 
       assert_equal :imported, result.status
-      workout = @user.logs.last.workout
-      assert_equal 'time', workout.score_type
-      movements_used = workout.exercises.map(&:movement)
-      assert_includes movements_used, movements(:row)
-      assert_includes movements_used, movements(:pushup)
+      log = @user.logs.last
+      assert_equal 215, log.score_value
+      assert_equal 4, log.movement_logs.size
+      assert_not_includes log.movement_logs.map(&:load), 225
     end
 
-    test 'falls back to the LLM parser when the heuristic parser cannot classify the header' do
-      row = { date: Date.new(2020, 2, 4), title: 'Strict Gymnastics', description: 'Some totally novel coaching shorthand',
-              best_result_raw: '19', best_result_display: '19', score_type: 'Reps', barbell_lift: nil, notes: nil }
+    test 'skips a barbell-lift row when the rep scheme cannot be aligned with set_details' do
+      row = { date: Date.new(2020, 2, 13), title: 'Bench Press 4-2-4-2-4', description: '',
+              best_result_raw: '205', best_result_display: '205', score_type: 'Load', barbell_lift: 'Bench Press',
+              set_details: '[{"success":true,"load":155},{"success":true,"load":185},{"success":true,"load":155},' \
+                           '{"success":true,"load":195},{"success":true,"load":155},{"success":true,"load":205}]',
+              notes: nil }
 
-      result = stub_llm_parser(workouts(:fran)) { RowImporter.call(row, user: @user) }
+      assert_equal :skipped, RowImporter.call(row, user: @user).status
+    end
 
-      assert_equal :imported, result.status
-      assert_equal workouts(:fran), @user.logs.last.workout
+    test 'skips the PR-tracking MovementLogs for a weight-scored workout that totals more than one exercise' do
+      row = { date: Date.new(2020, 4, 1), title: 'Total Test', description: 'For load:•Back Squat•Deadlift',
+              best_result_raw: '500', best_result_display: '500', score_type: 'Load', barbell_lift: nil, notes: nil }
+
+      result = RowImporter.call(row, user: @user)
+
+      assert_equal :skipped, result.status
+    end
+
+    test 'skips a row with an unrecognized barbell_lift movement name' do
+      row = { date: Date.new(2020, 5, 2), title: 'Some Lift', description: '', barbell_lift: 'Nonexistent Lift',
+              best_result_raw: '600', score_type: 'Load', set_details: '[{"success":true,"load":600}]' }
+
+      result = RowImporter.call(row, user: @user)
+
+      assert_equal :skipped, result.status
     end
 
     test 'skips a row with a disregarded score_type without attempting to parse it' do
@@ -81,28 +105,6 @@ class SugarwodImport
       assert_equal 'not a workout score type', result.reason
     end
 
-    test 'skips a row when both the heuristic and LLM parser fail, recording the failure reason' do
-      row = { date: Date.new(2020, 2, 4), title: 'Bubbles', description: 'A totally freeform multi-block session',
-              best_result_raw: '12', best_result_display: '12', score_type: 'Rounds + Reps', barbell_lift: nil, notes: nil }
-
-      result = stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'llm boom' }) do
-        RowImporter.call(row, user: @user)
-      end
-
-      assert_equal :skipped, result.status
-      assert_equal 'llm boom', result.reason
-    end
-
-    test 'falls through to the heuristic parser when the barbell_lift name is not in the movement catalog' do
-      row = { date: Date.new(2020, 5, 2), title: 'Row Burpee Chipper', description: 'For time:•50 Calorie Row•50 Push-ups',
-              best_result_raw: '600', barbell_lift: 'Nonexistent Lift' }
-      result = RowImporter.call(row, user: @user)
-
-      assert_equal :imported, result.status
-      workout = @user.logs.last.workout
-      assert_equal 'time', workout.score_type
-    end
-
     test 'skips a row with a blank best_result_raw without creating a Log' do
       row = { date: Date.new(2020, 6, 1), title: 'Fran', best_result_raw: '' }
       result = RowImporter.call(row, user: @user)
@@ -112,14 +114,13 @@ class SugarwodImport
       assert_not @user.logs.exists?(workout: workouts(:fran))
     end
 
-    test 'rolls back a newly persisted Workout when create_log raises after resolve_workout succeeds' do
-      row = { date: Date.new(2020, 7, 1), title: 'Totally Novel Max Pullup AMRAP',
-              description: 'As many rounds and reps as possible in 12 minutes of:•Max Pull-ups', best_result_raw: '6.054',
-              best_result_display: '6+54' }
+    test 'skips a row that matches no catalog workout, barbell lift, or single-modality shape' do
+      row = { date: Date.new(2020, 3, 1), title: 'Row Burpee Chipper', description: 'For time:•50 Calorie Row•50 Push-ups',
+              best_result_raw: '600', best_result_display: '10:00', score_type: '', barbell_lift: nil, notes: nil }
 
-      assert_no_difference -> { Workout.count } do
-        assert_equal :skipped, RowImporter.call(row, user: @user).status
-      end
+      result = RowImporter.call(row, user: @user)
+
+      assert_equal :skipped, result.status
     end
 
     test 'is idempotent: re-importing the same user/workout/date does not create a duplicate Log' do

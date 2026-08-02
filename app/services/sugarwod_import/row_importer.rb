@@ -15,9 +15,11 @@ class SugarwodImport
       return Result.new(status: :skipped, reason: 'not a workout score type') if disregard?
       return Result.new(status: :skipped, reason: 'no score recorded') if row[:best_result_raw].blank?
 
-      ActiveRecord::Base.transaction { create_log(resolve_workout) }
-    rescue CfWod::WorkoutParser::UnparseableError, WorkoutExtraction::LlmParser::ExtractionError,
-           WorkoutExtraction::LlmParser::UnrepresentableWorkoutError, ActiveRecord::ActiveRecordError => e
+      workout = resolve_workout
+      return Result.new(status: :skipped, reason: 'not a benchmark, barbell-lift, or single-modality workout') unless workout
+
+      ActiveRecord::Base.transaction { create_log(workout) }
+    rescue ActiveRecord::ActiveRecordError => e
       Result.new(status: :skipped, reason: e.message)
     end
 
@@ -30,31 +32,23 @@ class SugarwodImport
     end
 
     def resolve_workout
-      NameMatcher.call(row[:title]) || build_from_barbell_lift || build_from_heuristic_or_llm
+      NameMatcher.call(row[:title]) || build_from_barbell_lift || build_from_monostructural || build_from_bodyweight_max_rep
     end
 
     def build_from_barbell_lift
-      return nil if row[:barbell_lift].blank?
-
-      text = BarbellLiftHeader.call(row)
-      page = WodPageBuilder.call(row.merge(description: text), date: row[:date])
-      persist(CfWod::WorkoutParser.call(page))
-    rescue CfWod::WorkoutParser::UnparseableError
-      nil
+      persist(BarbellLiftBuilder.call(row))
     end
 
-    def build_from_heuristic_or_llm
-      page = WodPageBuilder.call(row, date: row[:date])
-      persist(heuristic_or_llm_workout(page))
+    def build_from_monostructural
+      persist(MonostructuralDetector.call(row))
     end
 
-    def heuristic_or_llm_workout(page)
-      CfWod::WorkoutParser.call(page)
-    rescue CfWod::WorkoutParser::UnparseableError
-      WorkoutExtraction::LlmParser.call(page.body_text, date: row[:date])
+    def build_from_bodyweight_max_rep
+      persist(BodyweightMaxRepDetector.call(row))
     end
 
     def persist(workout)
+      return nil unless workout
       return workout if workout.persisted?
 
       workout.save!
@@ -66,8 +60,8 @@ class SugarwodImport
 
       log = workout.logs.build(ScoreMapper.call(workout, row, user: user).merge(user: user))
       log.created_at = row[:date]
+      build_movement_logs(workout, log)
       log.save!
-      build_movement_log(workout, log) if single_weight_exercise?(workout)
       Result.new(status: :imported)
     end
 
@@ -75,18 +69,26 @@ class SugarwodImport
       user.logs.where(workout: workout).exists?(created_at: row[:date].all_day)
     end
 
-    # Weight-scored workouts that record more than one exercise (e.g. "CrossFit Total" =
-    # back squat + shoulder press + deadlift, summed) represent a combined total across
-    # different movements. Building a MovementLog from just the first exercise would
-    # misattribute that total to the wrong movement, so those are skipped.
-    def single_weight_exercise?(workout)
-      workout.score_weight? && workout.exercises_for_log_recording.one?
+    # Weight-scored workouts that total more than one DISTINCT movement (e.g. "CrossFit Total" =
+    # back squat + shoulder press + deadlift, summed) represent a combined total. Building
+    # MovementLogs from a single row's data would misattribute that total to the wrong movement,
+    # so those are skipped. A single-movement workout, whether one exercise (a simple heavy
+    # single) or many (a pyramid scheme, all the same movement), is safe to build per-set.
+    def build_movement_logs(workout, log)
+      exercises = workout.exercises_for_log_recording
+      return unless workout.score_weight? && exercises.present? && exercises.map(&:movement).uniq.one?
+
+      log.build_movement_logs
+      assign_set_loads(log)
     end
 
-    def build_movement_log(workout, log)
-      exercise = workout.exercises_for_log_recording.first
+    def assign_set_loads(log)
+      sets = SetSchemeExtractor.call(row)
+      return unless sets
 
-      log.movement_logs.create!(movement: exercise.movement, load: log.score_value, reps: exercise.reps)
+      log.movement_logs.zip(sets).each do |movement_log, set|
+        movement_log.load = LoadEquivalence.to_lb(set[:load], user.load_display_unit.to_s)
+      end
     end
   end
 end

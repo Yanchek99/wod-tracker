@@ -1,0 +1,71 @@
+class SugarwodImport
+  class MonostructuralDetector
+    DISTANCE_METERS = /\A(?:for time:?\s*)?([\d,]+)\s*meter\b/i
+    DISTANCE_K = /\A(?:for time:?\s*)?(\d+)\s*k\b/i
+    MAX_CALORIES = /\A(\d+)\s*minute\s*max\s*calorie\b/i
+
+    def self.call(row) = new(row).build
+
+    def initialize(row)
+      @row = row
+    end
+
+    def build
+      return nil if row[:barbell_lift].present?
+
+      description = row[:description].to_s.strip
+      build_distance_for_time(description) || build_max_calories(description)
+    end
+
+    private
+
+    attr_reader :row
+
+    def build_distance_for_time(description)
+      meters = extract_meters(description)
+      return nil unless meters&.positive?
+
+      movement = single_monostructural_movement(description)
+      return nil unless movement
+
+      build_workout(movement, score_type: :time, name: "#{movement.name} #{meters}m") do |exercise|
+        exercise.distance = meters
+        exercise.distance_unit = 'meter'
+      end
+    end
+
+    def extract_meters(description)
+      meters = description[DISTANCE_METERS, 1]&.delete(',')&.to_i
+      meters ||= (description[DISTANCE_K, 1].to_i * 1000 if description.match?(DISTANCE_K))
+      meters
+    end
+
+    def build_max_calories(description)
+      match = description.match(MAX_CALORIES)
+      return nil unless match
+
+      movement = single_monostructural_movement(description)
+      return nil unless movement
+
+      build_workout(movement, score_type: :calorie, name: "#{match[1]} Minute Max Calorie #{movement.name}") do |exercise|
+        exercise.duration_seconds = match[1].to_i * 60
+      end
+    end
+
+    def single_monostructural_movement(description)
+      names = %w[row run bike ski].select { |name| description.match?(/\b#{name}\b/i) }
+      return nil unless names.one?
+
+      movement = CfWod::MovementLookup.call(names.first)
+      movement if movement&.family_monostructural?
+    end
+
+    def build_workout(movement, score_type:, name:)
+      workout = Workout.new(score_type: score_type, name: name)
+      segment = workout.segments.build(position: 1)
+      exercise = segment.exercises.build(movement: movement, position: 1)
+      yield exercise
+      workout
+    end
+  end
+end

@@ -15,10 +15,12 @@ class SugarwodImport
       return Result.new(status: :skipped, reason: 'not a workout score type') if disregard?
       return Result.new(status: :skipped, reason: 'no score recorded') if row[:best_result_raw].blank?
 
-      workout = resolve_workout
-      return Result.new(status: :skipped, reason: 'not a benchmark, barbell-lift, or single-modality workout') unless workout
+      ActiveRecord::Base.transaction do
+        workout = resolve_workout
+        next Result.new(status: :skipped, reason: 'not a benchmark, barbell-lift, or single-modality workout') unless workout
 
-      ActiveRecord::Base.transaction { create_log(workout) }
+        create_log(workout)
+      end
     rescue ActiveRecord::ActiveRecordError => e
       Result.new(status: :skipped, reason: e.message)
     end
@@ -85,6 +87,7 @@ class SugarwodImport
     def assign_set_loads(log)
       sets = SetSchemeExtractor.call(row)
       return unless sets
+      return unless sets.size == log.movement_logs.size
 
       log.movement_logs.zip(sets).each do |movement_log, set|
         movement_log.load = LoadEquivalence.to_lb(set[:load], user.load_display_unit.to_s)

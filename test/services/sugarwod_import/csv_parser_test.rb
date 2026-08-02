@@ -52,6 +52,15 @@ class SugarwodImport
       assert_equal 'caf� diner', rows.first['description']
     end
 
+    test 'exposes the set_details column for barbell-lift rows' do
+      csv = "date,title,description,best_result_raw,best_result_display,score_type,barbell_lift,set_details,notes\n" \
+            "01/02/2018,Deadlift,,315,315,Load,Deadlift,\"[{\"\"success\"\":true,\"\"load\"\":315}]\",\n"
+
+      rows = CsvParser.call(csv)
+
+      assert_equal '[{"success":true,"load":315}]', rows.first['set_details']
+    end
+
     private
 
     def binary_upload_content(csv_text)

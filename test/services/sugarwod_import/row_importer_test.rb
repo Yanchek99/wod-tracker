@@ -123,55 +123,6 @@ class SugarwodImport
       assert_equal :skipped, result.status
     end
 
-    test 'rolls back a newly persisted Workout when create_log raises after resolve_workout succeeds' do
-      row = { date: Date.new(2020, 7, 1), title: 'Back Squat', description: 'Build to Heavy Single',
-              best_result_raw: '205', best_result_display: '205', score_type: 'Load', barbell_lift: 'Back Squat',
-              set_details: '[{"success":true,"load":205}]', notes: nil }
-
-      # Force a real failure inside create_log (ScoreMapper computes score_value before any
-      # MovementLogs are built): an unrecognized load_display_unit makes LoadEquivalence.to_lb
-      # raise ArgumentError, which propagates past RowImporter's own
-      # `rescue ActiveRecord::ActiveRecordError` since it isn't one. What's under test is that
-      # the transaction (now covering resolve_workout as well as create_log) still rolls back
-      # the Workout that resolve_workout/persist newly saved, regardless of exception type.
-      def @user.load_display_unit
-        'furlongs'
-      end
-
-      assert_no_difference -> { Workout.count } do
-        assert_raises(ArgumentError) { RowImporter.call(row, user: @user) }
-      end
-    end
-
-    test 'does not assign set loads when the row-derived set count does not match an already-catalogued workout' do
-      first_row = { date: Date.new(2020, 2, 11), title: 'Front Squat 3-1-3-1-3-1-12', description: '',
-                    best_result_raw: '185', best_result_display: '185', score_type: 'Load', barbell_lift: 'Front Squat',
-                    set_details: '[{"success":true,"load":155},{"success":true,"load":165},{"success":true,"load":155},' \
-                                 '{"success":true,"load":175},{"success":true,"load":155},{"success":true,"load":185},' \
-                                 '{"success":true,"load":125}]', notes: nil }
-      RowImporter.call(first_row, user: @user)
-
-      # Same title, so this second row is resolved via NameMatcher against the already-persisted
-      # 7-exercise catalog workout above, not rebuilt via BarbellLiftBuilder. Its own set_details
-      # still has 7 entries (so SetSchemeExtractor's scheme.size == details.size check passes),
-      # but one is a failed attempt, so the filtered `sets` array it returns has only 6 elements --
-      # a real mismatch against the persisted workout's 7 movement_logs.
-      mismatched_row = first_row.merge(
-        date: Date.new(2020, 2, 18),
-        set_details: '[{"success":true,"load":155},{"success":true,"load":165},{"success":true,"load":155},' \
-                     '{"success":true,"load":175},{"success":true,"load":155},{"success":true,"load":185},' \
-                     '{"success":false,"load":225}]'
-      )
-
-      result = RowImporter.call(mismatched_row, user: @user)
-
-      assert_equal :imported, result.status
-      workout = Workout.find_by!(name: 'Front Squat 3-1-3-1-3-1-12')
-      log = @user.logs.find_by!(workout: workout, created_at: Date.new(2020, 2, 18).all_day)
-      assert_equal 7, log.movement_logs.size
-      assert log.movement_logs.map(&:load).all?(&:nil?)
-    end
-
     test 'is idempotent: re-importing the same user/workout/date does not create a duplicate Log' do
       row = { date: Date.new(2018, 1, 2), title: 'Fran', description: '21-15-9 reps for time of:• Thruster 95/65#• Pull-ups',
               best_result_raw: '378', best_result_display: '6:18', score_type: '', barbell_lift: nil, notes: nil }

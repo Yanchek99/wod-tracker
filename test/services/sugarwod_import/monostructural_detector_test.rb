@@ -53,5 +53,28 @@ class SugarwodImport
 
       assert_nil MonostructuralDetector.call(row)
     end
+
+    test 'returns nil for a multi-movement chipper that merely mentions a distance and a monostructural movement' do
+      row = { title: 'Born to Run',
+              description: 'For Time: 400 Meter Run, 21 Burpees400 Meter Run, 15 Burpees400 Meter Run, ' \
+                            '9 Burpees200 Meter Run, 9 Power Cleans (115/85)200 Meter Run, 15 Power Cleans ' \
+                            '(115/85)200 Meter Run, 21 Power Cleans (115/85)',
+              barbell_lift: nil }
+
+      assert_nil MonostructuralDetector.call(row)
+    end
+
+    test 'builds a workout when a real trailing score annotation follows the distance shape' do
+      row = { title: '2K Row', description: 'For Time: 2,000 Meter Row*Score = Time it takes to complete the workout',
+              barbell_lift: nil }
+
+      workout = MonostructuralDetector.call(row)
+
+      assert_equal 'time', workout.score_type
+      exercise = workout.segments.sole.exercises.sole
+      assert_equal movements(:row), exercise.movement
+      assert_equal 2000, exercise.distance
+      assert_equal 'meter', exercise.distance_unit
+    end
   end
 end

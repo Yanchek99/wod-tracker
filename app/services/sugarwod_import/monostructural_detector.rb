@@ -1,8 +1,9 @@
 class SugarwodImport
   class MonostructuralDetector
-    DISTANCE_METERS = /\A(?:for time:?\s*)?([\d,]+)\s*meter\b/i
-    DISTANCE_K = /\A(?:for time:?\s*)?(\d+)\s*k\b/i
-    MAX_CALORIES = /\A(\d+)\s*minute\s*max\s*calorie\b/i
+    TRAILING_NOTE = /\s*\*.*\z/m
+    DISTANCE_METERS = /\A(?:for time:?\s*)?([\d,]+)\s*meter\s+(?:row|run|bike|ski)\z/i
+    DISTANCE_K      = /\A(?:for time:?\s*)?(\d+)\s*k\s+(?:row|run|bike|ski)\z/i
+    MAX_CALORIES    = /\A(\d+)\s*minute\s*max\s*calorie\s+(?:row|run|bike|ski)\z/i
 
     def self.call(row) = new(row).build
 
@@ -13,13 +14,22 @@ class SugarwodImport
     def build
       return nil if row[:barbell_lift].present?
 
-      description = row[:description].to_s.strip
+      description = normalized_description
       build_distance_for_time(description) || build_max_calories(description)
     end
 
     private
 
     attr_reader :row
+
+    # The whole description must be the monostructural shape itself -- allowing only a
+    # trailing "*Score = ..." annotation (present in real SugarWOD rows) -- so a multi-part
+    # chipper that merely mentions a distance and a monostructural movement somewhere in its
+    # text (e.g. a run/burpee/power-clean chipper) is not silently truncated into a bare
+    # distance-for-time workout.
+    def normalized_description
+      row[:description].to_s.strip.sub(TRAILING_NOTE, '').strip
+    end
 
     def build_distance_for_time(description)
       meters = extract_meters(description)

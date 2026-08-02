@@ -57,8 +57,8 @@ class SugarwodImport
     test 'returns nil for a multi-movement chipper that merely mentions a distance and a monostructural movement' do
       row = { title: 'Born to Run',
               description: 'For Time: 400 Meter Run, 21 Burpees400 Meter Run, 15 Burpees400 Meter Run, ' \
-                            '9 Burpees200 Meter Run, 9 Power Cleans (115/85)200 Meter Run, 15 Power Cleans ' \
-                            '(115/85)200 Meter Run, 21 Power Cleans (115/85)',
+                           '9 Burpees200 Meter Run, 9 Power Cleans (115/85)200 Meter Run, 15 Power Cleans ' \
+                           '(115/85)200 Meter Run, 21 Power Cleans (115/85)',
               barbell_lift: nil }
 
       assert_nil MonostructuralDetector.call(row)

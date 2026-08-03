@@ -82,6 +82,27 @@ class SugarwodImport
       assert_nil SetSchemeExtractor.call(row)
     end
 
+    test 'returns nil rather than fabricating a zero load for a successful set with a missing load' do
+      row = { title: 'Deadlift', description: 'Build to a heavy deadlift for the day',
+              set_details: '[{"success":true,"load":null}]' }
+
+      assert_nil SetSchemeExtractor.call(row)
+    end
+
+    test 'returns nil rather than fabricating a zero load for a successful set with a blank load' do
+      row = { title: 'Deadlift', description: 'Build to a heavy deadlift for the day',
+              set_details: '[{"success":true,"load":""}]' }
+
+      assert_nil SetSchemeExtractor.call(row)
+    end
+
+    test 'returns nil for the whole scheme when any successful set in a pyramid has no load' do
+      row = { title: 'Front Squat 3-1-3', description: '',
+              set_details: '[{"success":true,"load":155},{"success":true,"load":null},{"success":true,"load":175}]' }
+
+      assert_nil SetSchemeExtractor.call(row)
+    end
+
     test 'does not mistake a non-numeric dash phrase in a movement name for a rep scheme' do
       row = { title: '3-Position Power Snatch', description: 'Build to a heavy single',
               set_details: '[{"success":true,"load":135}]' }

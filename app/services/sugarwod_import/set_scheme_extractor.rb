@@ -22,7 +22,10 @@ class SugarwodImport
       scheme.zip(details).filter_map do |reps, detail|
         next if detail['success'] == false
 
-        { reps: reps, load: detail['load'].to_s.to_i }
+        load = parsed_load(detail)
+        return nil if load.nil?
+
+        { reps: reps, load: load }
       end
     end
 
@@ -40,6 +43,15 @@ class SugarwodImport
 
     def successful_details
       details.reject { |detail| detail['success'] == false }
+    end
+
+    # A blank/missing load must never be coerced to 0 -- a successful set with no recorded load
+    # would otherwise become a real zero-load MovementLog, fabricating a PR that never happened.
+    def parsed_load(detail)
+      load = detail['load']
+      return nil if load.blank?
+
+      Integer(load.to_s, exception: false)
     end
 
     def rep_scheme

@@ -938,6 +938,22 @@ Workout.find_or_create_by(name: 'Open 22.3') do |workout|
   segment.exercises.build(movement: thruster, position: 9, reps: 15, female_load: 85, male_load: 135, load_unit: :lb)
 end
 
+# Quarterfinals 22.4 ("The Other Total")
+# 1-rep-max total (30-minute cap):
+# 1 clean
+# 1 bench press
+# 1 overhead squat
+Workout.find_or_create_by(name: 'Quarterfinals 22.4') do |workout|
+  workout.score_type = :weight
+  workout.time_cap_seconds = 1800
+  workout.notes = 'Establish a 1-rep-max clean, bench press, and overhead squat, in that order, within ' \
+                  'the 30-minute cap. Post the sum of the three heaviest successful lifts.'
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: clean, position: 1, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: bench_press, position: 2, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: overhead_squat, position: 3, reps: 1, load_unit: :lb)
+end
+
 # Quarterfinals 22.5
 # For time (7-minute cap)
 # 30-calorie row

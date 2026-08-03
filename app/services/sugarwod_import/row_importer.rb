@@ -1,3 +1,5 @@
+require 'json'
+
 class SugarwodImport
   class RowImporter
     DISREGARD_SCORE_TYPES = ['Checkbox', 'Points', 'Emoji Selection', 'Other / Text'].freeze
@@ -78,10 +80,23 @@ class SugarwodImport
     # single) or many (a pyramid scheme, all the same movement), is safe to build per-set.
     def build_movement_logs(workout, log)
       exercises = workout.exercises_for_log_recording
-      return unless workout.score_weight? && exercises.present? && exercises.map(&:movement).uniq.one?
+      return unless workout.score_weight? && exercises.present?
+      return unless single_movement?(exercises) || distinct_movement_total?(exercises)
 
       log.build_movement_logs
-      assign_set_loads(log)
+      single_movement?(exercises) ? assign_set_loads(log) : assign_total_lift_loads(log)
+    end
+
+    def single_movement?(exercises)
+      exercises.map(&:movement).uniq.one?
+    end
+
+    # A "total" workout (e.g. a 1-rep-max clean + bench press + overhead squat) has one exercise per
+    # distinct movement and one set_details entry per exercise, in the same order -- unlike repeated
+    # sets of ONE movement, there is no rep scheme to infer: each exercise's own fixed reps apply as-is.
+    def distinct_movement_total?(exercises)
+      movements = exercises.map(&:movement)
+      movements.uniq.size == movements.size && movements.size == successful_loads.size
     end
 
     def assign_set_loads(log)
@@ -91,6 +106,24 @@ class SugarwodImport
 
       log.movement_logs.zip(sets).each do |movement_log, set|
         movement_log.load = LoadEquivalence.to_lb(set[:load], user.load_display_unit.to_s)
+      end
+    end
+
+    def assign_total_lift_loads(log)
+      return unless successful_loads.size == log.movement_logs.size
+
+      log.movement_logs.zip(successful_loads).each do |movement_log, load|
+        movement_log.load = LoadEquivalence.to_lb(load, user.load_display_unit.to_s)
+      end
+    end
+
+    def successful_loads
+      @successful_loads ||= begin
+        JSON.parse(row[:set_details].to_s)
+            .reject { |detail| detail['success'] == false }
+            .filter_map { |detail| Integer(detail['load'].to_s, exception: false) if detail['load'].present? }
+      rescue JSON::ParserError
+        []
       end
     end
   end

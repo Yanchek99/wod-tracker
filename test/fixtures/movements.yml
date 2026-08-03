@@ -103,6 +103,16 @@ power_clean:
   family: weightlifting
   equipment: barbell
 
+clean:
+  name: Clean
+  family: weightlifting
+  equipment: barbell
+
+overhead_squat:
+  name: Overhead Squat
+  family: weightlifting
+  equipment: barbell
+
 # Deliberately not fixtures: "Box Jump" and "Wall-ball Shot" are created dynamically per-test
 # in test/helpers/measurable_helper_test.rb, which would collide with a permanent global
 # fixture of the same name. Tests needing these movements create them via

@@ -64,6 +64,28 @@ class SugarwodImport
       assert_nil MonostructuralDetector.call(row)
     end
 
+    test 'builds a fixed-distance-for-time workout from a movement-first mile distance' do
+      row = { title: 'Run 1 mile', description: 'Run 1 mile', barbell_lift: nil }
+
+      workout = MonostructuralDetector.call(row)
+
+      assert_equal 'time', workout.score_type
+      exercise = workout.segments.sole.exercises.sole
+      assert_equal movements(:run), exercise.movement
+      assert_equal 1600, exercise.distance
+      assert_equal 'meter', exercise.distance_unit
+    end
+
+    test 'builds a fixed-distance-for-time workout from a number-first mile distance' do
+      row = { title: '3 Mile Run', description: 'For Time: 3 Mile Run', barbell_lift: nil }
+
+      workout = MonostructuralDetector.call(row)
+
+      exercise = workout.segments.sole.exercises.sole
+      assert_equal movements(:run), exercise.movement
+      assert_equal 4800, exercise.distance
+    end
+
     test 'builds a workout when a real trailing score annotation follows the distance shape' do
       row = { title: '2K Row', description: 'For Time: 2,000 Meter Row*Score = Time it takes to complete the workout',
               barbell_lift: nil }

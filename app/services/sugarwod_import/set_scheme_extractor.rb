@@ -6,6 +6,7 @@ class SugarwodImport
     AXB_SCHEME = /(\d+)\s*x\s*(\d+)\z/i
     SET_OF_N = /set of (\d+)/i
     SINGLE = /single\b/i
+    TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i
 
     def self.call(row) = new(row).extract
 
@@ -85,7 +86,7 @@ class SugarwodImport
     end
 
     def scheme_source
-      "#{row[:title]} #{row[:description]}"
+      "#{row[:title]} #{row[:description]}".sub(TRAILING_NOTE, '').strip
     end
   end
 end

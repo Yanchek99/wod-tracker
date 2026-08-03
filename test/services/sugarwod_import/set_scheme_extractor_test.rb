@@ -111,5 +111,16 @@ class SugarwodImport
 
       assert_equal [{ reps: 1, load: 135 }], result
     end
+
+    test 'strips a trailing rest/coaching note before applying the dash scheme' do
+      row = { title: 'Bench Press', description: '4-2-4-2-4-2Rest As Needed Between Sets.',
+              set_details: '[{"success":true,"load":155},{"success":true,"load":185},{"success":true,"load":155},' \
+                           '{"success":true,"load":195},{"success":true,"load":155},{"success":true,"load":205}]' }
+
+      result = SetSchemeExtractor.call(row)
+
+      assert_equal [{ reps: 4, load: 155 }, { reps: 2, load: 185 }, { reps: 4, load: 155 }, { reps: 2, load: 195 },
+                    { reps: 4, load: 155 }, { reps: 2, load: 205 }], result
+    end
   end
 end

@@ -10,6 +10,12 @@ class SugarwodImport
     TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i
     WAVE_MARKER = /wave\s*#?\d+\s*:?\s*/i
     WAVE_REPS = /(\d+)\s*[A-Za-z][\w-]*/
+    LABELED_SET = /set\s*\d+\s*(?:\([^)]*\))?\s*:\s*(\d+)/i
+    PERCENTAGE_SET = /(\d+)\s*reps?\s*@\s*\d+/i
+    REP_SCHEME_STRATEGIES = %i[
+      dash_scheme axb_scheme set_of_n_scheme single_scheme interval_scheme wave_scheme
+      labeled_set_scheme percentage_set_scheme default_single_set_scheme
+    ].freeze
 
     def self.call(row) = new(row).extract
 
@@ -59,8 +65,11 @@ class SugarwodImport
     end
 
     def rep_scheme
-      dash_scheme || axb_scheme || set_of_n_scheme || single_scheme || interval_scheme || wave_scheme ||
-        default_single_set_scheme
+      REP_SCHEME_STRATEGIES.each do |strategy|
+        result = send(strategy)
+        return result if result
+      end
+      nil
     end
 
     def dash_scheme
@@ -106,6 +115,16 @@ class SugarwodImport
 
       full_scheme = first_wave_reps * waves.size
       full_scheme if full_scheme.size == details.size
+    end
+
+    def labeled_set_scheme
+      reps = scheme_source.scan(LABELED_SET).map { |(reps)| reps.to_i }
+      reps if reps.size == details.size
+    end
+
+    def percentage_set_scheme
+      reps = scheme_source.scan(PERCENTAGE_SET).map { |(reps)| reps.to_i }
+      reps if reps.size == details.size
     end
 
     def scheme_source

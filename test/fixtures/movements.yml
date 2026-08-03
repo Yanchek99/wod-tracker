@@ -56,6 +56,9 @@ front_squat:
 
 power_snatch:
   name: Power Snatch
+  family: weightlifting
+  equipment: barbell
+  skill_level: intermediate
 
 overhead_walking_lunge:
   name: Overhead Walking Lunge
@@ -107,6 +110,18 @@ clean:
   name: Clean
   family: weightlifting
   equipment: barbell
+
+hang_clean:
+  name: Hang Clean
+  family: weightlifting
+  equipment: barbell
+  skill_level: intermediate
+
+clean_pull:
+  name: Clean Pull
+  family: weightlifting
+  equipment: barbell
+  skill_level: intermediate
 
 overhead_squat:
   name: Overhead Squat

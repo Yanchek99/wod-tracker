@@ -623,6 +623,44 @@ Workout.find_or_create_by(name: 'Open 18.4') do |workout|
   segment.exercises.build(movement: handstand_walk, position: 12, reps: 1, distance: 50, distance_unit: :foot)
 end
 
+# 18.Zero (bonus workout, released before 18.1)
+# 21-15-9 reps for time of:
+# Dumbbell snatches (50 / 35 lb)
+# Burpees, jumping over the dumbbell
+Workout.find_or_create_by(name: '18.Zero') do |workout|
+  segment = workout.segments.build(interval_scheme: '21-15-9', position: 1)
+  workout.score_type = :time
+  workout.notes = 'Burpees jump over the dumbbell. Post total time.'
+  segment.exercises.build(movement: dumbbell_power_snatch, position: 1, reps: 1, female_load: 35, male_load: 50, load_unit: :lb)
+  segment.exercises.build(movement: bar_facing_burpee, position: 2, reps: 1, notes: 'Jump over the dumbbell, not the bar.')
+end
+
+# Regionals 18.5 (2018 CrossFit Regionals, distinct from the Open's own repeated 18.5)
+# For time (17-minute cap, Men Rx / 22-minute cap, Women Rx)
+# 50 handstand push-ups
+# 50 toes-to-bar
+# 50-calorie bike
+# 50 dumbbell box step-overs (2 dumbbells, 24 / 20 in)
+# 50-ft right-arm dumbbell overhead lunge
+# 50-ft left-arm dumbbell overhead lunge
+# Dumbbells: 70 / 50 lb
+Workout.find_or_create_by(name: 'Regionals 18.5') do |workout|
+  workout.score_type = :time
+  workout.time_cap_seconds = 1020
+  workout.notes = 'For time. Time cap 17 minutes (Men Rx) / 22 minutes (Women Rx). Post total time.'
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: handstand_push_up, position: 1, reps: 50)
+  segment.exercises.build(movement: toes_to_bar, position: 2, reps: 50)
+  segment.exercises.build(movement: bike, position: 3, reps: 1, calories: 50)
+  segment.exercises.build(movement: dumbbell_box_step_up, position: 4, reps: 50,
+                          female_load: 50, male_load: 70, load_unit: :lb, implement_count: 2,
+                          female_distance: 20, male_distance: 24, distance_unit: :inch)
+  segment.exercises.build(movement: dumbbell_overhead_walking_lunge, position: 5, reps: 1, distance: 50, distance_unit: :foot,
+                          female_load: 50, male_load: 70, load_unit: :lb, notes: 'Right arm only.')
+  segment.exercises.build(movement: dumbbell_overhead_walking_lunge, position: 6, reps: 1, distance: 50, distance_unit: :foot,
+                          female_load: 50, male_load: 70, load_unit: :lb, notes: 'Left arm only.')
+end
+
 # 18.5 is a repeat of 11.6 (also run as 12.5)
 
 # ==============================================================================
@@ -898,6 +936,21 @@ Workout.find_or_create_by(name: 'Open 22.3') do |workout|
   segment.exercises.build(movement: bar_muscle_up, position: 7, reps: 15)
   segment.exercises.build(movement: double_under, position: 8, reps: 30)
   segment.exercises.build(movement: thruster, position: 9, reps: 15, female_load: 85, male_load: 135, load_unit: :lb)
+end
+
+# Quarterfinals 22.5
+# For time (7-minute cap)
+# 30-calorie row
+# 20 burpee box jump-overs (24 / 20 in)
+# 10 snatches (185 / 135 lb)
+Workout.find_or_create_by(name: 'Quarterfinals 22.5') do |workout|
+  workout.score_type = :time
+  workout.time_cap_seconds = 420
+  workout.notes = 'For time, 7-minute cap. Post total time.'
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: row, position: 1, reps: 1, calories: 30)
+  segment.exercises.build(movement: burpee_box_jump_over, position: 2, reps: 20, female_distance: 20, male_distance: 24, distance_unit: :inch)
+  segment.exercises.build(movement: snatch, position: 3, reps: 10, female_load: 135, male_load: 185, load_unit: :lb)
 end
 
 # ==============================================================================

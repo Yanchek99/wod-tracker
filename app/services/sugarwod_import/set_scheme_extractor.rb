@@ -6,6 +6,7 @@ class SugarwodImport
     AXB_SCHEME = /(\d+)\s*x\s*(\d+)\z/i
     SET_OF_N = /set of (\d+)/i
     SINGLE = /single\b/i
+    INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?:\s*sets?)?\s*:?\s*(\d+)/i
     TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i
 
     def self.call(row) = new(row).extract
@@ -56,7 +57,7 @@ class SugarwodImport
     end
 
     def rep_scheme
-      dash_scheme || axb_scheme || set_of_n_scheme || single_scheme || default_single_set_scheme
+      dash_scheme || axb_scheme || set_of_n_scheme || single_scheme || interval_scheme || default_single_set_scheme
     end
 
     def dash_scheme
@@ -79,6 +80,14 @@ class SugarwodImport
 
     def single_scheme
       Array.new(details.size, 1) if row[:description].to_s.match?(SINGLE)
+    end
+
+    def interval_scheme
+      match = scheme_source.match(INTERVAL_SCHEME)
+      return nil unless match
+
+      sets, reps = match.captures.map(&:to_i)
+      Array.new(details.size, reps) if sets == details.size
     end
 
     def default_single_set_scheme

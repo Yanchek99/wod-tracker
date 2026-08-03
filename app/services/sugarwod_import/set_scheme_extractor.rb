@@ -8,6 +8,8 @@ class SugarwodImport
     SINGLE = /single\b/i
     INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?:\s*sets?)?\s*:?\s*(\d+)/i
     TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i
+    WAVE_MARKER = /wave\s*#?\d+\s*:?\s*/i
+    WAVE_REPS = /(\d+)\s*[A-Za-z][\w-]*/
 
     def self.call(row) = new(row).extract
 
@@ -57,7 +59,8 @@ class SugarwodImport
     end
 
     def rep_scheme
-      dash_scheme || axb_scheme || set_of_n_scheme || single_scheme || interval_scheme || default_single_set_scheme
+      dash_scheme || axb_scheme || set_of_n_scheme || single_scheme || interval_scheme || wave_scheme ||
+        default_single_set_scheme
     end
 
     def dash_scheme
@@ -92,6 +95,17 @@ class SugarwodImport
 
     def default_single_set_scheme
       [1] if details.size == 1
+    end
+
+    def wave_scheme
+      waves = scheme_source.split(WAVE_MARKER).drop(1)
+      return nil if waves.size < 2
+
+      first_wave_reps = waves.first.scan(WAVE_REPS).map { |(reps)| reps.to_i }
+      return nil if first_wave_reps.empty?
+
+      full_scheme = first_wave_reps * waves.size
+      full_scheme if full_scheme.size == details.size
     end
 
     def scheme_source

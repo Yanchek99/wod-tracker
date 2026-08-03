@@ -1,9 +1,21 @@
 class SugarwodImport
   class NameMatcher
     OPEN_NUMBER = /\b(\d{2})\.(\d+|zero|one|two|three|four|five|six|seven|eight|nine)\b/i
+    STAGE_WORD = /\b(open|quarterfinals?|regionals?|semifinals?)\b/i
     WORD_TO_DIGIT = {
       'zero' => '0', 'one' => '1', 'two' => '2', 'three' => '3', 'four' => '4',
       'five' => '5', 'six' => '6', 'seven' => '7', 'eight' => '8', 'nine' => '9'
+    }.freeze
+
+    # SugarWOD's export uses several historical titles for an Open workout that was later reused
+    # verbatim as a different year's number -- the seed file (db/seeds/open_workouts.rb) already
+    # documents each of these as a "# NN.M is a repeat of ..." comment rather than duplicating the
+    # Workout row, so a lifter's PRs under either title land on the same catalog entry. This table
+    # is the import-time counterpart to those comments.
+    REPEATS = {
+      '19.2' => 'Open 16.2',
+      '21.2' => 'Open 17.1',
+      '23.1' => 'Open 14.4'
     }.freeze
 
     def self.call(title) = new(title).match
@@ -13,7 +25,7 @@ class SugarwodImport
     end
 
     def match
-      exact_match || flattened_match || open_number_match
+      exact_match || flattened_match || repeat_match || open_number_match
     end
 
     private
@@ -37,13 +49,34 @@ class SugarwodImport
       value.downcase.gsub(/[^a-z0-9]/, '')
     end
 
+    def repeat_match
+      return nil unless stage == 'open'
+
+      canonical = REPEATS[number]
+      Workout.find_by('LOWER(name) = ?', canonical.downcase) if canonical
+    end
+
+    # Requiring the competition-stage word to also match prevents a real collision: e.g.
+    # "Quarterfinals 22.4" and "Open 22.4" are different workouts that happen to share a number.
+    # A bare "NN.digit" title with no stage word at all (e.g. "18.Zero") defaults to "open",
+    # preserving the original behavior for that case.
     def open_number_match
+      return nil unless number
+
+      Workout.where('name ILIKE ? AND name LIKE ?', "%#{stage}%", "%#{number}%").first
+    end
+
+    def number
       captures = title.match(OPEN_NUMBER)
       return nil unless captures
 
       major, minor = captures.captures
-      minor_digit = WORD_TO_DIGIT[minor.downcase] || minor
-      Workout.where('name LIKE ?', "%#{major}.#{minor_digit}%").first
+      "#{major}.#{WORD_TO_DIGIT[minor.downcase] || minor}"
+    end
+
+    def stage
+      match = title.match(STAGE_WORD)
+      match ? match[1].downcase.delete_suffix('s') : 'open'
     end
   end
 end

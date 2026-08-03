@@ -13,7 +13,8 @@ module Devise
     test 'profile-only updates do not require the current password' do
       put user_registration_url, params: { user: { first_name: 'Matthew' } }
 
-      assert_redirected_to root_url
+      assert_redirected_to edit_user_registration_url
+      assert_equal 'Your account has been updated successfully.', flash[:notice]
       assert_equal 'Matthew', @user.reload.first_name
     end
 
@@ -43,7 +44,8 @@ module Devise
         }
       }
 
-      assert_redirected_to root_url
+      assert_redirected_to edit_user_registration_url
+      assert_equal 'Your account has been updated successfully.', flash[:notice]
       assert_equal 'new@example.com', @user.reload.email
       assert @user.valid_password?('new-password123')
     end
@@ -52,6 +54,8 @@ module Devise
       get edit_user_registration_url
 
       assert_response :success
+      assert_select 'h3', text: 'Change password'
+      assert_select 'hr'
       assert_select 'input[name="user[current_password]"]:not([required])'
     end
   end

@@ -9,5 +9,9 @@ module Users
         resource.update_without_password(params.except(:password, :password_confirmation, :current_password))
       end
     end
+
+    def after_update_path_for(_resource)
+      edit_registration_path(resource_name)
+    end
   end
 end

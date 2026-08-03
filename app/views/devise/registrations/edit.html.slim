@@ -1,7 +1,6 @@
 .row.justify-content-center.my-5
   .col-12.col-md-8.col-lg-6
     h2 Edit #{resource_name.to_s.humanize}
-    p = link_to 'Import from SugarWOD', new_sugarwod_import_path, class: 'btn btn-outline-secondary btn-sm'
     = simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f|
       = f.error_notification
       .form-inputs
@@ -13,6 +12,11 @@
         = f.input :weight, required: true
         = f.input :sex, collection: User.sexes.keys.map { |sex| [sex.titleize, sex] }, required: true, prompt: 'Select sex'
         = f.input :unit_system, label: 'Units', collection: User.unit_systems.keys.map { |system| [system.titleize, system] }, required: true, hint: 'How loads are displayed (kg or lb)'
+        hr
+        h4 Import from SugarWOD
+        p.text-muted Upload your SugarWOD CSV export to bring in your workout history.
+        p = link_to 'Import from SugarWOD', new_sugarwod_import_path, class: 'btn btn-outline-secondary btn-sm'
+        hr
         = f.input :password, hint: "leave it blank if you don't want to change it", required: false, input_html: { autocomplete: "new-password" }
         = f.input :password_confirmation, required: false, input_html: { autocomplete: "new-password" }
         = f.input :current_password, hint: 'we need your current password to confirm your changes', required: true, input_html: { autocomplete: 'current-password' }

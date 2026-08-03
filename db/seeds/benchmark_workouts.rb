@@ -451,3 +451,23 @@ hope = Workout.find_or_create_by(name: 'Hope') do |workout|
 end
 
 CF_PROGRAM.schedules.find_or_initialize_by(workout: hope).update(posted_at: Date.new(2018, 1, 5))
+
+# ==============================================================================
+# The Ghost
+# 6 rounds of:
+# 1 minute of rowing
+# 1 minute of burpees
+# 1 minute of double-unders
+# 1 minute rest
+# Score is total reps across all rounds and exercises (rowing counted as reps per this
+# workout's own scoring convention, same as the calorie-scored stations in Fight Gone Bad).
+Workout.find_or_create_by(name: 'The Ghost') do |workout|
+  workout.score_type = :rep
+  workout.notes = 'Try for as many reps as possible of EACH exercise, not just total score. ' \
+                  'Post separate totals of calories rowed, burpee reps, and double-under reps completed.'
+  segment = workout.segments.build(rounds: 6, time_seconds: 1440, position: 1)
+  segment.exercises.build(movement: row, position: 1, reps: 1, calories: 0, duration_seconds: 60)
+  segment.exercises.build(movement: burpee, position: 2, reps: 0, duration_seconds: 60)
+  segment.exercises.build(movement: double_under, position: 3, reps: 0, duration_seconds: 60)
+  segment.exercises.build(movement: rest, position: 4, reps: 1, duration_seconds: 60)
+end

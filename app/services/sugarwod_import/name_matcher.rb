@@ -13,7 +13,7 @@ class SugarwodImport
     end
 
     def match
-      exact_match || open_number_match
+      exact_match || flattened_match || open_number_match
     end
 
     private
@@ -22,6 +22,19 @@ class SugarwodImport
 
     def exact_match
       Workout.find_by('LOWER(name) = ?', title.downcase)
+    end
+
+    # SugarWOD's export sometimes wraps a named workout's title in literal quote marks
+    # (e.g. `"Murph"`), and its own display name for a catalog workout can drift from ours by
+    # spacing alone (e.g. "Hot Shots 19" vs our "Hotshots 19"). Comparing with everything but
+    # letters and digits stripped from both sides catches these without weakening exact_match's
+    # precision for the common case.
+    def flattened_match
+      Workout.find_by("LOWER(REGEXP_REPLACE(name, '[^a-zA-Z0-9]', '', 'g')) = ?", flattened(title))
+    end
+
+    def flattened(value)
+      value.downcase.gsub(/[^a-z0-9]/, '')
     end
 
     def open_number_match

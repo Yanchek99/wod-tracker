@@ -7,6 +7,15 @@ class SugarwodImport
       assert_equal workouts(:fran), NameMatcher.call('FRAN')
     end
 
+    test 'matches a catalog name wrapped in literal quote marks' do
+      assert_equal workouts(:fran), NameMatcher.call('"Fran"')
+    end
+
+    test 'matches a catalog name that differs from the title only by spacing' do
+      workout = Workout.create!(name: 'Hotshots 19', score_type: :time)
+      assert_equal workout, NameMatcher.call('Hot Shots 19')
+    end
+
     test 'returns nil when no catalog workout matches' do
       assert_nil NameMatcher.call('Not A Real Workout')
     end

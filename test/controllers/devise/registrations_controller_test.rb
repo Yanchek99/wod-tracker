@@ -55,7 +55,7 @@ module Devise
 
       assert_response :success
       assert_select 'h3', text: 'Change password'
-      assert_select 'hr'
+      assert_select 'hr', false
       assert_select 'input[name="user[current_password]"]:not([required])'
     end
   end

@@ -111,6 +111,11 @@ shoulder_press:
   family: weightlifting
   equipment: barbell
 
+clean_and_jerk:
+  name: Clean and Jerk
+  family: weightlifting
+  equipment: barbell
+
 clean:
   name: Clean
   family: weightlifting

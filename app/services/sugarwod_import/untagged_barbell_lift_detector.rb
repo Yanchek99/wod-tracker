@@ -65,8 +65,12 @@ class SugarwodImport
       /\b(?:#{Regexp.escape(name.pluralize)}|#{Regexp.escape(name)})\b/i
     end
 
+    # Normalizing "&" to "and" up front (mirroring CfWod::MovementLookup's own normalization)
+    # matters for correctness, not just coverage: without it, "Clean & Jerk" fails to match the
+    # catalog's "Clean and Jerk" pattern, but its own substring "Clean" still matches on its own --
+    # silently misidentifying a Clean and Jerk row as a bare Clean.
     def remaining_description
-      @remaining_description ||= row[:description].to_s
+      @remaining_description ||= row[:description].to_s.gsub(/\s*&\s*/, ' and ')
     end
 
     def weightlifting_names

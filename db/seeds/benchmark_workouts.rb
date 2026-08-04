@@ -471,3 +471,19 @@ Workout.find_or_create_by(name: 'The Ghost') do |workout|
   segment.exercises.build(movement: double_under, position: 3, reps: 0, duration_seconds: 60)
   segment.exercises.build(movement: rest, position: 4, reps: 1, duration_seconds: 60)
 end
+
+# ==============================================================================
+# CrossFit Total
+# The heaviest possible total of:
+# 1-rep-max back squat
+# 1-rep-max shoulder press
+# 1-rep-max deadlift
+Workout.find_or_create_by(name: 'CrossFit Total') do |workout|
+  workout.score_type = :weight
+  workout.notes = 'Establish a 1-rep-max back squat, shoulder press, and deadlift, in that order. ' \
+                  'Post the sum of the three heaviest successful lifts.'
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: back_squat, position: 1, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: shoulder_press, position: 2, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: deadlift, position: 3, reps: 1, load_unit: :lb)
+end

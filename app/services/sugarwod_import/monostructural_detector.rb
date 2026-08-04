@@ -2,6 +2,7 @@ class SugarwodImport
   class MonostructuralDetector
     TRAILING_NOTE = /\s*\*.*\z/m
     DISTANCE_METERS = /\A(?:for time:?\s*)?([\d,]+)\s*meter\s+(?:row|run|bike|ski)\z/i
+    DISTANCE_M_ABBREV = /\A(?:for time:?\s*)?([\d,]+)[\s-]*m\s+(?:row|run|bike|ski)\z/i
     DISTANCE_K      = /\A(?:for time:?\s*)?(\d+)\s*k\s+(?:row|run|bike|ski)\z/i
     DISTANCE_MILES  = /\A(?:for time:?\s*)?(\d+(?:\.\d+)?)\s*miles?\s+(?:row|run|bike|ski)\z/i
     MOVEMENT_K      = /\A(?:for time:?\s*)?(?:row|run|bike|ski)\s+(\d+)\s*k\z/i
@@ -9,6 +10,7 @@ class SugarwodImport
     MAX_CALORIES    = /\A(\d+)\s*minute\s*max\s*calorie\s+(?:row|run|bike|ski)\z/i
     DISTANCE_STRATEGIES = [
       [DISTANCE_METERS, 'meter'],
+      [DISTANCE_M_ABBREV, 'meter'],
       [DISTANCE_K, 'km'],
       [DISTANCE_MILES, 'mile'],
       [MOVEMENT_K, 'km'],

@@ -87,6 +87,17 @@ class SugarwodImport
       assert_equal 'meter', exercise.distance_unit
     end
 
+    test 'builds a fixed-distance-for-time workout from a hyphenated "m" abbreviation for meters' do
+      row = { title: '230321', description: 'For time:2,000-m row', barbell_lift: nil }
+
+      workout = MonostructuralDetector.call(row)
+
+      exercise = workout.segments.sole.exercises.sole
+      assert_equal movements(:row), exercise.movement
+      assert_equal 2000, exercise.distance
+      assert_equal 'meter', exercise.distance_unit
+    end
+
     test 'builds a fixed-distance-for-time workout from a number-first mile distance' do
       row = { title: '3 Mile Run', description: 'For Time: 3 Mile Run', barbell_lift: nil }
 

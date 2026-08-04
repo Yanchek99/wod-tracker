@@ -263,6 +263,20 @@ end
 
 CF_PROGRAM.schedules.find_or_initialize_by(workout: nancy).update(posted_at: Date.new(2018, 1, 16))
 
+# ==============================================================================
+# Nasty Girls
+# 3 rounds for time
+# Air squats, 50 reps
+# Muscle-ups, 7 reps
+# 135-lb. hang power cleans, 10 reps
+Workout.find_or_create_by(name: 'Nasty Girls') do |workout|
+  workout.score_type = :time
+  segment = workout.segments.build(rounds: 3, position: 1)
+  segment.exercises.build(movement: air_squat, position: 1, reps: 50)
+  segment.exercises.build(movement: muscle_up, position: 2, reps: 7)
+  segment.exercises.build(movement: hang_power_clean, position: 3, reps: 10, female_load: 95, male_load: 135, load_unit: :lb)
+end
+
 # The New Girls Workouts
 
 # ==============================================================================

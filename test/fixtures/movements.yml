@@ -58,7 +58,7 @@ power_snatch:
   name: Power Snatch
   family: weightlifting
   equipment: barbell
-  skill_level: intermediate
+  skill_level: advanced
 
 overhead_walking_lunge:
   name: Overhead Walking Lunge

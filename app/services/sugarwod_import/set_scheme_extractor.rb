@@ -2,7 +2,12 @@ require 'json'
 
 class SugarwodImport
   class SetSchemeExtractor
-    DASH_SCHEME = /\b(\d+(?:-\d+){2,})\b/
+    # The trailing boundary is a negative lookahead, not \b: real rows glue coaching-note text
+    # directly onto the scheme with no space (e.g. "6-6-5-5-4-4All Sets Based on..."), and \b
+    # can't match between two word characters -- it backtracks to a shorter, wrong-length dash
+    # sequence instead of failing outright. The lookahead only needs to rule out continuing into
+    # another "-digit", which is the only thing that would actually change the scheme's meaning.
+    DASH_SCHEME = /\b(\d+(?:-\d+){2,})(?!-?\d)/
     AXB_SCHEME = /(\d+)\s*x\s*(\d+)\z/i
     SET_OF_N = /sets?\s+of\s+(\d+)/i
     SINGLE = /single\b/i

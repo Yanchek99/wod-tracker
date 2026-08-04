@@ -76,5 +76,19 @@ class SugarwodImport
 
       assert_nil SetSchemeExtractor.call(row)
     end
+
+    test 'matches the full dash scheme when coaching-note text is glued directly onto it with no space' do
+      row = { title: 'Back Squat',
+              description: '6 Sets:6-6-5-5-4-4All Sets Based on 1RM Back SquatSet 1-2: 8 @ 70% Set 3-4: 6 @ 75% ' \
+                           'Set 5-6: 4 @ 80%',
+              set_details: '[{"success":true,"load":175},{"success":true,"load":175},{"success":true,"load":185},' \
+                           '{"success":true,"load":185},{"success":true,"load":200},{"success":true,"load":200}]' }
+
+      result = SetSchemeExtractor.call(row)
+
+      expected_reps = [6, 6, 5, 5, 4, 4]
+      expected_loads = [175, 175, 185, 185, 200, 200]
+      assert_equal expected_reps.zip(expected_loads).map { |reps, load| { reps: reps, load: load } }, result
+    end
   end
 end

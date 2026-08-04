@@ -78,8 +78,7 @@ class SugarwodImport
     end
 
     def build_workout(movement, sets)
-      name = "#{movement.name} #{sets.pluck(:reps).join('-')}"
-      workout = Workout.new(score_type: :weight, name: name)
+      workout = Workout.new(score_type: :weight, name: SchemeName.call(movement, sets))
       segment = workout.segments.build(position: 1)
       sets.each_with_index do |set, index|
         segment.exercises.build(movement: movement, position: index + 1, reps: set[:reps])

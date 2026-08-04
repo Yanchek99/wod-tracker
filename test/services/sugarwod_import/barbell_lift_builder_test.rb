@@ -32,6 +32,17 @@ class SugarwodImport
       assert_equal movements(:deadlift), exercise.movement
     end
 
+    test 'names a uniform multi-set scheme with "NxM" notation, not a repeated dash-joined value' do
+      row = { title: 'Box Squat', description: 'For Load2-2-2-2-2-2-2-2Box Squat', barbell_lift: 'Box Squat',
+              set_details: '[{"success":true,"load":205},{"success":true,"load":215},{"success":true,"load":225},' \
+                           '{"success":true,"load":235},{"success":true,"load":245},{"success":true,"load":245},' \
+                           '{"success":true,"load":250},{"success":true,"load":260}]' }
+
+      workout = BarbellLiftBuilder.call(row)
+
+      assert_equal 'Box Squat 8x2', workout.name
+    end
+
     test 'returns nil when barbell_lift is blank' do
       row = { title: 'Deadlift', description: '', barbell_lift: '', set_details: '[{"success":true,"load":315}]' }
 

@@ -48,6 +48,12 @@ back_squat:
   equipment: barbell
   skill_level: basic
 
+box_squat:
+  name: Box Squat
+  family: weightlifting
+  equipment: barbell
+  skill_level: basic
+
 front_squat:
   name: Front Squat
   family: weightlifting

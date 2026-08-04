@@ -11,6 +11,13 @@ class DistanceEquivalenceTest < ActiveSupport::TestCase
     assert_equal 1600, DistanceEquivalence.to_meters(1, :mile)
   end
 
+  test 'a mile returns an Integer even when given a Float value' do
+    result = DistanceEquivalence.to_meters(1.0, :mile)
+
+    assert_equal 1600, result
+    assert_kind_of Integer, result
+  end
+
   test 'kilometers convert to meters' do
     assert_equal 5000, DistanceEquivalence.to_meters(5, :km)
   end

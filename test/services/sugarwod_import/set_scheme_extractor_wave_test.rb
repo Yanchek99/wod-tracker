@@ -3,7 +3,8 @@ require 'test_helper'
 # Coverage for rep-scheme shapes split out of set_scheme_extractor_test.rb (which covers the
 # other rep-scheme shapes) to keep that class within Metrics/ClassLength: the repeating
 # "Wave #N: A B C reps..." shape (e.g. 3 waves of 7-5-3 reps = 9 total sets), the labeled
-# "Set N: X reps" shape with no percentages, and the "X Reps @ Y%" percentage-labeled shape.
+# "Set N: X reps" shape with no percentages, the "X Reps @ Y%" percentage-labeled shape, plus
+# the plural "Sets of N" phrasing and the default_single_set_scheme unrecognized-signal guard.
 class SugarwodImport
   class SetSchemeExtractorWaveTest < ActiveSupport::TestCase
     test 'expands a repeating "Wave #N" scheme to its flattened set-by-set rep sequence' do
@@ -58,6 +59,22 @@ class SugarwodImport
       expected_reps = [3, 3, 3, 3, 2, 1, 1]
       expected_loads = [65, 85, 105, 130, 135, 145, 145]
       assert_equal expected_reps.zip(expected_loads).map { |reps, load| { reps: reps, load: load } }, result
+    end
+
+    test 'applies a "Sets of N" (plural) description scheme instead of falling back to a 1-rep default' do
+      row = { title: 'Back Squat', description: 'For Total Load: 5 Sets of 5',
+              set_details: '[{"success":true,"load":225}]' }
+
+      result = SetSchemeExtractor.call(row)
+
+      assert_equal [{ reps: 5, load: 225 }], result
+    end
+
+    test 'returns nil rather than defaulting to 1 rep when a single-set description has an unparsed scheme signal' do
+      row = { title: 'Deadlift', description: 'Build to a heavy deadlift, 3 sets total',
+              set_details: '[{"success":true,"load":315}]' }
+
+      assert_nil SetSchemeExtractor.call(row)
     end
   end
 end

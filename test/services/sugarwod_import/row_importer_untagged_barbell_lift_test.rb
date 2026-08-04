@@ -16,7 +16,7 @@ class SugarwodImport
       result = RowImporter.call(row, user: @user)
 
       assert_equal :imported, result.status
-      assert @user.logs.exists?(workout: Workout.find_by(name: 'Back Squat 1'))
+      assert @user.logs.exists?(workout: Workout.find_by(name: 'Back Squat 5'))
     end
   end
 end

@@ -4,8 +4,10 @@ class SugarwodImport
   class SetSchemeExtractor
     DASH_SCHEME = /\b(\d+(?:-\d+){2,})\b/
     AXB_SCHEME = /(\d+)\s*x\s*(\d+)\z/i
-    SET_OF_N = /set of (\d+)/i
+    SET_OF_N = /sets?\s+of\s+(\d+)/i
     SINGLE = /single\b/i
+    # Scheme language earlier strategies failed to parse; blocks default_single_set_scheme's fallback.
+    UNRECOGNIZED_SCHEME_SIGNAL = /\d+\s*(?:x|reps?|sets?)\b/i
     INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?:\s*sets?)?\s*:?\s*(\d+)/i
     TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i
     WAVE_MARKER = /wave\s*#?\d+\s*:?\s*/i
@@ -103,7 +105,7 @@ class SugarwodImport
     end
 
     def default_single_set_scheme
-      [1] if details.size == 1
+      [1] if details.size == 1 && !scheme_source.match?(UNRECOGNIZED_SCHEME_SIGNAL)
     end
 
     def wave_scheme

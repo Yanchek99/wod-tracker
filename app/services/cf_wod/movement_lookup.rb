@@ -7,7 +7,11 @@ module CfWod
     ALIASES = {
       'bike' => 'Air Bike',
       'assault bike' => 'Air Bike',
-      'echo bike' => 'Air Bike'
+      'echo bike' => 'Air Bike',
+      'wallball' => 'Wall-ball Shot',
+      'wallballs' => 'Wall-ball Shot',
+      'wall ball' => 'Wall-ball Shot',
+      'wall balls' => 'Wall-ball Shot'
     }.freeze
 
     TRAILING_PARENTHETICAL = /\s*\([^)]*\)\z/

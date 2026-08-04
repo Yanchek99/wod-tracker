@@ -37,7 +37,7 @@ class SugarwodImport
 
     def resolve_workout
       NameMatcher.call(row[:title]) || build_from_barbell_lift || build_from_untagged_barbell_lift ||
-        build_from_monostructural || build_from_bodyweight_max_rep
+        build_from_monostructural || build_from_max_rep
     end
 
     def build_from_barbell_lift
@@ -52,8 +52,8 @@ class SugarwodImport
       persist(MonostructuralDetector.call(row))
     end
 
-    def build_from_bodyweight_max_rep
-      persist(BodyweightMaxRepDetector.call(row))
+    def build_from_max_rep
+      persist(MaxRepDetector.call(row))
     end
 
     def persist(workout)

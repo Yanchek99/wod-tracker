@@ -1,5 +1,5 @@
 class SugarwodImport
-  class BodyweightMaxRepDetector
+  class MaxRepDetector
     MAX_PREFIX = /\Amax (?:unbroken )?(.+)\z/i
     MAX_SUFFIX = /\A(.+?)\s*\(max reps\)\z/i
 
@@ -17,7 +17,7 @@ class SugarwodImport
       return nil unless name
 
       movement = CfWod::MovementLookup.call(name)
-      return nil unless movement&.family_gymnastics?
+      return nil unless movement && single_movement_reps_makes_sense?(movement)
 
       build_workout(movement)
     end
@@ -25,6 +25,15 @@ class SugarwodImport
     private
 
     attr_reader :row
+
+    # Any single named movement can be a legitimate "how many reps" test -- this only records a
+    # rep count, never a load, so there's no ambiguity from a weightlifting movement like Wall-ball
+    # Shot or Shoulder Press having no fixed weight. Monostructural movements (row/run/bike/ski) are
+    # excluded because they're scored in calories/distance within a time cap via
+    # MonostructuralDetector, not a bare rep count; "rest" isn't a real exercise.
+    def single_movement_reps_makes_sense?(movement)
+      !movement.family_monostructural? && !movement.family_rest?
+    end
 
     def build_workout(movement)
       workout = Workout.new(score_type: :rep, name: "Max #{movement.name}")

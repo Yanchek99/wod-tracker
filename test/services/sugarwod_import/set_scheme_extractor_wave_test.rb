@@ -99,6 +99,16 @@ class SugarwodImport
       assert_equal [{ reps: 3, load: 175 }], result
     end
 
+    test 'applies a uniform rep scheme from "N Rounds: M <movement>"' do
+      loads = Array.new(10, 245)
+      row = { title: 'Back Squat', description: '10 Rounds: 1 Back Squat*Same heavy weight across all 10 sets',
+              set_details: loads.map { |load| { success: true, load: load } }.to_json }
+
+      result = SetSchemeExtractor.call(row)
+
+      assert_equal Array.new(10) { { reps: 1, load: 245 } }, result
+    end
+
     test 'matches the full dash scheme when coaching-note text is glued directly onto it with no space' do
       row = { title: 'Back Squat',
               description: '6 Sets:6-6-5-5-4-4All Sets Based on 1RM Back SquatSet 1-2: 8 @ 70% Set 3-4: 6 @ 75% ' \

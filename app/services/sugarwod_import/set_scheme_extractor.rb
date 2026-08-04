@@ -16,6 +16,7 @@ class SugarwodImport
     # Scheme language earlier strategies failed to parse; blocks default_single_set_scheme's fallback.
     UNRECOGNIZED_SCHEME_SIGNAL = /\d+\s*(?:x|reps?|sets?)\b/i
     INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?:\s*sets?)?\s*:?\s*(\d+)/i
+    ROUNDS_SCHEME = /(\d+)\s*rounds?\s*:\s*(\d+)\b/i
     TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i
     WAVE_MARKER = /wave\s*#?\d+\s*:?\s*/i
     WAVE_REPS = /(\d+)\s*[A-Za-z][\w-]*/
@@ -23,10 +24,12 @@ class SugarwodImport
     PERCENTAGE_SET = /(\d+)\s*reps?\s*@\s*\d+/i
     REP_MAX = /(\d+)[\s-]*reps?\s+max\b/i
     SCAN_SCHEMES = [LABELED_SET, PERCENTAGE_SET].freeze
-    # AXB_SCHEME ("Back Squat 3x5") is a title-only convention; INTERVAL_SCHEME can appear in
-    # either title or description. Both are otherwise the same shape: a captured (sets, reps)
-    # pair, applied uniformly once the stated set count matches the logged set_details count.
-    UNIFORM_SET_SCHEMES = [[AXB_SCHEME, :title], [INTERVAL_SCHEME, :scheme_source]].freeze
+    # AXB_SCHEME ("Back Squat 3x5") is a title-only convention; the others can appear in either
+    # title or description. All are otherwise the same shape: a captured (sets, reps) pair,
+    # applied uniformly once the stated set count matches the logged set_details count.
+    UNIFORM_SET_SCHEMES = [
+      [AXB_SCHEME, :title], [INTERVAL_SCHEME, :scheme_source], [ROUNDS_SCHEME, :scheme_source]
+    ].freeze
     REP_SCHEME_STRATEGIES = %i[
       dash_scheme uniform_set_scheme set_of_n_scheme single_scheme wave_scheme
       scanned_scheme default_single_set_scheme
@@ -64,9 +67,7 @@ class SugarwodImport
       @details = []
     end
 
-    def successful_details
-      details.reject { |detail| detail['success'] == false }
-    end
+    def successful_details = details.reject { |detail| detail['success'] == false }
 
     # A blank/missing load must never be coerced to 0 -- a successful set with no recorded load
     # would otherwise become a real zero-load MovementLog, fabricating a PR that never happened.
@@ -105,9 +106,7 @@ class SugarwodImport
       Array.new(details.size, match[1].to_i) if match
     end
 
-    def single_scheme
-      Array.new(details.size, 1) if row[:description].to_s.match?(SINGLE)
-    end
+    def single_scheme = (Array.new(details.size, 1) if row[:description].to_s.match?(SINGLE))
 
     # "Build to a 3 rep max" describes one top set of N reps; otherwise default to a heavy single
     # unless the text still contains an unparsed scheme signal (never guess past real language).

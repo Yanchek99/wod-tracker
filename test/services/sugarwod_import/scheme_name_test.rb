@@ -2,10 +2,10 @@ require 'test_helper'
 
 class SugarwodImport
   class SchemeNameTest < ActiveSupport::TestCase
-    test 'states the bare rep count for a single set, with no "1x" prefix' do
+    test 'uses "1xM" notation for a single set, not a bare, ambiguous number' do
       sets = [{ reps: 5, load: 225 }]
 
-      assert_equal 'Back Squat 5', SchemeName.call(movements(:back_squat), sets)
+      assert_equal 'Back Squat 1x5', SchemeName.call(movements(:back_squat), sets)
     end
 
     test 'uses "NxM" notation when every set has the same reps' do

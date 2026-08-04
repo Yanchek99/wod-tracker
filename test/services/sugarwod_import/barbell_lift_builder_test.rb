@@ -70,7 +70,7 @@ class SugarwodImport
       workout = BarbellLiftBuilder.call(row)
 
       assert workout.valid?, workout.errors.full_messages.join(', ')
-      assert_equal 'Deadlift 1', workout.name
+      assert_equal 'Deadlift 1x1', workout.name
     end
   end
 end

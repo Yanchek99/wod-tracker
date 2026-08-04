@@ -21,9 +21,15 @@ class SugarwodImport
     WAVE_REPS = /(\d+)\s*[A-Za-z][\w-]*/
     LABELED_SET = /set\s*\d+\s*(?:\([^)]*\))?\s*:\s*(\d+)/i
     PERCENTAGE_SET = /(\d+)\s*reps?\s*@\s*\d+/i
+    REP_MAX = /(\d+)[\s-]*reps?\s+max\b/i
+    SCAN_SCHEMES = [LABELED_SET, PERCENTAGE_SET].freeze
+    # AXB_SCHEME ("Back Squat 3x5") is a title-only convention; INTERVAL_SCHEME can appear in
+    # either title or description. Both are otherwise the same shape: a captured (sets, reps)
+    # pair, applied uniformly once the stated set count matches the logged set_details count.
+    UNIFORM_SET_SCHEMES = [[AXB_SCHEME, :title], [INTERVAL_SCHEME, :scheme_source]].freeze
     REP_SCHEME_STRATEGIES = %i[
-      dash_scheme axb_scheme set_of_n_scheme single_scheme interval_scheme wave_scheme
-      labeled_set_scheme percentage_set_scheme default_single_set_scheme
+      dash_scheme uniform_set_scheme set_of_n_scheme single_scheme wave_scheme
+      scanned_scheme default_single_set_scheme
     ].freeze
 
     def self.call(row) = new(row).extract
@@ -53,11 +59,9 @@ class SugarwodImport
     attr_reader :row
 
     def details
-      @details ||= begin
-        JSON.parse(row[:set_details].to_s)
-      rescue JSON::ParserError
-        []
-      end
+      @details ||= JSON.parse(row[:set_details].to_s)
+    rescue JSON::ParserError
+      @details = []
     end
 
     def successful_details
@@ -68,9 +72,7 @@ class SugarwodImport
     # would otherwise become a real zero-load MovementLog, fabricating a PR that never happened.
     def parsed_load(detail)
       load = detail['load']
-      return nil if load.blank?
-
-      Integer(load.to_s, exception: false)
+      load.blank? ? nil : Integer(load.to_s, exception: false)
     end
 
     def rep_scheme
@@ -86,12 +88,16 @@ class SugarwodImport
       match && match[1].split('-').map(&:to_i)
     end
 
-    def axb_scheme
-      match = row[:title].to_s.strip.match(AXB_SCHEME)
-      return nil unless match
+    def uniform_set_scheme
+      UNIFORM_SET_SCHEMES.each do |pattern, source|
+        text = source == :title ? row[:title].to_s.strip : scheme_source
+        match = text.match(pattern)
+        next unless match
 
-      sets, reps = match.captures.map(&:to_i)
-      Array.new(sets, reps) if sets == details.size
+        sets, reps = match.captures.map(&:to_i)
+        return Array.new(details.size, reps) if sets == details.size
+      end
+      nil
     end
 
     def set_of_n_scheme
@@ -103,16 +109,15 @@ class SugarwodImport
       Array.new(details.size, 1) if row[:description].to_s.match?(SINGLE)
     end
 
-    def interval_scheme
-      match = scheme_source.match(INTERVAL_SCHEME)
-      return nil unless match
-
-      sets, reps = match.captures.map(&:to_i)
-      Array.new(details.size, reps) if sets == details.size
-    end
-
+    # "Build to a 3 rep max" describes one top set of N reps; otherwise default to a heavy single
+    # unless the text still contains an unparsed scheme signal (never guess past real language).
     def default_single_set_scheme
-      [1] if details.size == 1 && !scheme_source.match?(UNRECOGNIZED_SCHEME_SIGNAL)
+      return unless details.size == 1
+
+      match = scheme_source.match(REP_MAX)
+      return [match[1].to_i] if match
+
+      [1] unless scheme_source.match?(UNRECOGNIZED_SCHEME_SIGNAL)
     end
 
     def wave_scheme
@@ -126,14 +131,13 @@ class SugarwodImport
       full_scheme if full_scheme.size == details.size
     end
 
-    def labeled_set_scheme
-      reps = scheme_source.scan(LABELED_SET).map { |(reps)| reps.to_i }
-      reps if reps.size == details.size
-    end
-
-    def percentage_set_scheme
-      reps = scheme_source.scan(PERCENTAGE_SET).map { |(reps)| reps.to_i }
-      reps if reps.size == details.size
+    # LABELED_SET and PERCENTAGE_SET are one strategy: structurally identical scans, only the pattern differs.
+    def scanned_scheme
+      SCAN_SCHEMES.each do |pattern|
+        reps = scheme_source.scan(pattern).map { |(reps)| reps.to_i }
+        return reps if reps.size == details.size
+      end
+      nil
     end
 
     def scheme_source

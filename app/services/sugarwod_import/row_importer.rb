@@ -78,11 +78,13 @@ class SugarwodImport
       user.logs.where(workout: workout).exists?(created_at: row[:date].all_day)
     end
 
-    # Weight-scored workouts that total more than one DISTINCT movement (e.g. "CrossFit Total" =
-    # back squat + shoulder press + deadlift, summed) represent a combined total. Building
-    # MovementLogs from a single row's data would misattribute that total to the wrong movement,
-    # so those are skipped. A single-movement workout, whether one exercise (a simple heavy
-    # single) or many (a pyramid scheme, all the same movement), is safe to build per-set.
+    # A single-movement workout, whether one exercise (a simple heavy single) or many (a pyramid
+    # scheme, all the same movement), gets per-set MovementLogs via the scheme-extraction path. A
+    # distinct-movement "total" workout (e.g. a 1-rep-max clean + bench press + overhead squat) gets
+    # per-movement MovementLogs paired by position, but only when there's exactly one set_details
+    # entry per movement with no extra attempts of any kind -- anything else (e.g. "CrossFit Total" =
+    # back squat + shoulder press + deadlift with more attempts than movements) is skipped, since
+    # building MovementLogs from ambiguous positional data would risk misattributing a load.
     def build_movement_logs(workout, log)
       exercises = workout.exercises_for_log_recording
       return unless workout.score_weight? && exercises.present?
@@ -99,9 +101,15 @@ class SugarwodImport
     # A "total" workout (e.g. a 1-rep-max clean + bench press + overhead squat) has one exercise per
     # distinct movement and one set_details entry per exercise, in the same order -- unlike repeated
     # sets of ONE movement, there is no rep scheme to infer: each exercise's own fixed reps apply as-is.
+    # Requiring the RAW (unfiltered) set_details count to also match the movement count rules out
+    # retry/ramp-up rows (e.g. a missed first attempt logged as an extra entry) whose successful-load
+    # count only coincidentally matches -- pairing those positionally would misattribute a load to the
+    # wrong movement, so anything with extra attempts of any kind falls through and is skipped instead.
     def distinct_movement_total?(exercises)
       movements = exercises.map(&:movement)
-      movements.uniq.size == movements.size && movements.size == successful_loads.size
+      movements.uniq.size == movements.size &&
+        movements.size == successful_loads.size &&
+        movements.size == parsed_set_details.size
     end
 
     def assign_set_loads(log)
@@ -123,10 +131,14 @@ class SugarwodImport
     end
 
     def successful_loads
-      @successful_loads ||= begin
+      @successful_loads ||= parsed_set_details
+                            .reject { |detail| detail['success'] == false }
+                            .filter_map { |detail| Integer(detail['load'].to_s, exception: false) if detail['load'].present? }
+    end
+
+    def parsed_set_details
+      @parsed_set_details ||= begin
         JSON.parse(row[:set_details].to_s)
-            .reject { |detail| detail['success'] == false }
-            .filter_map { |detail| Integer(detail['load'].to_s, exception: false) if detail['load'].present? }
       rescue JSON::ParserError
         []
       end

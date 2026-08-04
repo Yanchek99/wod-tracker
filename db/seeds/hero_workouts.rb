@@ -133,7 +133,7 @@ end
 Workout.find_or_create_by(name: 'Badger') do |workout|
   segment = workout.segments.build(rounds: 3, position: 1)
   workout.score_type = :time
-  segment.exercises.build(movement: clean_squat, position: 1, reps: 30, female_load: 65, male_load: 95, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 1, reps: 30, female_load: 65, male_load: 95, load_unit: :lb)
   segment.exercises.build(movement: pull_up, position: 2, reps: 30)
   segment.exercises.build(movement: run, position: 3, reps: 1, distance: 800, distance_unit: :meter)
 end
@@ -323,7 +323,7 @@ end
 Workout.find_or_create_by(name: 'Buriak') do |workout|
   segment = workout.segments.build(time_seconds: 1200, position: 1)
   workout.score_type = :rep
-  segment.exercises.build(movement: clean_squat, position: 1, reps: 5, female_load: 135, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 1, reps: 5, female_load: 135, male_load: 155, load_unit: :lb)
   segment.exercises.build(movement: over_the_bar_burpee, position: 2, reps: 10)
   segment.exercises.build(movement: pull_up, position: 3, reps: 15)
   segment.exercises.build(movement: run, position: 4, reps: 1, distance: 200, distance_unit: :meter)
@@ -374,7 +374,7 @@ Workout.find_or_create_by(name: 'Carse') do |workout|
   segment = workout.segments.build(interval_scheme: '21-18-15-12-9-6-3', position: 1)
   workout.score_type = :time
   workout.notes = 'Begin each round with a 50-meter bear crawl.'
-  segment.exercises.build(movement: clean_squat, position: 1, reps: 1, female_load: 95, male_load: 135, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 1, reps: 1, female_load: 95, male_load: 135, load_unit: :lb)
   segment.exercises.build(movement: double_under, position: 2, reps: 1)
   segment.exercises.build(movement: deadlift, position: 3, reps: 1, female_load: 125, male_load: 185, load_unit: :lb)
   segment.exercises.build(movement: box_jump, position: 4, reps: 1, female_distance: 20, male_distance: 24, distance_unit: :inch)
@@ -1180,11 +1180,11 @@ Workout.find_or_create_by(name: 'Hidalgo') do |workout|
                   'female load); corrected here to 135 lb.'
   segment.exercises.build(movement: run, position: 1, reps: 1, distance: 3200, distance_unit: :meter)
   segment.exercises.build(movement: rest, position: 2, duration_seconds: 120)
-  segment.exercises.build(movement: clean_squat, position: 3, reps: 20, female_load: 95, male_load: 135, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 3, reps: 20, female_load: 95, male_load: 135, load_unit: :lb)
   segment.exercises.build(movement: box_jump, position: 4, reps: 20, female_distance: 20, male_distance: 24, distance_unit: :inch)
   segment.exercises.build(movement: overhead_walking_lunge, position: 5, reps: 20, female_load: 25, male_load: 45, load_unit: :lb)
   segment.exercises.build(movement: box_jump, position: 6, reps: 20, female_distance: 20, male_distance: 24, distance_unit: :inch)
-  segment.exercises.build(movement: clean_squat, position: 7, reps: 20, female_load: 95, male_load: 135, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 7, reps: 20, female_load: 95, male_load: 135, load_unit: :lb)
   segment.exercises.build(movement: rest, position: 8, duration_seconds: 120)
   segment.exercises.build(movement: run, position: 9, reps: 1, distance: 3200, distance_unit: :meter)
 end
@@ -1298,7 +1298,7 @@ Workout.find_or_create_by(name: 'J.J.') do |workout|
   workout.score_type = :time
   position = 1
   (1..10).each do |round|
-    segment.exercises.build(movement: clean_squat, position:, reps: round, female_load: 125, male_load: 185, load_unit: :lb)
+    segment.exercises.build(movement: squat_clean, position:, reps: round, female_load: 125, male_load: 185, load_unit: :lb)
     position += 1
     segment.exercises.build(movement: parallette_handstand_push_up, position:, reps: 11 - round)
     position += 1
@@ -1425,7 +1425,7 @@ Workout.find_or_create_by(name: 'Johnson') do |workout|
   workout.score_type = :rep
   segment.exercises.build(movement: deadlift, position: 1, reps: 9, female_load: 165, male_load: 245, load_unit: :lb)
   segment.exercises.build(movement: muscle_up, position: 2, reps: 8)
-  segment.exercises.build(movement: clean_squat, position: 3, reps: 9, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 3, reps: 9, female_load: 105, male_load: 155, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -1455,15 +1455,15 @@ Workout.find_or_create_by(name: 'Jorge') do |workout|
   segment = workout.segments.build(position: 1)
   workout.score_type = :time
   segment.exercises.build(movement: ghd_sit_up, position: 1, reps: 30)
-  segment.exercises.build(movement: clean_squat, position: 2, reps: 15, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 2, reps: 15, female_load: 105, male_load: 155, load_unit: :lb)
   segment.exercises.build(movement: ghd_sit_up, position: 3, reps: 24)
-  segment.exercises.build(movement: clean_squat, position: 4, reps: 12, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 4, reps: 12, female_load: 105, male_load: 155, load_unit: :lb)
   segment.exercises.build(movement: ghd_sit_up, position: 5, reps: 18)
-  segment.exercises.build(movement: clean_squat, position: 6, reps: 9, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 6, reps: 9, female_load: 105, male_load: 155, load_unit: :lb)
   segment.exercises.build(movement: ghd_sit_up, position: 7, reps: 12)
-  segment.exercises.build(movement: clean_squat, position: 8, reps: 6, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 8, reps: 6, female_load: 105, male_load: 155, load_unit: :lb)
   segment.exercises.build(movement: ghd_sit_up, position: 9, reps: 6)
-  segment.exercises.build(movement: clean_squat, position: 10, reps: 3, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 10, reps: 3, female_load: 105, male_load: 155, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -1629,7 +1629,7 @@ Workout.find_or_create_by(name: 'Klepto') do |workout|
   workout.score_type = :time
   segment.exercises.build(movement: box_jump, position: 1, reps: 27, female_distance: 20, male_distance: 24, distance_unit: :inch)
   segment.exercises.build(movement: burpee, position: 2, reps: 20)
-  segment.exercises.build(movement: clean_squat, position: 3, reps: 11, female_load: 95, male_load: 145, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 3, reps: 11, female_load: 95, male_load: 145, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -1686,7 +1686,7 @@ Workout.find_or_create_by(name: 'Lee') do |workout|
   workout.score_type = :time
   segment.exercises.build(movement: run, position: 1, reps: 1, distance: 400, distance_unit: :meter)
   segment.exercises.build(movement: deadlift, position: 2, reps: 1, female_load: 225, male_load: 345, load_unit: :lb)
-  segment.exercises.build(movement: clean_squat, position: 3, reps: 3, female_load: 125, male_load: 185, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 3, reps: 3, female_load: 125, male_load: 185, load_unit: :lb)
   segment.exercises.build(movement: push_jerk, position: 4, reps: 5, female_load: 125, male_load: 185, load_unit: :lb)
   segment.exercises.build(movement: muscle_up, position: 5, reps: 3)
   segment.exercises.build(movement: rope_climb, position: 6, reps: 1, distance: 15, distance_unit: :foot)
@@ -2224,7 +2224,7 @@ Workout.find_or_create_by(name: 'Nunez') do |workout|
   segment.exercises.build(movement: run, position: 9, reps: 1, distance: 400, distance_unit: :meter)
   segment.exercises.build(movement: burpee_box_jump_over, position: 10, reps: 15, female_distance: 20, male_distance: 20, distance_unit: :inch)
   segment.exercises.build(movement: bar_muscle_up, position: 11, reps: 12)
-  segment.exercises.build(movement: clean_squat, position: 12, reps: 10, female_load: 155, male_load: 225, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 12, reps: 10, female_load: 155, male_load: 225, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -2499,7 +2499,7 @@ Workout.find_or_create_by(name: 'Rich') do |workout|
   rounds.exercises.build(movement: pull_up, position: 1, reps: 10)
   rounds.exercises.build(movement: run, position: 2, reps: 1, distance: 100, distance_unit: :meter, notes: 'Sprint.')
   segment = workout.segments.build(position: 3)
-  segment.exercises.build(movement: clean_squat, position: 1, reps: 13, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 1, reps: 13, female_load: 105, male_load: 155, load_unit: :lb)
 end
 
 # ==============================================================================
@@ -2652,7 +2652,7 @@ Workout.find_or_create_by(name: 'Santora') do |workout|
   segment = workout.segments.build(rounds: 3, position: 1)
   workout.score_type = :rep
   workout.notes = 'Rest 1 minute between rounds.'
-  segment.exercises.build(movement: clean_squat, position: 1, reps: 0, duration_seconds: 60, female_load: 105, male_load: 155, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 1, reps: 0, duration_seconds: 60, female_load: 105, male_load: 155, load_unit: :lb)
   segment.exercises.build(movement: deadlift, position: 2, reps: 0, duration_seconds: 60, female_load: 165, male_load: 245, load_unit: :lb)
   segment.exercises.build(movement: burpee, position: 3, reps: 0, duration_seconds: 60)
   segment.exercises.build(movement: jerk, position: 4, reps: 0, duration_seconds: 60, female_load: 105, male_load: 155, load_unit: :lb)
@@ -2772,7 +2772,7 @@ end
 Workout.find_or_create_by(name: 'Ship') do |workout|
   segment = workout.segments.build(rounds: 9, position: 1)
   workout.score_type = :time
-  segment.exercises.build(movement: clean_squat, position: 1, reps: 7, female_load: 125, male_load: 185, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 1, reps: 7, female_load: 125, male_load: 185, load_unit: :lb)
   segment.exercises.build(movement: burpee_box_jump, position: 2, reps: 8, female_distance: 30, male_distance: 36, distance_unit: :inch)
 end
 
@@ -2958,7 +2958,7 @@ Workout.find_or_create_by(name: 'The Lyon') do |workout|
   workout.score_type = :time
   workout.notes = 'Each round is for time. Rest 2 minutes between rounds. ' \
                   'Ideally use a pull-up bar 6 inches above your max reach.'
-  segment.exercises.build(movement: clean_squat, position: 1, reps: 7, female_load: 115, male_load: 165, load_unit: :lb)
+  segment.exercises.build(movement: squat_clean, position: 1, reps: 7, female_load: 115, male_load: 165, load_unit: :lb)
   segment.exercises.build(movement: shoulder_to_overhead, position: 2, reps: 7, female_load: 115, male_load: 165, load_unit: :lb)
   segment.exercises.build(movement: burpee_chest_to_bar_pull_up, position: 3, reps: 7)
 end

@@ -3,6 +3,7 @@ module CfWod
     FOR_TIME = /\Afor time:?\z/i
     FOR_LOAD = /\Afor load:?\z/i
     AMRAP = /\A(?:complete )?as many (?:rounds(?: and reps)?|reps) as possible in (\d+) minutes? of:?\z/i
+    ROUNDS_AMRAP = /\Afor (\d+) rounds,\s*(?:complete )?as many (?:rounds(?: and reps)?|reps) as possible in (\d+) minutes? of:?\z/i
     EVERY_MINUTE = /\Aevery minute on the minute for (\d+) minutes?:?\z/i
     REP_LADDER = /\A(\d+(?:-\d+)+) reps for time of:?\z/i
     FIND_MAX = /\Afind a 1-rep-max (.+?)\.?\z/i
@@ -15,6 +16,7 @@ module CfWod
       [FOR_TIME, :for_time_attributes],
       [FOR_LOAD, :for_load_attributes],
       [AMRAP, :amrap_attributes],
+      [ROUNDS_AMRAP, :rounds_amrap_attributes],
       [EVERY_MINUTE, :emom_attributes],
       [REP_LADDER, :rep_ladder_attributes],
       [FIND_MAX, :find_max_attributes],
@@ -53,6 +55,11 @@ module CfWod
 
     def amrap_attributes
       { score_type: :rep, time: header_line.match(AMRAP)[1].to_i }
+    end
+
+    def rounds_amrap_attributes
+      rounds, minutes = header_line.match(ROUNDS_AMRAP).captures
+      { score_type: :rep, rounds: rounds.to_i, time: minutes.to_i }
     end
 
     def emom_attributes

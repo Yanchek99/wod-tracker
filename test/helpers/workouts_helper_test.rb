@@ -95,12 +95,38 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_nil lifting_sets_line(workout)
   end
 
-  test 'renders timed max-finding workouts as max load clocks' do
+  test 'renders untimed max-finding workouts as for load' do
     workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
     segment = workout.segments.build(position: 1)
     segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
                             duration_seconds: 240, load_unit: :lb)
     workout.valid? # canonicalizes load_unit into the load: 0 find-a-max sentinel
+
+    assert_equal 'For load', workout_objective(workout)
+  end
+
+  test 'renders timed max-finding workouts as max load clocks' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    segment = workout.segments.build(position: 1, time_seconds: 240)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+    workout.valid? # canonicalizes load_unit into the load: 0 find-a-max sentinel
+
+    assert_equal 'Find a max load in 4 minutes', workout_objective(workout)
+  end
+
+  test 'renders a bare untimed single-lift weight workout as for load, not for time' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 1, load: 0)
+
+    assert_equal 'For load', workout_objective(workout)
+  end
+
+  test 'renders a weight-scored workout with a ladder step as for load, not an ascending ladder' do
+    workout = Workout.new(name: 'Loaded Ladder', score_type: :weight, ladder_step: 3)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 1, load: 0)
 
     assert_equal 'For load', workout_objective(workout)
   end

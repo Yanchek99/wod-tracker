@@ -3,10 +3,14 @@ class OfficialMovementNameNormalizer
     'Double Under' => 'Double-under',
     'Kettlebell Swings' => 'Kettlebell Swing',
     'Pistol' => 'Single-leg Squat (Pistol)',
-    'Strict Toes to Bar' => 'Strict Toes-to-bar'
+    'Strict Toes to Bar' => 'Strict Toes-to-bar',
+    'Bike' => 'Air Bike',
+    'Chest-to-bar pull-up' => 'Chest-to-bar Pull-up',
+    'Toes To Bar' => 'Toes to Bar',
+    'Ground To Overhead' => 'Ground to Overhead'
   }.freeze
 
-  BAD_MOVEMENTS = ['Press Jerk'].freeze
+  BAD_MOVEMENTS = ['Press Jerk', 'Butterfly Sit-up', 'Inchworm Push-up', 'Suitcase Deadlift', 'Wall Climb'].freeze
 
   def initialize(output: $stdout)
     @output = output

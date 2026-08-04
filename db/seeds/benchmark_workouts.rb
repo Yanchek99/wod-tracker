@@ -501,3 +501,20 @@ Workout.find_or_create_by(name: 'CrossFit Total') do |workout|
   segment.exercises.build(movement: shoulder_press, position: 2, reps: 1, load_unit: :lb)
   segment.exercises.build(movement: deadlift, position: 3, reps: 1, load_unit: :lb)
 end
+
+# ==============================================================================
+# Andi (source: a real user's SugarWOD history; not a verified CrossFit.com benchmark)
+# For time:
+# 100 hang power snatches
+# 100 push presses
+# 100 sumo deadlift high pulls
+# 100 front squats
+# 45 / 65 lb.
+Workout.find_or_create_by(name: 'Andi') do |workout|
+  workout.score_type = :time
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: hang_power_snatch, position: 1, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: push_press, position: 2, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: sumo_deadlift_high_pull, position: 3, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: front_squat, position: 4, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+end

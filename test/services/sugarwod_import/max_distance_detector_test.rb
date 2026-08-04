@@ -10,9 +10,10 @@ class SugarwodImport
 
       workout = MaxDistanceDetector.call(row)
 
-      assert_equal 'distance', workout.score_type
+      assert_equal 'inch', workout.score_type
       exercise = workout.segments.sole.exercises.sole
       assert_equal box_jump, exercise.movement
+      assert_equal 'inch', exercise.distance_unit
     end
 
     test 'returns nil when barbell_lift is already present' do

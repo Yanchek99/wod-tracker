@@ -24,7 +24,7 @@ class Metric
   end
 
   def self.workout_measurements
-    [:calorie, :rep, :round, :time, :weight, :distance]
+    [:calorie, :rep, :round, :time, :weight, :inch]
   end
 
   def self.recording_order(measurement)

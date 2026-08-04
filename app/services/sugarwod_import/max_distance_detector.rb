@@ -32,10 +32,13 @@ class SugarwodImport
       !movement.family_monostructural? && !movement.family_rest?
     end
 
+    # :inch, not the abstract :distance category -- MetricsHelper renders a score by pluralizing
+    # its measurement name directly (e.g. "44 inches"), and "distance" isn't a real unit, just a
+    # grouping label alongside foot/inch/meter in Metric::DISTANCE_MEASUREMENTS ("44 distances").
     def build_workout(movement)
-      workout = Workout.new(score_type: :distance, name: "Max #{movement.name} Height")
+      workout = Workout.new(score_type: :inch, name: "Max #{movement.name} Height")
       segment = workout.segments.build(position: 1)
-      segment.exercises.build(movement: movement, position: 1)
+      segment.exercises.build(movement: movement, position: 1, distance_unit: :inch)
       workout
     end
   end

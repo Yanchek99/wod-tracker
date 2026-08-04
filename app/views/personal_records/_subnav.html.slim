@@ -1,0 +1,5 @@
+ul.nav.nav-tabs.mt-3.mb-3
+  li.nav-item
+    = link_to 'Lifts', lifts_user_personal_records_path(@user), class: "nav-link #{'active' if action_name == 'lifts'}"
+  li.nav-item
+    = link_to 'Repeated Workouts', repeated_workouts_user_personal_records_path(@user), class: "nav-link #{'active' if action_name == 'repeated_workouts'}"

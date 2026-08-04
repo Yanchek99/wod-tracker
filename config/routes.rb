@@ -11,12 +11,12 @@ Rails.application.routes.draw do
   resources :movements, only: [:index, :create]
 
   resources :users do
-    resources :movement_logs, only: [] do
+    resources :personal_records, only: [:index] do
       collection do
-        get :personal_records
+        get :lifts
+        get :repeated_workouts
       end
     end
-    resources :workout_records, only: [:index]
   end
 
   resources :workouts do

@@ -3,6 +3,9 @@ require 'json'
 class SugarwodImport
   class RowImporter
     DISREGARD_SCORE_TYPES = ['Checkbox', 'Points', 'Emoji Selection', 'Other / Text'].freeze
+    DETECTOR_STRATEGIES = [
+      BarbellLiftBuilder, UntaggedBarbellLiftDetector, MonostructuralDetector, MaxRepDetector, MaxDistanceDetector
+    ].freeze
 
     Result = Struct.new(:status, :reason, keyword_init: true)
 
@@ -36,24 +39,15 @@ class SugarwodImport
     end
 
     def resolve_workout
-      NameMatcher.call(row[:title]) || build_from_barbell_lift || build_from_untagged_barbell_lift ||
-        build_from_monostructural || build_from_max_rep
+      NameMatcher.call(row[:title]) || detected_workout
     end
 
-    def build_from_barbell_lift
-      persist(BarbellLiftBuilder.call(row))
-    end
-
-    def build_from_untagged_barbell_lift
-      persist(UntaggedBarbellLiftDetector.call(row))
-    end
-
-    def build_from_monostructural
-      persist(MonostructuralDetector.call(row))
-    end
-
-    def build_from_max_rep
-      persist(MaxRepDetector.call(row))
+    def detected_workout
+      DETECTOR_STRATEGIES.each do |detector|
+        workout = persist(detector.call(row))
+        return workout if workout
+      end
+      nil
     end
 
     def persist(workout)

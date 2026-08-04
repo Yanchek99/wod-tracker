@@ -4,8 +4,16 @@ class SugarwodImport
     DISTANCE_METERS = /\A(?:for time:?\s*)?([\d,]+)\s*meter\s+(?:row|run|bike|ski)\z/i
     DISTANCE_K      = /\A(?:for time:?\s*)?(\d+)\s*k\s+(?:row|run|bike|ski)\z/i
     DISTANCE_MILES  = /\A(?:for time:?\s*)?(\d+(?:\.\d+)?)\s*miles?\s+(?:row|run|bike|ski)\z/i
+    MOVEMENT_K      = /\A(?:for time:?\s*)?(?:row|run|bike|ski)\s+(\d+)\s*k\z/i
     MOVEMENT_MILES  = /\A(?:for time:?\s*)?(?:row|run|bike|ski)\s+(\d+(?:\.\d+)?)\s*miles?\z/i
     MAX_CALORIES    = /\A(\d+)\s*minute\s*max\s*calorie\s+(?:row|run|bike|ski)\z/i
+    DISTANCE_STRATEGIES = [
+      [DISTANCE_METERS, 'meter'],
+      [DISTANCE_K, 'km'],
+      [DISTANCE_MILES, 'mile'],
+      [MOVEMENT_K, 'km'],
+      [MOVEMENT_MILES, 'mile']
+    ].freeze
 
     def self.call(row) = new(row).build
 
@@ -47,11 +55,12 @@ class SugarwodImport
     end
 
     def extract_meters(description)
-      return description[DISTANCE_METERS, 1].delete(',').to_i if description.match?(DISTANCE_METERS)
-      return DistanceEquivalence.to_meters(description[DISTANCE_K, 1].to_f, 'km') if description.match?(DISTANCE_K)
-      return DistanceEquivalence.to_meters(description[DISTANCE_MILES, 1].to_f, 'mile') if description.match?(DISTANCE_MILES)
-      return DistanceEquivalence.to_meters(description[MOVEMENT_MILES, 1].to_f, 'mile') if description.match?(MOVEMENT_MILES)
+      DISTANCE_STRATEGIES.each do |pattern, unit|
+        value = description[pattern, 1]
+        next unless value
 
+        return DistanceEquivalence.to_meters(value.delete(',').to_f, unit)
+      end
       nil
     end
 

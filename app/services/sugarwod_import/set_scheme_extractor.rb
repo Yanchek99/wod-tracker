@@ -12,7 +12,10 @@ class SugarwodImport
     DASH_SCHEME = /(?<!\d)(\d+(?:-\d+){2,})(?!-?\d)/
     AXB_SCHEME = /(\d+)\s*x\s*(\d+)\z/i
     SET_OF_N = /sets?\s+of\s+(\d+)/i
-    SINGLE = /single\b/i
+    # "1-rep max" is included here, not just "single": every attempt in a build-up toward a 1RM
+    # is definitionally one rep, regardless of how many attempts are logged -- unlike "Build to a
+    # 3 rep max" (REP_MAX below), where only the final logged attempt is actually N reps.
+    SINGLE = /single\b|1[\s-]*rep\s+max\b/i
     # Scheme language earlier strategies failed to parse; blocks default_single_set_scheme's fallback.
     UNRECOGNIZED_SCHEME_SIGNAL = /\d+\s*(?:x|reps?|sets?)\b/i
     INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?:\s*sets?)?\s*:?\s*(\d+)/i

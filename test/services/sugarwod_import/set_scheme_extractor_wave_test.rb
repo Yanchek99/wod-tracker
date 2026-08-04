@@ -109,6 +109,16 @@ class SugarwodImport
       assert_equal Array.new(10) { { reps: 1, load: 245 } }, result
     end
 
+    test 'applies a uniform single-rep scheme for a "1-rep max" build-up with multiple attempts' do
+      loads = [295, 315, 335, 355, 365]
+      row = { title: '230324', description: 'For load:1-rep max deadlift',
+              set_details: loads.map { |load| { success: true, load: load } }.to_json }
+
+      result = SetSchemeExtractor.call(row)
+
+      assert_equal loads.map { |load| { reps: 1, load: load } }, result
+    end
+
     test 'matches the full dash scheme when coaching-note text is glued directly onto it with no space' do
       row = { title: 'Back Squat',
               description: '6 Sets:6-6-5-5-4-4All Sets Based on 1RM Back SquatSet 1-2: 8 @ 70% Set 3-4: 6 @ 75% ' \

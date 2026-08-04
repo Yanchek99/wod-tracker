@@ -20,6 +20,7 @@ class SugarwodImport
     UNRECOGNIZED_SCHEME_SIGNAL = /\d+\s*(?:x|reps?|sets?)\b/i
     INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?:\s*sets?)?\s*:?\s*(\d+)/i
     ROUNDS_SCHEME = /(\d+)\s*rounds?\s*:\s*(\d+)\b/i
+    SETS_FOR_LOAD_SCHEME = /(\d+)\s*sets?\s+for\s+load\s*:\s*(\d+)\b/i
     TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i
     WAVE_MARKER = /wave\s*#?\d+\s*:?\s*/i
     WAVE_REPS = /(\d+)\s*[A-Za-z][\w-]*/
@@ -31,7 +32,8 @@ class SugarwodImport
     # title or description. All are otherwise the same shape: a captured (sets, reps) pair,
     # applied uniformly once the stated set count matches the logged set_details count.
     UNIFORM_SET_SCHEMES = [
-      [AXB_SCHEME, :title], [INTERVAL_SCHEME, :scheme_source], [ROUNDS_SCHEME, :scheme_source]
+      [AXB_SCHEME, :title], [INTERVAL_SCHEME, :scheme_source], [ROUNDS_SCHEME, :scheme_source],
+      [SETS_FOR_LOAD_SCHEME, :scheme_source]
     ].freeze
     REP_SCHEME_STRATEGIES = %i[
       dash_scheme uniform_set_scheme set_of_n_scheme single_scheme wave_scheme
@@ -87,10 +89,7 @@ class SugarwodImport
       nil
     end
 
-    def dash_scheme
-      match = scheme_source.match(DASH_SCHEME)
-      match && match[1].split('-').map(&:to_i)
-    end
+    def dash_scheme = scheme_source.match(DASH_SCHEME)&.then { |m| m[1].split('-').map(&:to_i) }
 
     def uniform_set_scheme
       UNIFORM_SET_SCHEMES.each do |pattern, source|

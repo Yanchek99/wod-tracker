@@ -70,8 +70,10 @@ module CfWod
     # the exact form first (see #lookup) and only falling back to the singularized form preserves
     # both: "power snatches" still finds "Power Snatch" via the fallback, and "knees-to-elbows"
     # finds "Knees-to-elbows" directly without ever needing it.
+    # SugarWOD and other free-text sources often shorten "and" to "&" in compound lift names
+    # (e.g. "Clean & Jerk"), which never appears literally in the catalog.
     def base_name
-      name.to_s.strip.delete_suffix('.').downcase.sub(TRAILING_PARENTHETICAL, '')
+      name.to_s.strip.delete_suffix('.').downcase.sub(TRAILING_PARENTHETICAL, '').gsub(/\s*&\s*/, ' and ')
     end
 
     def normalized(candidate, word_separator)

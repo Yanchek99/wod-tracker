@@ -2,6 +2,7 @@ class SugarwodImport
   class MaxRepDetector
     MAX_PREFIX = /\Amax (?:unbroken )?(.+)\z/i
     MAX_SUFFIX = /\A(.+?)\s*\(max reps\)\z/i
+    MAX_COLON_SUFFIX = /\A(.+?)\s*:\s*max reps\z/i
 
     def self.call(row) = new(row).build
 
@@ -13,7 +14,7 @@ class SugarwodImport
       return nil if row[:barbell_lift].present?
 
       description = row[:description].to_s.strip
-      name = description[MAX_PREFIX, 1] || description[MAX_SUFFIX, 1]
+      name = description[MAX_PREFIX, 1] || description[MAX_SUFFIX, 1] || description[MAX_COLON_SUFFIX, 1]
       return nil unless name
 
       movement = CfWod::MovementLookup.call(name)

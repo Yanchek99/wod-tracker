@@ -30,6 +30,16 @@ class SugarwodImport
       assert_equal movements(:hspu), exercise.movement
     end
 
+    test 'builds a rep-scored workout from "<movement>: Max Reps"' do
+      row = { title: 'Handstand Push-ups (Strict): Max Reps', description: 'Handstand Push-ups (Strict): Max Reps',
+              barbell_lift: nil }
+
+      workout = MaxRepDetector.call(row)
+
+      exercise = workout.segments.sole.exercises.sole
+      assert_equal movements(:handstand_push_up), exercise.movement
+    end
+
     test 'builds a rep-scored workout for a weightlifting-family movement with a fixed implement' do
       # Not a fixture: Wall-ball Shot is created dynamically here (and in
       # test/helpers/measurable_helper_test.rb) to avoid colliding with a permanent global

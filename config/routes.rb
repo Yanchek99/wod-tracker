@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :personal_records, only: [:index] do
       collection do
         get :lifts
+        get :barbell
         get :repeated_workouts
       end
     end

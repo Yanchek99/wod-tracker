@@ -98,6 +98,30 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_select '[hidden]', count: 0
   end
 
+  test 'barbell renders a loaded record with no rep count instead of a bare RM label' do
+    back_squat = movements(:back_squat)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: back_squat, load: 405, reps: nil)
+
+    get barbell_user_personal_records_url(users(:mathew))
+
+    assert_response :success
+    assert_select '.fw-semibold', text: 'Back Squat', count: 1
+    assert_select 'a', text: '405 lbs'
+    assert_no_match(/\bRM\b/, response.body)
+  end
+
+  test 'barbell excludes a weightlifting record with reps but no load' do
+    back_squat = movements(:back_squat)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: back_squat, load: nil, reps: 12)
+
+    get barbell_user_personal_records_url(users(:mathew))
+
+    assert_response :success
+    assert_select '.fw-semibold', text: 'Back Squat', count: 0
+  end
+
   test 'subnav links to the barbell tab' do
     get lifts_user_personal_records_url(users(:mathew))
 

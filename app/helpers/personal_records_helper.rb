@@ -1,5 +1,7 @@
 module PersonalRecordsHelper
   def rep_max_label(movement_log)
+    return unless movement_log.reps
+
     "#{movement_log.reps}RM"
   end
 

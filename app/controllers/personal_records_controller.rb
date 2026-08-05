@@ -11,7 +11,7 @@ class PersonalRecordsController < ApplicationController
 
   def barbell
     @movement_rep_maxes = @user.personal_records
-                               .select { |record| record.movement.family_weightlifting? }
+                               .select { |record| weightlifting_rep_max?(record) }
                                .group_by(&:movement)
                                .sort_by { |movement, _records| movement.name }
                                .map { |movement, records| [movement, records.sort_by { |record| record.reps || Float::INFINITY }] }
@@ -22,6 +22,10 @@ class PersonalRecordsController < ApplicationController
   end
 
   private
+
+  def weightlifting_rep_max?(record)
+    record.movement.family_weightlifting? && record.load.present?
+  end
 
   def set_user
     @user = User.find(params.expect(:user_id))

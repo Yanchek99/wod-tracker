@@ -17,6 +17,9 @@ class SugarwodImport
       assert_equal :imported, result.status
       log = @user.logs.find_by(workout: Workout.find_by(name: 'Max Box Jump Height'))
       assert_equal 44, log.score_value
+      movement_log = log.movement_logs.sole
+      assert_equal 44, movement_log.distance
+      assert_equal 'inch', movement_log.distance_unit
     end
   end
 end

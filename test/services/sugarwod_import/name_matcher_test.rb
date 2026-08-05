@@ -63,5 +63,18 @@ class SugarwodImport
       assert_equal open171, NameMatcher.call('Open 21.2')
       assert_equal open144, NameMatcher.call('Open 23.1')
     end
+
+    test 'does not match "24.1" against a catalog entry named "24.10"' do
+      Workout.create!(name: 'Open 24.10', score_type: :time)
+
+      assert_nil NameMatcher.call('Open 24.1')
+    end
+
+    test 'matches "24.1" exactly when both "24.1" and "24.10" are in the catalog' do
+      exact = Workout.create!(name: 'Open 24.1', score_type: :time)
+      Workout.create!(name: 'Open 24.10', score_type: :time)
+
+      assert_equal exact, NameMatcher.call('Open 24.1')
+    end
   end
 end

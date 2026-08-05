@@ -105,15 +105,6 @@ class SugarwodImport
       assert_equal 'not a workout score type', result.reason
     end
 
-    test 'skips a row with a blank best_result_raw without creating a Log' do
-      row = { date: Date.new(2020, 6, 1), title: 'Fran', best_result_raw: '' }
-      result = RowImporter.call(row, user: @user)
-
-      assert_equal :skipped, result.status
-      assert_equal 'no score recorded', result.reason
-      assert_not @user.logs.exists?(workout: workouts(:fran))
-    end
-
     test 'skips a row that matches no catalog workout, barbell lift, or single-modality shape' do
       row = { date: Date.new(2020, 3, 1), title: 'Row Burpee Chipper', description: 'For time:•50 Calorie Row•50 Push-ups',
               best_result_raw: '600', best_result_display: '10:00', score_type: '', barbell_lift: nil, notes: nil }

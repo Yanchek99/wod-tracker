@@ -10,8 +10,15 @@ class SugarwodImport
       @user = user
     end
 
+    # nil when best_result_raw isn't a valid value for the workout's score type (e.g. SugarWOD
+    # text like "not recorded" for a numeric score) -- to_f/to_i would silently coerce that
+    # garbage to 0, fabricating a bogus recorded result, so the caller must check for nil and
+    # skip the row instead of importing it.
     def attributes
-      { score_type: workout.score_type, score_value: score_value, notes: row[:notes].presence }
+      value = score_value
+      return unless value
+
+      { score_type: workout.score_type, score_value: value, notes: row[:notes].presence }
     end
 
     private
@@ -20,17 +27,30 @@ class SugarwodImport
 
     def score_value
       case workout.score_type
-      when 'time' then row[:best_result_raw].to_f.round
-      when 'weight' then LoadEquivalence.to_lb(row[:best_result_raw].to_f, user.load_display_unit.to_s)
+      when 'time' then parsed_float&.round
+      when 'weight' then parsed_weight
       when 'rep', 'round' then rep_or_round_value
-      else row[:best_result_raw].to_i
+      else parsed_integer
       end
+    end
+
+    def parsed_weight
+      raw = parsed_float
+      LoadEquivalence.to_lb(raw, user.load_display_unit.to_s) if raw
     end
 
     def rep_or_round_value
       return rounds_plus_reps_string if workout.rep_scored_amrap? && rounds_plus_reps_match
 
-      row[:best_result_raw].to_i
+      parsed_integer
+    end
+
+    def parsed_float
+      Float(row[:best_result_raw], exception: false)
+    end
+
+    def parsed_integer
+      Integer(row[:best_result_raw], exception: false)
     end
 
     def rounds_plus_reps_match

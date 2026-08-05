@@ -27,5 +27,20 @@ class SugarwodImport
       attrs = ScoreMapper.call(workouts(:amrap_couplet), row, user: users(:mathew))
       assert_equal 241, attrs[:score_value]
     end
+
+    test 'returns nil for a non-numeric best_result_raw instead of coercing it to zero' do
+      row = { best_result_raw: 'not recorded', best_result_display: 'not recorded', notes: nil }
+      assert_nil ScoreMapper.call(workouts(:fran), row, user: users(:mathew))
+    end
+
+    test 'returns nil for a non-numeric load on a weight-scored workout' do
+      row = { best_result_raw: 'abc123', best_result_display: 'abc123', notes: nil }
+      assert_nil ScoreMapper.call(workouts(:back_squat_5x5), row, user: users(:mathew))
+    end
+
+    test 'returns nil for a non-numeric best_result_raw on a rep-scored workout' do
+      row = { best_result_raw: 'DNF', best_result_display: 'DNF', notes: nil }
+      assert_nil ScoreMapper.call(workouts(:amrap_couplet), row, user: users(:mathew))
+    end
   end
 end

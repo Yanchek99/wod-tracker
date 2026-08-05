@@ -60,10 +60,21 @@ class SugarwodImport
     # "Quarterfinals 22.4" and "Open 22.4" are different workouts that happen to share a number.
     # A bare "NN.digit" title with no stage word at all (e.g. "18.Zero") defaults to "open",
     # preserving the original behavior for that case.
+    #
+    # The number itself is matched with digit boundaries on both sides (not a bare substring),
+    # so "24.1" can't match a catalog entry named "24.10" -- and results are ordered so the
+    # lookup is deterministic even if more than one row somehow matches.
     def open_number_match
       return nil unless number
 
-      Workout.where('name ILIKE ? AND name LIKE ?', "%#{stage}%", "%#{number}%").first
+      Workout.where('name ILIKE ?', "%#{stage}%")
+             .where('name ~* ?', number_boundary_pattern)
+             .order(:id)
+             .first
+    end
+
+    def number_boundary_pattern
+      "(^|[^0-9])#{Regexp.escape(number)}([^0-9]|$)"
     end
 
     def number

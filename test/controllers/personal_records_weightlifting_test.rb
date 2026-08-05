@@ -69,4 +69,11 @@ class PersonalRecordsWeightliftingTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select '.fw-semibold', text: 'Back Squat', count: 0
   end
+
+  test 'weightlifting shows an empty state when the user has no weightlifting PRs' do
+    get family_user_personal_records_url(users(:mathew), family: 'weightlifting')
+
+    assert_response :success
+    assert_select 'p', text: 'No weightlifting records yet.'
+  end
 end

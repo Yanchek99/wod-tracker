@@ -1,26 +1,29 @@
 .container
   h1.mt-3 Personal Records
   = render 'subnav'
-  - @movement_rep_maxes.each do |movement, records|
-    .card.mb-2 data-controller=("rep-max-row" if records.size > 1)
-      .card-body.py-2.px-3
-        - if records.size > 1
-          button.btn.btn-link.p-0.text-start.w-100.d-flex.justify-content-between.align-items-center type="button" data-action="rep-max-row#toggle" data-rep-max-row-target="toggle" aria-expanded="false"
-            span.fw-semibold = movement.name
-            span.text-muted
-              = rep_max_label(records.first)
-              '
-              = rep_max_load_msg(records.first)
-              span.ms-1 data-rep-max-row-target="caret" ▾
-          .mt-2 hidden=true data-rep-max-row-target="details"
-            - records.each do |record|
-              .d-flex.justify-content-between
-                span = rep_max_label(record)
-                = link_to rep_max_load_msg(record), record.log
-        - else
-          .d-flex.justify-content-between.align-items-center
-            span.fw-semibold = movement.name
-            span.text-muted
-              = rep_max_label(records.first)
-              '
-              = link_to rep_max_load_msg(records.first), records.first.log
+  - if @movement_rep_maxes.empty?
+    p.text-muted No weightlifting records yet.
+  - else
+    - @movement_rep_maxes.each do |movement, records|
+      .card.mb-2 data-controller=("rep-max-row" if records.size > 1)
+        .card-body.py-2.px-3
+          - if records.size > 1
+            button.btn.btn-link.p-0.text-start.w-100.d-flex.justify-content-between.align-items-center type="button" data-action="rep-max-row#toggle" data-rep-max-row-target="toggle" aria-expanded="false"
+              span.fw-semibold = movement.name
+              span.text-muted
+                = rep_max_label(records.first)
+                '
+                = rep_max_load_msg(records.first)
+                span.ms-1 data-rep-max-row-target="caret" ▾
+            .mt-2 hidden=true data-rep-max-row-target="details"
+              - records.each do |record|
+                .d-flex.justify-content-between
+                  span = rep_max_label(record)
+                  = link_to rep_max_load_msg(record), record.log
+          - else
+            .d-flex.justify-content-between.align-items-center
+              span.fw-semibold = movement.name
+              span.text-muted
+                = rep_max_label(records.first)
+                '
+                = link_to rep_max_load_msg(records.first), records.first.log

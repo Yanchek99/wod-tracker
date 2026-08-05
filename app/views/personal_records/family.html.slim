@@ -2,15 +2,18 @@
   h1.mt-3 Personal Records
   = render 'subnav'
   h2.h5.text-muted = @family.capitalize
-  table.table.table-hover
-    thead
-      tr
-        th scope="col" Movement
-        th scope="col" Record
-    tbody
-      - @movement_logs.each do |pr|
+  - if @movement_logs.empty?
+    p.text-muted No #{@family} records yet.
+  - else
+    table.table.table-hover
+      thead
         tr
-          th scope="row" #{pr.movement.name}
-          td = link_to pr.log
-            span = measurable_reps_msg(pr)
-            span = measurable_additional_metrics(pr)
+          th scope="col" Movement
+          th scope="col" Record
+      tbody
+        - @movement_logs.each do |pr|
+          tr
+            th scope="row" #{pr.movement.name}
+            td = link_to pr.log
+              span = measurable_reps_msg(pr)
+              span = measurable_additional_metrics(pr)

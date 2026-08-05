@@ -31,6 +31,13 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'th', text: 'Pull Up', count: 2
   end
 
+  test 'gymnastics shows an empty state when the user has no gymnastics PRs' do
+    get family_user_personal_records_url(users(:mathew), family: 'gymnastics')
+
+    assert_response :success
+    assert_select 'p', text: 'No gymnastics records yet.'
+  end
+
   test 'gymnastics excludes movements from other families' do
     back_squat = movements(:back_squat)
     log = logs(:matt_amrap)

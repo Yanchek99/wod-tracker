@@ -263,6 +263,20 @@ end
 
 CF_PROGRAM.schedules.find_or_initialize_by(workout: nancy).update(posted_at: Date.new(2018, 1, 16))
 
+# ==============================================================================
+# Nasty Girls
+# 3 rounds for time
+# Air squats, 50 reps
+# Muscle-ups, 7 reps
+# 135-lb. hang power cleans, 10 reps
+Workout.find_or_create_by(name: 'Nasty Girls') do |workout|
+  workout.score_type = :time
+  segment = workout.segments.build(rounds: 3, position: 1)
+  segment.exercises.build(movement: air_squat, position: 1, reps: 50)
+  segment.exercises.build(movement: muscle_up, position: 2, reps: 7)
+  segment.exercises.build(movement: hang_power_clean, position: 3, reps: 10, female_load: 95, male_load: 135, load_unit: :lb)
+end
+
 # The New Girls Workouts
 
 # ==============================================================================
@@ -451,3 +465,56 @@ hope = Workout.find_or_create_by(name: 'Hope') do |workout|
 end
 
 CF_PROGRAM.schedules.find_or_initialize_by(workout: hope).update(posted_at: Date.new(2018, 1, 5))
+
+# ==============================================================================
+# The Ghost
+# 6 rounds of:
+# 1 minute of rowing
+# 1 minute of burpees
+# 1 minute of double-unders
+# 1 minute rest
+# Score is total reps across all rounds and exercises (rowing counted as reps per this
+# workout's own scoring convention, same as the calorie-scored stations in Fight Gone Bad).
+Workout.find_or_create_by(name: 'The Ghost') do |workout|
+  workout.score_type = :rep
+  workout.notes = 'Try for as many reps as possible of EACH exercise, not just total score. ' \
+                  'Post separate totals of calories rowed, burpee reps, and double-under reps completed.'
+  segment = workout.segments.build(rounds: 6, time_seconds: 1440, position: 1)
+  segment.exercises.build(movement: row, position: 1, reps: 1, calories: 0, duration_seconds: 60)
+  segment.exercises.build(movement: burpee, position: 2, reps: 0, duration_seconds: 60)
+  segment.exercises.build(movement: double_under, position: 3, reps: 0, duration_seconds: 60)
+  segment.exercises.build(movement: rest, position: 4, reps: 1, duration_seconds: 60)
+end
+
+# ==============================================================================
+# CrossFit Total
+# The heaviest possible total of:
+# 1-rep-max back squat
+# 1-rep-max shoulder press
+# 1-rep-max deadlift
+Workout.find_or_create_by(name: 'CrossFit Total') do |workout|
+  workout.score_type = :weight
+  workout.notes = 'Establish a 1-rep-max back squat, shoulder press, and deadlift, in that order. ' \
+                  'Post the sum of the three heaviest successful lifts.'
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: back_squat, position: 1, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: shoulder_press, position: 2, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: deadlift, position: 3, reps: 1, load_unit: :lb)
+end
+
+# ==============================================================================
+# Andi (source: a real user's SugarWOD history; not a verified CrossFit.com benchmark)
+# For time:
+# 100 hang power snatches
+# 100 push presses
+# 100 sumo deadlift high pulls
+# 100 front squats
+# 45 / 65 lb.
+Workout.find_or_create_by(name: 'Andi') do |workout|
+  workout.score_type = :time
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: hang_power_snatch, position: 1, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: push_press, position: 2, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: sumo_deadlift_high_pull, position: 3, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: front_squat, position: 4, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+end

@@ -381,9 +381,9 @@ Workout.find_or_create_by(name: 'Carse') do |workout|
 end
 
 # ==============================================================================
-# CHAD1000x
+# CHAD
 # For time: 1,000 weighted box step-ups
-Workout.find_or_create_by(name: 'CHAD1000x') do |workout|
+Workout.find_or_create_by(name: 'CHAD') do |workout|
   segment = workout.segments.build(position: 1)
   workout.score_type = :time
   workout.notes = 'Performed with a weighted ruck or vest.'

@@ -1,10 +1,18 @@
 module WorkoutsHelper
   def workout_objective(workout)
     return weight_objective(workout) if workout.score_measurement == 'weight'
+    return achievement_objective(workout) if workout.single_achievement_test?
     return ascending_ladder_objective(workout) if workout.ascending_ladder?
     return for_time_objective(workout) if workout.rounds_for_time?
 
     clock_objective(workout)
+  end
+
+  # Mirrors the exercise line's own wording (leading_prescription's "max reps"/"max calories"/
+  # "max height") so the workout-level objective and the exercise bullet never disagree.
+  def achievement_objective(workout)
+    exercise = workout.governing_segment_exercises.first
+    "For #{leading_prescription(exercise).text}"
   end
 
   # Weight-scored workouts are always "for load" -- the only exception is a find-a-max

@@ -31,6 +31,23 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'For Time', workout_objective(workout)
   end
 
+  test 'renders a bare max-rep achievement test as for max reps, not for time' do
+    workout = Workout.new(name: 'Max Toes to Bar', score_type: :rep)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    assert_equal 'For max reps', workout_objective(workout)
+  end
+
+  test 'renders a bare max-height achievement test as for max height, not for time' do
+    box_jump = Movement.create!(name: 'Box Jump')
+    workout = Workout.new(name: 'Max Box Jump Height', score_type: :inch)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: box_jump, position: 1, distance_unit: :inch)
+
+    assert_equal 'For max height', workout_objective(workout)
+  end
+
   test 'renders a segment-less workout with a generic fallback objective' do
     workout = Workout.new(name: 'Empty Workout', score_type: :time)
 

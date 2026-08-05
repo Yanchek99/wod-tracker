@@ -82,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_30_120000) do
 
   create_table "logs", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
+    t.text "notes"
     t.integer "reps_per_round"
     t.integer "score_type", null: false
     t.integer "score_value"
@@ -94,8 +95,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_30_120000) do
 
   create_table "movement_function_roles", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "movement_id", null: false
     t.integer "movement_function", null: false
+    t.bigint "movement_id", null: false
     t.integer "role", null: false
     t.datetime "updated_at", null: false
     t.index ["movement_function"], name: "index_movement_function_roles_on_movement_function"
@@ -311,6 +312,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_30_120000) do
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
 
+  create_table "sugarwod_imports", force: :cascade do |t|
+    t.integer "already_imported_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "imported_count", default: 0, null: false
+    t.integer "skipped_count", default: 0, null: false
+    t.jsonb "skipped_rows", default: [], null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sugarwod_imports_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.datetime "current_sign_in_at", precision: nil
@@ -377,4 +390,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_30_120000) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "subscriptions", "programs"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "sugarwod_imports", "users"
 end

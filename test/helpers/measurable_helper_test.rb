@@ -64,6 +64,13 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal 'max calories Row', measurable_message(exercise)
   end
 
+  test 'renders untimed max-height station movements with max height prefix' do
+    box_jump = Movement.create!(name: 'Box Jump')
+    exercise = workouts(:fran).segments.first.exercises.create!(movement: box_jump, position: 3, distance_unit: :inch)
+
+    assert_equal 'max height Box Jump', measurable_message(exercise)
+  end
+
   test 'renders additional calories before load for exercises' do
     exercise = workouts(:fran).segments.first.exercises.create!(movement: movements(:row), position: 3,
                                                                 reps: 10, calories: 20, load: 135, load_unit: :lb)

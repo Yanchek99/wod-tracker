@@ -12,9 +12,17 @@ module Measurable
       return unless metric
       return 'max reps' if max_rep?(metric)
       return 'max calories' if max_calorie?(metric)
+      return 'max height' if max_distance?(metric)
       return prescribed_work_metric_text(metric) if prescribed_work_metric?(metric)
 
       metric.value == 1 ? '' : metric.value.to_s
+    end
+
+    # True when the leading metric is one of the blank-valued "how many/how far" achievement
+    # sentinels (max reps, max calories, max height) rather than a fixed prescription -- used to
+    # route a workout's overall objective away from a time/round-based label.
+    def achievement_test?
+      metric.present? && (max_rep?(metric) || max_calorie?(metric) || max_distance?(metric))
     end
 
     def additional_metrics
@@ -95,6 +103,10 @@ module Measurable
 
     def max_calorie?(candidate)
       candidate.calorie? && candidate.value.blank? && !candidate.sex_specific?
+    end
+
+    def max_distance?(candidate)
+      distance_metric?(candidate) && candidate.value.blank? && !candidate.sex_specific?
     end
 
     def prescribed_work_metric_text(candidate)

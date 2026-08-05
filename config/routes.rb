@@ -10,6 +10,8 @@ Rails.application.routes.draw do
 
   resources :movements, only: [:index, :create]
 
+  resources :sugarwod_imports, only: [:new, :create, :show]
+
   resources :users do
     resources :personal_records, only: [:index] do
       collection do

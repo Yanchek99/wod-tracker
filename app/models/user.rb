@@ -20,6 +20,7 @@ class User < ApplicationRecord
   has_many :workouts, -> { distinct }, through: :logs
   has_many :movements, -> { distinct }, through: :movement_logs
   has_many :subscriptions, dependent: :destroy
+  has_many :sugarwod_imports, dependent: :destroy
   has_many :programs, through: :subscriptions do
     def manageable
       where(subscriptions: { role: [:owner, :coach] })

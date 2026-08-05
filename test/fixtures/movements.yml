@@ -48,6 +48,12 @@ back_squat:
   equipment: barbell
   skill_level: basic
 
+box_squat:
+  name: Box Squat
+  family: weightlifting
+  equipment: barbell
+  skill_level: basic
+
 front_squat:
   name: Front Squat
   family: weightlifting
@@ -56,6 +62,9 @@ front_squat:
 
 power_snatch:
   name: Power Snatch
+  family: weightlifting
+  equipment: barbell
+  skill_level: advanced
 
 overhead_walking_lunge:
   name: Overhead Walking Lunge
@@ -92,6 +101,48 @@ deficit_push_up:
 
 deadlift:
   name: Deadlift
+
+bench_press:
+  name: Bench Press
+  family: weightlifting
+  equipment: barbell
+
+power_clean:
+  name: Power Clean
+  family: weightlifting
+  equipment: barbell
+
+shoulder_press:
+  name: Shoulder Press
+  family: weightlifting
+  equipment: barbell
+
+clean_and_jerk:
+  name: Clean and Jerk
+  family: weightlifting
+  equipment: barbell
+
+clean:
+  name: Clean
+  family: weightlifting
+  equipment: barbell
+
+hang_clean:
+  name: Hang Clean
+  family: weightlifting
+  equipment: barbell
+  skill_level: intermediate
+
+clean_pull:
+  name: Clean Pull
+  family: weightlifting
+  equipment: barbell
+  skill_level: intermediate
+
+overhead_squat:
+  name: Overhead Squat
+  family: weightlifting
+  equipment: barbell
 
 # Deliberately not fixtures: "Box Jump" and "Wall-ball Shot" are created dynamically per-test
 # in test/helpers/measurable_helper_test.rb, which would collide with a permanent global

@@ -15,8 +15,8 @@ Rails.application.routes.draw do
   resources :users do
     resources :personal_records, only: [:index] do
       collection do
-        get :lifts
-        get :barbell
+        get ':family', to: 'personal_records#family', as: :family,
+                       constraints: { family: /weightlifting|gymnastics|monostructural/ }
         get :repeated_workouts
       end
     end

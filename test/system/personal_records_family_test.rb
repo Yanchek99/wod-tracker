@@ -1,6 +1,6 @@
 require 'application_system_test_case'
 
-class PersonalRecordsBarbellTest < ApplicationSystemTestCase
+class PersonalRecordsFamilyTest < ApplicationSystemTestCase
   include Warden::Test::Helpers
 
   setup do
@@ -17,7 +17,7 @@ class PersonalRecordsBarbellTest < ApplicationSystemTestCase
     log.movement_logs.create!(movement: back_squat, load: 315, reps: 1)
     log.movement_logs.create!(movement: back_squat, load: 275, reps: 3)
 
-    visit barbell_user_personal_records_url(users(:mathew))
+    visit family_user_personal_records_url(users(:mathew), family: 'weightlifting')
 
     assert_selector '[data-rep-max-row-target="details"]', visible: false
     click_button 'Back Squat'
@@ -30,8 +30,19 @@ class PersonalRecordsBarbellTest < ApplicationSystemTestCase
     log = logs(:matt_amrap)
     log.movement_logs.create!(movement: back_squat, load: 315, reps: 1)
 
-    visit barbell_user_personal_records_url(users(:mathew))
+    visit family_user_personal_records_url(users(:mathew), family: 'weightlifting')
 
+    assert_no_selector 'button'
+  end
+
+  test 'the gymnastics tab renders a flat list, not the expand/collapse format' do
+    pullup = movements(:pullup)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: pullup, reps: 5)
+
+    visit family_user_personal_records_url(users(:mathew), family: 'gymnastics')
+
+    assert_text 'Pull Up'
     assert_no_selector 'button'
   end
 end

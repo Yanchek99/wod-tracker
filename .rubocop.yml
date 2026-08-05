@@ -52,6 +52,9 @@ Metrics/ClassLength:
     - app/services/workout_extraction/llm_parser.rb
     - test/services/workout_extraction/llm_parser_test.rb
     - test/models/workout_test.rb
+    # Grew past the limit purely from merging two unrelated branches' independent
+    # additions to this shared file, not from any single change growing it.
+    - test/helpers/measurable_helper_test.rb
     - test/models/workout_fingerprint_test.rb
     - test/migrations/backfill_segments_for_top_level_exercises_test.rb
     - test/system/workout_drag_ordering_test.rb

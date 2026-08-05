@@ -39,7 +39,7 @@ module WorkoutExtraction
     test 'score_type stays constrained to the workout-valid subset, not the full 12-value enum' do
       enum = LlmParser.workout_schema[:properties][:score_type][:enum]
 
-      assert_equal(%w[calorie rep round time weight].sort, enum.sort)
+      assert_equal(%w[calorie rep round time weight inch].sort, enum.sort)
     end
 
     test 'extractable and movement_name are the only strictly required fields in their schemas' do

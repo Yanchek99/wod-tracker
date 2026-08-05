@@ -35,9 +35,14 @@ module CfWod
       assert_equal({ score_type: :time, interval: '21-15-9' }, result)
     end
 
-    test 'classifies a find-a-1-rep-max header, extracting the lift name' do
+    test 'classifies a find-a-N-rep-max header, extracting the lift name and rep count' do
       result = WorkoutFormatClassifier.call('Find a 1-rep-max back squat.')
-      assert_equal({ score_type: :weight, lift_name: 'back squat' }, result)
+      assert_equal({ score_type: :weight, lift_name: 'back squat', set_reps: 1 }, result)
+    end
+
+    test 'classifies a find-a-N-rep-max header with a rep count other than 1' do
+      result = WorkoutFormatClassifier.call('Find a 5-rep-max Back Squat.')
+      assert_equal({ score_type: :weight, lift_name: 'Back Squat', set_reps: 5 }, result)
     end
 
     test 'raises UnparseableError on an unrecognized header' do
@@ -65,6 +70,36 @@ module CfWod
     test 'classifies a "With a partner," rounds-for-time header, extracting team_size' do
       result = WorkoutFormatClassifier.call('With a partner, 5 rounds for time of:')
       assert_equal({ score_type: :time, rounds: 5, team_size: 2 }, result)
+    end
+
+    test 'classifies short EMOM shorthand, extracting rounds and time' do
+      result = WorkoutFormatClassifier.call('EMOM 30')
+      assert_equal({ score_type: :rep, time: 30, rounds: 30 }, result)
+    end
+
+    test 'classifies an on-the-clock interval header, extracting total time and rounds' do
+      result = WorkoutFormatClassifier.call('On the 4:00 x 5 Rounds:')
+      assert_equal({ score_type: :rep, time: 20, rounds: 5 }, result)
+    end
+
+    test 'classifies an every-the-clock interval header the same as on-the-clock' do
+      result = WorkoutFormatClassifier.call('Every the 3:00 x 6 Rounds')
+      assert_equal({ score_type: :rep, time: 18, rounds: 6 }, result)
+    end
+
+    test 'classifies a plain rounds header with no "for time" suffix' do
+      result = WorkoutFormatClassifier.call('5 Rounds:')
+      assert_equal({ score_type: :time, rounds: 5 }, result)
+    end
+
+    test 'classifies an every-N:00-x-rounds header with no literal "the"' do
+      result = WorkoutFormatClassifier.call('Every 3:00 x 6 Rounds')
+      assert_equal({ score_type: :rep, time: 18, rounds: 6 }, result)
+    end
+
+    test 'classifies short EMOM shorthand with a trailing colon' do
+      result = WorkoutFormatClassifier.call('EMOM 30:')
+      assert_equal({ score_type: :rep, time: 30, rounds: 30 }, result)
     end
   end
 end

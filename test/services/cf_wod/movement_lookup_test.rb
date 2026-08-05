@@ -24,6 +24,11 @@ module CfWod
       assert_equal clean_and_jerk, MovementLookup.call('clean and jerks')
     end
 
+    test 'matches an ampersand as a stand-in for "and"' do
+      clean_and_jerk = Movement.find_or_create_by(name: 'Clean and Jerk')
+      assert_equal clean_and_jerk, MovementLookup.call('Clean & Jerk')
+    end
+
     test 'falls back to treating a hyphenated compound as space-separated words' do
       toes_to_bar = Movement.find_or_create_by(name: 'Toes to Bar')
       assert_equal toes_to_bar, MovementLookup.call('toes-to-bars')

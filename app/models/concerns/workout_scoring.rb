@@ -38,6 +38,16 @@ module WorkoutScoring
     governing_segment&.exercises || []
   end
 
+  # A bare "how many/how far" achievement test -- MaxRepDetector's reps: 0 sentinel or
+  # MaxDistanceDetector's distance_unit-with-no-value sentinel -- has no time or round structure
+  # to announce, so workout_objective routes it away from the for-time/clock format guesses.
+  def single_achievement_test?
+    exercises = governing_segment_exercises.to_a
+    return false unless exercises.one?
+
+    Measurable::LeadingPrescription.new(exercises.first.prescription_metrics).achievement_test?
+  end
+
   def amrap_score_components
     return [] unless rep_scored_amrap?
     return [] if ascending_ladder? # variable reps per round; scored by raw total

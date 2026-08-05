@@ -1,0 +1,22 @@
+.container
+  h1 SugarWOD Import
+  - if @sugarwod_import.pending?
+    p Your import is processing. This page will refresh automatically.
+    meta http-equiv="refresh" content="3"
+  - else
+    p
+      = "#{@sugarwod_import.imported_count} workouts imported, #{@sugarwod_import.already_imported_count} already imported, #{@sugarwod_import.skipped_count} skipped."
+    - if @sugarwod_import.skipped_rows.any?
+      h2 Skipped rows
+      table.table.table-striped
+        thead
+          tr
+            th Date
+            th Title
+            th Reason
+        tbody
+          - @sugarwod_import.skipped_rows.each do |row|
+            tr
+              td = row['date']
+              td = row['title']
+              td = row['reason']

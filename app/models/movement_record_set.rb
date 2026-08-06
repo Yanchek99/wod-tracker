@@ -20,6 +20,7 @@ class MovementRecordSet
   private
 
   def candidate_for(movement_log)
+    return load_for_time_candidate(movement_log) if load_for_time?(movement_log)
     return load_candidate(movement_log) if movement_log.load.present?
     return distance_or_duration_candidate(movement_log) if movement_log.distance.present? || movement_log.duration_seconds.present?
 
@@ -29,6 +30,19 @@ class MovementRecordSet
   def load_candidate(movement_log)
     group_key = [:load, movement_log.reps, movement_log.distance, movement_log.duration_seconds, movement_log.calories]
     Candidate.new(movement_log, group_key, movement_log.load)
+  end
+
+  # A fixed load/reps/distance test scored by elapsed time (e.g. "1000 Box Step-ups @ 45lb/20in
+  # for time") -- distinct from a find-a-max-with-time-cap test (`load_candidate`), where duration
+  # is a fixed cap and load is what you're trying to beat. Distinguished by a fixed distance also
+  # being present alongside load and duration.
+  def load_for_time?(movement_log)
+    movement_log.load.present? && movement_log.distance.present? && movement_log.duration_seconds.present?
+  end
+
+  def load_for_time_candidate(movement_log)
+    group_key = [:load_for_time, movement_log.load, movement_log.reps, movement_log.distance, movement_log.calories]
+    Candidate.new(movement_log, group_key, -movement_log.duration_seconds)
   end
 
   # Distance without load is either a for-time test (paired with duration) or a bare, unranked

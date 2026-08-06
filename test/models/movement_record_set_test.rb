@@ -88,4 +88,23 @@ class MovementRecordSetTest < ActiveSupport::TestCase
     assert_includes records, back_squat
     assert_equal 2, records.size
   end
+
+  test 'ranks a fixed load/reps/distance test by the fastest time' do
+    slow = MovementLog.new(movement_id: 11, load: 45, reps: 1000, distance: 20, duration_seconds: 4183)
+    faster = MovementLog.new(movement_id: 11, load: 45, reps: 1000, distance: 20, duration_seconds: 4057)
+    fastest = MovementLog.new(movement_id: 11, load: 45, reps: 1000, distance: 20, duration_seconds: 3752)
+
+    records = MovementRecordSet.new([slow, faster, fastest]).records
+
+    assert_equal [fastest], records
+  end
+
+  test 'still ranks a find-a-max-with-time-cap test by load when no distance is recorded' do
+    light = MovementLog.new(movement_id: 12, load: 225, reps: 4, duration_seconds: 240)
+    heavy = MovementLog.new(movement_id: 12, load: 245, reps: 4, duration_seconds: 240)
+
+    records = MovementRecordSet.new([light, heavy]).records
+
+    assert_equal [heavy], records
+  end
 end

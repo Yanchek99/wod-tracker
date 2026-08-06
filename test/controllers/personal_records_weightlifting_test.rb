@@ -59,7 +59,7 @@ class PersonalRecordsWeightliftingTest < ActionDispatch::IntegrationTest
     assert_no_match(/\bRM\b/, response.body)
   end
 
-  test 'weightlifting renders a loaded record with reps: 0 instead of a "0RM" label' do
+  test 'weightlifting labels a reps: 0 record "Max" instead of "0RM"' do
     back_squat = movements(:back_squat)
     log = logs(:matt_amrap)
     log.movement_logs.create!(movement: back_squat, load: 145, reps: 0)
@@ -69,7 +69,23 @@ class PersonalRecordsWeightliftingTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select '.fw-semibold', text: 'Back Squat', count: 1
     assert_select 'a', text: '145 lbs'
+    assert_match(/Max/, response.body)
     assert_no_match(/0RM/, response.body)
+  end
+
+  test 'weightlifting labels a reps: 0 row "Max" alongside labeled rep-max rows in the expanded list' do
+    front_squat = movements(:front_squat)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: front_squat, load: 255, reps: 1)
+    log.movement_logs.create!(movement: front_squat, load: 145, reps: 0)
+
+    get family_user_personal_records_url(users(:mathew), family: 'weightlifting')
+
+    assert_response :success
+    assert_select '[data-rep-max-row-target="details"]' do
+      assert_select 'span', text: 'Max'
+      assert_select 'span', text: '1RM'
+    end
   end
 
   test 'weightlifting excludes a record with reps but no load' do

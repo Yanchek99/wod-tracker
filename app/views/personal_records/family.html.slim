@@ -4,15 +4,8 @@
   - if @movement_logs.empty?
     p.text-muted No #{@family} records yet.
   - else
-    table.table.table-hover
-      thead
-        tr
-          th scope="col" Movement
-          th scope="col" Record
-      tbody
-        - @movement_logs.each do |pr|
-          tr
-            th scope="row" #{pr.movement.name}
-            td = link_to pr.log
-              span = measurable_reps_msg(pr)
-              span = measurable_additional_metrics(pr)
+    .list-group.list-group-flush
+      - @movement_logs.each do |pr|
+        .list-group-item.py-2.d-flex.justify-content-between.align-items-center
+          span.fw-semibold = pr.movement.name
+          = link_to record_msg(pr), pr.log

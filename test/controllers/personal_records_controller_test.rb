@@ -28,7 +28,7 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     get family_user_personal_records_url(users(:mathew), family: 'gymnastics')
 
     assert_response :success
-    assert_select 'th', text: 'Pull Up', count: 2
+    assert_select '.fw-semibold', text: 'Pull Up', count: 2
   end
 
   test 'gymnastics shows an empty state when the user has no gymnastics PRs' do
@@ -46,7 +46,7 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     get family_user_personal_records_url(users(:mathew), family: 'gymnastics')
 
     assert_response :success
-    assert_select 'th', text: 'Back Squat', count: 0
+    assert_select '.fw-semibold', text: 'Back Squat', count: 0
   end
 
   test 'monostructural renders a movement log from its performance columns' do
@@ -57,7 +57,18 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     get family_user_personal_records_url(users(:mathew), family: 'monostructural')
 
     assert_response :success
-    assert_select 'th', text: 'Row', count: 1
+    assert_select '.fw-semibold', text: 'Row', count: 1
+  end
+
+  test 'monostructural renders a bare distance/duration record without stray parens' do
+    row = movements(:row)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: row, distance: 5000, distance_unit: :meter, duration_seconds: 1200)
+
+    get family_user_personal_records_url(users(:mathew), family: 'monostructural')
+
+    assert_response :success
+    assert_select 'a', text: '5000 meters'
   end
 
   test 'monostructural excludes movements from other families' do
@@ -68,7 +79,7 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     get family_user_personal_records_url(users(:mathew), family: 'monostructural')
 
     assert_response :success
-    assert_select 'th', text: 'Pull Up', count: 0
+    assert_select '.fw-semibold', text: 'Pull Up', count: 0
   end
 
   test 'repeated_workouts shows the best score per workout, one row per workout' do

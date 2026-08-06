@@ -63,9 +63,17 @@ module WorkoutsHelper
   end
 
   def amrap_objective(workout)
-    score = workout.fixed_rep_amrap? ? 'rounds and reps' : 'rounds'
+    "As many #{amrap_score_word(workout)} as possible in #{pluralize workout.governing_segment.time_seconds / 60, 'minute'}"
+  end
 
-    "As many #{score} as possible in #{pluralize workout.governing_segment.time_seconds / 60, 'minute'}"
+  # "rounds and reps" once a per-round total is known, "rounds" for a multi-movement AMRAP without
+  # one, or the score measurement itself (e.g. "reps") for a single-movement open-ended AMRAP like
+  # Open 12.1's max-rep burpees, where there's no round structure to speak of.
+  def amrap_score_word(workout)
+    return 'rounds and reps' if workout.fixed_rep_amrap?
+    return workout.score_measurement.pluralize if workout.governing_segment_exercises.one?
+
+    'rounds'
   end
 
   def ascending_ladder_objective(workout)

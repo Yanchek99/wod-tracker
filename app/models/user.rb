@@ -44,10 +44,36 @@ class User < ApplicationRecord
   end
 
   def personal_records
-    movement_logs
-      .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \
-             'OR calories IS NOT NULL OR duration_seconds IS NOT NULL')
-      .order(Arel.sql('COALESCE(load, distance, calories, duration_seconds, reps)'))
-      .uniq(&:movement_id)
+    candidates = movement_logs
+                 .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \
+                        'OR calories IS NOT NULL OR duration_seconds IS NOT NULL')
+                 .reorder(nil)
+    MovementRecordSet.new(candidates).records
+  end
+
+  def workout_records
+    logs
+      .group_by(&:workout_id)
+      .values
+      .select { |workout_logs| repeated_metcon?(workout_logs) }
+      .map { |workout_logs| best_log(workout_logs) }
+  end
+
+  private
+
+  # Lift workouts are already represented on the movement PR page (grouped by rep count), and a
+  # workout logged only once has nothing to be a "record" against.
+  def repeated_metcon?(workout_logs)
+    workout_logs.size > 1 && !workout_logs.first.workout.score_weight?
+  end
+
+  def best_log(workout_logs)
+    workout_logs.max_by { |log| log_rank_value(log) }
+  end
+
+  def log_rank_value(log)
+    return -Float::INFINITY if log.score_value.nil?
+
+    log.score_time? ? -log.score_value : log.score_value
   end
 end

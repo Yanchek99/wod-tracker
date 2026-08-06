@@ -39,6 +39,8 @@ module MeasurableHelper
 
   def measurable_reps_msg(measurable)
     rep_metric = measurable.prescription_metrics.find(&:rep?)
+    return unless rep_metric
+
     metric_unit_msg(rep_metric)
   end
 

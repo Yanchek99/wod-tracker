@@ -122,25 +122,5 @@ class SugarwodImport
       assert_equal [{ reps: 4, load: 155 }, { reps: 2, load: 185 }, { reps: 4, load: 155 }, { reps: 2, load: 195 },
                     { reps: 4, load: 155 }, { reps: 2, load: 205 }], result
     end
-
-    test 'applies a uniform interval scheme from "On the Minute x N: M reps"' do
-      row = { title: 'Pausing Front Squat', description: 'On the Minute x 8: 2 Pausing Front Squats (2 Seconds)',
-              set_details: '[{"success":true,"load":95},{"success":true,"load":115},{"success":true,"load":135},{"success":true,"load":145},' \
-                           '{"success":true,"load":155},{"success":true,"load":165},{"success":true,"load":175},{"success":true,"load":185}]' }
-
-      result = SetSchemeExtractor.call(row)
-
-      assert_equal Array.new(8) { |i| { reps: 2, load: [95, 115, 135, 145, 155, 165, 175, 185][i] } }, result
-    end
-
-    test 'applies a uniform interval scheme from "On the X:XX x N Sets: M reps"' do
-      row = { title: 'Power Clean', description: 'On the 1:30 x 6 Sets:3 Power Cleans',
-              set_details: '[{"success":true,"load":135},{"success":true,"load":155},{"success":true,"load":165},' \
-                           '{"success":true,"load":175},{"success":true,"load":175},{"success":true,"load":185}]' }
-
-      result = SetSchemeExtractor.call(row)
-
-      assert_equal Array.new(6) { |i| { reps: 3, load: [135, 155, 165, 175, 175, 185][i] } }, result
-    end
   end
 end

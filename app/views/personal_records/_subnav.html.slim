@@ -1,0 +1,9 @@
+ul.nav.nav-tabs.mt-3.mb-3
+  li.nav-item
+    = link_to 'Weightlifting', family_user_personal_records_path(@user, family: 'weightlifting'), class: "nav-link #{'active' if params[:family] == 'weightlifting'}"
+  li.nav-item
+    = link_to 'Gymnastics', family_user_personal_records_path(@user, family: 'gymnastics'), class: "nav-link #{'active' if params[:family] == 'gymnastics'}"
+  li.nav-item
+    = link_to 'Monostructural', family_user_personal_records_path(@user, family: 'monostructural'), class: "nav-link #{'active' if params[:family] == 'monostructural'}"
+  li.nav-item
+    = link_to 'Workouts', repeated_workouts_user_personal_records_path(@user), class: "nav-link #{'active' if action_name == 'repeated_workouts'}"

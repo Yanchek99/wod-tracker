@@ -126,6 +126,13 @@ class MeasurableHelperTest < ActionView::TestCase
     assert_equal 'Row (300 meters)', measurable_message(movement_log)
   end
 
+  test 'renders no reps message for a movement log with no reps recorded' do
+    movement_log = logs(:matt_amrap).movement_logs.create!(movement: movements(:row),
+                                                           distance: 300, distance_unit: :meter)
+
+    assert_nil measurable_reps_msg(movement_log)
+  end
+
   test 'renders additional distance before load for movement logs' do
     movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:row),
                                                          reps: 10, distance: 400,

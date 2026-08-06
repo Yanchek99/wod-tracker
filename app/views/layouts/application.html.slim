@@ -23,7 +23,7 @@ html lang="en"
               = link_to 'Schedule', schedules_path, class: nav_item_class(:schedules) unless Current.user.schedules.empty?
               = link_to 'Programs', programs_path, class: nav_item_class(:programs)
               = link_to 'Workouts', workouts_path, class: nav_item_class(:workouts)
-              = link_to 'PRs', personal_records_user_movement_logs_path(Current.user), class: 'nav-item nav-link'
+              = link_to 'PRs', family_user_personal_records_path(Current.user, family: 'weightlifting'), class: nav_item_class(:personal_records)
               = link_to 'History', logs_path, class: nav_item_class(:logs)
             .navbar-nav
               .nav-item.dropdown

@@ -90,7 +90,7 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     get repeated_workouts_user_personal_records_url(users(:mathew))
 
     assert_response :success
-    assert_select 'th', text: 'Fran', count: 1
+    assert_select '.fw-semibold', text: 'Fran', count: 1
     assert_select 'a[href=?]', log_path(fast)
   end
 
@@ -98,7 +98,14 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     get repeated_workouts_user_personal_records_url(users(:mathew))
 
     assert_response :success
-    assert_select 'th', text: 'Murph', count: 0
+    assert_select '.fw-semibold', text: 'Murph', count: 0
+  end
+
+  test 'repeated_workouts shows an empty state when the user has no repeated workouts' do
+    get repeated_workouts_user_personal_records_url(users(:mathew))
+
+    assert_response :success
+    assert_select 'p', text: 'No repeated workouts yet.'
   end
 
   test 'subnav links to every family tab and repeated workouts' do

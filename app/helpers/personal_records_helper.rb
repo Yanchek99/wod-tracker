@@ -22,4 +22,12 @@ module PersonalRecordsHelper
 
     additional_metrics(movement_log).map { |metric| metric_unit_msg(metric) }.join(' / ')
   end
+
+  def distance_label(movement_log)
+    pluralize(movement_log.distance.to_i, movement_log.distance_unit || 'meter')
+  end
+
+  def duration_msg(movement_log)
+    seconds_to_duration_string(movement_log.duration_seconds)
+  end
 end

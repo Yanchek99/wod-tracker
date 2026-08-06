@@ -1,6 +1,9 @@
 module PersonalRecordsHelper
+  # reps: 0 is this app's existing convention for "uncapped/unspecified reps" (see the
+  # "max reps X" prescription pattern in MeasurableHelper), not a literal zero-rep set -- treat
+  # it the same as a missing rep count and skip the label rather than rendering "0RM".
   def rep_max_label(movement_log)
-    return unless movement_log.reps
+    return if movement_log.reps.blank? || movement_log.reps.zero?
 
     "#{movement_log.reps}RM"
   end

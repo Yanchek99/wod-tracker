@@ -59,6 +59,19 @@ class PersonalRecordsWeightliftingTest < ActionDispatch::IntegrationTest
     assert_no_match(/\bRM\b/, response.body)
   end
 
+  test 'weightlifting renders a loaded record with reps: 0 instead of a "0RM" label' do
+    back_squat = movements(:back_squat)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: back_squat, load: 145, reps: 0)
+
+    get family_user_personal_records_url(users(:mathew), family: 'weightlifting')
+
+    assert_response :success
+    assert_select '.fw-semibold', text: 'Back Squat', count: 1
+    assert_select 'a', text: '145 lbs'
+    assert_no_match(/0RM/, response.body)
+  end
+
   test 'weightlifting excludes a record with reps but no load' do
     back_squat = movements(:back_squat)
     log = logs(:matt_amrap)

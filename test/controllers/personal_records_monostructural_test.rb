@@ -26,8 +26,8 @@ class PersonalRecordsMonostructuralTest < ActionDispatch::IntegrationTest
     get family_user_personal_records_url(users(:mathew), family: 'monostructural')
 
     assert_response :success
-    assert_select '.text-muted', text: /5000 meters/
-    assert_select 'a', text: '00:20:00'
+    assert_select '.text-muted', text: /5000m/
+    assert_select 'a', text: '20:00'
   end
 
   test 'monostructural excludes movements from other families' do
@@ -52,7 +52,7 @@ class PersonalRecordsMonostructuralTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select '.fw-semibold', text: 'Row', count: 1
-    assert_select 'button .text-muted', text: /500 meters/
+    assert_select 'button .text-muted', text: /500m/
   end
 
   test 'monostructural expands to show every distance in ascending order, regardless of headline' do

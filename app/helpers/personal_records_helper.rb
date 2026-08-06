@@ -23,11 +23,14 @@ module PersonalRecordsHelper
     additional_metrics(movement_log).map { |metric| metric_unit_msg(metric) }.join(' / ')
   end
 
+  DISTANCE_UNIT_ABBREVIATIONS = { 'meter' => 'm', 'foot' => 'ft', 'inch' => 'in' }.freeze
+
   def distance_label(movement_log)
-    pluralize(movement_log.distance.to_i, movement_log.distance_unit || 'meter')
+    unit = (movement_log.distance_unit || 'meter').to_s
+    "#{movement_log.distance.to_i}#{DISTANCE_UNIT_ABBREVIATIONS.fetch(unit, unit)}"
   end
 
   def duration_msg(movement_log)
-    seconds_to_duration_string(movement_log.duration_seconds)
+    duration_metric_msg(Metric.new(measurement: :seconds, value: movement_log.duration_seconds))
   end
 end

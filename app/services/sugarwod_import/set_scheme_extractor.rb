@@ -18,7 +18,11 @@ class SugarwodImport
     SINGLE = /single\b|1[\s-]*rep\s+max\b/i
     # Scheme language earlier strategies failed to parse; blocks default_single_set_scheme's fallback.
     UNRECOGNIZED_SCHEME_SIGNAL = /\d+\s*(?:x|reps?|sets?)\b/i
-    INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?:\s*sets?)?\s*:?\s*(\d+)/i
+    # The (?!\d) guards the first capture the same way DASH_SCHEME's lookarounds do above: without
+    # it, a plain interval count with no real "sets: reps" scheme after it (e.g. "On the Minute x
+    # 10 (5 Rounds): Minute 1: ...") lets \d+ backtrack and split "10" into captures "1" and "0",
+    # fabricating a false "1 set of 0 reps" scheme instead of failing to match at all.
+    INTERVAL_SCHEME = /on the (?:minute|\d+:\d+) x\s*(\d+)(?!\d)(?:\s*sets?)?\s*:?\s*(\d+)/i
     ROUNDS_SCHEME = /(\d+)\s*rounds?\s*:\s*(\d+)\b/i
     SETS_FOR_LOAD_SCHEME = /(\d+)\s*sets?\s+for\s+load\s*:\s*(\d+)\b/i
     TRAILING_NOTE = /(?:Rest\s*As\s*Needed.*|Rest\s*\d+.*)\z/i

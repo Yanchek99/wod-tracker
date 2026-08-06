@@ -47,5 +47,33 @@ class SugarwodImport
       expected_loads = [115, 120, 125, 127, 130, 125, 125]
       assert_equal expected_loads.map { |load| { reps: 2, load: load } }, result
     end
+
+    test 'applies a uniform interval scheme from "On the Minute x N: M reps"' do
+      row = { title: 'Pausing Front Squat', description: 'On the Minute x 8: 2 Pausing Front Squats (2 Seconds)',
+              set_details: '[{"success":true,"load":95},{"success":true,"load":115},{"success":true,"load":135},{"success":true,"load":145},' \
+                           '{"success":true,"load":155},{"success":true,"load":165},{"success":true,"load":175},{"success":true,"load":185}]' }
+
+      result = SetSchemeExtractor.call(row)
+
+      assert_equal Array.new(8) { |i| { reps: 2, load: [95, 115, 135, 145, 155, 165, 175, 185][i] } }, result
+    end
+
+    test 'applies a uniform interval scheme from "On the X:XX x N Sets: M reps"' do
+      row = { title: 'Power Clean', description: 'On the 1:30 x 6 Sets:3 Power Cleans',
+              set_details: '[{"success":true,"load":135},{"success":true,"load":155},{"success":true,"load":165},' \
+                           '{"success":true,"load":175},{"success":true,"load":175},{"success":true,"load":185}]' }
+
+      result = SetSchemeExtractor.call(row)
+
+      assert_equal Array.new(6) { |i| { reps: 3, load: [135, 155, 165, 175, 175, 185][i] } }, result
+    end
+
+    # "x 10" is interval structure ("10 rounds"), not a "sets: reps" scheme -- backtracking used
+    # to split it into false captures "1" and "0", read as "1 set of 0 reps".
+    test 'does not split a two-digit round count into a false "1 set of 0 reps" scheme' do
+      row = { title: 'AFTER PARTY', description: 'On the Minute x 10 (5 Rounds): Front Squats',
+              set_details: '[{"success":true,"load":145}]' }
+      assert_equal [{ reps: 1, load: 145 }], SetSchemeExtractor.call(row)
+    end
   end
 end

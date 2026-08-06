@@ -40,6 +40,8 @@ CI loads the test schema, runs `bundle exec rails test:all`, and runs RuboCop th
 
 Production app (for reproducing reported bugs, especially UI/rendering issues): https://cf.mattyanchek.com
 
+Hosted on Railway (see issue #1781 for full history). Three environments: `production` (always-on), `staging` (seeded via `db:seed`, safe test data only), and ephemeral PR environments (auto-created per PR, cloned from `staging`, serverless). Use the `railway` CLI (`railway logs`, `railway status`, `railway variables`) for production debugging.
+
 ## Rails Engineering Guidelines
 
 - Prefer Rails conventions and existing app patterns over new abstractions.

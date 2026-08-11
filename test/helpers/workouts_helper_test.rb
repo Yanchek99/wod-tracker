@@ -157,6 +157,14 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'As many rounds and reps as possible in 10 minutes', workout_objective(workout)
   end
 
+  test 'renders a timed single-movement max-rep amrap with its time, not as a bare achievement test' do
+    workout = Workout.new(name: 'Open 12.1', score_type: :rep)
+    segment = workout.segments.build(time_seconds: 420, position: 1)
+    segment.exercises.build(movement: movements(:burpee), position: 1, reps: 0)
+
+    assert_equal 'As many reps as possible in 7 minutes', workout_objective(workout)
+  end
+
   test 'renders segmented rep-scored clocks as total reps' do
     workout = Workout.new(name: 'Segmented Total Reps', score_type: :rep)
 

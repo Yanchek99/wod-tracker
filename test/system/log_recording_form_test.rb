@@ -29,7 +29,7 @@ class LogRecordingFormTest < ApplicationSystemTestCase
     visit workout_url(workouts(:fran))
     click_on 'Log'
 
-    thruster_card = all('.card.mb-3')[0] # Thruster: reps only -- see test/fixtures/exercises.yml
+    thruster_card = first('.card.mb-3') # Thruster: reps only -- see test/fixtures/exercises.yml
 
     within thruster_card do
       assert_no_selector '.set-breakdown-row'
@@ -38,10 +38,10 @@ class LogRecordingFormTest < ApplicationSystemTestCase
       click_on 'Add set'
       assert_selector '.set-breakdown-row', count: 2
 
-      all('.set-breakdown-row input')[0].set('21')
+      first('.set-breakdown-row input').set('21')
       all('.set-breakdown-row input')[1].set('24')
 
-      within all('.set-breakdown-row')[0] do
+      within first('.set-breakdown-row') do
         click_on 'Remove'
       end
       assert_selector '.set-breakdown-row', count: 1

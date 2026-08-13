@@ -17,4 +17,26 @@ class MovementLogTest < ActiveSupport::TestCase
 
     assert_nil movement_log.implement_count
   end
+
+  test 'is valid when set_breakdown sums to reps' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.assign_attributes(reps: 15, set_breakdown: [8, 7])
+
+    assert_predicate movement_log, :valid?
+  end
+
+  test 'is invalid when set_breakdown does not sum to reps' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.assign_attributes(reps: 15, set_breakdown: [8, 6])
+
+    assert_not movement_log.valid?
+    assert_includes movement_log.errors[:set_breakdown], 'must sum to reps'
+  end
+
+  test 'is valid with a blank set_breakdown regardless of reps' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.assign_attributes(reps: 15, set_breakdown: [])
+
+    assert_predicate movement_log, :valid?
+  end
 end

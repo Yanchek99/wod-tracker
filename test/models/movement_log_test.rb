@@ -55,4 +55,39 @@ class MovementLogTest < ActiveSupport::TestCase
     assert_not movement_log.valid?
     assert_includes movement_log.errors[:set_breakdown], 'must contain only positive numbers'
   end
+
+  test 'set_breakdown_text parses a comma-separated string into set_breakdown' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.set_breakdown_text = '8,7,6'
+
+    assert_equal [8, 7, 6], movement_log.set_breakdown
+  end
+
+  test 'set_breakdown_text tolerates whitespace and double commas' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.set_breakdown_text = ' 8 , , 7,6 '
+
+    assert_equal [8, 7, 6], movement_log.set_breakdown
+  end
+
+  test 'set_breakdown_text blank clears set_breakdown' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.set_breakdown = [8, 7, 6]
+    movement_log.set_breakdown_text = ''
+
+    assert_empty movement_log.set_breakdown
+  end
+
+  test 'set_breakdown_text reader joins set_breakdown back into a comma-separated string' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.set_breakdown = [8, 7, 6]
+
+    assert_equal '8, 7, 6', movement_log.set_breakdown_text
+  end
+
+  test 'set_breakdown_text reader is nil when set_breakdown is blank' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+
+    assert_nil movement_log.set_breakdown_text
+  end
 end

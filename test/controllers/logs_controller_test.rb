@@ -136,7 +136,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
           '0' => {
             movement_id: movements(:pullup).id,
             reps: 45,
-            set_breakdown: %w[21 15 9]
+            set_breakdown_text: '21,15,9'
           }
         }
       } }
@@ -156,7 +156,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
           '0' => {
             movement_id: movements(:pullup).id,
             reps: 45,
-            set_breakdown: %w[21 15]
+            set_breakdown_text: '21,15'
           }
         }
       } }
@@ -247,7 +247,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'new log form shows the set breakdown repeater when reps are not auto-populated' do
+  test 'new log form shows the set breakdown field when reps are not auto-populated' do
     get new_workout_log_url(workouts(:fran))
 
     assert_response :success
@@ -255,21 +255,22 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     # Fran: Thruster and Pullup both aggregate to 45 reps via the interval scheme, and neither
     # is auto-populated (multi-exercise workout) -- see test/fixtures/exercises.yml.
     thruster_card = css_select('.card.mb-3')[0]
-    assert_select thruster_card, "[data-controller~='set-breakdown']" do |elements|
-      assert_nil elements.first['hidden']
+    assert_select thruster_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
     end
-    assert_select thruster_card, "input[name$='[set_breakdown][]']"
   end
 
-  test 'new log form hides the set breakdown repeater for an auto-populated single-lift day' do
+  test 'new log form hides the set breakdown field for an auto-populated single-lift day' do
     get new_workout_log_url(workouts(:back_squat_5x5))
 
     assert_response :success
     card = css_select('.card.mb-3').first
-    assert_select card, "[data-controller~='set-breakdown'][hidden]", 1
+    assert_select card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
   end
 
-  test 'failed submission redisplays the set breakdown repeater with the submitted values' do
+  test 'failed submission redisplays the set breakdown field with the submitted value' do
     post workout_logs_url(workouts(:fran)), params: { log: {
       score_type: :time,
       score_value: '5:30',
@@ -277,16 +278,16 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
         '0' => {
           movement_id: movements(:thruster).id,
           reps: 45,
-          set_breakdown: %w[21 15]
+          set_breakdown_text: '21,15'
         }
       }
     } }
 
     assert_response :unprocessable_content
     thruster_card = css_select('.card.mb-3')[0]
-    container = css_select(thruster_card, "[data-set-breakdown-target='container']").first
-    values = css_select(container, "input[type='number']").pluck('value')
-    assert_equal %w[21 15], values
+    assert_select thruster_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_equal '21, 15', elements.first['value']
+    end
   end
 
   test 'auto-populated set breakdown persists through the hidden repeater input on create' do
@@ -306,7 +307,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     Log.last.movement_logs.each { |ml| assert_equal [5], ml.set_breakdown }
   end
 
-  test 'submitting a blank set breakdown entry does not crash' do
+  test 'submitting a malformed set breakdown entry does not crash' do
     post workout_logs_url(@workout), params: { log: {
       score_type: :time,
       score_value: '5:30',
@@ -314,7 +315,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
         '0' => {
           movement_id: movements(:pullup).id,
           reps: 21,
-          set_breakdown: ['21', '']
+          set_breakdown_text: '21,,'
         }
       }
     } }

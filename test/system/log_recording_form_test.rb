@@ -25,28 +25,17 @@ class LogRecordingFormTest < ApplicationSystemTestCase
     assert_selector "input[name$='[duration_seconds]']", visible: true
   end
 
-  test 'set breakdown repeater adds and removes reps-per-set inputs' do
+  test 'set breakdown text field accepts a comma-separated value' do
     visit workout_url(workouts(:fran))
     click_on 'Log'
 
     thruster_card = first('.card.mb-3') # Thruster: reps only -- see test/fixtures/exercises.yml
 
     within thruster_card do
-      assert_no_selector '.set-breakdown-row'
-
-      click_on 'Add set'
-      click_on 'Add set'
-      assert_selector '.set-breakdown-row', count: 2
-
-      first('.set-breakdown-row input').set('21')
-      all('.set-breakdown-row input')[1].set('24')
-
-      within first('.set-breakdown-row') do
-        click_on 'Remove'
-      end
-      assert_selector '.set-breakdown-row', count: 1
-      assert_equal '24', find('.set-breakdown-row input').value
+      fill_in 'Set breakdown', with: '21,15,9'
     end
+
+    assert_field 'Set breakdown', with: '21,15,9'
   end
 
   test 'changing the movement reveals the fields the original prescription did not need' do

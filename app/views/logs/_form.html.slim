@@ -52,7 +52,11 @@
           .col-12
             label.form-label Set breakdown
             p.form-text.mb-1 Optional: how did you break up your sets? Leave blank if unsure.
+            - if ml.errors[:set_breakdown].present?
+              .invalid-feedback.d-block
+                = ml.errors[:set_breakdown].to_sentence
             div data-set-breakdown-target="container"
+              input type="hidden" name=set_breakdown_name value=""
               - ml.set_breakdown.each do |set_size|
                 .input-group.input-group-sm.mb-1.set-breakdown-row
                   input type="number" name=set_breakdown_name value=set_size class="form-control" placeholder="Reps"

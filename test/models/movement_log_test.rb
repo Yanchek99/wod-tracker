@@ -39,4 +39,20 @@ class MovementLogTest < ActiveSupport::TestCase
 
     assert_predicate movement_log, :valid?
   end
+
+  test 'compacts blank entries out of set_breakdown instead of crashing' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.assign_attributes(reps: 21, set_breakdown: [21, nil])
+
+    assert_predicate movement_log, :valid?
+    assert_equal [21], movement_log.set_breakdown
+  end
+
+  test 'is invalid when set_breakdown contains a non-positive value' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.assign_attributes(reps: 15, set_breakdown: [15, 0])
+
+    assert_not movement_log.valid?
+    assert_includes movement_log.errors[:set_breakdown], 'must contain only positive numbers'
+  end
 end

@@ -15,6 +15,6 @@ export default class extends Controller {
   remove(event) {
     event.preventDefault()
 
-    event.target.closest(".set-breakdown-row").remove()
+    event.currentTarget.closest(".set-breakdown-row").remove()
   }
 }

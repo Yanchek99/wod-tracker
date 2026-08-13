@@ -285,8 +285,42 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     thruster_card = css_select('.card.mb-3')[0]
     container = css_select(thruster_card, "[data-set-breakdown-target='container']").first
-    values = css_select(container, 'input').pluck('value')
+    values = css_select(container, "input[type='number']").pluck('value')
     assert_equal %w[21 15], values
+  end
+
+  test 'auto-populated set breakdown persists through the hidden repeater input on create' do
+    assert_difference('MovementLog.count', 5) do
+      post workout_logs_url(workouts(:back_squat_5x5)), params: { log: {
+        score_type: :weight,
+        movement_logs_attributes: {
+          '0' => { movement_id: movements(:back_squat).id, reps: 5, load: 135, set_breakdown: ['5'] },
+          '1' => { movement_id: movements(:back_squat).id, reps: 5, load: 145, set_breakdown: ['5'] },
+          '2' => { movement_id: movements(:back_squat).id, reps: 5, load: 155, set_breakdown: ['5'] },
+          '3' => { movement_id: movements(:back_squat).id, reps: 5, load: 165, set_breakdown: ['5'] },
+          '4' => { movement_id: movements(:back_squat).id, reps: 5, load: 175, set_breakdown: ['5'] }
+        }
+      } }
+    end
+
+    Log.last.movement_logs.each { |ml| assert_equal [5], ml.set_breakdown }
+  end
+
+  test 'submitting a blank set breakdown entry does not crash' do
+    post workout_logs_url(@workout), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:pullup).id,
+          reps: 21,
+          set_breakdown: ['21', '']
+        }
+      }
+    } }
+
+    assert_response :redirect
+    assert_equal [21], Log.last.movement_logs.first.set_breakdown
   end
 
   test 're-rendered new form falls back to showing all fields when a movement log has no matching exercise' do

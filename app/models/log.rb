@@ -73,6 +73,7 @@ class Log < ApplicationRecord
       assign_performance(movement_log, metric, movement_log_metric_value(metric, exercise))
     end
     auto_populate_set_breakdown(movement_log, exercise)
+    movement_log
   end
 
   # A single logged rep, or a dedicated single-lift weightlifting day, is unbroken by

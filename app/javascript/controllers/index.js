@@ -34,9 +34,6 @@ application.register("nested-form", NestedFormController)
 import SegmentCardController from "./segment_card_controller"
 application.register("segment-card", SegmentCardController)
 
-import SetBreakdownController from "./set_breakdown_controller"
-application.register("set-breakdown", SetBreakdownController)
-
 import SortableListController from "./sortable_list_controller"
 application.register("sortable-list", SortableListController)
 

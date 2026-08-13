@@ -147,7 +147,7 @@ class LogTest < ActiveSupport::TestCase
     [95, 115, 135, 145, 155].each.with_index do |load, index|
       log.movement_logs[index].load = load
     end
-    log.movement_logs[4].assign_attributes(reps: 2, set_breakdown: [2])
+    log.movement_logs[4].reps = 2
 
     assert log.valid?
     assert_equal 'lb', log.score_type
@@ -203,7 +203,7 @@ class LogTest < ActiveSupport::TestCase
                               duration_seconds: 240, load_unit: :lb)
     log = workout.logs.build(user: users(:mathew), score_type: :weight)
     log.build_movement_logs
-    log.movement_logs.first.assign_attributes(reps: 3, load: 405, set_breakdown: [3])
+    log.movement_logs.first.assign_attributes(reps: 3, load: 405)
 
     assert log.valid?
     assert_nil log.score_value

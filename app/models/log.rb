@@ -13,6 +13,7 @@ class Log < ApplicationRecord
   validates :score_type, presence: true
 
   before_save :backfill_lifting_loads_from_score
+  before_validation :resync_trivial_set_breakdown
 
   def build_movement_logs
     workout.exercises_for_log_recording.each do |exercise|
@@ -91,6 +92,24 @@ class Log < ApplicationRecord
     exercise.movement.family_weightlifting? &&
       workout.exercises.one? &&
       !exercise.reps_defined_by_interval?
+  end
+
+  def resync_trivial_set_breakdown
+    exercises = workout.exercises_for_log_recording
+    movement_logs.each_with_index do |movement_log, index|
+      exercise = exercises[index]
+      next unless resyncable_set_breakdown?(movement_log, exercise)
+
+      movement_log.set_breakdown = [movement_log.reps]
+    end
+  end
+
+  def resyncable_set_breakdown?(movement_log, exercise)
+    return false unless exercise
+
+    single_weightlifting_exercise_day?(exercise) &&
+      movement_log.reps.present? && movement_log.reps.positive? &&
+      movement_log.set_breakdown.compact.size <= 1
   end
 
   # Copies a selected prescription dimension onto the movement log's performance columns. reps and

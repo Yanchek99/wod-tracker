@@ -269,6 +269,26 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_select card, "[data-controller~='set-breakdown'][hidden]", 1
   end
 
+  test 'failed submission redisplays the set breakdown repeater with the submitted values' do
+    post workout_logs_url(workouts(:fran)), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:thruster).id,
+          reps: 45,
+          set_breakdown: %w[21 15]
+        }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    thruster_card = css_select('.card.mb-3')[0]
+    container = css_select(thruster_card, "[data-set-breakdown-target='container']").first
+    values = css_select(container, 'input').map { |input| input['value'] }
+    assert_equal %w[21 15], values
+  end
+
   test 're-rendered new form falls back to showing all fields when a movement log has no matching exercise' do
     # Fran only prescribes 2 exercises. Simulates the workout gaining an exercise between the user
     # loading the form and submitting it, so the submitted movement log count no longer matches

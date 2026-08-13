@@ -25,6 +25,30 @@ class LogRecordingFormTest < ApplicationSystemTestCase
     assert_selector "input[name$='[duration_seconds]']", visible: true
   end
 
+  test 'set breakdown repeater adds and removes reps-per-set inputs' do
+    visit workout_url(workouts(:fran))
+    click_on 'Log'
+
+    thruster_card = all('.card.mb-3')[0] # Thruster: reps only -- see test/fixtures/exercises.yml
+
+    within thruster_card do
+      assert_no_selector '.set-breakdown-row'
+
+      click_on 'Add set'
+      click_on 'Add set'
+      assert_selector '.set-breakdown-row', count: 2
+
+      all('.set-breakdown-row input')[0].set('21')
+      all('.set-breakdown-row input')[1].set('24')
+
+      within all('.set-breakdown-row')[0] do
+        click_on 'Remove'
+      end
+      assert_selector '.set-breakdown-row', count: 1
+      assert_equal '24', find('.set-breakdown-row input').value
+    end
+  end
+
   test 'changing the movement reveals the fields the original prescription did not need' do
     visit workout_url(workouts(:fran))
     click_on 'Log'

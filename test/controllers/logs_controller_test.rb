@@ -285,7 +285,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     thruster_card = css_select('.card.mb-3')[0]
     container = css_select(thruster_card, "[data-set-breakdown-target='container']").first
-    values = css_select(container, 'input').map { |input| input['value'] }
+    values = css_select(container, 'input').pluck('value')
     assert_equal %w[21 15], values
   end
 

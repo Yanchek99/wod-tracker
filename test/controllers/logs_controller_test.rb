@@ -127,6 +127,44 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 45, movement_log.reps
   end
 
+  test 'creates log with a set breakdown' do
+    assert_difference(['Log.count', 'MovementLog.count'], 1) do
+      post workout_logs_url(@workout), params: { log: {
+        score_type: :time,
+        score_value: '5:30',
+        movement_logs_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            reps: 45,
+            set_breakdown: %w[21 15 9]
+          }
+        }
+      } }
+    end
+
+    assert_redirected_to log_url(Log.last)
+    movement_log = Log.last.movement_logs.first
+    assert_equal [21, 15, 9], movement_log.set_breakdown
+  end
+
+  test 'rejects a log whose set breakdown does not sum to reps' do
+    assert_no_difference('Log.count') do
+      post workout_logs_url(@workout), params: { log: {
+        score_type: :time,
+        score_value: '5:30',
+        movement_logs_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            reps: 45,
+            set_breakdown: %w[21 15]
+          }
+        }
+      } }
+    end
+
+    assert_response :unprocessable_content
+  end
+
   test 'should not show another user log' do
     get log_url(logs(:brooke_fran))
 

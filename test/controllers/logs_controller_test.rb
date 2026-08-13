@@ -179,7 +179,7 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     } }
 
     assert_response :unprocessable_content
-    assert_select '.invalid-feedback', text: /can only contain numbers, commas, and spaces/
+    assert_select '.invalid-feedback', text: /can only contain numbers, commas, dashes, and spaces/
   end
 
   test 'should not show another user log' do

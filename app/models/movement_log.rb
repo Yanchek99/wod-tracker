@@ -4,14 +4,18 @@ class MovementLog < ApplicationRecord
   belongs_to :log
   belongs_to :movement
 
-  SET_BREAKDOWN_TEXT_PATTERN = /\A[\d,\s]*\z/
+  SET_BREAKDOWN_TEXT_PATTERN = /\A[\d,\-\s]*\z/
 
-  # Comma-separated reps-per-set input for the recording form, e.g. "8,7,6" -> [8, 7, 6]. Blank
-  # pieces between/around commas (double commas, trailing commas, stray whitespace) are dropped
-  # rather than treated as malformed input, since a typo shouldn't block an otherwise-valid entry.
+  # Reps-per-set input for the recording form, comma- or dash-separated, e.g. "8,7,6" or
+  # "10,10,8-2" -> [8, 7, 6] / [10, 10, 8, 2]. Commas and dashes are equivalent separators --
+  # the stored set_breakdown column has no round-boundary concept, so a dash exists purely to let
+  # the athlete group entries by round while typing (e.g. "8-2" for one round broken into two
+  # sets); it has no effect on what's actually stored. Blank pieces between/around separators
+  # (double commas, trailing dashes, stray whitespace) are dropped rather than treated as
+  # malformed input, since a typo shouldn't block an otherwise-valid entry.
   def set_breakdown_text=(value)
     @set_breakdown_text_input = value.to_s
-    self.set_breakdown = @set_breakdown_text_input.split(',').map(&:strip).compact_blank.map(&:to_i)
+    self.set_breakdown = @set_breakdown_text_input.split(/[,-]/).map(&:strip).compact_blank.map(&:to_i)
   end
 
   def set_breakdown_text
@@ -48,6 +52,6 @@ class MovementLog < ApplicationRecord
     return if @set_breakdown_text_input.blank?
     return if @set_breakdown_text_input.match?(SET_BREAKDOWN_TEXT_PATTERN)
 
-    errors.add(:set_breakdown_text, 'can only contain numbers, commas, and spaces')
+    errors.add(:set_breakdown_text, 'can only contain numbers, commas, dashes, and spaces')
   end
 end

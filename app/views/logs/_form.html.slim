@@ -49,7 +49,7 @@
             = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
         .row.mt-2 hidden=!show_set_breakdown
           .col-12
-            = ml_form.input :set_breakdown_text, label: 'Set breakdown', hint: 'Optional: how did you break up your sets, e.g. 8,7,6. Leave blank if unsure.', input_html: { class: 'form-control', value: ml.set_breakdown_text, pattern: '[0-9, ]*' }
+            = ml_form.input :set_breakdown_text, label: 'Set breakdown', hint: 'Optional: how did you break up your sets, e.g. 10,10,8-2 (commas between rounds, dashes for breaks within a round). Leave blank if unsure.', input_html: { class: 'form-control', value: ml.set_breakdown_text, pattern: '[0-9,\- ]*' }
             - if ml.errors[:set_breakdown].present? || ml.errors[:set_breakdown_text].present?
               .invalid-feedback.d-block
                 = (ml.errors[:set_breakdown] + ml.errors[:set_breakdown_text]).to_sentence

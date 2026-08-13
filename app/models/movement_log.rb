@@ -4,11 +4,14 @@ class MovementLog < ApplicationRecord
   belongs_to :log
   belongs_to :movement
 
+  SET_BREAKDOWN_TEXT_PATTERN = /\A[\d,\s]*\z/
+
   # Comma-separated reps-per-set input for the recording form, e.g. "8,7,6" -> [8, 7, 6]. Blank
   # pieces between/around commas (double commas, trailing commas, stray whitespace) are dropped
   # rather than treated as malformed input, since a typo shouldn't block an otherwise-valid entry.
   def set_breakdown_text=(value)
-    self.set_breakdown = value.to_s.split(',').map(&:strip).compact_blank.map(&:to_i)
+    @set_breakdown_text_input = value.to_s
+    self.set_breakdown = @set_breakdown_text_input.split(',').map(&:strip).compact_blank.map(&:to_i)
   end
 
   def set_breakdown_text
@@ -19,6 +22,7 @@ class MovementLog < ApplicationRecord
 
   validate :set_breakdown_sums_to_reps
   validate :set_breakdown_values_are_positive
+  validate :set_breakdown_text_format
 
   private
 
@@ -38,5 +42,12 @@ class MovementLog < ApplicationRecord
     return if set_breakdown.all? { |size| size.to_i.positive? }
 
     errors.add(:set_breakdown, 'must contain only positive numbers')
+  end
+
+  def set_breakdown_text_format
+    return if @set_breakdown_text_input.blank?
+    return if @set_breakdown_text_input.match?(SET_BREAKDOWN_TEXT_PATTERN)
+
+    errors.add(:set_breakdown_text, 'can only contain numbers, commas, and spaces')
   end
 end

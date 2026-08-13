@@ -165,6 +165,23 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
   end
 
+  test 'rejects a set breakdown containing non-numeric characters' do
+    post workout_logs_url(@workout), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:pullup).id,
+          reps: 21,
+          set_breakdown_text: '8,seven,6'
+        }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    assert_select '.invalid-feedback', text: /can only contain numbers, commas, and spaces/
+  end
+
   test 'should not show another user log' do
     get log_url(logs(:brooke_fran))
 

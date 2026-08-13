@@ -70,6 +70,22 @@ class MovementLogTest < ActiveSupport::TestCase
     assert_equal [8, 7, 6], movement_log.set_breakdown
   end
 
+  test 'set_breakdown_text rejects non-numeric characters' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.set_breakdown_text = '8,seven,6'
+
+    assert_not movement_log.valid?
+    assert_includes movement_log.errors[:set_breakdown_text], 'can only contain numbers, commas, and spaces'
+  end
+
+  test 'set_breakdown_text accepts digits, commas, and spaces only' do
+    movement_log = movement_logs(:brooke_fran_thruster)
+    movement_log.reps = 21
+    movement_log.set_breakdown_text = '8, 7, 6'
+
+    assert_predicate movement_log, :valid?
+  end
+
   test 'set_breakdown_text blank clears set_breakdown' do
     movement_log = movement_logs(:brooke_fran_thruster)
     movement_log.set_breakdown = [8, 7, 6]

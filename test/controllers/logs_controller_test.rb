@@ -247,6 +247,28 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'new log form shows the set breakdown repeater when reps are not auto-populated' do
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+
+    # Fran: Thruster and Pullup both aggregate to 45 reps via the interval scheme, and neither
+    # is auto-populated (multi-exercise workout) -- see test/fixtures/exercises.yml.
+    thruster_card = css_select('.card.mb-3')[0]
+    assert_select thruster_card, "[data-controller~='set-breakdown']" do |elements|
+      assert_nil elements.first['hidden']
+    end
+    assert_select thruster_card, "input[name$='[set_breakdown][]']"
+  end
+
+  test 'new log form hides the set breakdown repeater for an auto-populated single-lift day' do
+    get new_workout_log_url(workouts(:back_squat_5x5))
+
+    assert_response :success
+    card = css_select('.card.mb-3').first
+    assert_select card, "[data-controller~='set-breakdown'][hidden]", 1
+  end
+
   test 're-rendered new form falls back to showing all fields when a movement log has no matching exercise' do
     # Fran only prescribes 2 exercises. Simulates the workout gaining an exercise between the user
     # loading the form and submitting it, so the submitted movement log count no longer matches

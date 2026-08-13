@@ -27,6 +27,8 @@
     - relevant = exercise && @log.metrics_for_movement_log(exercise).map(&:measurement)
     - load_hidden = relevant && (relevant & %w[lb kg weight]).empty?
     - prescribed_reps = exercise&.prescription_metrics&.find(&:rep?)&.value
+    - show_set_breakdown = ml.reps.to_i > 1 && (ml.set_breakdown.blank? || ml.errors[:set_breakdown].present?)
+    - set_breakdown_name = "#{ml_form.object_name}[set_breakdown][]"
     - distance_unit = ml.distance_unit || 'meter'
     - distance_unit_label = { 'meter' => 'm', 'foot' => 'ft', 'inch' => 'in' }.fetch(distance_unit, distance_unit)
     .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json data-lifting-score-target=(@workout.calculated_lifting_score? ? 'set' : nil) data-lifting-score-prescribed-reps=prescribed_reps
@@ -46,6 +48,20 @@
             = ml_form.hidden_field :distance_unit, value: distance_unit
           .col-6.col-md data-log-exercise-target="field" hidden=(relevant && (relevant & %w[calorie]).empty?)
             = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
+        .row.mt-2 hidden=!show_set_breakdown data-controller="set-breakdown"
+          .col-12
+            label.form-label Set breakdown
+            p.form-text.mb-1 Optional: how did you break up your sets? Leave blank if unsure.
+            div data-set-breakdown-target="container"
+              - ml.set_breakdown.each do |set_size|
+                .input-group.input-group-sm.mb-1.set-breakdown-row
+                  input type="number" name=set_breakdown_name value=set_size class="form-control" placeholder="Reps"
+                  button.btn.btn-outline-secondary type="button" data-action="click->set-breakdown#remove" Remove
+            template data-set-breakdown-target="template"
+              .input-group.input-group-sm.mb-1.set-breakdown-row
+                input type="number" name=set_breakdown_name class="form-control" placeholder="Reps"
+                button.btn.btn-outline-secondary type="button" data-action="click->set-breakdown#remove" Remove
+            button.btn.btn-sm.btn-outline-secondary.mt-1 type="button" data-action="click->set-breakdown#add" Add set
         .workout-card-toolbar.mt-2
           button.btn.btn-sm.btn-outline-secondary type="button" data-log-exercise-target="editButton" data-action="click->log-exercise#reveal click->implement-count#toggle" Edit
   .form-actions.d-grid

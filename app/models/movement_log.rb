@@ -4,6 +4,17 @@ class MovementLog < ApplicationRecord
   belongs_to :log
   belongs_to :movement
 
+  # Comma-separated reps-per-set input for the recording form, e.g. "8,7,6" -> [8, 7, 6]. Blank
+  # pieces between/around commas (double commas, trailing commas, stray whitespace) are dropped
+  # rather than treated as malformed input, since a typo shouldn't block an otherwise-valid entry.
+  def set_breakdown_text=(value)
+    self.set_breakdown = value.to_s.split(',').map(&:strip).compact_blank.map(&:to_i)
+  end
+
+  def set_breakdown_text
+    set_breakdown.presence&.join(', ')
+  end
+
   before_validation :compact_set_breakdown
 
   validate :set_breakdown_sums_to_reps

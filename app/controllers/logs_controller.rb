@@ -86,7 +86,7 @@ class LogsController < ApplicationController
                                      :id, :movement_id,
                                      :reps, :duration_seconds, :load, :implement_count,
                                      :distance, :distance_unit, :calories, :notes,
-                                     { set_breakdown: [] }
+                                     :set_breakdown_text
                                    ]]
                                  }
                                ])

@@ -15,6 +15,86 @@ class LogTest < ActiveSupport::TestCase
     end
   end
 
+  test 'auto-populates set_breakdown as one set for a single-exercise weightlifting day' do
+    log = workouts(:back_squat_5x5).logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    log.movement_logs.each do |movement_log|
+      assert_equal [5], movement_log.set_breakdown
+    end
+  end
+
+  test 'does not auto-populate set_breakdown for a single-exercise interval-scheme workout' do
+    workout = Workout.new(name: 'Interval Ladder Test', score_type: :time)
+    segment = workout.segments.build(position: 1, interval_scheme: '10-5')
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 1)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+    assert_equal 15, movement_log.reps
+    assert_empty movement_log.set_breakdown
+  end
+
+  test 'does not auto-populate set_breakdown for a multi-exercise weightlifting workout' do
+    workout = Workout.new(name: 'Multi Weightlifting Test', score_type: :time)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 5)
+    segment.exercises.build(movement: movements(:thruster), position: 2, reps: 5)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time)
+    log.build_movement_logs
+
+    log.movement_logs.each do |movement_log|
+      assert_empty movement_log.set_breakdown
+    end
+  end
+
+  test 'does not auto-populate set_breakdown for a single-exercise non-weightlifting workout' do
+    workout = Workout.new(name: 'Single Gymnastics Test', score_type: :time)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 10)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+    assert_equal 10, movement_log.reps
+    assert_empty movement_log.set_breakdown
+  end
+
+  test 'auto-populates set_breakdown for a single logged rep regardless of family or shape' do
+    workout = Workout.new(name: 'Single Rep Test', score_type: :time)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 1)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+    assert_equal 1, movement_log.reps
+    assert_equal [1], movement_log.set_breakdown
+  end
+
+  test 'does not auto-populate set_breakdown for the unspecified max-reps sentinel' do
+    workout = Workout.new(name: 'Max Reps Test', score_type: :time)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+    assert_equal 0, movement_log.reps
+    assert_empty movement_log.set_breakdown
+  end
+
   test 'parses duration score values before score type assignment' do
     log = Log.new(workout: workouts(:fran), user: users(:mathew), score_value: '5:30', score_type: :time)
 

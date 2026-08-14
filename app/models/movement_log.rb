@@ -35,14 +35,14 @@ class MovementLog < ApplicationRecord
   validate :set_breakdown_text_format
 
   # Chunks the flat set_breakdown array into rounds, using round sizes reconstructed from the
-  # workout's structure (see Log#set_breakdown_round_sizes_for) -- [] if nothing was captured,
+  # workout's structure (see Log#round_sizes_for_set_breakdown) -- [] if nothing was captured,
   # or a single round containing everything when no round structure is knowable for this
   # movement. Greedily accumulates entries into each round's bucket until their sum reaches that
   # round's target; a set is assumed to never span a round boundary.
   def set_breakdown_rounds
     return [] if set_breakdown.blank?
 
-    round_sizes = log.set_breakdown_round_sizes_for(self)
+    round_sizes = log.round_sizes_for_set_breakdown(self)
     return [set_breakdown] if round_sizes.blank?
 
     chunk_set_breakdown_by_round(round_sizes)

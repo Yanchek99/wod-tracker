@@ -9,8 +9,7 @@ module LogSetBreakdown
   # display -- [] when no round structure is knowable for this movement (e.g. a single-lift day,
   # or a movement with no round structure at all like Murph's pull-ups), in which case the whole
   # set_breakdown stays one ungrouped round.
-  # set_breakdown is a domain noun here, not the verb "set" -- this is a query, not a writer.
-  def set_breakdown_round_sizes_for(movement_log) # rubocop:disable Naming/AccessorMethodName
+  def round_sizes_for_set_breakdown(movement_log)
     index = movement_logs.index(movement_log)
     return [] unless index
 

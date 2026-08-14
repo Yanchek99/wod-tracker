@@ -5,6 +5,22 @@ module LogSetBreakdown
     before_validation :resync_trivial_set_breakdown
   end
 
+  # The sequence of round sizes to chunk a movement log's flat set_breakdown array against for
+  # display -- [] when no round structure is knowable for this movement (e.g. a single-lift day,
+  # or a movement with no round structure at all like Murph's pull-ups), in which case the whole
+  # set_breakdown stays one ungrouped round.
+  # set_breakdown is a domain noun here, not the verb "set" -- this is a query, not a writer.
+  def set_breakdown_round_sizes_for(movement_log) # rubocop:disable Naming/AccessorMethodName
+    index = movement_logs.index(movement_log)
+    return [] unless index
+
+    exercise = workout.exercises_for_log_recording[index]
+    return [] unless exercise
+    return exercise.segment.interval_scheme.split('-').map(&:to_i) if exercise.reps_defined_by_interval?
+
+    amrap_round_sizes_for(index)
+  end
+
   private
 
   # A single logged rep, or a dedicated single-lift weightlifting day, is unbroken by

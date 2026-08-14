@@ -102,8 +102,6 @@ module LogScoring
   end
 
   def submitted_distance_score_reps(metric, distance_units_per_rep)
-    return nil if (metric.value % distance_units_per_rep).nonzero?
-
     metric.value / distance_units_per_rep
   end
 end

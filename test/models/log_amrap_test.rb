@@ -39,6 +39,18 @@ class LogAmrapTest < ActiveSupport::TestCase
     assert_equal 15, log.reps_per_round
   end
 
+  test 'rounds down submitted distance when calculating distance-to-rep scoring' do
+    log = workouts(:amrap_mixed).logs.build(user: users(:mathew), score_type: :rep, score_value: '2+5')
+    log.build_movement_logs
+
+    row_recording = log.movement_logs.find { |movement_log| movement_log.movement == movements(:row) }
+    row_recording.distance = 237
+
+    assert log.valid?
+    assert_equal 53, log.reps_per_round
+    assert_equal 111, log.score_value
+  end
+
   test 'accepts raw total reps' do
     log = workouts(:amrap_couplet).logs.build(user: users(:mathew), score_type: :rep, score_value: '202')
 

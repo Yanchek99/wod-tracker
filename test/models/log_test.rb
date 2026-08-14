@@ -366,4 +366,33 @@ class LogTest < ActiveSupport::TestCase
     movement_log = log.movement_logs.first
     assert_equal movement_log.reps, movement_log.set_breakdown_target_reps
   end
+
+  test 'does not compute an AMRAP target for a fixed-rung ladder where a movement repeats with varying reps' do
+    # Mirrors Open 14.3's shape: an ascending deadlift ladder (10, 15, 20, 25, 30, 35 reps)
+    # paired with fixed 15-rep box jumps each rung -- 12 explicit exercises, not two movements
+    # repeating identically every round. fixed_amrap_reps_per_round sums all 12 rungs into a
+    # number with no meaning as a per-round total, so this must fall back to the default
+    # (each rung's own reps) rather than apply repeating-round math to a non-repeating shape.
+    box_jump = Movement.find_or_create_by!(name: 'Box Jump')
+    workout = Workout.new(name: 'Ladder Shape Test', score_type: :rep)
+    segment = workout.segments.build(time_seconds: 480, position: 1)
+    [[movements(:deadlift), 10], [box_jump, 15],
+     [movements(:deadlift), 15], [box_jump, 15],
+     [movements(:deadlift), 20], [box_jump, 15],
+     [movements(:deadlift), 25], [box_jump, 15],
+     [movements(:deadlift), 30], [box_jump, 15],
+     [movements(:deadlift), 35], [box_jump, 15]].each_with_index do |(movement, reps), index|
+      segment.exercises.build(movement: movement, position: index + 1, reps: reps)
+    end
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :rep, score_value: '300')
+    log.build_movement_logs
+
+    first_rung = log.movement_logs.first
+    first_rung.set_breakdown_text = '5,5'
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+    assert_equal 10, first_rung.set_breakdown_target_reps
+  end
 end

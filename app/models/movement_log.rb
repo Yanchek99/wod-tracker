@@ -22,6 +22,12 @@ class MovementLog < ApplicationRecord
     set_breakdown.presence&.join(', ')
   end
 
+  attr_writer :set_breakdown_target_reps
+
+  def set_breakdown_target_reps
+    @set_breakdown_target_reps || reps.to_i
+  end
+
   before_validation :compact_set_breakdown
 
   validate :set_breakdown_sums_to_reps
@@ -36,7 +42,7 @@ class MovementLog < ApplicationRecord
 
   def set_breakdown_sums_to_reps
     return if set_breakdown.blank?
-    return if set_breakdown.sum == reps.to_i
+    return if set_breakdown.sum == set_breakdown_target_reps
 
     errors.add(:set_breakdown, 'must sum to reps')
   end

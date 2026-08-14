@@ -315,4 +315,55 @@ class LogTest < ActiveSupport::TestCase
       Workout.where(id: workout.id).delete_all
     end
   end
+
+  test 'computes AMRAP set_breakdown target from full rounds plus a partial-round share attributed in round order' do
+    log = workouts(:amrap_couplet).logs.build(user: users(:mathew), score_type: :rep, score_value: '502')
+    log.build_movement_logs
+
+    pullup_log = log.movement_logs.find { |ml| ml.movement == movements(:pullup) }
+    pushup_log = log.movement_logs.find { |ml| ml.movement == movements(:pushup) }
+    pullup_log.set_breakdown_text = '10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,2'
+    pushup_log.set_breakdown_text = '15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15'
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+  end
+
+  test 'gives an earlier movement in round order full credit for a partial round reached later' do
+    log = workouts(:amrap_couplet).logs.build(user: users(:mathew), score_type: :rep, score_value: '512')
+    log.build_movement_logs
+
+    pullup_log = log.movement_logs.find { |ml| ml.movement == movements(:pullup) }
+    pushup_log = log.movement_logs.find { |ml| ml.movement == movements(:pushup) }
+    pullup_log.set_breakdown_text = '10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10'
+    pushup_log.set_breakdown_text = '15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,2'
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+  end
+
+  test 'rejects an AMRAP set_breakdown that does not match the computed total across all rounds' do
+    log = workouts(:amrap_couplet).logs.build(user: users(:mathew), score_type: :rep, score_value: '502')
+    log.build_movement_logs
+
+    pullup_log = log.movement_logs.find { |ml| ml.movement == movements(:pullup) }
+    pullup_log.set_breakdown_text = '10,10,10' # nowhere near 202
+
+    assert_not log.valid?
+    assert_includes pullup_log.errors[:set_breakdown], 'must sum to reps'
+  end
+
+  test 'does not compute an AMRAP target when a round component is distance-based' do
+    log = workouts(:amrap_mixed).logs.build(user: users(:mathew), score_type: :rep, score_value: '1+35')
+    log.build_movement_logs
+
+    pushup_log = log.movement_logs.find { |ml| ml.movement == movements(:pushup) }
+    assert_equal pushup_log.reps, pushup_log.set_breakdown_target_reps
+  end
+
+  test 'set_breakdown_target_reps defaults to reps for non-AMRAP workouts' do
+    log = workouts(:back_squat_5x5).logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+    assert_equal movement_log.reps, movement_log.set_breakdown_target_reps
+  end
 end

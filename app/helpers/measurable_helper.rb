@@ -49,7 +49,12 @@ module MeasurableHelper
   end
 
   def measurable_set_breakdown(measurable)
-    "[#{measurable.set_breakdown_text}]" if measurable.respond_to?(:set_breakdown_text) && measurable.set_breakdown_text.present?
+    return unless measurable.respond_to?(:set_breakdown_rounds)
+
+    rounds = measurable.set_breakdown_rounds
+    return if rounds.blank?
+
+    "[#{rounds.map { |round| round.join('-') }.join(', ')}]"
   end
 
   def measurable_notes(measurable)
@@ -97,21 +102,6 @@ module MeasurableHelper
     return rep_movement_msg(measurable, rep_metric) if leading.metric.rep?
 
     [leading.text, measurable.movement.name].compact_blank.join(' ')
-  end
-
-  def sex_specific_metrics_msg(metrics)
-    ordered_metrics = metrics.sort_by { |metric| sex_specific_metric_display_order(metric) }
-    female_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.female_value) }
-    male_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.male_value) }
-
-    "♀︎#{female_values.join(' + ')} / ♂︎#{male_values.join(' + ')}"
-  end
-
-  def sex_specific_metric_value_msg(metric, value)
-    return "#{load_input_value(value)}#{load_display_unit}" if load_metric?(metric)
-    return "#{value}ft" if metric.foot? # Rails has no foot -> feet inflection
-
-    "#{value}-#{metric.measurement.singularize}"
   end
 
   def pluralize_movement?(metric)

@@ -98,7 +98,7 @@ module LogScoring
   # distance-based leg -- rather than risk misattributing the partial-round budget to the wrong
   # movement.
   def assign_amrap_set_breakdown_targets
-    return unless rep_scored_amrap_log? && !fixed_rung_ladder?
+    return unless rep_scored_amrap_log?
 
     parts = amrap_score_parts
     return unless parts
@@ -116,11 +116,6 @@ module LogScoring
     movement_log.set_breakdown_target_reps = (rounds * per_round) + partial_share if movement_log.set_breakdown.present?
 
     remaining_partial - partial_share
-  end
-
-  # e.g. Open 14.3: a movement repeats across rungs at varying reps, not identically every round.
-  def fixed_rung_ladder?
-    movement_logs.map(&:movement_id).uniq.size != movement_logs.size
   end
 
   # The per-round rep value for each movement in round order, or nil if any component's

@@ -27,7 +27,8 @@
     - relevant = exercise && @log.metrics_for_movement_log(exercise).map(&:measurement)
     - load_hidden = relevant && (relevant & %w[lb kg weight]).empty?
     - prescribed_reps = exercise&.prescription_metrics&.find(&:rep?)&.value
-    - show_set_breakdown = ml.reps.to_i > 1 && (ml.set_breakdown.blank? || ml.errors[:set_breakdown].present?)
+    - movement_breakable = ml.movement.nil? || ml.movement.breakable?
+    - show_set_breakdown = ml.reps.to_i > 1 && movement_breakable && (ml.set_breakdown.blank? || ml.errors[:set_breakdown].present?)
     - distance_unit = ml.distance_unit || 'meter'
     - distance_unit_label = { 'meter' => 'm', 'foot' => 'ft', 'inch' => 'in' }.fetch(distance_unit, distance_unit)
     .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json data-lifting-score-target=(@workout.calculated_lifting_score? ? 'set' : nil) data-lifting-score-prescribed-reps=prescribed_reps

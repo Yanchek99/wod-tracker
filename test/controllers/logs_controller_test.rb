@@ -287,6 +287,18 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'new log form hides the set breakdown field for a non-breakable movement' do
+    movements(:pullup).update!(breakable: false)
+
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+    pullup_card = css_select('.card.mb-3')[1] # Pullups: reps only -- see test/fixtures/exercises.yml
+    assert_select pullup_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+  end
+
   test 'failed submission redisplays the set breakdown field with the submitted value' do
     post workout_logs_url(workouts(:fran)), params: { log: {
       score_type: :time,

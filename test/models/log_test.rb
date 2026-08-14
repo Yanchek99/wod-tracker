@@ -397,4 +397,36 @@ class LogTest < ActiveSupport::TestCase
     assert log.valid?, log.errors.full_messages.to_sentence
     assert_equal 20, first_rung.set_breakdown_target_reps
   end
+
+  test 'reconstructs interval-scheme round sizes from a segment for display grouping' do
+    log = logs(:brooke_fran)
+    thruster_log = log.movement_logs.find { |ml| ml.movement == movements(:thruster) }
+    thruster_log.reps = 45
+    thruster_log.set_breakdown = [8, 7, 6, 8, 7, 9]
+
+    assert_equal [[8, 7, 6], [8, 7], [9]], thruster_log.set_breakdown_rounds
+  end
+
+  test 'reconstructs AMRAP round sizes across full rounds plus a partial round for display grouping' do
+    workout = workouts(:amrap_couplet)
+    log = workout.logs.build(user: users(:mathew), score_type: :rep, score_value: '502')
+    log.build_movement_logs
+
+    pullup_log = log.movement_logs.find { |ml| ml.movement == movements(:pullup) }
+    pullup_log.reps = 10
+    pullup_log.set_breakdown = Array.new(20, 10) + [2]
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+    assert_equal ([[10]] * 20) + [[2]], pullup_log.set_breakdown_rounds
+  end
+
+  test 'falls back to one ungrouped round when no round structure is knowable' do
+    log = workouts(:back_squat_5x5).logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+    movement_log.set_breakdown = [3, 2]
+
+    assert_equal [[3, 2]], movement_log.set_breakdown_rounds
+  end
 end

@@ -38,9 +38,18 @@ class MeasurableHelperMovementLogTest < ActionView::TestCase
 
   test 'renders a movement log set breakdown in brackets after its reps, only when present' do
     movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:pullup), reps: 45, set_breakdown: [21, 15, 9])
-    assert_equal '45 Pull Ups [21, 15, 9]', measurable_message(movement_log)
+    assert_equal '45 Pull Ups [21-15-9]', measurable_message(movement_log)
 
     movement_log.set_breakdown = []
     assert_equal '45 Pull Ups', measurable_message(movement_log)
+  end
+
+  test 'renders a movement log set breakdown grouped by round, dash-joined within a round' do
+    log = logs(:brooke_fran)
+    thruster_log = log.movement_logs.find { |ml| ml.movement == movements(:thruster) }
+    thruster_log.reps = 45
+    thruster_log.set_breakdown = [8, 7, 6, 8, 7, 9]
+
+    assert_equal '45 Thrusters [8-7-6, 8-7, 9]', measurable_message(thruster_log)
   end
 end

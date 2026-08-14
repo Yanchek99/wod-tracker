@@ -1,6 +1,7 @@
 module MeasurableHelper
   def measurable_message(measurable)
-    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable), measurable_notes(measurable)].compact.join(' ')
+    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable), measurable_set_breakdown(measurable),
+     measurable_notes(measurable)].compact.join(' ')
   end
 
   def measurable_movement_msg(measurable)
@@ -37,10 +38,7 @@ module MeasurableHelper
       !measurable.reps_defined_by_interval?
   end
 
-  def measurable_reps_msg(measurable)
-    rep_metric = measurable.prescription_metrics.find(&:rep?)
-    metric_unit_msg(rep_metric)
-  end
+  def measurable_reps_msg(measurable) = metric_unit_msg(measurable.prescription_metrics.find(&:rep?))
 
   def measurable_additional_metrics(measurable)
     metrics = additional_metrics(measurable)
@@ -48,6 +46,10 @@ module MeasurableHelper
     return "(#{sex_specific_metrics_msg(metrics)})" if grouped_sex_specific_metrics?(metrics)
 
     "(#{metrics.map { |metric| metric_unit_msg(metric) }.join(' / ')})"
+  end
+
+  def measurable_set_breakdown(measurable)
+    "[#{measurable.set_breakdown_text}]" if measurable.respond_to?(:set_breakdown_text) && measurable.set_breakdown_text.present?
   end
 
   def measurable_notes(measurable)

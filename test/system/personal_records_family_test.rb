@@ -15,7 +15,7 @@ class PersonalRecordsFamilyTest < ApplicationSystemTestCase
     back_squat = movements(:back_squat)
     log = logs(:matt_amrap)
     log.movement_logs.create!(movement: back_squat, load: 315, reps: 1)
-    log.movement_logs.create!(movement: back_squat, load: 275, reps: 3)
+    log.movement_logs.create!(movement: back_squat, load: 275, reps: 3, set_breakdown: [3])
 
     visit family_user_personal_records_url(users(:mathew), family: 'weightlifting')
 
@@ -38,7 +38,7 @@ class PersonalRecordsFamilyTest < ApplicationSystemTestCase
   test 'the gymnastics tab renders a flat list, not the expand/collapse format' do
     pullup = movements(:pullup)
     log = logs(:matt_amrap)
-    log.movement_logs.create!(movement: pullup, reps: 5)
+    log.movement_logs.create!(movement: pullup, reps: 5, set_breakdown: [5])
 
     visit family_user_personal_records_url(users(:mathew), family: 'gymnastics')
 

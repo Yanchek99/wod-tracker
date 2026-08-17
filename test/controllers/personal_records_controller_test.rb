@@ -22,13 +22,35 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
   test 'gymnastics renders every distinct rep-count record for a movement' do
     pullup = movements(:pullup)
     log = logs(:matt_amrap)
-    log.movement_logs.create!(movement: pullup, duration_seconds: 60, reps: 20)
-    log.movement_logs.create!(movement: pullup, duration_seconds: 120, reps: 35)
+    log.movement_logs.create!(movement: pullup, duration_seconds: 60, reps: 20, set_breakdown: [20])
+    log.movement_logs.create!(movement: pullup, duration_seconds: 120, reps: 35, set_breakdown: [35])
 
     get family_user_personal_records_url(users(:mathew), family: 'gymnastics')
 
     assert_response :success
     assert_select '.fw-semibold', text: 'Pull Up', count: 2
+  end
+
+  test 'gymnastics excludes a reps>1 record with no captured set breakdown' do
+    pullup = movements(:pullup)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: pullup, duration_seconds: 240, reps: 100)
+
+    get family_user_personal_records_url(users(:mathew), family: 'gymnastics')
+
+    assert_response :success
+    assert_select '.fw-semibold', text: 'Pull Up', count: 0
+  end
+
+  test 'gymnastics includes a reps<=1 record with no captured set breakdown' do
+    pullup = movements(:pullup)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: pullup, duration_seconds: 5, reps: 1)
+
+    get family_user_personal_records_url(users(:mathew), family: 'gymnastics')
+
+    assert_response :success
+    assert_select '.fw-semibold', text: 'Pull Up', count: 1
   end
 
   test 'gymnastics shows an empty state when the user has no gymnastics PRs' do

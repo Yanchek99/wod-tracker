@@ -11,7 +11,7 @@ class PersonalRecordsWeightliftingTest < ActionDispatch::IntegrationTest
     back_squat = movements(:back_squat)
     log = logs(:matt_amrap)
     log.movement_logs.create!(movement: back_squat, load: 315, reps: 1)
-    log.movement_logs.create!(movement: back_squat, load: 275, reps: 3)
+    log.movement_logs.create!(movement: back_squat, load: 275, reps: 3, set_breakdown: [3])
 
     get family_user_personal_records_url(users(:mathew), family: 'weightlifting')
 
@@ -104,5 +104,29 @@ class PersonalRecordsWeightliftingTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select 'p', text: 'No weightlifting records yet.'
+  end
+
+  test 'weightlifting excludes a reps>1 record with no captured set breakdown' do
+    back_squat = movements(:back_squat)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: back_squat, load: 225, reps: 21)
+
+    get family_user_personal_records_url(users(:mathew), family: 'weightlifting')
+
+    assert_response :success
+    assert_select '.fw-semibold', text: 'Back Squat', count: 0
+  end
+
+  test 'weightlifting labels a captured set breakdown by its largest verified unbroken set, not the raw total' do
+    back_squat = movements(:back_squat)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: back_squat, load: 225, reps: 45, set_breakdown: [21, 15, 9])
+
+    get family_user_personal_records_url(users(:mathew), family: 'weightlifting')
+
+    assert_response :success
+    assert_select '.fw-semibold', text: 'Back Squat', count: 1
+    assert_match(/21RM/, response.body)
+    assert_no_match(/45RM/, response.body)
   end
 end

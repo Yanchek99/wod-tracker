@@ -1,12 +1,15 @@
 module PersonalRecordsHelper
   # reps: 0 is this app's existing convention for "uncapped/unspecified reps" (see the
   # "max reps X" prescription pattern in MeasurableHelper), not a literal zero-rep set -- label it
-  # explicitly rather than rendering "0RM" or leaving it blank next to labeled sibling rows.
+  # explicitly rather than rendering "0RM" or leaving it blank next to labeled sibling rows. The
+  # labeled count is the verified rep-max (see MovementLog#verified_unbroken_reps), not the raw
+  # reps total, since a record only reaches this helper once it's passed that verification.
   def rep_max_label(movement_log)
-    return if movement_log.reps.blank?
-    return 'Max' if movement_log.reps.zero?
+    reps = movement_log.verified_unbroken_reps
+    return if reps.blank?
+    return 'Max' if reps.zero?
 
-    "#{movement_log.reps}RM"
+    "#{reps}RM"
   end
 
   def rep_max_load_msg(movement_log)

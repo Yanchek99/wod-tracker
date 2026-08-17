@@ -84,6 +84,6 @@ group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara'
   gem 'selenium-webdriver'
-  gem 'simplecov', '1.0.3', require: false # Version locked because of code climate issues
+  gem 'simplecov', '1.1.1', require: false # Version locked because of code climate issues
   gem 'webmock' # Stub and disable external HTTP in tests
 end

@@ -1062,7 +1062,8 @@ end
 Workout.find_or_create_by(name: 'Open 24.2') do |workout|
   segment = workout.segments.build(time_seconds: 1200, position: 1)
   workout.score_type = :rep
-  segment.exercises.build(movement: row, position: 1, reps: 1, distance: 300, distance_unit: :meter)
+  segment.exercises.build(movement: row, position: 1, reps: 1, distance: 300, distance_unit: :meter,
+                          distance_units_per_rep: 10)
   segment.exercises.build(movement: deadlift, position: 2, reps: 10, female_load: 125, male_load: 185, load_unit: :lb)
   segment.exercises.build(movement: double_under, position: 3, reps: 50)
 end

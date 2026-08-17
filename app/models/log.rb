@@ -1,6 +1,7 @@
 class Log < ApplicationRecord
   include LogScoring
   include LogAmrapRoundSizing
+  include LogAscendingLadderSizing
   include LogSetBreakdown
 
   belongs_to :user, default: -> { Current.user }

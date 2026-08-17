@@ -398,6 +398,49 @@ class LogTest < ActiveSupport::TestCase
     assert_equal 20, first_rung.set_breakdown_target_reps
   end
 
+  test 'computes ascending-ladder set_breakdown targets for full rounds with no partial round' do
+    workout = Workout.new(name: 'Ascending Ladder Test', score_type: :rep, ladder_step: 3)
+    segment = workout.segments.build(time_seconds: 480, position: 1)
+    segment.exercises.build(movement: movements(:hspu), position: 1, reps: 3)
+    segment.exercises.build(movement: movements(:clean), position: 2, reps: 3, ladder_step_every: 3,
+                            female_load: 125, male_load: 185, load_unit: :lb)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :rep, score_value: '45')
+    log.build_movement_logs
+
+    hspu_log = log.movement_logs.find { |ml| ml.movement == movements(:hspu) }
+    clean_log = log.movement_logs.find { |ml| ml.movement == movements(:clean) }
+    hspu_log.set_breakdown_text = '3,6,9,12'
+    clean_log.set_breakdown_text = '3,3,3,6'
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+    assert_equal 30, hspu_log.set_breakdown_target_reps
+    assert_equal 15, clean_log.set_breakdown_target_reps
+  end
+
+  test 'attributes a partial ascending-ladder round to the exercise earlier in position order' do
+    workout = Workout.new(name: 'Ascending Ladder Partial Test', score_type: :rep, ladder_step: 3)
+    segment = workout.segments.build(time_seconds: 480, position: 1)
+    segment.exercises.build(movement: movements(:hspu), position: 1, reps: 3)
+    segment.exercises.build(movement: movements(:clean), position: 2, reps: 3, ladder_step_every: 3,
+                            female_load: 125, male_load: 185, load_unit: :lb)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :rep, score_value: '50')
+    log.build_movement_logs
+
+    hspu_log = log.movement_logs.find { |ml| ml.movement == movements(:hspu) }
+    clean_log = log.movement_logs.find { |ml| ml.movement == movements(:clean) }
+    hspu_log.set_breakdown_text = '3,6,9,12,5'
+    clean_log.set_breakdown_text = '3,3,3,6'
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+    assert_equal 35, hspu_log.set_breakdown_target_reps
+    assert_equal 15, clean_log.set_breakdown_target_reps
+    assert_equal [[3], [6], [9], [12], [5]], hspu_log.set_breakdown_rounds
+  end
+
   test 'reconstructs interval-scheme round sizes from a segment for display grouping' do
     log = logs(:brooke_fran)
     thruster_log = log.movement_logs.find { |ml| ml.movement == movements(:thruster) }

@@ -95,6 +95,56 @@ class LogTest < ActiveSupport::TestCase
     assert_empty movement_log.set_breakdown
   end
 
+  test 'does not auto-populate set_breakdown for a reps == 1 AMRAP-repeated movement' do
+    workout = Workout.new(name: 'Reps One AMRAP Test', score_type: :rep)
+    segment = workout.segments.build(time_seconds: 600, position: 1)
+    segment.exercises.build(movement: movements(:rope_climb), position: 1, reps: 1)
+    segment.exercises.build(movement: movements(:pushup), position: 2, reps: 10)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :rep, score_value: '110')
+    log.build_movement_logs
+
+    rope_log = log.movement_logs.find { |ml| ml.movement == movements(:rope_climb) }
+    assert_equal 1, rope_log.reps
+    assert_empty rope_log.set_breakdown
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+
+    rope_log.set_breakdown_text = '1,1,1,1,1,1,1,1,1,1'
+    assert log.valid?, log.errors.full_messages.to_sentence
+    assert_equal 10, rope_log.set_breakdown_target_reps
+  end
+
+  test 'does not auto-populate set_breakdown for a reps == 1 ascending-ladder movement' do
+    workout = Workout.new(name: 'Reps One Ladder Test', score_type: :rep, ladder_step: 1)
+    segment = workout.segments.build(time_seconds: 600, position: 1)
+    segment.exercises.build(movement: movements(:rope_climb), position: 1, reps: 1)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :rep, score_value: '5')
+    log.build_movement_logs
+
+    rope_log = log.movement_logs.first
+    assert_equal 1, rope_log.reps
+    assert_empty rope_log.set_breakdown
+    assert log.valid?, log.errors.full_messages.to_sentence
+  end
+
+  test 'does not silently overwrite a genuine self-reported breakdown that mismatches reps' do
+    log = workouts(:back_squat_5x5).logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    movement_log = log.movement_logs.first
+    assert_equal [5], movement_log.set_breakdown
+
+    movement_log.set_breakdown_text = '4'
+
+    assert_not log.valid?
+    assert_equal [4], movement_log.set_breakdown
+    assert_includes movement_log.errors[:set_breakdown], 'must sum to reps'
+  end
+
   test 'parses duration score values before score type assignment' do
     log = Log.new(workout: workouts(:fran), user: users(:mathew), score_value: '5:30', score_type: :time)
 

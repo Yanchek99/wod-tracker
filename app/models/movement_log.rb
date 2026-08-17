@@ -22,6 +22,15 @@ class MovementLog < ApplicationRecord
     set_breakdown.presence&.join(', ')
   end
 
+  # True when set_breakdown_text= was called this request with a genuinely non-blank value --
+  # i.e. the athlete actually typed something into a visible field, as opposed to a hidden field
+  # submitting blank, or reps having been set directly without touching this field at all (e.g.
+  # a request-level score calculation, or a test). Used by Log#resync_trivial_set_breakdown to
+  # tell "safe to auto-derive" apart from "must be preserved for normal validation to judge."
+  def set_breakdown_text_submitted?
+    @set_breakdown_text_input.present?
+  end
+
   attr_writer :set_breakdown_target_reps
 
   def set_breakdown_target_reps

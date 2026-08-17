@@ -287,6 +287,21 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'new log form shows the set breakdown field for a reps == 1 AMRAP-repeated movement' do
+    workout = Workout.create!(name: 'Reps One AMRAP Field Test', score_type: :rep)
+    segment = workout.segments.create!(time_seconds: 600, position: 1)
+    segment.exercises.create!(movement: movements(:rope_climb), position: 1, reps: 1)
+    segment.exercises.create!(movement: movements(:pushup), position: 2, reps: 10)
+
+    get new_workout_log_url(workout)
+
+    assert_response :success
+    rope_card = css_select('.card.mb-3')[0]
+    assert_select rope_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+  end
+
   test 'new log form hides the set breakdown field for a non-breakable movement' do
     movements(:pullup).update!(breakable: false)
 

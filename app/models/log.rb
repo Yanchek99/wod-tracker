@@ -1,5 +1,8 @@
 class Log < ApplicationRecord
   include LogScoring
+  include LogAmrapRoundSizing
+  include LogAscendingLadderSizing
+  include LogSetBreakdown
 
   belongs_to :user, default: -> { Current.user }
   belongs_to :workout
@@ -72,6 +75,8 @@ class Log < ApplicationRecord
     metrics_for_movement_log(exercise).each do |metric|
       assign_performance(movement_log, metric, movement_log_metric_value(metric, exercise))
     end
+    auto_populate_set_breakdown(movement_log, exercise)
+    movement_log
   end
 
   # Copies a selected prescription dimension onto the movement log's performance columns. reps and

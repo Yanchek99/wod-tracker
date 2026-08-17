@@ -25,6 +25,19 @@ class LogRecordingFormTest < ApplicationSystemTestCase
     assert_selector "input[name$='[duration_seconds]']", visible: true
   end
 
+  test 'set breakdown text field accepts a comma-separated value' do
+    visit workout_url(workouts(:fran))
+    click_on 'Log'
+
+    thruster_card = first('.card.mb-3') # Thruster: reps only -- see test/fixtures/exercises.yml
+
+    within thruster_card do
+      fill_in 'Set breakdown', with: '21,15,9'
+    end
+
+    assert_field 'Set breakdown', with: '21,15,9'
+  end
+
   test 'changing the movement reveals the fields the original prescription did not need' do
     visit workout_url(workouts(:fran))
     click_on 'Log'

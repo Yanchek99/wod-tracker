@@ -82,26 +82,6 @@ module LogScoring
   def submitted_amrap_reps_per_round
     return nil if movement_logs.blank?
 
-    components = workout.amrap_score_components
-    return nil if components.blank? || components.size != movement_logs.size
-
-    score_reps = components.map.with_index do |component, index|
-      submitted_score_reps_for(component, movement_logs[index])
-    end
-    return nil if score_reps.any?(&:nil?)
-
-    score_reps.sum
-  end
-
-  def submitted_score_reps_for(component, movement_log)
-    metric = movement_log.prescription_metrics.find { |m| m.measurement == component[:measurement] }
-    return nil unless metric&.value.present? && metric.value.positive?
-    return submitted_distance_score_reps(metric, component[:distance_units_per_rep]) if component[:distance_units_per_rep]
-
-    metric.value
-  end
-
-  def submitted_distance_score_reps(metric, distance_units_per_rep)
-    metric.value / distance_units_per_rep
+    amrap_component_per_round_values&.sum
   end
 end

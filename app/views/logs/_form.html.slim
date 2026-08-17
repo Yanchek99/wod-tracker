@@ -27,6 +27,10 @@
     - relevant = exercise && @log.metrics_for_movement_log(exercise).map(&:measurement)
     - load_hidden = relevant && (relevant & %w[lb kg weight]).empty?
     - prescribed_reps = exercise&.prescription_metrics&.find(&:rep?)&.value
+    - movement_breakable = ml.movement.nil? || ml.movement.breakable?
+    - structured_round_repeat = exercise && (@workout.rep_scored_amrap? || exercise.ladder_participant?)
+    - relevant_reps = ml.reps.to_i > 1 || structured_round_repeat
+    - show_set_breakdown = relevant_reps && movement_breakable && (ml.set_breakdown.blank? || ml.errors[:set_breakdown].present?)
     - distance_unit = ml.distance_unit || 'meter'
     - distance_unit_label = { 'meter' => 'm', 'foot' => 'ft', 'inch' => 'in' }.fetch(distance_unit, distance_unit)
     .card.mb-3 data-controller="implement-count log-exercise" data-action="change->implement-count#toggle" data-implement-count-movement-ids-value=implement_count_movement_ids.to_json data-lifting-score-target=(@workout.calculated_lifting_score? ? 'set' : nil) data-lifting-score-prescribed-reps=prescribed_reps
@@ -46,6 +50,12 @@
             = ml_form.hidden_field :distance_unit, value: distance_unit
           .col-6.col-md data-log-exercise-target="field" hidden=(relevant && (relevant & %w[calorie]).empty?)
             = ml_form.input :calories, label: 'Calories', input_html: { class: 'recording-value' }
+        .row.mt-2 hidden=!show_set_breakdown
+          .col-12
+            = ml_form.input :set_breakdown_text, label: 'Set breakdown', hint: 'Optional: how did you break up your sets, e.g. 10,10,8-2 (commas between rounds, dashes for breaks within a round). Leave blank if unsure.', input_html: { class: 'form-control', value: (ml.set_breakdown_text if show_set_breakdown), pattern: '[0-9,\- ]*' }
+            - if ml.errors[:set_breakdown].present? || ml.errors[:set_breakdown_text].present?
+              .invalid-feedback.d-block
+                = (ml.errors[:set_breakdown] + ml.errors[:set_breakdown_text]).to_sentence
         .workout-card-toolbar.mt-2
           button.btn.btn-sm.btn-outline-secondary type="button" data-log-exercise-target="editButton" data-action="click->log-exercise#reveal click->implement-count#toggle" Edit
   .form-actions.d-grid

@@ -1,5 +1,44 @@
 # Decisions
 
+## 2026-08-12: Set Breakdown Is A Flat, Ordered Reps-Per-Set Array On MovementLog
+
+`MovementLog` had no way to record how a logged rep count was actually performed — e.g.
+Diane's Deadlift entry is `reps: 45` (`Metric#calculated_value` sums 21+15+9 across an
+interval ladder's rounds), which is a fabricated total nobody performed as one continuous
+effort, and a movement like Murph's 100 pull-ups is large by design specifically because
+it's expected to be broken up. Per `programming.md`, this app's stated goal is
+individualized scaling via machine learning over athlete history: "given an athlete's
+history and a workout's intended stimulus, design a workout variation that preserves the
+stimulus for that athlete." This decision is about the athlete-history half of that input
+only — it makes no claim about what "intended stimulus" itself requires; that remains
+separate, not-yet-modeled work per the "Document Programming Concepts Before Modeling Them"
+decision below, and deserves its own dedicated, source-grounded design when it's taken up.
+
+`movement_logs.set_breakdown` is a flat, ordered Postgres integer array — the sequence of
+individual unbroken-set sizes as actually performed, e.g. `[21]` (one continuous set),
+`[8, 7, 6]` (broken across three sets), or twenty `5`s for "20 rounds of 5." A single
+boolean was considered and rejected: it collapses away exactly the information that
+matters here — Diane's Deadlift done as 21/15/9 (each round fully unbroken) is materially
+different training signal from the same 45 total reps broken raggedly across 8-7-6/8-7/9,
+but both would read identically as "not one unbroken set" under a boolean. A structured
+per-round nested breakdown was also considered and rejected: round boundaries, when
+needed, are already reconstructable later from existing structural data
+(`Segment#interval_scheme`, `logs.reps_per_round`) by slicing the flat array against known
+per-round targets, so storing round boundaries redundantly in the new column isn't
+necessary. The array is optional/self-reported in general (empty means "not captured"),
+except that a `reps <= 1` movement log is always auto-populated as `[reps]` unconditionally
+— a single rep is trivially one continuous set by mathematical certainty, not a domain
+inference — and a single-exercise weightlifting-only workout (e.g. "5x5 Back Squat") is
+auto-populated the same way, since that shape of workout is unbroken by construction.
+
+Rationale: this is deliberately general-purpose raw signal rather than a data shape guessed
+to fit one consumer. It still answers the narrower question that motivated it (#1860 — was
+a specific rep-max claim actually one continuous set: `set_breakdown == [reps]`), and gives
+a strictly better fallback than a boolean could (the largest verified unbroken effort in a
+log: `set_breakdown.max` — e.g. a legitimate 21RM from Diane's Deadlift rather than
+suppressing the record entirely), without foreclosing other derivations a future ML feature
+pipeline might need once intended stimulus is modeled and its actual requirements are known.
+
 ## 2026-07-03: CrossFit.com Workout Pages Require Cache-Busting And A Retry, Not A Headless Browser
 
 The epic's "Key findings" note (#1679) said plain HTTP GET + Nokogiri is enough to scrape

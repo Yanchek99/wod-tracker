@@ -61,26 +61,28 @@ body_blaster = Movement.find_or_initialize_by(name: 'Body Blaster').tap do |move
   movement.save!
 end
 box_jump = Movement.find_or_initialize_by(name: 'Box Jump').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :box, skill_level: :basic)
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :box, skill_level: :basic,
+                             breakable: false)
   movement.save!
 end
 box_step_up = Movement.find_or_initialize_by(name: 'Box Step-up').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat] }, equipment: :box,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 burpee = Movement.find_or_initialize_by(name: 'Burpee').tap do |movement|
-  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] }, skill_level: :basic)
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] }, skill_level: :basic,
+                             breakable: false)
   movement.save!
 end
 burpee_box_jump = Movement.find_or_initialize_by(name: 'Burpee Box Jump').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] }, equipment: :box,
-                             skill_level: :intermediate)
+                             skill_level: :intermediate, breakable: false)
   movement.save!
 end
 burpee_box_jump_over = Movement.find_or_initialize_by(name: 'Burpee Box Jump-over').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
-                             equipment: :box, skill_level: :intermediate)
+                             equipment: :box, skill_level: :intermediate, breakable: false)
   movement.save!
 end
 butterfly_pull_up = Movement.find_or_initialize_by(name: 'Butterfly Pull-up').tap do |movement|
@@ -418,7 +420,7 @@ l_sit_on_rings = Movement.find_or_initialize_by(name: 'L-sit on Rings').tap do |
 end
 l_sit_rope_climb = Movement.find_or_initialize_by(name: 'L-sit Rope Climb').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_pull] }, equipment: :rope,
-                             skill_level: :advanced)
+                             skill_level: :advanced, breakable: false)
   movement.save!
 end
 l_sit_to_shoulder_stand = Movement.find_or_initialize_by(name: 'L-sit to Shoulder Stand').tap do |movement|
@@ -437,7 +439,7 @@ lateral_over_barbell_burpee = Movement.find_or_initialize_by(name: 'Lateral Over
 end
 legless_rope_climb = Movement.find_or_initialize_by(name: 'Legless Rope Climb').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_pull] },
-                             equipment: :rope, skill_level: :advanced)
+                             equipment: :rope, skill_level: :advanced, breakable: false)
   movement.save!
 end
 lunge = Movement.find_or_initialize_by(name: 'Lunge').tap do |movement|
@@ -458,7 +460,7 @@ medicine_ball_clean = Movement.find_or_initialize_by(name: 'Medicine-ball Clean'
 end
 modified_rope_climb = Movement.find_or_initialize_by(name: 'Modified Rope Climb').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_pull] },
-                             equipment: :rope, skill_level: :intermediate)
+                             equipment: :rope, skill_level: :intermediate, breakable: false)
   movement.save!
 end
 muscle_snatch = Movement.find_or_initialize_by(name: 'Muscle Snatch').tap do |movement|
@@ -575,11 +577,11 @@ ring_row = Movement.find_or_initialize_by(name: 'Ring Row').tap do |movement|
 end
 rope_climb = Movement.find_or_initialize_by(name: 'Rope Climb').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_pull] }, equipment: :rope,
-                             skill_level: :intermediate)
+                             skill_level: :intermediate, breakable: false)
   movement.save!
 end
 row = Movement.find_or_initialize_by(name: 'Row').tap do |movement|
-  movement.assign_attributes(family: :monostructural, function_roles: { primary: [:horizontal_pull] }, equipment: :machine, skill_level: :basic)
+  movement.assign_attributes(family: :monostructural, function_roles: { primary: [:horizontal_pull] }, equipment: :machine, skill_level: :basic, breakable: false)
   movement.save!
 end
 run = Movement.find_or_initialize_by(name: 'Run').tap do |movement|
@@ -626,12 +628,12 @@ slam_ball = Movement.find_or_initialize_by(name: 'Slam Ball').tap do |movement|
 end
 sled_drag = Movement.find_or_initialize_by(name: 'Sled Drag').tap do |movement|
   movement.assign_attributes(family: :weightlifting, function_roles: { primary: [] }, equipment: :sled,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 sled_pull = Movement.find_or_initialize_by(name: 'Sled Pull').tap do |movement|
   movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:horizontal_pull] }, equipment: :sled,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 snatch = Movement.find_or_initialize_by(name: 'Snatch').tap do |movement|
@@ -805,7 +807,7 @@ bar_facing_burpee = Movement.find_or_initialize_by(name: 'Bar-facing Burpee').ta
 end
 box_jump_over = Movement.find_or_initialize_by(name: 'Box Jump-over').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :box,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 ground_to_overhead = Movement.find_or_initialize_by(name: 'Ground to Overhead').tap do |movement|
@@ -833,7 +835,7 @@ bear_crawl = Movement.find_or_initialize_by(name: 'Bear Crawl').tap do |movement
 end
 bike = Movement.find_or_initialize_by(name: 'Air Bike').tap do |movement|
   movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :machine,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 broad_jump = Movement.find_or_initialize_by(name: 'Broad Jump').tap do |movement|
@@ -886,7 +888,7 @@ burpee_to_target = Movement.find_or_initialize_by(name: 'Burpee to Target').tap 
 end
 box_step_over = Movement.find_or_initialize_by(name: 'Box Step-over').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:squat] }, equipment: :box,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 deficit_handstand_push_up = Movement.find_or_initialize_by(name: 'Deficit Handstand Push-up').tap do |movement|
@@ -1032,7 +1034,7 @@ shuttle_run = Movement.find_or_initialize_by(name: 'Shuttle Run').tap do |moveme
 end
 sled_push = Movement.find_or_initialize_by(name: 'Sled Push').tap do |movement|
   movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:horizontal_push] }, equipment: :sled,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 squat_clean_thruster = Movement.find_or_initialize_by(name: 'Squat Clean Thruster').tap do |movement|
@@ -1098,7 +1100,7 @@ buddy_carry = Movement.find_or_initialize_by(name: 'Buddy Carry').tap do |moveme
 end
 burpee_over_rower = Movement.find_or_initialize_by(name: 'Burpee Over Rower').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:horizontal_push] },
-                             equipment: :machine, skill_level: :intermediate)
+                             equipment: :machine, skill_level: :intermediate, breakable: false)
   movement.save!
 end
 dumbbell_bent_over_row = Movement.find_or_initialize_by(name: 'Dumbbell Bent-over Row').tap do |movement|
@@ -1134,7 +1136,7 @@ three_position_power_snatch = Movement.find_or_initialize_by(name: '3-Position P
 end
 bike_erg = Movement.find_or_initialize_by(name: 'Bike Erg').tap do |movement|
   movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :machine,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 box_squat = Movement.find_or_initialize_by(name: 'Box Squat').tap do |movement|
@@ -1236,7 +1238,7 @@ single_leg_deadlift = Movement.find_or_initialize_by(name: 'Single-leg Deadlift'
 end
 ski_erg = Movement.find_or_initialize_by(name: 'Ski Erg').tap do |movement|
   movement.assign_attributes(family: :monostructural, function_roles: { primary: [] }, equipment: :machine,
-                             skill_level: :basic)
+                             skill_level: :basic, breakable: false)
   movement.save!
 end
 snatch_grip_push_press = Movement.find_or_initialize_by(name: 'Snatch Grip Push Press').tap do |movement|

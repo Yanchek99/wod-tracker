@@ -127,6 +127,61 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 45, movement_log.reps
   end
 
+  test 'creates log with a set breakdown' do
+    assert_difference(['Log.count', 'MovementLog.count'], 1) do
+      post workout_logs_url(@workout), params: { log: {
+        score_type: :time,
+        score_value: '5:30',
+        movement_logs_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            reps: 45,
+            set_breakdown_text: '21,15,9'
+          }
+        }
+      } }
+    end
+
+    assert_redirected_to log_url(Log.last)
+    movement_log = Log.last.movement_logs.first
+    assert_equal [21, 15, 9], movement_log.set_breakdown
+  end
+
+  test 'rejects a log whose set breakdown does not sum to reps' do
+    assert_no_difference('Log.count') do
+      post workout_logs_url(@workout), params: { log: {
+        score_type: :time,
+        score_value: '5:30',
+        movement_logs_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            reps: 45,
+            set_breakdown_text: '21,15'
+          }
+        }
+      } }
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test 'rejects a set breakdown containing non-numeric characters' do
+    post workout_logs_url(@workout), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:pullup).id,
+          reps: 21,
+          set_breakdown_text: '8,seven,6'
+        }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    assert_select '.invalid-feedback', text: /can only contain numbers, commas, dashes, and spaces/
+  end
+
   test 'should not show another user log' do
     get log_url(logs(:brooke_fran))
 
@@ -207,6 +262,110 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_select pullup_card, "input[name$='[load]']" do |elements|
       assert elements.first.ancestors('[hidden]').any?
     end
+  end
+
+  test 'new log form shows the set breakdown field when reps are not auto-populated' do
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+
+    # Fran: Thruster and Pullup both aggregate to 45 reps via the interval scheme, and neither
+    # is auto-populated (multi-exercise workout) -- see test/fixtures/exercises.yml.
+    thruster_card = css_select('.card.mb-3')[0]
+    assert_select thruster_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'new log form hides the set breakdown field for an auto-populated single-lift day' do
+    get new_workout_log_url(workouts(:back_squat_5x5))
+
+    assert_response :success
+    card = css_select('.card.mb-3').first
+    assert_select card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'new log form shows the set breakdown field for a reps == 1 AMRAP-repeated movement' do
+    workout = Workout.create!(name: 'Reps One AMRAP Field Test', score_type: :rep)
+    segment = workout.segments.create!(time_seconds: 600, position: 1)
+    segment.exercises.create!(movement: movements(:rope_climb), position: 1, reps: 1)
+    segment.exercises.create!(movement: movements(:pushup), position: 2, reps: 10)
+
+    get new_workout_log_url(workout)
+
+    assert_response :success
+    rope_card = css_select('.card.mb-3')[0]
+    assert_select rope_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'new log form hides the set breakdown field for a non-breakable movement' do
+    movements(:pullup).update!(breakable: false)
+
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+    pullup_card = css_select('.card.mb-3')[1] # Pullups: reps only -- see test/fixtures/exercises.yml
+    assert_select pullup_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'failed submission redisplays the set breakdown field with the submitted value' do
+    post workout_logs_url(workouts(:fran)), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:thruster).id,
+          reps: 45,
+          set_breakdown_text: '21,15'
+        }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    thruster_card = css_select('.card.mb-3')[0]
+    assert_select thruster_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_equal '21, 15', elements.first['value']
+    end
+  end
+
+  test 'auto-populated set breakdown persists through the hidden repeater input on create' do
+    assert_difference('MovementLog.count', 5) do
+      post workout_logs_url(workouts(:back_squat_5x5)), params: { log: {
+        score_type: :weight,
+        movement_logs_attributes: {
+          '0' => { movement_id: movements(:back_squat).id, reps: 5, load: 135, set_breakdown: ['5'] },
+          '1' => { movement_id: movements(:back_squat).id, reps: 5, load: 145, set_breakdown: ['5'] },
+          '2' => { movement_id: movements(:back_squat).id, reps: 5, load: 155, set_breakdown: ['5'] },
+          '3' => { movement_id: movements(:back_squat).id, reps: 5, load: 165, set_breakdown: ['5'] },
+          '4' => { movement_id: movements(:back_squat).id, reps: 5, load: 175, set_breakdown: ['5'] }
+        }
+      } }
+    end
+
+    Log.last.movement_logs.each { |ml| assert_equal [5], ml.set_breakdown }
+  end
+
+  test 'submitting a malformed set breakdown entry does not crash' do
+    post workout_logs_url(@workout), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:pullup).id,
+          reps: 21,
+          set_breakdown_text: '21,,'
+        }
+      }
+    } }
+
+    assert_response :redirect
+    assert_equal [21], Log.last.movement_logs.first.set_breakdown
   end
 
   test 're-rendered new form falls back to showing all fields when a movement log has no matching exercise' do

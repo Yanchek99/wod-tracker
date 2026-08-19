@@ -25,7 +25,7 @@
     - ml = ml_form.object
     - exercise = exercises[ml_form.index]
     - relevant = exercise && @log.metrics_for_movement_log(exercise).map(&:measurement)
-    - load_hidden = relevant && (relevant & %w[lb kg weight]).empty?
+    - load_hidden = !@workout.calculated_lifting_score? && relevant && (relevant & %w[lb kg weight]).empty?
     - prescribed_reps = exercise&.prescription_metrics&.find(&:rep?)&.value
     - movement_breakable = ml.movement.nil? || ml.movement.breakable?
     - structured_round_repeat = exercise && (@workout.rep_scored_amrap? || exercise.ladder_participant?)

@@ -51,6 +51,12 @@ class MeasurableHelperMovementLogTest < ActionView::TestCase
     assert_equal '45 Pull Ups', measurable_message(movement_log)
   end
 
+  test 'omits the breakdown bracket for a trivial single-entry set_breakdown' do
+    movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:back_squat), reps: 5, set_breakdown: [5])
+
+    assert_equal '5 Back Squats', measurable_message(movement_log)
+  end
+
   test 'renders a movement log set breakdown grouped by round, dash-joined within a round' do
     log = logs(:brooke_fran)
     thruster_log = log.movement_logs.find { |ml| ml.movement == movements(:thruster) }

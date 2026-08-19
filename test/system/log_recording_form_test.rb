@@ -25,6 +25,16 @@ class LogRecordingFormTest < ApplicationSystemTestCase
     assert_selector "input[name$='[duration_seconds]']", visible: true
   end
 
+  test 'load input is visible by default for a weight-scored set workout with no prescribed load' do
+    workout = workouts(:back_squat_5x5)
+    workout.exercises.each { |exercise| exercise.update!(load: nil, load_unit: nil, female_load: nil, male_load: nil) }
+
+    visit workout_url(workout)
+    click_on 'Log'
+
+    assert_selector "input[name$='[load]']", visible: true
+  end
+
   test 'set breakdown text field accepts a comma-separated value' do
     visit workout_url(workouts(:fran))
     click_on 'Log'

@@ -36,4 +36,16 @@ class MovementLogVerifiedUnbrokenRepsTest < ActiveSupport::TestCase
 
     assert_equal 5, movement_log.verified_unbroken_reps
   end
+
+  test 'verified_unbroken_reps trusts raw reps for a single max-effort achievement test' do
+    workout = Workout.new(name: 'Max Pull-up', score_type: :rep)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :rep)
+    movement_log = log.movement_logs.build(movement: movements(:pullup), reps: 19)
+
+    assert_equal 19, movement_log.verified_unbroken_reps
+  end
 end

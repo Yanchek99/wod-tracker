@@ -28,4 +28,12 @@ class MovementLogVerifiedUnbrokenRepsTest < ActiveSupport::TestCase
 
     assert_equal 21, movement_log.verified_unbroken_reps
   end
+
+  test 'verified_unbroken_reps trusts raw reps for a set-based lifting day, no set_breakdown needed' do
+    workout = workouts(:back_squat_5x5)
+    log = workout.logs.build(user: users(:mathew), score_type: :weight)
+    movement_log = log.movement_logs.build(movement: movements(:back_squat), reps: 5, load: 225)
+
+    assert_equal 5, movement_log.verified_unbroken_reps
+  end
 end

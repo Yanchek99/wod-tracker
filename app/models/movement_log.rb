@@ -58,15 +58,18 @@ class MovementLog < ApplicationRecord
   end
 
   # The largest rep count this movement log can actually back up as one continuous, unbroken
-  # effort -- nil when that can't be verified. reps <= 1 is trivially unbroken by mathematical
-  # certainty (a single rep, or the app's "max effort" reps: 0 sentinel, can't be broken into
-  # sets); anything higher needs a captured set_breakdown, and the largest entry in it is the
-  # real rep-max, not the raw (possibly WOD-aggregated) reps total -- e.g. Diane's Deadlift logs
-  # reps: 45 (21+15+9 summed by Metric#calculated_value) but set_breakdown: [21, 15, 9], so the
-  # verified rep-max is 21, not 45.
+  # effort -- nil when that can't be verified. Two cases are unbroken by construction, not
+  # self-report: reps <= 1 (a single rep, or the app's "max effort" reps: 0 sentinel, can't be
+  # broken into sets) and a set-based lifting day (Workout#set_based_lifting? -- a fixed "5x5"
+  # or a variable build like "5-5-3-3-1-1"), whose structure alone proves each recorded reps
+  # value is one genuine set; that proof comes from data that already exists for every log, old
+  # or new, so it needs no captured set_breakdown to trust reps directly. Anything else needs a
+  # captured set_breakdown, and the largest entry in it is the real rep-max, not the raw
+  # (possibly WOD-aggregated) reps total -- e.g. Diane's Deadlift logs reps: 45 (21+15+9 summed
+  # by Metric#calculated_value) but set_breakdown: [21, 15, 9], so the verified rep-max is 21.
   def verified_unbroken_reps
     return if reps.blank?
-    return reps if reps <= 1
+    return reps if reps <= 1 || log.workout.set_based_lifting?
 
     set_breakdown.presence&.max
   end

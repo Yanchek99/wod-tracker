@@ -127,6 +127,26 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 45, movement_log.reps
   end
 
+  test 'submitting a set-based lifting day with a blank set_breakdown_text still auto-populates set_breakdown' do
+    workout = workouts(:back_squat_5x5)
+
+    post workout_logs_url(workout), params: { log: {
+      score_type: :weight,
+      movement_logs_attributes: {
+        '0' => { movement_id: movements(:back_squat).id, reps: 5, load: 225, set_breakdown_text: '' },
+        '1' => { movement_id: movements(:back_squat).id, reps: 5, load: 235, set_breakdown_text: '' },
+        '2' => { movement_id: movements(:back_squat).id, reps: 5, load: 245, set_breakdown_text: '' },
+        '3' => { movement_id: movements(:back_squat).id, reps: 5, load: 245, set_breakdown_text: '' },
+        '4' => { movement_id: movements(:back_squat).id, reps: 5, load: 245, set_breakdown_text: '' }
+      }
+    } }
+
+    assert_redirected_to log_url(Log.last)
+    Log.last.movement_logs.each do |movement_log|
+      assert_equal [5], movement_log.set_breakdown
+    end
+  end
+
   test 'creates log with a set breakdown' do
     assert_difference(['Log.count', 'MovementLog.count'], 1) do
       post workout_logs_url(@workout), params: { log: {

@@ -40,7 +40,7 @@ module LogSetBreakdown
 
   def single_weightlifting_exercise_day?(exercise)
     exercise.movement.family_weightlifting? &&
-      workout.exercises.one? &&
+      workout.set_based_lifting? &&
       !exercise.reps_defined_by_interval?
   end
 

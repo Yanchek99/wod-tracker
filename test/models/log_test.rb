@@ -24,6 +24,20 @@ class LogTest < ActiveSupport::TestCase
     end
   end
 
+  test 'auto-populates set_breakdown as one set per exercise for a variable-rep-scheme weightlifting day' do
+    workout = Workout.new(name: 'Deadlift Ladder Test', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    [5, 3, 3, 2, 1, 1, 1].each_with_index do |reps, index|
+      segment.exercises.build(movement: movements(:back_squat), position: index + 1, reps: reps)
+    end
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    assert_equal [[5], [3], [3], [2], [1], [1], [1]], log.movement_logs.map(&:set_breakdown)
+  end
+
   test 'does not auto-populate set_breakdown for a single-exercise interval-scheme workout' do
     workout = Workout.new(name: 'Interval Ladder Test', score_type: :time)
     segment = workout.segments.build(position: 1, interval_scheme: '10-5')

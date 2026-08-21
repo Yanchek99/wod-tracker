@@ -69,4 +69,18 @@ class LiftingWorkoutsTest < ApplicationSystemTestCase
     assert_current_path %r{/logs/\d+}
     assert_text '225 lbs'
   end
+
+  test 'does not show a set breakdown field for a variable-rep-scheme lifting workout' do
+    workout = Workout.create!(name: 'Back Squat Ladder', score_type: :weight)
+    segment = workout.segments.create!(position: 1)
+    [5, 3, 3, 2, 1, 1, 1].each_with_index do |reps, index|
+      segment.exercises.create!(movement: movements(:back_squat), position: index + 1, reps: reps, load: 0)
+    end
+
+    visit workout_url(workout)
+    click_on 'Log'
+
+    assert_selector '.card.mb-3', count: 7
+    assert_no_selector 'label', text: 'Set breakdown'
+  end
 end

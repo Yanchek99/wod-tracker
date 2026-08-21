@@ -34,13 +34,15 @@ module LogSetBreakdown
   def auto_populate_set_breakdown(movement_log, exercise)
     return if movement_log.reps.blank? || movement_log.reps.zero?
     return if structured_round_repeat?(exercise)
-    return unless movement_log.reps == 1 || set_based_lifting_day?
+    return unless movement_log.reps == 1 || single_weightlifting_exercise_day?(exercise)
 
     movement_log.set_breakdown = [movement_log.reps]
   end
 
-  def set_based_lifting_day?
-    workout.set_based_lifting?
+  def single_weightlifting_exercise_day?(exercise)
+    exercise.movement.family_weightlifting? &&
+      workout.set_based_lifting? &&
+      !exercise.reps_defined_by_interval?
   end
 
   # True when this exercise's reps is a per-round value rather than a lifetime total -- an
@@ -72,7 +74,7 @@ module LogSetBreakdown
     return false if structured_round_repeat?(exercise)
     return false if movement_log.set_breakdown_text_submitted?
 
-    set_based_lifting_day? &&
+    single_weightlifting_exercise_day?(exercise) &&
       movement_log.reps.present? && movement_log.reps.positive? &&
       movement_log.set_breakdown.compact.size <= 1
   end

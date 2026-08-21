@@ -13,9 +13,11 @@ Rails.application.routes.draw do
   resources :sugarwod_imports, only: [:new, :create, :show]
 
   resources :users do
-    resources :movement_logs, only: [] do
+    resources :personal_records, only: [:index] do
       collection do
-        get :personal_records
+        get ':family', to: 'personal_records#family', as: :family,
+                       constraints: { family: /weightlifting|gymnastics|monostructural/ }
+        get :repeated_workouts
       end
     end
   end

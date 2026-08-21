@@ -38,7 +38,12 @@ module MeasurableHelper
       !measurable.reps_defined_by_interval?
   end
 
-  def measurable_reps_msg(measurable) = metric_unit_msg(measurable.prescription_metrics.find(&:rep?))
+  def measurable_reps_msg(measurable)
+    rep_metric = measurable.prescription_metrics.find(&:rep?)
+    return unless rep_metric
+
+    metric_unit_msg(rep_metric)
+  end
 
   def measurable_additional_metrics(measurable)
     metrics = additional_metrics(measurable)
@@ -48,11 +53,14 @@ module MeasurableHelper
     "(#{metrics.map { |metric| metric_unit_msg(metric) }.join(' / ')})"
   end
 
+  # A single set (one round, one entry, e.g. one line of a "5x5 Back Squat") isn't a "breakdown"
+  # at all -- it's just restating the reps count, so showing "[5]" would be noise rather than
+  # information. Only render once there's more than one recorded set to actually reveal.
   def measurable_set_breakdown(measurable)
     return unless measurable.respond_to?(:set_breakdown_rounds)
 
     rounds = measurable.set_breakdown_rounds
-    return if rounds.blank?
+    return if rounds.blank? || rounds.sum(&:size) <= 1
 
     "[#{rounds.map { |round| round.join('-') }.join(', ')}]"
   end

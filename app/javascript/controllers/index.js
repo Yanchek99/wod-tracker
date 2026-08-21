@@ -31,6 +31,9 @@ application.register("movement-select", MovementSelectController)
 import NestedFormController from "./nested_form_controller"
 application.register("nested-form", NestedFormController)
 
+import RepMaxRowController from "./rep_max_row_controller"
+application.register("rep-max-row", RepMaxRowController)
+
 import SegmentCardController from "./segment_card_controller"
 application.register("segment-card", SegmentCardController)
 

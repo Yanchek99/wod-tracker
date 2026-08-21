@@ -67,6 +67,20 @@ class LogTest < ActiveSupport::TestCase
     end
   end
 
+  test 'auto-populates set_breakdown for each set of a variable set-based lifting workout' do
+    workout = Workout.new(name: 'Back Squat Build Test', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 5)
+    segment.exercises.build(movement: movements(:back_squat), position: 2, reps: 3)
+    segment.exercises.build(movement: movements(:back_squat), position: 3, reps: 1)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :weight)
+    log.build_movement_logs
+
+    assert_equal [[5], [3], [1]], log.movement_logs.map(&:set_breakdown)
+  end
+
   test 'does not auto-populate set_breakdown for a single-exercise non-weightlifting workout' do
     workout = Workout.new(name: 'Single Gymnastics Test', score_type: :time)
     segment = workout.segments.build(position: 1)

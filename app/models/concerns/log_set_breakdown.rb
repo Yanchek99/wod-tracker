@@ -23,13 +23,14 @@ module LogSetBreakdown
 
   private
 
-  # A single logged rep, or a dedicated single-lift weightlifting day, is unbroken by
-  # construction -- no self-report needed. reps: 0 is this app's existing "unspecified/max
-  # effort" sentinel (see ExercisePrescription#rep_prescription_metric), not a literal single
-  # rep, so it's excluded here and left unpopulated like any other not-yet-known case.
-  # Excludes structured round-repeat movements (AMRAPs, ascending ladders) entirely: for these,
-  # reps is a per-round value, not a lifetime total, so a build-time reps == 1 says nothing about
-  # what the eventual set_breakdown target will be once score_value is known.
+  # A single logged rep, or a set within a dedicated set-based lifting workout (see
+  # Workout#set_based_lifting? -- a fixed "5x5 Back Squat", or a variable build like "Back Squat:
+  # 5-5-3-3-1-1"), is unbroken by construction -- no self-report needed. reps: 0 is this app's
+  # existing "unspecified/max effort" sentinel (see ExercisePrescription#rep_prescription_metric),
+  # not a literal single rep, so it's excluded here and left unpopulated like any other
+  # not-yet-known case. Excludes structured round-repeat movements (AMRAPs, ascending ladders)
+  # entirely: for these, reps is a per-round value, not a lifetime total, so a build-time reps == 1
+  # says nothing about what the eventual set_breakdown target will be once score_value is known.
   def auto_populate_set_breakdown(movement_log, exercise)
     return if movement_log.reps.blank? || movement_log.reps.zero?
     return if structured_round_repeat?(exercise)

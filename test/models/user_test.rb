@@ -18,6 +18,84 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :kg, brooke.load_display_unit
   end
 
+  test 'personal_records keeps the heaviest load within the same rep count, regardless of log order' do
+    deadlift = movements(:deadlift)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: deadlift, load: 225, reps: 5)
+    log.movement_logs.create!(movement: deadlift, load: 275, reps: 5)
+
+    records = users(:mathew).personal_records.select { |pr| pr.movement == deadlift }
+
+    assert_equal [275], records.map(&:load)
+  end
+
+  test 'personal_records shows a separate record per rep count for the same movement' do
+    deadlift = movements(:deadlift)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: deadlift, load: 275, reps: 5)
+    log.movement_logs.create!(movement: deadlift, load: 185, reps: 52)
+
+    records = users(:mathew).personal_records.select { |pr| pr.movement == deadlift }
+
+    assert_equal [[185, 52], [275, 5]], records.map { |pr| [pr.load, pr.reps] }.sort
+  end
+
+  test 'workout_records keeps the lowest score for a time-scored workout' do
+    workout = workouts(:fran)
+    users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: 400)
+    fast = users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: 330)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_equal [fast], records
+  end
+
+  test 'workout_records keeps the highest score for a rep-scored workout' do
+    workout = workouts(:segmented_total_reps)
+    users(:mathew).logs.create!(workout: workout, score_type: :rep, score_value: 100)
+    more = users(:mathew).logs.create!(workout: workout, score_type: :rep, score_value: 150)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_equal [more], records
+  end
+
+  test 'workout_records excludes a workout logged only once' do
+    records = users(:mathew).workout_records
+
+    assert_not_includes records, logs(:matt_murph)
+  end
+
+  test 'workout_records excludes weight-scored lift workouts, even when repeated' do
+    workout = Workout.create!(name: 'Back Squat Max', score_type: :weight)
+    users(:mathew).logs.create!(workout: workout, score_type: :weight, score_value: 185)
+    users(:mathew).logs.create!(workout: workout, score_type: :weight, score_value: 205)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_empty records
+  end
+
+  test 'workout_records ignores an unscored log when a real score exists for the same workout' do
+    workout = workouts(:fran)
+    users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: nil)
+    scored = users(:mathew).logs.create!(workout: workout, score_type: :time, score_value: 330)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_equal [scored], records
+  end
+
+  test 'workout_records does not raise when every log for a repeated workout is unscored' do
+    workout = workouts(:segmented_total_reps)
+    users(:mathew).logs.create!(workout: workout, score_type: :rep, score_value: nil)
+    users(:mathew).logs.create!(workout: workout, score_type: :rep, score_value: nil)
+
+    records = users(:mathew).workout_records.select { |log| log.workout == workout }
+
+    assert_equal 1, records.size
+  end
+
   test 'requires sex on user profiles' do
     user = User.new(
       email: 'test@example.com',

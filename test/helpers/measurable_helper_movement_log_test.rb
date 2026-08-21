@@ -36,12 +36,25 @@ class MeasurableHelperMovementLogTest < ActionView::TestCase
     assert_equal '10 Rows (400 meters / 135 lbs)', measurable_message(movement_log)
   end
 
+  test 'renders no reps message for a movement log with no reps recorded' do
+    movement_log = logs(:matt_amrap).movement_logs.create!(movement: movements(:row),
+                                                           distance: 300, distance_unit: :meter)
+
+    assert_nil measurable_reps_msg(movement_log)
+  end
+
   test 'renders a movement log set breakdown in brackets after its reps, only when present' do
     movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:pullup), reps: 45, set_breakdown: [21, 15, 9])
     assert_equal '45 Pull Ups [21-15-9]', measurable_message(movement_log)
 
     movement_log.set_breakdown = []
     assert_equal '45 Pull Ups', measurable_message(movement_log)
+  end
+
+  test 'omits the breakdown bracket for a trivial single-entry set_breakdown' do
+    movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:back_squat), reps: 5, set_breakdown: [5])
+
+    assert_equal '5 Back Squats', measurable_message(movement_log)
   end
 
   test 'renders a movement log set breakdown grouped by round, dash-joined within a round' do

@@ -198,6 +198,39 @@ module WorkoutExtraction
       assert_equal [0] * 8, segment.exercises.map(&:load)
     end
 
+    # Regression guard for CF-260422 (workout 405): a strength scheme ("Overhead squat 8-8-8-8
+    # reps") then "Then," + a separate 6-minute AMRAP is TWO parts, not one. The LLM had merged
+    # them into a single AMRAP segment that swept the strength sets in with the metcon movements.
+    # This locks the two-segment shape the builder must produce from the corrected output.
+    test 'builds a strength piece and a conditioning piece as two separate segments' do
+      overhead_squat = Movement.find_or_create_by!(name: 'Overhead Squat')
+      deficit_push_up = Movement.find_or_create_by!(name: 'Deficit Push-up')
+      ohs = ->(reps) { exercise_payload(movement_name: overhead_squat.name, reps: reps, female_load: 55, male_load: 75) }
+      deficit = exercise_payload(movement_name: deficit_push_up.name, reps: 30, female_distance: 2, male_distance: 4, distance_unit: 'inch')
+      stub_llm_response(
+        extractable: true, name: 'CF-260422', score_type: 'rep',
+        segments: [
+          { name: 'Overhead squat', rounds: 4, exercises: [ohs.call(8)] },
+          { name: nil, time_seconds: 360, exercises: [ohs.call(40), deficit] }
+        ],
+        exercises: []
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('Overhead squat 8-8-8-8, then AMRAP 6', date: DATE)
+
+      assert workout.valid?
+      assert_equal 'rep', workout.score_type
+      strength, amrap = workout.segments.sort_by(&:position)
+      assert_equal 2, workout.segments.size
+      assert_equal 'Overhead squat', strength.name
+      assert_equal 4, strength.rounds
+      assert_equal [overhead_squat], strength.exercises.map(&:movement)
+      assert_equal [8], strength.exercises.map(&:reps)
+      assert_equal 360, amrap.time_seconds
+      assert_equal [overhead_squat, deficit_push_up], amrap.exercises.map(&:movement)
+      assert_equal [40, 30], amrap.exercises.map(&:reps)
+    end
+
     test 'marks only barbell-family movements load-bearing in manually scored weight workouts' do
       barbell_movements = load_bearing_barbell_movements
       pull_up = movements(:pull_up)

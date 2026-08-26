@@ -2,8 +2,11 @@ module CfWod
   class MovementLookup
     # Brand names for the same equipment category: Assault Bike and Echo Bike are both air bikes,
     # scored identically (calories/distance), so they resolve to the one canonical movement rather
-    # than fragmenting PR tracking across three near-duplicate entries. Keys are already normalized
-    # (lowercase, trimmed) -- see #alias_match.
+    # than fragmenting PR tracking across three near-duplicate entries. The single-dumbbell walking
+    # lunge entries are the same idea applied to implement count: per cf/docs/movement-standards.md,
+    # implement count is tracked via the `implement_count` column, not baked into the movement name,
+    # so "single-dumbbell" collapses onto the plain `Dumbbell Walking Lunge` movement. Keys are
+    # already normalized (lowercase, trimmed) -- see #alias_match.
     ALIASES = {
       'bike' => 'Air Bike',
       'assault bike' => 'Air Bike',
@@ -11,7 +14,9 @@ module CfWod
       'wallball' => 'Wall-ball Shot',
       'wallballs' => 'Wall-ball Shot',
       'wall ball' => 'Wall-ball Shot',
-      'wall balls' => 'Wall-ball Shot'
+      'wall balls' => 'Wall-ball Shot',
+      'single-dumbbell walking lunge' => 'Dumbbell Walking Lunge',
+      'single dumbbell walking lunge' => 'Dumbbell Walking Lunge'
     }.freeze
 
     TRAILING_PARENTHETICAL = /\s*\([^)]*\)\z/

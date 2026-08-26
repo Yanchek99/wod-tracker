@@ -77,11 +77,15 @@ class SchedulesControllerTest < ActionDispatch::IntegrationTest
 
   private
 
+  # Mirrors ScrapeCfWodJob#posted_at_for, which anchors every real CF.com schedule to 6pm
+  # America/Los_Angeles -- an instant that falls after UTC midnight, so tests must anchor the
+  # same way rather than at UTC midnight to actually exercise the controller's date handling.
   def create_schedule_on(date)
+    parsed = Date.parse(date)
     Schedule.create!(
       program: programs(:crossfit),
       workout: workouts(:murph),
-      posted_at: Time.zone.parse(date)
+      posted_at: ActiveSupport::TimeZone['America/Los_Angeles'].local(parsed.year, parsed.month, parsed.day, 18)
     )
   end
 

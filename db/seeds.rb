@@ -1259,6 +1259,15 @@ CF_PROGRAM.subscriptions.find_or_create_by(user: admin) do |subscription|
   subscription.role = :owner
 end
 
+# Anchors a seeded schedule's posted_at to 6pm America/Los_Angeles, matching
+# ScrapeCfWodJob#posted_at_for. The app's Time.zone (UTC) casts a bare Date to midnight UTC,
+# which falls on the *previous* calendar day once localized for a US-timezone viewer (see
+# programs/show.html.slim's local_time rendering) -- shared here so seed files stay consistent
+# with the schedules the live scraper creates.
+posted_at_on = lambda do |date|
+  ActiveSupport::TimeZone['America/Los_Angeles'].local(date.year, date.month, date.day, 18)
+end
+
 %w[
   benchmark_workouts
   hero_workouts

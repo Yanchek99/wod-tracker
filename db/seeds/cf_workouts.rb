@@ -47,7 +47,7 @@ crossfit_workout = Workout.find_or_create_by(name: 'CF-260622') do |workout|
                                 female_distance: 2, male_distance: 4, distance_unit: :inch)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: crossfit_workout).update(posted_at: Date.new(2026, 6, 22))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: crossfit_workout).update(posted_at: posted_at_on.call(Date.new(2026, 6, 22)))
 
 # Example Workouts
 #
@@ -70,7 +70,7 @@ segmented = Workout.find_or_create_by!(name: 'CFJ-181202') do |workout|
   final_run.exercises.build(movement: run, position: 1, reps: 1, distance: 800, distance_unit: :meter)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: segmented).update(posted_at: Date.new(2018, 12, 2))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: segmented).update(posted_at: posted_at_on.call(Date.new(2018, 12, 2)))
 
 # ==============================================================================
 # https://www.crossfit.com/workout/2018/12/26#/comments
@@ -112,7 +112,7 @@ tabata = Workout.find_or_create_by!(name: 'CFJ-181226') do |workout|
   tab4.exercises.build(movement: rest, position: 2, duration_seconds: 10)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: tabata).update(posted_at: Date.new(2018, 12, 26))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: tabata).update(posted_at: posted_at_on.call(Date.new(2018, 12, 26)))
 
 # ==============================================================================
 # https://www.crossfit.com/260620
@@ -145,4 +145,4 @@ sled_drag_carry = Workout.find_or_create_by!(name: 'CFJ-260620') do |workout|
                           notes: 'Performed with the barbell. Log the total reps actually completed.')
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: sled_drag_carry).update(posted_at: Date.new(2026, 6, 20))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: sled_drag_carry).update(posted_at: posted_at_on.call(Date.new(2026, 6, 20)))

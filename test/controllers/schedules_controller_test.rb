@@ -23,7 +23,57 @@ class SchedulesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, query_counts[:exercises]
   end
 
+  test 'index with date param jumps to the exact scheduled date' do
+    create_schedule_on('2026-08-01')
+    create_schedule_on('2026-08-10')
+    create_schedule_on('2026-08-20')
+
+    get schedules_url(date: '2026-08-10')
+
+    assert_response :success
+    assert_select 'h3', text: /August 10, 2026/
+  end
+
+  test 'index with date param snaps to the nearest earlier scheduled date' do
+    create_schedule_on('2026-08-01')
+    create_schedule_on('2026-08-20')
+
+    get schedules_url(date: '2026-08-15')
+
+    assert_response :success
+    assert_select 'h3', text: /August\s+1, 2026/
+  end
+
+  test 'index with date param before all schedules clamps to the earliest date' do
+    Schedule.delete_all
+    create_schedule_on('2026-08-01')
+    create_schedule_on('2026-08-20')
+
+    get schedules_url(date: '2020-01-01')
+
+    assert_response :success
+    assert_select 'h3', text: /August\s+1, 2026/
+  end
+
+  test 'index with date param after all schedules clamps to the most recent date' do
+    create_schedule_on('2026-08-01')
+    create_schedule_on('2026-08-20')
+
+    get schedules_url(date: '2027-01-01')
+
+    assert_response :success
+    assert_select 'h3', text: /August 20, 2026/
+  end
+
   private
+
+  def create_schedule_on(date)
+    Schedule.create!(
+      program: programs(:crossfit),
+      workout: workouts(:murph),
+      posted_at: Time.zone.parse(date)
+    )
+  end
 
   def count_matching_queries(patterns, &)
     counts = patterns.transform_values { 0 }

@@ -34,6 +34,9 @@ application.register("nested-form", NestedFormController)
 import RepMaxRowController from "./rep_max_row_controller"
 application.register("rep-max-row", RepMaxRowController)
 
+import ScheduleDatePickerController from "./schedule_date_picker_controller"
+application.register("schedule-date-picker", ScheduleDatePickerController)
+
 import SegmentCardController from "./segment_card_controller"
 application.register("segment-card", SegmentCardController)
 

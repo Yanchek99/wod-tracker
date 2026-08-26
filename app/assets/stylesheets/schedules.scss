@@ -1,0 +1,23 @@
+// Place all the styles related to the Schedules controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.schedule-date-picker-trigger {
+  cursor: pointer;
+}
+
+[data-controller="schedule-date-picker"] [data-input] {
+  display: none;
+}
+
+.flatpickr-day.has-schedule::after {
+  background: var(--bs-primary);
+  border-radius: 50%;
+  bottom: 4px;
+  content: "";
+  height: 4px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 4px;
+}

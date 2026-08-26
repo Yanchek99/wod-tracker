@@ -4,7 +4,10 @@
   - else
     .row.flex-nowrap
       .col.text-start = link_to_next_page @dates, '<', class: 'btn btn-primary'
-      h3.col.text-center = local_time(@date, '%A %B %e, %Y')
+      .col.text-center data-controller="schedule-date-picker" data-schedule-date-picker-date-value=@date.to_date.iso8601 data-schedule-date-picker-scheduled-value=@scheduled_dates.to_json
+        h3.schedule-date-picker-trigger data-toggle=true
+          = local_time(@date, '%A %B %e, %Y')
+        input type="hidden" data-input=true
       .col.text-end = link_to_prev_page @dates, '>', class: 'btn btn-primary'
     - @schedules.each do |schedule|
       .row.my-3.pt-3.border-top

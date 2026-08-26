@@ -22,6 +22,7 @@
     "@rails/request.js": "^0.0.13",
     "bootstrap": "^5.3.8",
     "esbuild": "^0.28.2",
+    "flatpickr": "^4.6.13",
     "local-time": "^3.0.3",
     "sass": "^1.103.1",
     "sortablejs": "^1.15.7",

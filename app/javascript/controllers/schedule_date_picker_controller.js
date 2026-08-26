@@ -10,6 +10,7 @@ export default class extends Controller {
       wrap: true,
       defaultDate: this.dateValue,
       dateFormat: "Y-m-d",
+      positionElement: this.element.querySelector("[data-toggle]"),
       onDayCreate: (_selectedDates, _dateStr, fp, dayElem) => {
         const date = fp.formatDate(dayElem.dateObj, "Y-m-d")
         if (this.scheduledValue.includes(date)) {

@@ -254,6 +254,11 @@ dumbbell_turkish_get_up = Movement.find_or_initialize_by(name: 'Dumbbell Turkish
                              skill_level: :advanced)
   movement.save!
 end
+dumbbell_walking_lunge = Movement.find_or_initialize_by(name: 'Dumbbell Walking Lunge').tap do |movement|
+  movement.assign_attributes(family: :weightlifting, function_roles: { primary: [:squat] },
+                             equipment: :dumbbell, skill_level: :basic)
+  movement.save!
+end
 forward_roll_from_support = Movement.find_or_initialize_by(name: 'Forward Roll From Support').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] },
                              skill_level: :advanced)

@@ -60,5 +60,11 @@ module CfWod
       pistol_squat = Movement.find_or_create_by(name: 'Pistol Squat (Single-leg)')
       assert_equal pistol_squat, MovementLookup.call('pistol squats')
     end
+
+    test 'aliases single-dumbbell walking lunge to the canonical Dumbbell Walking Lunge movement' do
+      dumbbell_walking_lunge = Movement.find_or_create_by(name: 'Dumbbell Walking Lunge')
+      assert_equal dumbbell_walking_lunge, MovementLookup.call('single-dumbbell walking lunge')
+      assert_equal dumbbell_walking_lunge, MovementLookup.call('single dumbbell walking lunge')
+    end
   end
 end

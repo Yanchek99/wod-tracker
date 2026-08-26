@@ -23,6 +23,16 @@ class SchedulesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, query_counts[:exercises]
   end
 
+  test 'index date heading renders the scheduled calendar day without browser-local conversion' do
+    create_schedule_on('2026-08-10')
+
+    get schedules_url
+
+    assert_response :success
+    assert_select 'h3', text: /August 10, 2026/
+    assert_select 'h3 time[data-local]', count: 0
+  end
+
   test 'index with date param jumps to the exact scheduled date' do
     create_schedule_on('2026-08-01')
     create_schedule_on('2026-08-10')

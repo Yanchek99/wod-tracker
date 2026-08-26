@@ -89,11 +89,21 @@ module WorkoutExtraction
           one list of movements (e.g. "6 rounds of: 1 minute rowing, 1 minute burpees, 1 minute
           rest") is NOT multiple parts -- that's a flat list of top-level exercises, each with its
           own "duration_seconds"; do not wrap them in a segment just to hold a shared note.
-        - There is no field for a round count that wraps several already-distinct named/timed
-          segments (e.g. "2 rounds for total reps of: [Part A] ... [Part B] ... [Part C]"). Repeat
-          those segment objects literally that many times, in order, in the "segments" array (e.g.
-          6 segments for "2 rounds" of 3 parts) rather than dropping the repeat or emitting only
-          one pass.
+        - IMPORTANT, and easy to get wrong -- contrast this with the case directly above: when an
+          outer round count instead wraps several already-distinct, separately-timed parts (e.g.
+          "2 rounds for total reps of:" followed by three different "On a 3-minute clock:" blocks,
+          each with its own movements), those blocks DO need their own segments (per the rule
+          above) AND the round count applies to the whole group of them together. There is no
+          schema field for "repeat this group of segments N times" -- the only way to represent it
+          is to emit the same segment objects again, in the same order, N times total in the
+          "segments" array. Concretely: "2 rounds for total reps of: [3-min run+pull-up block]
+          Rest 1 minute [3-min run+push-up block] Rest 1 minute" is 4 segments in this exact
+          order -- [run+pull-up], [run+push-up], [run+pull-up] (repeated), [run+push-up]
+          (repeated) -- never 2. Do not drop the repeat or emit only one pass through the group.
+        - A "Rest N minutes" (or "Rest N minute") line after a timed segment's exercises is that
+          segment's own "rest_seconds" -- this still applies to the LAST part in a repeated group
+          (the rule above), even though the same rest also precedes the next repetition of the
+          first part. Do not omit "rest_seconds" on a segment just because it happens to be last.
         - "movement_name" must be copied verbatim from this exact list of recognized movements (case and
           spelling matter):
           #{Movement.pluck(:name).sort.join(', ')}

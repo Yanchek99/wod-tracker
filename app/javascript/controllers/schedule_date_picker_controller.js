@@ -11,12 +11,7 @@ export default class extends Controller {
       defaultDate: this.dateValue,
       dateFormat: "Y-m-d",
       positionElement: this.element.querySelector("[data-toggle]"),
-      onDayCreate: (_selectedDates, _dateStr, fp, dayElem) => {
-        const date = fp.formatDate(dayElem.dateObj, "Y-m-d")
-        if (this.scheduledValue.includes(date)) {
-          dayElem.classList.add("has-schedule")
-        }
-      },
+      enable: this.scheduledValue,
       onChange: (_selectedDates, dateStr) => {
         window.Turbo.visit(`${window.location.pathname}?date=${dateStr}`)
       }

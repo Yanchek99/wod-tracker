@@ -9,15 +9,3 @@
 [data-controller="schedule-date-picker"] [data-input] {
   display: none;
 }
-
-.flatpickr-day.has-schedule::after {
-  background: var(--bs-primary);
-  border-radius: 50%;
-  bottom: 4px;
-  content: "";
-  height: 4px;
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-  width: 4px;
-}

@@ -74,6 +74,10 @@ module WorkoutExtraction
           "male_calories" -- a placeholder is never sex-specific, even if the workout has
           sex-specific values elsewhere (e.g. a load on a different movement). The real per-round
           values come from the interval scheme itself, not from a stored count on the exercise.
+        - An exercise prefixed "Max"/"Maximum" (e.g. "Max chest-to-bar pull-ups" inside a timed
+          AMRAP window) is scored by whatever reps the athlete completes, not a fixed count -- set
+          that exercise's "reps" to 0, the app's own "max reps" sentinel, never 1 or any other
+          number.
         - "rounds" is a fixed round count (e.g. "5 rounds for time"); leave it out for AMRAPs, single-round
           workouts, or interval-ladder workouts (use "interval" instead).
         - "time" is a time cap or AMRAP duration in seconds; "time_cap" is a "MM:SS" string cap on a
@@ -85,6 +89,11 @@ module WorkoutExtraction
           one list of movements (e.g. "6 rounds of: 1 minute rowing, 1 minute burpees, 1 minute
           rest") is NOT multiple parts -- that's a flat list of top-level exercises, each with its
           own "duration_seconds"; do not wrap them in a segment just to hold a shared note.
+        - There is no field for a round count that wraps several already-distinct named/timed
+          segments (e.g. "2 rounds for total reps of: [Part A] ... [Part B] ... [Part C]"). Repeat
+          those segment objects literally that many times, in order, in the "segments" array (e.g.
+          6 segments for "2 rounds" of 3 parts) rather than dropping the repeat or emitting only
+          one pass.
         - "movement_name" must be copied verbatim from this exact list of recognized movements (case and
           spelling matter):
           #{Movement.pluck(:name).sort.join(', ')}

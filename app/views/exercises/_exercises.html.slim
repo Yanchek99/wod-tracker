@@ -1,5 +1,5 @@
 - set_based_line = lifting_sets_line(workout)
-- workout.segments.each_with_index do |segment, index|
+- workout.distinct_segments.each_with_index do |segment, index|
   - governing = segment == workout.governing_segment
   - # The governing segment's own scheme is already conveyed by workout_objective
   - # wherever this partial is rendered; showing it again here would be redundant.

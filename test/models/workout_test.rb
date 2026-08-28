@@ -165,6 +165,30 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_equal 1, workout.segment_group_rounds
   end
 
+  test 'collapses a repeated total-reps segment group to one pass for display' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup squat].each_with_index do |movement, block|
+        segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60,
+                                         position: (round * 3) + block + 1)
+        segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    assert_equal workout.segments.to_a.first(3), workout.distinct_segments
+  end
+
+  test 'keeps every segment for display when there is no repeated group' do
+    workout = Workout.new(name: 'Windowed', score_type: :rep)
+    first = workout.segments.build(name: '0:00-5:00', time_seconds: 300, position: 1)
+    first.exercises.build(movement: movements(:pushup), position: 1, reps: 0)
+    second = workout.segments.build(name: '5:00-10:00', time_seconds: 300, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    assert_equal workout.segments.to_a, workout.distinct_segments
+  end
+
   test 'distance scoring takes precedence over legacy rep marker' do
     component = exercises(:amrap_mixed_row).score_component
 

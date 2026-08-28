@@ -15,6 +15,15 @@ module WorkoutSegmentGrouping
     segment_group_rounds > 1
   end
 
+  # The segments to actually render: a repeated total-reps group collapsed to a
+  # single pass, since workout_objective already announces "N rounds for total
+  # reps of". Every segment otherwise.
+  def distinct_segments
+    return segments.to_a unless segmented_total_reps? && repeated_segment_group?
+
+    segments.to_a.first(segments.size / segment_group_rounds)
+  end
+
   private
 
   # Smallest group size the shape list is a whole-number repeat of (a proper

@@ -51,7 +51,7 @@ module WorkoutsHelper
   # convention for describing a workout as text, just written as lines instead of HTML.
   def workout_as_text(workout)
     lines = [workout.name, [team_objective(workout), workout_objective(workout)].compact.join(' ')]
-    workout.segments.each_with_index { |segment, index| lines.concat(segment_as_text_lines(workout, segment, index)) }
+    workout.distinct_segments.each_with_index { |segment, index| lines.concat(segment_as_text_lines(workout, segment, index)) }
     lines.concat(workout_as_text_trailer(workout)).compact_blank.join("\n")
   end
 

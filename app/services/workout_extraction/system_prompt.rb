@@ -33,7 +33,7 @@ module WorkoutExtraction
         #{workout_field_lines},
           "segments": [
             {
-              "name": "<string, required>",
+              "name": "<string, optional>",
         #{segment_field_lines},
               "exercises": [ <exercise, see shape below> ]
             }
@@ -100,6 +100,11 @@ module WorkoutExtraction
           Rest 1 minute [3-min run+push-up block] Rest 1 minute" is 4 segments in this exact
           order -- [run+pull-up], [run+push-up], [run+pull-up] (repeated), [run+push-up]
           (repeated) -- never 2. Do not drop the repeat or emit only one pass through the group.
+        - A segment's "name" is a short label copied verbatim from the source's own heading for
+          that part -- "Part A", "Buy-in", "On a 3-minute clock", "0:00-5:00". Omit "name"
+          entirely when the source gives the part no heading of its own. Never invent a name that
+          summarizes the part's movements or scheme (NOT "Block 1: Run + Max Pull-ups", NOT
+          "3-minute AMRAP") -- those movements are already listed in the segment's "exercises".
         - A "Rest N minutes" (or "Rest N minute") line after a timed segment's exercises is that
           segment's own "rest_seconds" -- this still applies to the LAST part in a repeated group
           (the rule above), even though the same rest also precedes the next repetition of the

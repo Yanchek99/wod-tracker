@@ -47,7 +47,7 @@ module WorkoutExtraction
       assert_equal(%w[extractable], LlmParser.workout_schema[:required])
       assert_equal({ type: 'string' }, LlmParser.exercise_schema[:properties][:movement_name])
       assert_equal(%w[movement_name], LlmParser.exercise_schema[:required])
-      assert_equal(%w[name], LlmParser.segment_schema[:required])
+      assert_empty(LlmParser.segment_schema[:required])
     end
 
     test 'gap_reason is plainly optional, not required or nullable' do

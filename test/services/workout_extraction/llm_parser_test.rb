@@ -91,6 +91,63 @@ module WorkoutExtraction
       end
     end
 
+    test 'recovers a dropped title line as the workout name from the source text' do
+      stub_llm_response(
+        extractable: true, name: nil, score_type: 'rep', rounds: nil, time: 240, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 0)]
+      )
+      source = "Community Cup Workout 3\n\nAs many reps as possible in 4 minutes of:\n10 shuttle runs\nMax thrusters"
+
+      workout = WorkoutExtraction::LlmParser.call(source, date: DATE)
+
+      assert_equal 'Community Cup Workout 3', workout.name
+    end
+
+    test 'still uses the date fallback when a single-piece prose paste has no title line' do
+      stub_llm_response(
+        extractable: true, name: nil, score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 20)]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call("21 Thrusters\n21 Pull-ups", date: DATE)
+
+      assert_equal 'CF-260115', workout.name
+    end
+
+    test 'backfills the shuttle-run distance from a down-and-back sentence the LLM leaves in prose' do
+      shuttle_run = Movement.find_or_create_by!(name: 'Shuttle Run')
+      stub_llm_response(
+        extractable: true, name: 'Community Cup Workout 3', score_type: 'rep', rounds: nil, time: 240,
+        interval: nil, time_cap: nil, ladder_step: nil, team_size: nil,
+        notes: 'One shuttle run is 25 feet down and 25 feet back.', gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: shuttle_run.name, reps: 10)]
+      )
+      source = "As many reps as possible in 4 minutes of:\n10 shuttle runs\n\nOne shuttle run is 25 feet down and 25 feet back."
+
+      workout = WorkoutExtraction::LlmParser.call(source, date: DATE)
+      exercise = workout_exercises(workout).first
+
+      assert_equal 50, exercise.distance
+      assert_equal 'foot', exercise.distance_unit
+    end
+
+    test 'leaves a shuttle-run distance the LLM already provided untouched' do
+      shuttle_run = Movement.find_or_create_by!(name: 'Shuttle Run')
+      stub_llm_response(
+        extractable: true, name: 'Shuttle Sprint', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: shuttle_run.name, reps: 10, distance: 25, distance_unit: 'meter')]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('10 shuttle runs, 25 meters down and 25 meters back', date: DATE)
+      exercise = workout_exercises(workout).first
+
+      assert_equal 25, exercise.distance
+      assert_equal 'meter', exercise.distance_unit
+    end
+
     test 'wraps a flat workout in one implicit unnamed segment carrying its scheme' do
       stub_llm_response(
         extractable: true, name: 'Cindy', score_type: 'round', rounds: nil, time: 1200, interval: nil,

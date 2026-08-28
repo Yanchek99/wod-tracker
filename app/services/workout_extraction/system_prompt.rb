@@ -19,6 +19,10 @@ module WorkoutExtraction
         "24/20 in") is a distance in inches, never a load: use female_distance/male_distance (or a
         single "distance") with distance_unit "inch". Do not put box height in female_load/male_load
         even though it looks like a sex-split load pattern.
+      - A shuttle run has a per-rep distance, stated as one leg out and back ("One shuttle run is
+        25 feet down and 25 feet back" -> "distance": 50, "distance_unit": "foot"; sum the legs).
+        Set it on the Shuttle Run exercise even when the length is in a separate sentence, and
+        keep the rep count ("10 shuttle runs" -> reps 10).
     CHEATSHEET
 
     def self.text
@@ -55,6 +59,13 @@ module WorkoutExtraction
         fit; an honest "extractable": false is far more useful than a wrong workout.
 
         Rules (when "extractable" is true):
+        - "name" is the workout's own title -- use it whenever the source text has a title line
+          above the prescription: a hero-workout name ("Murph"), a numbered series/event title
+          ("Community Cup Workout 3", "Open Workout 25.1"), or a quoted nickname ("Tank Top Time").
+          Copy it verbatim into "name". Omit "name" only when there is genuinely no such title line;
+          never use a prescription/rep-scheme line, a movement line, or a section heading like
+          "Stimulus and Strategy" as the name. The app supplies a date-based fallback when "name"
+          is absent.
         - "score_type" must be exactly one of: #{Metric.workout_measurements.join(', ')}. Use "time" for
           for-time workouts, including rounds-for-time (e.g. "5 RFT") -- these are scored by elapsed
           time, not round count. Use "rep" for AMRAP/max-rep workouts scored by total reps, "round"
@@ -74,10 +85,16 @@ module WorkoutExtraction
           "male_calories" -- a placeholder is never sex-specific, even if the workout has
           sex-specific values elsewhere (e.g. a load on a different movement). The real per-round
           values come from the interval scheme itself, not from a stored count on the exercise.
-        - An exercise prefixed "Max"/"Maximum" (e.g. "Max chest-to-bar pull-ups" inside a timed
-          AMRAP window) is scored by whatever reps the athlete completes, not a fixed count -- set
-          that exercise's "reps" to 0, the app's own "max reps" sentinel, never 1 or any other
-          number.
+        - An exercise prefixed "Max"/"Maximum" (e.g. "Max chest-to-bar pull-ups", "Max power
+          snatches") inside a timed AMRAP window is scored by whatever reps the athlete completes,
+          not a fixed count -- set that exercise's "reps" to 0, the app's own "max reps" sentinel.
+          Never 1: that is the interval-placeholder value from the rule above, and it does NOT
+          apply here -- a "Max" movement has no per-round count to stand in for. Apply this in
+          every segment that has a "Max" movement, however many there are: a workout of three
+          4-minute windows (max power snatches, then max overhead squats, then max squat snatches),
+          each also holding 10 shuttle runs and 21 toes-to-bars, gets "reps": 0 on the
+          snatch/overhead-squat exercise of all three segments while the shuttle runs stay 10 and
+          the toes-to-bars stay 21.
         - "rounds" is a fixed round count (e.g. "5 rounds for time"); leave it out for AMRAPs, single-round
           workouts, or interval-ladder workouts (use "interval" instead).
         - "time" is a time cap or AMRAP duration in seconds; "time_cap" is a "MM:SS" string cap on a
@@ -119,6 +136,11 @@ module WorkoutExtraction
           source text (miles, yards, kilometers) to meters before writing "distance" (e.g. "1 mile"
           is 1600 meters -- CrossFit's own rounded convention, not the physics-exact 1609.34) --
           never write a "distance_unit" outside those three values.
+        - A movement's "distance" counts as specified even when its length sits in a separate
+          sentence, not inline with the rep count -- still set "distance"/"distance_unit" on that
+          exercise. Most common case: a shuttle run given as one leg out and back -- "One shuttle
+          run is 25 feet down and 25 feet back" means every "Shuttle Run" exercise gets
+          "distance": 50 (the two legs summed), "distance_unit": "foot", plus its rep count.
         - Only include a field when the source text specifies it; omit fields you're not confident about
           rather than guessing a value.
 

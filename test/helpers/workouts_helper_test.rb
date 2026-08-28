@@ -204,6 +204,19 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal '2 rounds for total reps of', workout_objective(workout)
   end
 
+  test 'renders rest-separated non-repeating total-reps interval blocks without a summed clock' do
+    workout = Workout.new(name: 'Community Cup 3', score_type: :rep)
+
+    first = workout.segments.build(time_seconds: 240, rest_seconds: 120, position: 1)
+    first.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 200, distance_unit: :meter)
+    first.exercises.build(movement: movements(:pushup), position: 2, reps: 0)
+
+    second = workout.segments.build(time_seconds: 240, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    assert_equal 'For total reps', workout_objective(workout)
+  end
+
   test 'renders a sequential workout with one inner rounds segment as for time' do
     assert_equal 'For Time', workout_objective(cfj_181202_workout)
   end

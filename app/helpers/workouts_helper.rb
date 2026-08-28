@@ -106,6 +106,8 @@ module WorkoutsHelper
   def total_reps_clock_objective(workout)
     rounds = workout.segment_group_rounds
     return "#{pluralize rounds, 'round'} for total reps of" if rounds > 1
+    # Rest between blocks means separate interval windows, not one continuous clock to sum.
+    return 'For total reps' if workout.segments.any? { |segment| segment.rest_seconds.present? }
 
     "On a #{workout.segments.sum(&:time_seconds) / 60}-minute clock for total reps"
   end

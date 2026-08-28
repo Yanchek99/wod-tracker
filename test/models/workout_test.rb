@@ -148,6 +148,20 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_equal 2, workout.segment_group_rounds
   end
 
+  test 'still counts the repeat when the extractor drops rest_seconds on the last block of the group' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    6.times do |i|
+      movement = %i[pullup pushup squat][i % 3]
+      # The final segment of the last round has no trailing rest -- the LLM routinely omits it.
+      segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180,
+                                       rest_seconds: (i == 5 ? nil : 60), position: i + 1)
+      segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+      segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+    end
+
+    assert_equal 2, workout.segment_group_rounds
+  end
+
   test 'counts non-repeating distinct blocks as a single segment-group round' do
     workout = Workout.new(name: 'Windowed', score_type: :rep)
     first = workout.segments.build(name: '0:00-5:00', time_seconds: 300, position: 1)

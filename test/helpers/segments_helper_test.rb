@@ -38,6 +38,17 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal 'AMRAP in 3:00', segment_objective(workout.segments.first, then_prefix: true)
   end
 
+  test 'does not prefix a nameless repeated-group max-rep block with then' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    6.times do |i|
+      segment = workout.segments.build(time_seconds: 180, position: i + 1)
+      segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+      segment.exercises.build(movement: movements(%i[pullup pushup squat][i % 3]), position: 2, reps: 0)
+    end
+
+    assert_equal 'AMRAP in 3:00', segment_objective(workout.segments.second, then_prefix: true)
+  end
+
   test 'keeps the named max-rep phrasing for a max-rep block that is not part of a repeated group' do
     workout = Workout.new(name: 'Windowed', score_type: :rep)
     first = workout.segments.build(name: '0:00-5:00', time_seconds: 300, position: 1)

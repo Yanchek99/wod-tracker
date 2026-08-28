@@ -6,7 +6,7 @@ module WorkoutSegmentGrouping
   # blocks the extractor had to emit twice, since the schema has no field for
   # repeating a segment group. 1 when the segments do not repeat.
   def segment_group_rounds
-    shapes = segments.reject(&:marked_for_destruction?).map { |segment| segment_content_signature(segment) }
+    shapes = segments.reject(&:marked_for_destruction?).map { |segment| grouping_shape(segment) }
     period = repeating_period(shapes)
     period ? shapes.size / period : 1
   end
@@ -25,6 +25,14 @@ module WorkoutSegmentGrouping
   end
 
   private
+
+  # A segment's structural work, minus the "rest_seconds" annotation that sits
+  # between blocks: the LLM routinely omits it on the final block of a repeated
+  # group, and that lone asymmetry shouldn't hide the repeat.
+  def grouping_shape(segment)
+    signature = segment_content_signature(segment)
+    signature.merge(segment: signature[:segment].except(:rest_seconds))
+  end
 
   # Smallest group size the shape list is a whole-number repeat of (a proper
   # divisor of its length whose blocks all recur at that stride), or nil.

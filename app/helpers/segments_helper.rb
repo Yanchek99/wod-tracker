@@ -2,7 +2,7 @@ module SegmentsHelper
   def segment_objective(segment, then_prefix: false)
     return nil if segment.name.blank? && !segment.schemed?
 
-    msg = then_prefix && !named_max_reps_segment?(segment) ? 'Then, ' : ''
+    msg = then_prefix && !standalone_max_reps_segment?(segment) ? 'Then, ' : ''
     "#{msg}#{segment_prescription(segment)}"
   end
 
@@ -20,8 +20,13 @@ module SegmentsHelper
 
   private
 
-  def named_max_reps_segment?(segment)
-    segment.name.present? && segment.max_reps?
+  # A max-rep block that reads on its own without a "Then, " lead-in: either it
+  # carries its own label (a "0:00-5:00" window) or it is one part of a repeated
+  # group already announced as "N rounds for total reps of".
+  def standalone_max_reps_segment?(segment)
+    return false unless segment.max_reps?
+
+    segment.name.present? || segment.workout&.repeated_segment_group? || false
   end
 
   def segment_prescription(segment)

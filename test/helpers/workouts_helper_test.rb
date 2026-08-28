@@ -191,6 +191,19 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'On a 10-minute clock for total reps', workout_objective(workout)
   end
 
+  test 'renders a repeated block group as rounds for total reps rather than a summed clock' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup].each_with_index do |movement, block|
+        segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, position: (round * 2) + block + 1)
+        segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    assert_equal '2 rounds for total reps of', workout_objective(workout)
+  end
+
   test 'renders a sequential workout with one inner rounds segment as for time' do
     assert_equal 'For Time', workout_objective(cfj_181202_workout)
   end

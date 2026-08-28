@@ -104,6 +104,9 @@ module WorkoutsHelper
   end
 
   def total_reps_clock_objective(workout)
+    rounds = workout.segment_group_rounds
+    return "#{pluralize rounds, 'round'} for total reps of" if rounds > 1
+
     "On a #{workout.segments.sum(&:time_seconds) / 60}-minute clock for total reps"
   end
 

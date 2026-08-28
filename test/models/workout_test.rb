@@ -203,6 +203,19 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_equal workout.segments.to_a, workout.distinct_segments
   end
 
+  test 'log recording lists a repeated total-reps group only once' do
+    workout = Workout.create!(name: 'CF-260825', score_type: :rep)
+    6.times do |i|
+      segment = workout.segments.create!(name: 'On a 3-minute clock', time_seconds: 180,
+                                         rest_seconds: (i == 5 ? nil : 60), position: i + 1)
+      segment.exercises.create!(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+      segment.exercises.create!(movement: movements(%i[pullup pushup squat][i % 3]), position: 2, reps: 0)
+    end
+
+    assert_equal workout.segments.to_a.first(3).flat_map(&:exercises).map(&:id),
+                 workout.exercises_for_log_recording.map(&:id)
+  end
+
   test 'distance scoring takes precedence over legacy rep marker' do
     component = exercises(:amrap_mixed_row).score_component
 

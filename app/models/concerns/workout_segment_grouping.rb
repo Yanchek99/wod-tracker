@@ -24,6 +24,14 @@ module WorkoutSegmentGrouping
     segments.to_a.first(segments.size / segment_group_rounds)
   end
 
+  # The distinct pass's exercises, for a log form that mirrors the collapsed
+  # display. nil (caller falls back to every exercise) when there is no repeat.
+  def collapsed_repeat_exercises
+    return unless segmented_total_reps? && repeated_segment_group?
+
+    distinct_segments.flat_map(&:exercises)
+  end
+
   private
 
   # A segment's structural work, minus the "rest_seconds" annotation that sits

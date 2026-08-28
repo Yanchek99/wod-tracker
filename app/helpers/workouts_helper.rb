@@ -131,7 +131,7 @@ module WorkoutsHelper
     objective = governing ? nil : segment_objective(segment, then_prefix: index.positive?)
     set_based_line = lifting_sets_line(workout) if governing
     exercise_lines = set_based_line ? [set_based_line] : segment.exercises.map { |exercise| measurable_message(exercise) }
-    [objective, *exercise_lines].compact
+    [objective, *exercise_lines, segment_rest(segment)].compact
   end
 
   def workout_as_text_trailer(workout)

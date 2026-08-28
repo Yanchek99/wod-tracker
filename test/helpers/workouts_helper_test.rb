@@ -244,6 +244,20 @@ class WorkoutsHelperTest < ActionView::TestCase
                  workout_as_text(cfj_181202_workout)
   end
 
+  test "includes a segment's trailing rest as its own line in the paste-text-box text" do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    first = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 1)
+    first.exercises.build(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+    second = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    lines = workout_as_text(workout).split("\n")
+
+    assert_equal 2, lines.count('Rest 1 minute')
+    assert_equal '400 meter Run', lines[lines.index('Rest 1 minute') - 1]
+    assert_equal 'Rest 1 minute', lines.last
+  end
+
   test 'renders set-based lifting text as a collapsed rep-scheme line' do
     workout = Workout.new(name: 'Deadlift Heavy Day', score_type: :weight)
     segment = workout.segments.build(position: 1)

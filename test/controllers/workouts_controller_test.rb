@@ -199,6 +199,16 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'li', text: '21-15-9 of', count: 0
   end
 
+  test "renders a segment's trailing rest as its own line" do
+    workout = Workout.create!(name: 'CF-260825', score_type: :rep)
+    segment = workout.segments.create!(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 1)
+    segment.exercises.create!(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+
+    get workout_url(workout)
+
+    assert_select 'li', text: 'Rest 1 minute'
+  end
+
   test 'collapses a set-based lifting workout into a for-load rep-scheme line' do
     get workout_url(workouts(:back_squat_5x5))
 

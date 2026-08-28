@@ -69,4 +69,16 @@ class SegmentsHelperTest < ActionView::TestCase
     segment = Segment.new
     assert_nil segment_objective(segment)
   end
+
+  test 'renders a segments trailing rest with a whole-minute duration in minutes' do
+    assert_equal 'Rest 1 minute', segment_rest(Segment.new(rest_seconds: 60))
+  end
+
+  test 'renders a segments trailing rest with a partial-minute duration in seconds' do
+    assert_equal 'Rest 90 seconds', segment_rest(Segment.new(rest_seconds: 90))
+  end
+
+  test 'has no rest line when the segment carries no rest of its own' do
+    assert_nil segment_rest(Segment.new)
+  end
 end

@@ -11,3 +11,5 @@
   - else
     - segment.exercises.each do |exercise|
       li class=(objective ? 'ms-4' : nil) #{measurable_message(exercise)}
+  - if segment_rest(segment)
+    li = segment_rest(segment)

@@ -10,6 +10,14 @@ module SegmentsHelper
     !segment.implicit_workout_part?
   end
 
+  # A segment's own trailing rest ("Rest 1 minute"), rendered as its own line after the
+  # segment's exercises. nil when the segment carries no rest of its own.
+  def segment_rest(segment)
+    return nil if segment.rest_seconds.blank?
+
+    "Rest #{humanized_duration(segment.rest_seconds)}"
+  end
+
   private
 
   def named_max_reps_segment?(segment)
@@ -36,7 +44,10 @@ module SegmentsHelper
   end
 
   def segment_duration(segment)
-    seconds = segment.time_seconds
+    humanized_duration(segment.time_seconds)
+  end
+
+  def humanized_duration(seconds)
     return pluralize(seconds / 60, 'minute') if (seconds % 60).zero?
 
     pluralize(seconds, 'second')

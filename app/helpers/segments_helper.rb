@@ -39,12 +39,23 @@ module SegmentsHelper
     "#{segment.rounds} #{segment.time_seconds / 60}-minute rounds" if segment.timed_rounds?
   end
 
+  # In a repeated segment group (e.g. CF.com's "2 rounds for total reps of:" wrapping
+  # three "On a 3-minute clock:" blocks) the block name is either a bare source heading
+  # or an LLM-synthesized summary of its own movements -- either way redundant with the
+  # movements listed right below it. Reduce it to "AMRAP in M:SS". Named max-rep blocks
+  # that stand on their own (e.g. "0:00-5:00" windows of a shared clock) keep their label.
   def max_reps_segment_prescription(segment)
+    return "AMRAP in #{clock_duration(segment.time_seconds)}" if segment.workout&.repeated_segment_group?
+
     [segment.name.presence, "max reps in #{segment_duration(segment)}"].compact.join(': ')
   end
 
   def segment_duration(segment)
     humanized_duration(segment.time_seconds)
+  end
+
+  def clock_duration(seconds)
+    format('%<minutes>d:%<seconds>02d', minutes: seconds / 60, seconds: seconds % 60)
   end
 
   def humanized_duration(seconds)

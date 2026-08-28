@@ -24,6 +24,30 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal '0:00-5:00: max reps in 5 minutes', segment_objective(segment, then_prefix: true)
   end
 
+  test 'renders a repeated-group max-rep block as AMRAP with a clock time, dropping the block name' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup].each_with_index do |movement, block|
+        segment = workout.segments.build(name: "Block #{block + 1}: Run + Max", time_seconds: 180,
+                                         position: (round * 2) + block + 1)
+        segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    assert_equal 'AMRAP in 3:00', segment_objective(workout.segments.first, then_prefix: true)
+  end
+
+  test 'keeps the named max-rep phrasing for a max-rep block that is not part of a repeated group' do
+    workout = Workout.new(name: 'Windowed', score_type: :rep)
+    first = workout.segments.build(name: '0:00-5:00', time_seconds: 300, position: 1)
+    first.exercises.build(movement: movements(:pushup), position: 1, reps: 0)
+    second = workout.segments.build(name: '5:00-10:00', time_seconds: 300, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    assert_equal '0:00-5:00: max reps in 5 minutes', segment_objective(workout.segments.first)
+  end
+
   test 'renders emom segments with their duration in minutes' do
     assert_equal 'EMOM 10', segment_objective(Segment.new(time_seconds: 600, rounds: 10))
   end

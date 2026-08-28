@@ -42,28 +42,13 @@ module WorkoutFingerprint
     canonical
   end
 
-  # How many times the segment list is an identical group repeated back to back
-  # (>= 2) -- e.g. "2 rounds for total reps of:" wrapping three distinct timed
-  # blocks the extractor had to emit twice, since the schema has no field for
-  # repeating a segment group. 1 when the segments do not repeat.
-  def segment_group_rounds
-    shapes = segments.reject(&:marked_for_destruction?).map { |segment| canonical_segment(segment) }
-    period = repeating_period(shapes)
-    period ? shapes.size / period : 1
+  # Structural signature of one segment -- the same content fields the fingerprint
+  # is built from -- for detecting a repeated segment group (see WorkoutSegmentGrouping).
+  def segment_content_signature(segment)
+    canonical_segment(segment)
   end
 
   private
-
-  # Smallest group size the shape list is a whole-number repeat of (a proper
-  # divisor of its length whose blocks all recur at that stride), or nil.
-  def repeating_period(shapes)
-    count = shapes.size
-    return if count < 2
-
-    (1...count).find do |candidate|
-      (count % candidate).zero? && shapes.drop(candidate).each_with_index.all? { |shape, i| shape == shapes[i] }
-    end
-  end
 
   # The fingerprint to persist, or nil when another workout already owns this content.
   # Leaving a duplicate's key nil keeps the save from hitting the unique index; the

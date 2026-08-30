@@ -3,6 +3,7 @@ class Workout < ApplicationRecord
   include WorkoutGoverningSegment
   include WorkoutPositionReservation
   include WorkoutScoring
+  include WorkoutSegmentGrouping
 
   has_many :segments, dependent: :destroy
   has_many :exercises, through: :segments

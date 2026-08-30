@@ -191,6 +191,19 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'On a 10-minute clock for total reps', workout_objective(workout)
   end
 
+  test 'renders a repeated block group as rounds for total reps rather than a summed clock' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup].each_with_index do |movement, block|
+        segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, position: (round * 2) + block + 1)
+        segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    assert_equal '2 rounds for total reps of', workout_objective(workout)
+  end
+
   test 'renders a sequential workout with one inner rounds segment as for time' do
     assert_equal 'For Time', workout_objective(cfj_181202_workout)
   end
@@ -242,6 +255,20 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal "CFJ-181202\nFor Time\n800 meter Run\nThen, 10 rounds of\n10 Handstand Push-ups\n" \
                  "10 Single-leg Squats\n800 meter Run",
                  workout_as_text(cfj_181202_workout)
+  end
+
+  test "includes a segment's trailing rest as its own line in the paste-text-box text" do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    first = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 1)
+    first.exercises.build(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+    second = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    lines = workout_as_text(workout).split("\n")
+
+    assert_equal 2, lines.count('Rest 1 minute')
+    assert_equal '400 meter Run', lines[lines.index('Rest 1 minute') - 1]
+    assert_equal 'Rest 1 minute', lines.last
   end
 
   test 'renders set-based lifting text as a collapsed rep-scheme line' do

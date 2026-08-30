@@ -134,6 +134,88 @@ class WorkoutTest < ActiveSupport::TestCase
     assert_not_predicate workout, :segmented_total_reps?
   end
 
+  test 'counts an identical block group repeated back to back as that many segment-group rounds' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup squat].each_with_index do |movement, block|
+        segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60,
+                                         position: (round * 3) + block + 1)
+        segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    assert_equal 2, workout.segment_group_rounds
+  end
+
+  test 'still counts the repeat when the extractor drops rest_seconds on the last block of the group' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    6.times do |i|
+      movement = %i[pullup pushup squat][i % 3]
+      # The final segment of the last round has no trailing rest -- the LLM routinely omits it.
+      segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180,
+                                       rest_seconds: (i == 5 ? nil : 60), position: i + 1)
+      segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+      segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+    end
+
+    assert_equal 2, workout.segment_group_rounds
+  end
+
+  test 'counts non-repeating distinct blocks as a single segment-group round' do
+    workout = Workout.new(name: 'Windowed', score_type: :rep)
+    first = workout.segments.build(name: '0:00-5:00', time_seconds: 300, position: 1)
+    first.exercises.build(movement: movements(:row), position: 1, reps: 1, distance: 250, distance_unit: :meter)
+    second = workout.segments.build(name: '5:00-10:00', time_seconds: 300, position: 2)
+    second.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+
+    assert_equal 1, workout.segment_group_rounds
+  end
+
+  test 'counts a lone segment as a single segment-group round' do
+    workout = Workout.new(name: 'Solo', score_type: :rep)
+    workout.segments.build(time_seconds: 300, position: 1)
+
+    assert_equal 1, workout.segment_group_rounds
+  end
+
+  test 'collapses a repeated total-reps segment group to one pass for display' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup squat].each_with_index do |movement, block|
+        segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60,
+                                         position: (round * 3) + block + 1)
+        segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    assert_equal workout.segments.to_a.first(3), workout.distinct_segments
+  end
+
+  test 'keeps every segment for display when there is no repeated group' do
+    workout = Workout.new(name: 'Windowed', score_type: :rep)
+    first = workout.segments.build(name: '0:00-5:00', time_seconds: 300, position: 1)
+    first.exercises.build(movement: movements(:pushup), position: 1, reps: 0)
+    second = workout.segments.build(name: '5:00-10:00', time_seconds: 300, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    assert_equal workout.segments.to_a, workout.distinct_segments
+  end
+
+  test 'log recording lists a repeated total-reps group only once' do
+    workout = Workout.create!(name: 'CF-260825', score_type: :rep)
+    6.times do |i|
+      segment = workout.segments.create!(name: 'On a 3-minute clock', time_seconds: 180,
+                                         rest_seconds: (i == 5 ? nil : 60), position: i + 1)
+      segment.exercises.create!(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+      segment.exercises.create!(movement: movements(%i[pullup pushup squat][i % 3]), position: 2, reps: 0)
+    end
+
+    assert_equal workout.segments.to_a.first(3).flat_map(&:exercises).map(&:id),
+                 workout.exercises_for_log_recording.map(&:id)
+  end
+
   test 'distance scoring takes precedence over legacy rep marker' do
     component = exercises(:amrap_mixed_row).score_component
 

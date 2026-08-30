@@ -42,6 +42,12 @@ module WorkoutFingerprint
     canonical
   end
 
+  # Structural signature of one segment -- the same content fields the fingerprint
+  # is built from -- for detecting a repeated segment group (see WorkoutSegmentGrouping).
+  def segment_content_signature(segment)
+    canonical_segment(segment)
+  end
+
   private
 
   # The fingerprint to persist, or nil when another workout already owns this content.

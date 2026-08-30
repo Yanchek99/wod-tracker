@@ -51,7 +51,7 @@ module WorkoutsHelper
   # convention for describing a workout as text, just written as lines instead of HTML.
   def workout_as_text(workout)
     lines = [workout.name, [team_objective(workout), workout_objective(workout)].compact.join(' ')]
-    workout.segments.each_with_index { |segment, index| lines.concat(segment_as_text_lines(workout, segment, index)) }
+    workout.distinct_segments.each_with_index { |segment, index| lines.concat(segment_as_text_lines(workout, segment, index)) }
     lines.concat(workout_as_text_trailer(workout)).compact_blank.join("\n")
   end
 
@@ -104,6 +104,9 @@ module WorkoutsHelper
   end
 
   def total_reps_clock_objective(workout)
+    rounds = workout.segment_group_rounds
+    return "#{pluralize rounds, 'round'} for total reps of" if rounds > 1
+
     "On a #{workout.segments.sum(&:time_seconds) / 60}-minute clock for total reps"
   end
 
@@ -131,7 +134,7 @@ module WorkoutsHelper
     objective = governing ? nil : segment_objective(segment, then_prefix: index.positive?)
     set_based_line = lifting_sets_line(workout) if governing
     exercise_lines = set_based_line ? [set_based_line] : segment.exercises.map { |exercise| measurable_message(exercise) }
-    [objective, *exercise_lines].compact
+    [objective, *exercise_lines, segment_rest(segment)].compact
   end
 
   def workout_as_text_trailer(workout)

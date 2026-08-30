@@ -32,7 +32,7 @@ module WorkoutExtraction
         type: 'object',
         properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
                                .merge(exercises: { type: 'array', items: exercise_schema }),
-        required: %w[name],
+        required: [],
         additionalProperties: false
       }.freeze
     end

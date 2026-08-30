@@ -199,6 +199,33 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'li', text: '21-15-9 of', count: 0
   end
 
+  test "renders a segment's trailing rest as its own line" do
+    workout = Workout.create!(name: 'CF-260825', score_type: :rep)
+    segment = workout.segments.create!(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 1)
+    segment.exercises.create!(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+
+    get workout_url(workout)
+
+    assert_select 'li', text: 'Rest 1 minute'
+  end
+
+  test 'shows a repeated total-reps group once under a rounds objective' do
+    workout = Workout.create!(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup squat].each_with_index do |movement, block|
+        segment = workout.segments.create!(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60,
+                                           position: (round * 3) + block + 1)
+        segment.exercises.create!(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.create!(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    get workout_url(workout)
+
+    assert_select 'span', text: '2 rounds for total reps of'
+    assert_select 'li', text: 'AMRAP in 3:00', count: 3
+  end
+
   test 'collapses a set-based lifting workout into a for-load rep-scheme line' do
     get workout_url(workouts(:back_squat_5x5))
 

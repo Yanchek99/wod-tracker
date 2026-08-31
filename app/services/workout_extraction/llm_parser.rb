@@ -80,6 +80,15 @@ module WorkoutExtraction
     LEADING_PRESCRIPTION_LINE = /\A#{PRESCRIPTION_VALUE_PATTERN}\s+.+\s+x\s*\d+\z/i
     REORDERED_PRESCRIPTION_LINE = /\A\d+\s*x\s*#{PRESCRIPTION_VALUE_PATTERN}\s+.+\z/i
 
+    # CrossFit states a shuttle run's length as one leg out and one leg back ("One shuttle run
+    # is 25 feet down and 25 feet back"); the per-rep distance is the two legs summed (50 ft).
+    # Recovered from the source text because that clause sits apart from the "10 shuttle runs"
+    # line and the LLM routinely leaves it only in the workout notes.
+    SHUTTLE_RUN_MOVEMENT = 'Shuttle Run'.freeze
+    SHUTTLE_RUN_UNIT = 'feet|foot|ft|meters?|metres?|m'.freeze
+    SHUTTLE_RUN_LEG_LENGTH =
+      /(\d+)\s*-?\s*(#{SHUTTLE_RUN_UNIT})\b[^.\n]*?\bdown\b[^.\n]*?(\d+)\s*-?\s*(?:#{SHUTTLE_RUN_UNIT})?\b[^.\n]*?\bback\b/i
+
     # logger is opt-in and silent by default (nil) so normal callers don't get unexpected output;
     # pass one (e.g. Logger.new($stdout)) to see progress or where a failure occurred.
     def self.call(text, date:, logger: nil) = new(text, date: date, logger: logger).parse
@@ -96,6 +105,7 @@ module WorkoutExtraction
 
       attrs = normalize_lifting_set_interval(attrs)
       workout = build_workout(attrs)
+      backfill_shuttle_run_distance(workout)
       LiftingLoadSentinelMarker.call(workout)
       validate_workout!(workout)
       workout
@@ -198,10 +208,40 @@ module WorkoutExtraction
     end
 
     def normalized_name(name)
-      return default_name if name.blank?
-      return default_name if prescription_line_name?(name)
+      return name if name.present? && !prescription_line_name?(name)
 
-      name
+      source_title || default_name
+    end
+
+    # The workout's title line, recovered from the source when the LLM drops it. CrossFit.com
+    # names its workouts ("Community Cup Workout 3", "Murph") on the first content line, above
+    # the format header. Returned only when that line reads as a title and a later line carries
+    # the workout's own format header, so a plain single-piece prose paste ("20 Thrusters for
+    # time") still falls through to the date-based name.
+    def source_title
+      lines = text.to_s.each_line.map(&:strip).compact_blank
+      candidate = lines.first.to_s
+      return unless title_like?(candidate)
+      return unless lines.drop(1).any? { |line| cf_format_header?(line) }
+
+      candidate
+    end
+
+    # The first content line reads as a workout's own name -- not a prescription, a recognized
+    # CrossFit format header, a "Part A:"-style label, or a movement -- and is short enough to be
+    # a title rather than a run-on sentence.
+    def title_like?(line)
+      return false if line.blank? || line.length > 60 || line.end_with?(':')
+      return false if prescription_line_name?(line) || cf_format_header?(line)
+
+      CfWod::MovementLookup.call(line).nil?
+    end
+
+    def cf_format_header?(line)
+      CfWod::WorkoutFormatClassifier.call(line)
+      true
+    rescue CfWod::WorkoutParser::UnparseableError
+      false
     end
 
     def prescription_line_name?(name)
@@ -248,6 +288,26 @@ module WorkoutExtraction
         attrs = normalize_sex_paired_attrs(exercise_attrs.except(:movement_name))
         segment.exercises.build(attrs.merge(movement: movement, position: index + 1))
       end
+    end
+
+    def backfill_shuttle_run_distance(workout)
+      prescription = shuttle_run_prescription
+      return unless prescription
+
+      workout.segments.flat_map(&:exercises).each do |exercise|
+        next unless exercise.movement&.name == SHUTTLE_RUN_MOVEMENT
+        next if exercise.distance.present?
+
+        exercise.assign_attributes(prescription)
+      end
+    end
+
+    def shuttle_run_prescription
+      match = text.to_s.match(SHUTTLE_RUN_LEG_LENGTH)
+      return unless match
+
+      unit = match[2].downcase.start_with?('m') ? :meter : :foot
+      { distance: match[1].to_i + match[3].to_i, distance_unit: unit }
     end
 
     # Despite the prompt's instruction, the LLM occasionally attaches a stray one-sided

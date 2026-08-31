@@ -38,21 +38,30 @@ module SegmentsHelper
 
   def timed_segment_prescription(segment)
     return max_reps_segment_prescription(segment) if segment.max_reps?
-    return "As many rounds as possible in #{segment_duration(segment)}" if segment.amrap?
+    return amrap_segment_prescription(segment) if segment.amrap?
     return "EMOM #{segment.time_seconds / 60}" if segment.emom?
 
     "#{segment.rounds} #{segment.time_seconds / 60}-minute rounds" if segment.timed_rounds?
   end
 
-  # In a repeated segment group (e.g. CF.com's "2 rounds for total reps of:" wrapping
-  # three "On a 3-minute clock:" blocks) the block name is either a bare source heading
-  # or an LLM-synthesized summary of its own movements -- either way redundant with the
-  # movements listed right below it. Reduce it to "AMRAP in M:SS". Named max-rep blocks
-  # that stand on their own (e.g. "0:00-5:00" windows of a shared clock) keep their label.
-  def max_reps_segment_prescription(segment)
-    return "AMRAP in #{clock_duration(segment.time_seconds)}" if segment.workout&.repeated_segment_group?
+  # A bare interval block -- one with no heading of its own, or one part of a repeated group
+  # already announced as "N rounds for total reps of" -- reads as "AMRAP in M:SS", since its
+  # name would only restate the timing or the movements listed right below it. A labeled
+  # standalone window ("0:00-5:00" on one shared clock) keeps the prose form.
+  def amrap_segment_prescription(segment)
+    return "AMRAP in #{clock_duration(segment.time_seconds)}" if bare_interval_block?(segment)
 
-    [segment.name.presence, "max reps in #{segment_duration(segment)}"].compact.join(': ')
+    "#{segment.name}: As many rounds as possible in #{segment_duration(segment)}"
+  end
+
+  def max_reps_segment_prescription(segment)
+    return "AMRAP in #{clock_duration(segment.time_seconds)}" if bare_interval_block?(segment)
+
+    "#{segment.name}: max reps in #{segment_duration(segment)}"
+  end
+
+  def bare_interval_block?(segment)
+    segment.name.blank? || segment.workout&.repeated_segment_group? || false
   end
 
   def segment_duration(segment)

@@ -9,12 +9,22 @@ class SegmentsHelperTest < ActionView::TestCase
     assert_equal 'Then, 10 rounds of', segment_objective(Segment.new(rounds: 10), then_prefix: true)
   end
 
-  test 'renders amrap segments with whole-minute durations in minutes' do
-    assert_equal 'As many rounds as possible in 10 minutes', segment_objective(Segment.new(time_seconds: 600))
+  test 'renders bare amrap interval blocks as an AMRAP clock' do
+    assert_equal 'AMRAP in 10:00', segment_objective(Segment.new(time_seconds: 600))
+    assert_equal 'AMRAP in 1:30', segment_objective(Segment.new(time_seconds: 90))
   end
 
-  test 'renders amrap segments with partial-minute durations in seconds' do
-    assert_equal 'As many rounds as possible in 90 seconds', segment_objective(Segment.new(time_seconds: 90))
+  test 'renders bare max-rep interval blocks as an AMRAP clock' do
+    segment = Segment.new(time_seconds: 240)
+    segment.exercises.build(reps: 0)
+
+    assert_equal 'AMRAP in 4:00', segment_objective(segment)
+    assert_equal 'Then, AMRAP in 4:00', segment_objective(segment, then_prefix: true)
+  end
+
+  test 'renders named amrap windows on a shared clock in prose' do
+    assert_equal '0:00-5:00: As many rounds as possible in 5 minutes',
+                 segment_objective(Segment.new(name: '0:00-5:00', time_seconds: 300))
   end
 
   test 'renders named max-rep segments with their time window' do

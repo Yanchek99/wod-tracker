@@ -19,6 +19,10 @@ module WorkoutExtraction
         "24/20 in") is a distance in inches, never a load: use female_distance/male_distance (or a
         single "distance") with distance_unit "inch". Do not put box height in female_load/male_load
         even though it looks like a sex-split load pattern.
+      - A wall-ball target height ("♀ 9-foot target / ♂ 10-foot target", "10-ft. target") is a
+        distance in feet: female_distance/male_distance (or a single "distance") with distance_unit
+        "foot". Keep BOTH sex-specific values when the source splits them, exactly as for a
+        sex-split load -- never collapse "♀ 9-foot / ♂ 10-foot" down to one number.
       - A shuttle run has a per-rep distance, stated as one leg out and back ("One shuttle run is
         25 feet down and 25 feet back" -> "distance": 50, "distance_unit": "foot"; sum the legs).
         Set it on the Shuttle Run exercise even when the length is in a separate sentence, and
@@ -71,6 +75,10 @@ module WorkoutExtraction
           time, not round count. Use "rep" for AMRAP/max-rep workouts scored by total reps, "round"
           only for AMRAP-style workouts actually scored by rounds completed, "weight" for max-load
           workouts, "calorie" for calorie-based workouts.
+        - "for max reps" / "for total reps" always means "rep", even with a fixed round count: a
+          workout like "3 rounds for max reps of:" (e.g. Fight Gone Bad) is "rep" with "rounds": 3,
+          NOT "time". "time" is only for workouts actually scored by elapsed time; do not let a
+          leading "N rounds" pull a max-reps workout to "time".
         - "interval" holds a rep scheme like "21-15-9" when the workout is an ascending or descending
           conditioning rep ladder across rounds; leave it out otherwise.
         - For load-scored lifting set schemes (e.g. "Back squat 5-5-5-5-5 reps" or
@@ -95,6 +103,12 @@ module WorkoutExtraction
           each also holding 10 shuttle runs and 21 toes-to-bars, gets "reps": 0 on the
           snatch/overhead-squat exercise of all three segments while the shuttle runs stay 10 and
           the toes-to-bars stay 21.
+        - A time-boxed station with no rep target has the same "0" sentinel even without a "Max"
+          prefix: in "3 rounds for max reps of: 1 minute of wall-ball shots ... 1 minute of rowing
+          for calories", every station is a minute-long max effort -- set "reps" 0 on each (or
+          "calories" 0 for a calorie-scored movement like Row), never 1. The "= 1" placeholder is
+          only for an exercise driven by an explicit interval rep scheme (a "21-15-9" ladder), not
+          for a plain timed station.
         - "rounds" is a fixed round count (e.g. "5 rounds for time"); leave it out for AMRAPs, single-round
           workouts, or interval-ladder workouts (use "interval" instead).
         - "time" is a time cap or AMRAP duration in seconds; "time_cap" is a "MM:SS" string cap on a
@@ -106,6 +120,11 @@ module WorkoutExtraction
           one list of movements (e.g. "6 rounds of: 1 minute rowing, 1 minute burpees, 1 minute
           rest") is NOT multiple parts -- that's a flat list of top-level exercises, each with its
           own "duration_seconds"; do not wrap them in a segment just to hold a shared note.
+        - A "Rest N minute(s)" line inside such a per-round list is one of those top-level
+          exercises, not something to drop: emit a "Rest" exercise in list order with
+          "duration_seconds" set ("Rest 1 minute" -> movement_name "Rest", duration_seconds 60).
+          This applies even when the rest sits at the end of the round (e.g. Fight Gone Bad's
+          "1 minute of rowing ... Rest 1 minute") -- keep the Rest exercise.
         - IMPORTANT, and easy to get wrong -- contrast this with the case directly above: when an
           outer round count instead wraps several already-distinct, separately-timed parts (e.g.
           "2 rounds for total reps of:" followed by three different "On a 3-minute clock:" blocks,

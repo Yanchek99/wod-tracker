@@ -103,6 +103,39 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10))).workout
   end
 
+  test 'a scraped workout whose name matches a catalogued benchmark resolves to that record instead of duplicating it' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    extracted = Workout.new(name: workouts(:fran).name, score_type: :rep)
+
+    assert_no_difference('Workout.count') do
+      stub_llm_parser(extracted) do
+        perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+      end
+    end
+
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
+    assert_equal workouts(:fran), schedule.workout
+    assert_equal 0, WorkoutImport.count
+  end
+
+  test 'a scraped workout whose name is not in the catalogue is persisted as a new Workout' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    extracted = Workout.new(name: 'Uncatalogued Grinder', score_type: :rep)
+
+    assert_difference('Workout.count', 1) do
+      stub_llm_parser(extracted) do
+        perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+      end
+    end
+
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
+    assert_equal 'Uncatalogued Grinder', schedule.workout.name
+  end
+
   test 'a rest day is skipped: no Workout, Schedule, or WorkoutImport row' do
     stub_cf_wod_redirect('2026/07/02', '260702')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260702})

@@ -18,7 +18,7 @@ fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
                   'The clock does not reset or stop between exercises. ' \
                   'On the call of "rotate," the athlete(s) must move to the next station immediately for a good score. ' \
                   'One point is given for each rep, except on the rower where each calorie is 1 point.'
-  segment = workout.segments.build(rounds: 3, time_seconds: 1080, position: 1)
+  segment = workout.segments.build(rounds: 3, position: 1)
   segment.exercises.build(movement: wall_ball_shot, position: 1, reps: 0, duration_seconds: 60,
                           female_load: 14, male_load: 20, load_unit: :lb, female_distance: 9, male_distance: 10,
                           distance_unit: :foot)
@@ -27,7 +27,7 @@ fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
   segment.exercises.build(movement: box_jump, position: 3, reps: 0, duration_seconds: 60, distance: 20, distance_unit: :inch)
   segment.exercises.build(movement: push_press, position: 4, reps: 0, duration_seconds: 60,
                           female_load: 55, male_load: 75, load_unit: :lb)
-  segment.exercises.build(movement: row, position: 5, reps: 1, calories: 0, duration_seconds: 60)
+  segment.exercises.build(movement: row, position: 5, calories: 0, duration_seconds: 60)
   segment.exercises.build(movement: rest, position: 6, reps: 1, duration_seconds: 60)
 end
 

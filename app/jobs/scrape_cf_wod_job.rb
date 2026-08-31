@@ -87,7 +87,21 @@ class ScrapeCfWodJob < ApplicationJob
   def persist(workout)
     return workout if workout.persisted?
 
+    catalog = catalog_workout_named(workout.name)
+    return catalog if catalog
+
     workout.save!
     workout.absorb_duplicate!
+  end
+
+  # A scraped benchmark (e.g. "Fight Gone Bad") carries its catalog name verbatim, and its
+  # prescription is already modeled under that name. Resolve to the existing record rather than
+  # persisting a structurally different re-derivation as a duplicate -- content_fingerprint dedup
+  # can't catch that, since two valid models of one workout fingerprint differently. This gives
+  # the LLM parser the catalog-name match CfWod::WorkoutParser#find_named_workout already does for
+  # the heuristic path (a no-op there -- that parser returns the persisted catalog record itself).
+  def catalog_workout_named(name)
+    name = name.to_s.strip
+    Workout.find_by(name: name) if name.present?
   end
 end

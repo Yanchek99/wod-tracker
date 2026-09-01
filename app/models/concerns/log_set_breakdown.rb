@@ -17,6 +17,7 @@ module LogSetBreakdown
     return [] unless exercise
     return exercise.segment.interval_scheme.split('-').map(&:to_i) if exercise.reps_defined_by_interval?
     return ladder_round_sizes_for(exercise) if exercise.ladder_participant?
+    return [exercise.reps] * exercise.segment.rounds if fixed_rounds_multipliable?(exercise)
 
     amrap_round_sizes_for(index)
   end

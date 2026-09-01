@@ -445,6 +445,56 @@ class LogTest < ActiveSupport::TestCase
     assert_equal movement_log.reps, movement_log.set_breakdown_target_reps
   end
 
+  test 'computes a fixed-rounds set_breakdown target by multiplying per-round reps across all rounds' do
+    workout = Workout.new(name: 'Barbara', score_type: :time)
+    segment = workout.segments.build(rounds: 5, position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 20)
+    segment.exercises.build(movement: movements(:pushup), position: 2, reps: 30)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: 900)
+    log.build_movement_logs
+
+    pullup_log = log.movement_logs.find { |ml| ml.movement == movements(:pullup) }
+    pushup_log = log.movement_logs.find { |ml| ml.movement == movements(:pushup) }
+    pullup_log.set_breakdown_text = '20,20,20,20,20'
+    pushup_log.set_breakdown_text = '15,15,20,20,15,25'
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+    assert_equal 100, pullup_log.set_breakdown_target_reps
+    assert_equal 150, pushup_log.set_breakdown_target_reps
+    assert_equal [[20], [20], [20], [20], [20]], pullup_log.set_breakdown_rounds
+  end
+
+  test 'rejects a fixed-rounds set_breakdown that does not match reps times rounds' do
+    workout = Workout.new(name: 'Barbara', score_type: :time)
+    segment = workout.segments.build(rounds: 5, position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 20)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: 900)
+    log.build_movement_logs
+
+    pullup_log = log.movement_logs.first
+    pullup_log.set_breakdown_text = '20,20,20' # nowhere near 5 rounds of 20
+
+    assert_not log.valid?
+    assert_includes pullup_log.errors[:set_breakdown], 'must sum to reps'
+  end
+
+  test 'does not multiply a fixed-rounds target for a reps <= 1 movement repeated each round' do
+    workout = Workout.new(name: 'Brenton', score_type: :time)
+    segment = workout.segments.build(rounds: 5, position: 1)
+    segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 30, distance_unit: :meter)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: 900)
+    log.build_movement_logs
+
+    run_log = log.movement_logs.first
+    assert_equal 1, run_log.set_breakdown_target_reps
+  end
+
   test 'computes an AMRAP target across a repeating ascending-rung ladder, attributing a partial second lap in position order' do
     # Mirrors Open 14.3: an ascending deadlift ladder (10, 15, 20, 25, 30, 35 reps) paired with
     # fixed 15-rep box jumps each rung -- 12 explicit exercise positions that repeat as a whole

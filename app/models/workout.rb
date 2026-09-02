@@ -1,9 +1,13 @@
 class Workout < ApplicationRecord
+  include IntendedStimulus
   include WorkoutFingerprint
   include WorkoutGoverningSegment
   include WorkoutPositionReservation
   include WorkoutScoring
   include WorkoutSegmentGrouping
+
+  # Columns intended_stimulus_for can resolve; the whole-workout expected-result range.
+  STIMULUS_FIELDS = %w[stimulus_range_low stimulus_range_high].freeze
 
   has_many :segments, dependent: :destroy
   has_many :exercises, through: :segments
@@ -23,6 +27,8 @@ class Workout < ApplicationRecord
             numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :team_size,
             numericality: { only_integer: true, greater_than: 1 }, allow_nil: true
+  validates :stimulus_range_low, :stimulus_range_high,
+            numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
 
   def self.search_by_name(name)
     return all unless name

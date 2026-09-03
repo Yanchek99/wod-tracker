@@ -24,9 +24,12 @@
     .col-12
       = f.label :notes, class: 'form-label'
       = f.rich_text_area :notes
+  hr
+  h3 Intended stimulus
+  .form-inputs.row.g-2
     .col-12
-      .workout-form__field-label = field_label.call(:intended_stimulus_notes, 'Intended stimulus', 'the effect the workout should produce — the target a coach scales toward')
-      = f.input :intended_stimulus_notes, as: :text, label: false, hint: false, input_html: { rows: 3 }
+      = f.label :intended_stimulus_notes, 'Notes', class: 'form-label mb-0'
+      = f.input :intended_stimulus_notes, as: :text, label: false, hint: 'The effect the workout should produce — the target a coach scales toward. Not a prescribed pace.', input_html: { rows: 3 }
     .col-6.col-md-3
       .workout-form__field-label = field_label.call(:stimulus_range_low, 'Expected result (low)', "in the workout's score unit: seconds, total reps, or rounds")
       = f.input :stimulus_range_low, label: false, hint: false

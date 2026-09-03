@@ -89,6 +89,33 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_equal 0, WorkoutImport.count
   end
 
+  test 'keeps the scraped Stimulus and Strategy prose as the workout intended_stimulus_notes' do
+    stub_cf_wod_redirect('2025/06/18', '250618')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
+      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
+
+    stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
+    end
+
+    notes = Workout.find_by!(name: 'CF-250618').intended_stimulus_notes
+    assert_includes notes, 'four sprint-style efforts'
+    assert_includes notes, 'lighter side'
+  end
+
+  test 'does not overwrite an existing catalog workout stimulus notes on scrape' do
+    stub_cf_wod_redirect('2025/06/18', '250618')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
+      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
+    workouts(:fran).update!(intended_stimulus_notes: 'Curated Fran stimulus.')
+
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
+    end
+
+    assert_equal 'Curated Fran stimulus.', workouts(:fran).reload.intended_stimulus_notes
+  end
+
   test 're-running the same date is idempotent: no duplicate Schedule or Workout' do
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
       .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))

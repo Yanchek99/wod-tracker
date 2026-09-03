@@ -54,6 +54,7 @@ class ScrapeCfWodJob < ApplicationJob
     return if page.rest_day?
 
     workout = extract_workout(page, date, parser)
+    attach_intended_stimulus(workout, page)
     workout = persist(workout)
     Program.find_by!(name: 'Crossfit.com')
            .schedules.find_or_initialize_by(posted_at: posted_at_for(date))
@@ -82,6 +83,17 @@ class ScrapeCfWodJob < ApplicationJob
     PARSERS.fetch(parser).call(page, date)
   rescue *PARSER_ERRORS.fetch(parser)
     PARSERS.fetch(FALLBACKS.fetch(parser)).call(page, date)
+  end
+
+  # The "Stimulus and Strategy" paragraph is parsed into WodPage#description, but neither
+  # parser consumes it. Keep the raw prose as the workout's intended-stimulus source of truth
+  # (the structured stimulus fields are populated separately, later). Only for a freshly
+  # derived workout -- never overwrite an existing catalog record's curated notes.
+  def attach_intended_stimulus(workout, page)
+    return unless workout.new_record?
+    return if workout.intended_stimulus_notes.present? || page.description.blank?
+
+    workout.intended_stimulus_notes = page.description
   end
 
   def persist(workout)

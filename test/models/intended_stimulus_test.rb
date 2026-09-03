@@ -84,4 +84,20 @@ class IntendedStimulusTest < ActiveSupport::TestCase
 
     assert_not_predicate exercise, :valid?
   end
+
+  test 'stimulus columns round-trip through nested workout/segment/exercise attributes' do
+    workout = workouts(:fran)
+
+    workout.update!(
+      stimulus_range_low: 180, stimulus_range_high: 300, stimulus_source: :authored,
+      segments_attributes: [{ id: workout.segments.first.id,
+                              exercises_attributes: [{ id: exercises(:fran_thruster).id,
+                                                       stimulus_loading: '', stimulus_sets_max: 2 }] }]
+    )
+
+    assert_equal [180, 300, 'authored'],
+                 workout.reload.values_at(:stimulus_range_low, :stimulus_range_high, :stimulus_source)
+    assert_nil exercises(:fran_thruster).reload.stimulus_loading
+    assert_equal 2, exercises(:fran_thruster).stimulus_sets_max
+  end
 end

@@ -259,6 +259,36 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Break up the pull-ups early.', @workout.reload.notes.to_plain_text.strip
   end
 
+  test 'update persists the intended stimulus and stamps its source authored' do
+    patch workout_url(@workout), params: { workout: {
+      name: @workout.name, score_type: @workout.score_type,
+      intended_stimulus_notes: 'Sprint the thrusters; keep the pull-ups in big sets.',
+      stimulus_range_low: 180, stimulus_range_high: 300,
+      segments_attributes: {
+        '0' => { id: @workout.segments.first.id, position: 1, interval_scheme: '21-15-9', exercises_attributes: {
+          '0' => { id: exercises(:fran_thruster).id, movement_id: movements(:thruster).id, position: 1,
+                   stimulus_loading: 'moderate', stimulus_sets_max: 1, stimulus_duration_max: '' }
+        } }
+      }
+    } }
+
+    assert_redirected_to workout_url(@workout)
+    assert_equal [180, 300, 'authored'],
+                 @workout.reload.values_at(:stimulus_range_low, :stimulus_range_high, :stimulus_source)
+    assert_equal 'Sprint the thrusters; keep the pull-ups in big sets.', @workout.intended_stimulus_notes
+    assert_equal %w[moderate authored],
+                 exercises(:fran_thruster).reload.values_at(:stimulus_loading, :stimulus_source)
+    assert_equal 1, exercises(:fran_thruster).stimulus_sets_max
+    assert_nil exercises(:fran_thruster).stimulus_duration_max
+  end
+
+  test 'update leaves the stimulus source unset when no stimulus fields are submitted' do
+    patch workout_url(@workout), params: { workout: { name: @workout.name, stimulus_range_low: '', stimulus_range_high: '' } }
+
+    assert_redirected_to workout_url(@workout)
+    assert_nil @workout.reload.stimulus_source
+  end
+
   test 'submitting a blank interval field keeps a timed-rounds segment timed-rounds' do
     workout = Workout.create!(name: 'Timed Rounds Update Test', score_type: :time)
     segment = workout.segments.create!(rounds: 4, time_seconds: 1500, position: 1)

@@ -168,6 +168,16 @@ class WorkoutsController < ApplicationController
   end
 
   def submitted_exercise_attributes(attributes)
-    Array(attributes[:segments_attributes]).flat_map { |segment| Array(segment[:exercises_attributes]) }
+    nested_children(attributes[:segments_attributes])
+      .flat_map { |segment| nested_children(segment[:exercises_attributes]) }
+  end
+
+  # Nested attributes arrive either as an array or as a "0","1",... keyed hash
+  # (fields_for's default, and what a real form submits); normalize both to the
+  # list of child param hashes so callers can iterate and mutate them.
+  def nested_children(nested)
+    return [] if nested.blank?
+
+    nested.respond_to?(:values) ? nested.values : nested
   end
 end

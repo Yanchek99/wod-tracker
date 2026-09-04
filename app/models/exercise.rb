@@ -2,10 +2,16 @@ class Exercise < ApplicationRecord
   include ExerciseDuration
   include ExercisePositionValidation
   include ExercisePrescription
+  include IntendedStimulus
   include RefreshesWorkoutContentKey
+
+  # Columns intended_stimulus_for can resolve; the per-movement stimulus guidance.
+  STIMULUS_FIELDS = %w[stimulus_loading stimulus_sets_max stimulus_duration_max].freeze
 
   belongs_to :movement
   belongs_to :segment
+
+  enum :stimulus_loading, IntendedStimulus::LOADINGS, prefix: :stimulus_loading
 
   # No direct workout_id column or association anymore -- segment is the sole owner of workout
   # membership. Kept private since it's an implementation detail for ladder_participant?,
@@ -20,6 +26,7 @@ class Exercise < ApplicationRecord
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :duration_seconds, :female_load, :male_load,
             :distance, :female_distance, :male_distance, :female_calories, :male_calories,
+            :stimulus_sets_max, :stimulus_duration_max,
             numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :distance_units_per_rep,
             numericality: { only_integer: true, greater_than: 0 },

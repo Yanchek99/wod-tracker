@@ -22,6 +22,12 @@ class ScrapeCfWodJob < ApplicationJob
   # The other strategy to fall back to when the primary one fails to extract a workout.
   FALLBACKS = { llm: :heuristic, heuristic: :llm }.freeze
 
+  # CfWod::PageParser::SECTION_MARKERS classifies a paragraph into WodPage#description by its
+  # leading <strong> heading, but (deliberately -- see CfWod::FetcherTest) keeps that heading text
+  # in the paragraph itself. Strip it back off here: it's a section label from the source page's
+  # layout, not part of the coach's own prose.
+  STIMULUS_HEADING_PATTERN = /\AStimulus and Strategy:?\s*/i
+
   retry_on CfWod::Fetcher::FetchError, wait: :polynomially_longer, attempts: 3 do |job, error|
     WorkoutImport.log_failure!(job.arguments.first, error.message)
   end
@@ -54,7 +60,9 @@ class ScrapeCfWodJob < ApplicationJob
     return if page.rest_day?
 
     workout = extract_workout(page, date, parser)
+    attach_intended_stimulus(workout, page)
     workout = persist(workout)
+    extract_structured_stimulus(workout)
     Program.find_by!(name: 'Crossfit.com')
            .schedules.find_or_initialize_by(posted_at: posted_at_for(date))
            .update!(workout: workout)
@@ -82,6 +90,30 @@ class ScrapeCfWodJob < ApplicationJob
     PARSERS.fetch(parser).call(page, date)
   rescue *PARSER_ERRORS.fetch(parser)
     PARSERS.fetch(FALLBACKS.fetch(parser)).call(page, date)
+  end
+
+  # The "Stimulus and Strategy" paragraph is parsed into WodPage#description, but neither
+  # parser consumes it. Keep the raw prose as the workout's intended-stimulus source of truth
+  # (the structured stimulus fields are populated separately, later). Only for a freshly
+  # derived workout -- never overwrite an existing catalog record's curated notes.
+  def attach_intended_stimulus(workout, page)
+    return unless workout.new_record?
+    return if workout.intended_stimulus_notes.present? || page.description.blank?
+
+    workout.intended_stimulus_notes = page.description.sub(STIMULUS_HEADING_PATTERN, '')
+  end
+
+  # Structure the raw "Stimulus and Strategy" prose into the workout's stimulus_range_* and its
+  # exercises' stimulus_loading/sets_max/duration_max via one LLM call. Best-effort: a failure
+  # here never fails the import, and a workout that already has extracted/authored values is
+  # skipped so re-scrapes don't re-spend the call.
+  def extract_structured_stimulus(workout)
+    return if workout.intended_stimulus_notes.blank?
+    return if workout.stimulus_source.present? || workout.stimulus_range_low.present? || workout.stimulus_range_high.present?
+
+    WorkoutExtraction::IntendedStimulusParser.call(workout)
+  rescue WorkoutExtraction::IntendedStimulusParser::ExtractionError => e
+    Rails.logger.warn("[ScrapeCfWodJob] intended-stimulus extraction skipped: #{e.message}")
   end
 
   def persist(workout)

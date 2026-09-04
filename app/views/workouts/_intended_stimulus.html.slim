@@ -1,0 +1,10 @@
+- range = intended_stimulus_range(workout)
+- if range || workout.intended_stimulus_notes.present?
+  .intended-stimulus.mb-3
+    b Intended stimulus
+    - if range
+      p.mb-1
+        | Expected:&nbsp;
+        span = range
+    - if workout.intended_stimulus_notes.present?
+      .notes = simple_format(workout.intended_stimulus_notes)

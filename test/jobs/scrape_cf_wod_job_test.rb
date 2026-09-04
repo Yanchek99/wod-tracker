@@ -101,8 +101,23 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
 
     workout = Workout.find_by!(name: 'CF-250618')
     assert_includes workout.intended_stimulus_notes, 'four sprint-style efforts'
+    assert_not_includes workout.intended_stimulus_notes, 'Stimulus and Strategy'
     assert_equal [300, 480, 'extracted'],
                  workout.values_at(:stimulus_range_low, :stimulus_range_high, :stimulus_source)
+  end
+
+  test 'strips the source page\'s "Stimulus and Strategy" section label from the stored prose' do
+    stub_cf_wod_redirect('2025/06/18', '250618')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
+      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
+    stub_stimulus_extraction(range_low: nil, range_high: nil, movements: [])
+
+    stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
+    end
+
+    notes = Workout.find_by!(name: 'CF-250618').intended_stimulus_notes
+    assert_match(/\AToday.s workout is four sprint-style efforts/, notes)
   end
 
   test 'a failed structured-stimulus extraction does not fail the import' do
@@ -117,6 +132,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
 
     workout = Workout.find_by!(name: 'CF-250618')
     assert_includes workout.intended_stimulus_notes, 'four sprint-style efforts'
+    assert_not_includes workout.intended_stimulus_notes, 'Stimulus and Strategy'
     assert_nil workout.stimulus_range_high
     assert_equal 0, WorkoutImport.count
   end

@@ -22,6 +22,12 @@ class ScrapeCfWodJob < ApplicationJob
   # The other strategy to fall back to when the primary one fails to extract a workout.
   FALLBACKS = { llm: :heuristic, heuristic: :llm }.freeze
 
+  # CfWod::PageParser::SECTION_MARKERS classifies a paragraph into WodPage#description by its
+  # leading <strong> heading, but (deliberately -- see CfWod::FetcherTest) keeps that heading text
+  # in the paragraph itself. Strip it back off here: it's a section label from the source page's
+  # layout, not part of the coach's own prose.
+  STIMULUS_HEADING_PATTERN = /\AStimulus and Strategy:?\s*/i
+
   retry_on CfWod::Fetcher::FetchError, wait: :polynomially_longer, attempts: 3 do |job, error|
     WorkoutImport.log_failure!(job.arguments.first, error.message)
   end
@@ -94,7 +100,7 @@ class ScrapeCfWodJob < ApplicationJob
     return unless workout.new_record?
     return if workout.intended_stimulus_notes.present? || page.description.blank?
 
-    workout.intended_stimulus_notes = page.description
+    workout.intended_stimulus_notes = page.description.sub(STIMULUS_HEADING_PATTERN, '')
   end
 
   # Structure the raw "Stimulus and Strategy" prose into the workout's stimulus_range_* and its

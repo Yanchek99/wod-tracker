@@ -24,7 +24,7 @@
     "esbuild": "^0.28.2",
     "flatpickr": "^4.6.13",
     "local-time": "^3.0.3",
-    "sass": "^1.103.1",
+    "sass": "^1.104.0",
     "sortablejs": "^1.15.7",
     "tom-select": "^2.6.2",
     "trix": "^2.1.19"

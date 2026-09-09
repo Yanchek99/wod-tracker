@@ -36,3 +36,10 @@ plugin :tmp_restart
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV['PIDFILE'] if ENV['PIDFILE']
+
+# Process jobs in-process on staging and PR environments (no `worker` service).
+# Skip recurring so only production's worker runs the scheduled scrape.
+if ENV['SOLID_QUEUE_IN_PUMA']
+  ENV['SOLID_QUEUE_SKIP_RECURRING'] ||= 'true'
+  plugin :solid_queue
+end

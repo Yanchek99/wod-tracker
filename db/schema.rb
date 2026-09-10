@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
     t.integer "position", null: false
     t.integer "reps"
     t.bigint "segment_id", null: false
+    t.integer "stimulus_duration_max"
+    t.integer "stimulus_loading"
+    t.integer "stimulus_sets_max"
+    t.integer "stimulus_source"
     t.datetime "updated_at", precision: nil, null: false
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
     t.index ["position", "segment_id"], name: "index_exercises_on_position_and_segment_id", unique: true
@@ -303,6 +307,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "stimulus_predictions", force: :cascade do |t|
+    t.decimal "confidence", precision: 4, scale: 3
+    t.datetime "created_at", null: false
+    t.boolean "current", default: false, null: false
+    t.bigint "exercise_id"
+    t.string "model_version", null: false
+    t.integer "source", null: false
+    t.integer "stimulus_duration_max"
+    t.integer "stimulus_loading"
+    t.integer "stimulus_range_high"
+    t.integer "stimulus_range_low"
+    t.integer "stimulus_sets_max"
+    t.datetime "updated_at", null: false
+    t.bigint "workout_id"
+    t.index ["exercise_id", "model_version", "created_at"], name: "index_stimulus_predictions_exercise_history"
+    t.index ["exercise_id"], name: "index_stimulus_predictions_current_exercise", where: "current"
+    t.index ["workout_id", "model_version", "created_at"], name: "index_stimulus_predictions_workout_history"
+    t.index ["workout_id"], name: "index_stimulus_predictions_current_workout", where: "current"
+    t.check_constraint "num_nonnulls(workout_id, exercise_id) = 1", name: "stimulus_predictions_exactly_one_target"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.bigint "program_id"
@@ -362,9 +387,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
   create_table "workouts", force: :cascade do |t|
     t.string "content_key"
     t.datetime "created_at", precision: nil, null: false
+    t.text "intended_stimulus_notes"
     t.integer "ladder_step"
     t.string "name"
     t.integer "score_type", null: false
+    t.integer "stimulus_range_high"
+    t.integer "stimulus_range_low"
+    t.integer "stimulus_source"
     t.integer "team_size"
     t.integer "time_cap_seconds"
     t.datetime "updated_at", precision: nil, null: false
@@ -390,6 +419,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_120000) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "stimulus_predictions", "exercises"
+  add_foreign_key "stimulus_predictions", "workouts"
   add_foreign_key "subscriptions", "programs"
   add_foreign_key "subscriptions", "users"
   add_foreign_key "sugarwod_imports", "users"

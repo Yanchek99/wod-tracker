@@ -1,5 +1,101 @@
 # Decisions
 
+## 2026-09-02: Model Intended Stimulus As Row Attributes Plus A Predictions Table
+
+`terminology.md` defines a workout's intended stimulus from the L1/L2 guides — the
+combination of movement functions, loading, time frame, and volume of repetitions
+that a coach scales toward — and the "Document Programming Concepts Before
+Modeling Them" decision below flags it as real but not yet modeled. This decision
+fixes its schema (#1884). It is proposed, not implemented.
+
+Two of the L2 guide's four components are already recoverable and are not stored
+again: movement functions come from `Movement` function roles, and volume comes
+from the prescription (reps, rounds, distance, calories). The two that are not
+recoverable get explicit storage:
+
+- Loading intent, per movement: `exercises.stimulus_loading`, an integer enum of
+  `unloaded` / `light` / `moderate` / `heavy`. It is the coach's loading target
+  under the Programming Basics consecutive-reps lens (light around 20+ unbroken
+  reps, moderate 6-20, heavy 1-5), distinct from the prescribed `load` value.
+- Time frame, per workout: `workouts.stimulus_range_low` and
+  `workouts.stimulus_range_high`, integers read in the workout's own `score_type`
+  unit — seconds for a For Time workout, total reps for a fixed-rep AMRAP, rounds
+  for a rounds-scored AMRAP. A bare ceiling sets only the high bound; a point
+  estimate sets both equal.
+
+Per movement, two more optional columns capture the rest of the published
+per-movement guidance: `exercises.stimulus_sets_max` (an intended maximum number
+of unbroken sets; one means unbroken) and `exercises.stimulus_duration_max` (a
+ceiling in seconds for a single effort, for example a 400-meter run in two
+minutes).
+
+CrossFit publishes the stimulus as a labeled "Stimulus and Strategy" paragraph
+separate from the workout description. That prose is the source of truth and is
+kept in `workouts.intended_stimulus_notes` (text). The structured columns are its
+extracted, queryable projection — populated by an LLM extraction pass over the
+prose (a follow-up issue), by a coach authoring directly, or by a model. Every
+row that has structured values carries `stimulus_source`, an integer enum of
+`authored` (a coach entered them) or `extracted` (pulled from the prose), as one
+value for the whole row rather than per field. Editing an `extracted` value
+re-stamps the row `authored`.
+
+Model- and rule-generated values are never written to those columns. They accrue
+in a `stimulus_predictions` table: `workout_id` xor `exercise_id` (a check
+constraint enforces exactly one), `source` (`derived` for a rule-based estimate,
+`predicted` for a model), `model_version` (string), an optional `confidence`
+(numeric, 0.000-1.000), the same value columns as the target level
+(`stimulus_range_low` / `stimulus_range_high` for a workout row,
+`stimulus_loading` / `stimulus_sets_max` / `stimulus_duration_max` for an
+exercise row), and a `current` boolean marking the row to use when the target has
+no authored or extracted value. The table is append-only: predictions are
+retained as history and `current` moves as new ones arrive. Indexes: a partial
+index on `workout_id` where `current`, a partial index on `exercise_id` where
+`current`, and `(workout_id, model_version, created_at)` /
+`(exercise_id, model_version, created_at)` for history and evaluation scans.
+
+A value resolves as the authored/extracted column when present, otherwise the
+`current` prediction row (carrying its `confidence`), otherwise nil. A coach's
+authored value always wins, and predictions stay comparable against it so a model
+can be scored on how close it came.
+
+All new columns on `workouts` and `exercises` are excluded from the content
+fingerprint (`WorkoutFingerprint` / `RefreshesWorkoutContentKey`). This refines
+the "Repeat/Benchmark Workouts Are One Workout On Many Schedules" decision, which
+names intended stimulus as part of workout identity: the structural fields that
+already feed the fingerprint — movements, loads, rep scheme, structure, volume —
+are what determine the stimulus, and the new columns are a derived annotation on
+top, treated like `notes`, which is already excluded. Two workouts with identical
+structure but different hand-tuned expected ranges are the same workout, and a
+predicted range cannot sit in a key meant to be stable.
+
+`time_cap_seconds` is unchanged and orthogonal: it is a hard boundary (the
+athlete stops), while `stimulus_range_*` is the expected finish, normally inside
+the cap for a task-priority workout. That ordering is coaching guidance, not a
+database constraint, consistent with `programming.md` treating time buckets as
+planning guidelines rather than validation rules. The whole-workout range and the
+per-movement columns are independent: the range is authored or extracted
+directly, not summed from the per-movement values. A future rule-based "estimate
+each movement, sum the round, add transitions" pass (the single-workout workflow
+in `programming.md`) writes a `derived` prediction row rather than overwriting an
+authored range.
+
+Rejected alternatives: a polymorphic `intended_stimuli` table keyed by
+`(target_type, target_id)` — every read becomes a polymorphic `OR` with no
+foreign key and needs `DISTINCT ON` to pick the live row; and two parallel
+per-level tables — real foreign keys, but two extra indexed queries on the
+workout page for two near-duplicate concerns. Columns on the rows the page
+already loads, with prediction provenance isolated in one append-only table,
+keeps the common read free and confines the source/confidence/version shape to
+the batch paths that use it.
+
+Not modeled: per-field provenance (the row-level `stimulus_source` is
+deliberately coarse), history of authored values (only predictions are
+versioned), `Segment`-level stimulus (not seen in sources; the same columns can
+be added to `segments` later if it appears), and a movement-level nominal cycle
+time (load-, volume- and athlete-dependent, i.e. pace, which the stimulus
+definition excludes; if a future `derived` estimator needs it, it attaches to
+`Movement` then).
+
 ## 2026-08-12: Set Breakdown Is A Flat, Ordered Reps-Per-Set Array On MovementLog
 
 `MovementLog` had no way to record how a logged rep count was actually performed — e.g.

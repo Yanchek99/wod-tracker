@@ -20,10 +20,23 @@ module PersonalRecordsHelper
   # reps message (e.g. "10 Rows (20 calories / 135 lbs)"). A pure distance/duration test with no
   # reps has nothing for those parens to trail, so render the bare metrics instead.
   def record_msg(movement_log)
-    reps_msg = measurable_reps_msg(movement_log)
+    reps_msg = verified_reps_msg(movement_log)
     return "#{reps_msg} #{measurable_additional_metrics(movement_log)}".strip if reps_msg
 
     additional_metrics(movement_log).map { |metric| metric_unit_msg(metric) }.join(' / ')
+  end
+
+  # The reps portion of a record row, counted from MovementLog#verified_unbroken_reps rather than
+  # the raw rep metric -- a record only reaches this list once that verified value backs it (see
+  # PersonalRecordsController#unverified_reps_claim?), so the row must show the verified rep-max,
+  # not the possibly WOD-aggregated reps total (a 15-12-9 workout logs reps: 36 with
+  # set_breakdown: [15, 12, 9], and the record is "15", not "36"). nil when no reps were recorded,
+  # so record_msg falls through to the bare distance/duration metrics.
+  def verified_reps_msg(movement_log)
+    reps = movement_log.verified_unbroken_reps
+    return if reps.blank?
+
+    metric_unit_msg(Metric.new(measurement: :rep, value: reps))
   end
 
   DISTANCE_UNIT_ABBREVIATIONS = { 'meter' => 'm', 'foot' => 'ft', 'inch' => 'in' }.freeze

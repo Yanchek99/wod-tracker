@@ -31,6 +31,18 @@ class PersonalRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_select '.fw-semibold', text: 'Pull Up', count: 2
   end
 
+  test 'gymnastics shows the verified unbroken rep-max, not the aggregated reps total' do
+    pullup = movements(:pullup)
+    log = logs(:matt_amrap)
+    log.movement_logs.create!(movement: pullup, duration_seconds: 90, reps: 36, set_breakdown: [15, 12, 9])
+
+    get family_user_personal_records_url(users(:mathew), family: 'gymnastics')
+
+    assert_response :success
+    assert_select '.list-group-item a', text: '15'
+    assert_select '.list-group-item a', text: '36', count: 0
+  end
+
   test 'gymnastics excludes a reps>1 record with no captured set breakdown' do
     pullup = movements(:pullup)
     log = logs(:matt_amrap)

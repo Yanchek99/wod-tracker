@@ -45,9 +45,8 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
   end
 
   test 'program actions allow legacy roleless subscribers to unsubscribe' do
-    # rubocop:disable Rails/SkipsModelValidations
+    # rubocop:disable-next Rails/SkipsModelValidations
     subscriptions(:one).update_column(:role, nil)
-    # rubocop:enable Rails/SkipsModelValidations
 
     get program_url(programs(:crossfit))
 

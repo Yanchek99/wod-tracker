@@ -1,5 +1,7 @@
 class WorkoutsController < ApplicationController
   LOAD_FIELDS = %i[load female_load male_load].freeze
+  WORKOUT_STIMULUS_FIELDS = %i[stimulus_range_low stimulus_range_high].freeze
+  EXERCISE_STIMULUS_FIELDS = %i[stimulus_loading stimulus_sets_max stimulus_duration_max].freeze
 
   before_action :set_workout, only: [:show, :edit, :edit_unstructured, :re_extract, :update, :destroy]
 
@@ -124,14 +126,31 @@ class WorkoutsController < ApplicationController
                        :reps, :duration_seconds, :ladder_step_every, :ladder_exempt,
                        :load, :female_load, :male_load, :implement_count,
                        :distance, :female_distance, :male_distance, :distance_unit,
-                       :calories, :female_calories, :male_calories, :notes]
+                       :calories, :female_calories, :male_calories, :notes,
+                       *EXERCISE_STIMULUS_FIELDS]
 
     attributes = params.expect(workout: [:name, :notes, :time_cap, :score_type, :ladder_step, :team_size,
+                                         :intended_stimulus_notes, *WORKOUT_STIMULUS_FIELDS,
                                          { segments_attributes: [[:id, :name, :rounds, :time_seconds, :interval_scheme,
                                                                   :rest_seconds, :notes, :position, :_destroy,
                                                                   { exercises_attributes: [exercise_params] }]] }])
     canonicalize_submitted_loads(attributes)
+    stamp_authored_stimulus(attributes)
     attributes
+  end
+
+  # A stimulus value that comes in through the form is coach-authored. Stamp the row's source
+  # so a later importer/model run treats it as an override rather than something to refill.
+  def stamp_authored_stimulus(attributes)
+    attributes[:stimulus_source] = :authored if stimulus_present?(attributes, WORKOUT_STIMULUS_FIELDS)
+
+    submitted_exercise_attributes(attributes).each do |exercise|
+      exercise[:stimulus_source] = :authored if stimulus_present?(exercise, EXERCISE_STIMULUS_FIELDS)
+    end
+  end
+
+  def stimulus_present?(attrs, fields)
+    fields.any? { |field| attrs[field].present? }
   end
 
   # Loads are stored canonically in pounds. A metric athlete enters kilograms, so normalize the
@@ -149,6 +168,16 @@ class WorkoutsController < ApplicationController
   end
 
   def submitted_exercise_attributes(attributes)
-    Array(attributes[:segments_attributes]).flat_map { |segment| Array(segment[:exercises_attributes]) }
+    nested_children(attributes[:segments_attributes])
+      .flat_map { |segment| nested_children(segment[:exercises_attributes]) }
+  end
+
+  # Nested attributes arrive either as an array or as a "0","1",... keyed hash
+  # (fields_for's default, and what a real form submits); normalize both to the
+  # list of child param hashes so callers can iterate and mutate them.
+  def nested_children(nested)
+    return [] if nested.blank?
+
+    nested.respond_to?(:values) ? nested.values : nested
   end
 end

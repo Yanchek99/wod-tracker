@@ -61,6 +61,41 @@ a prescribed pace — speed is one way an athlete modulates intensity, not part 
 the prescribed stimulus. The app will use the intended stimulus to design
 individualized workout variations.
 
+In this app the intended stimulus is modeled as the fixed target the workout
+prescribes, not one of several authored scale levels. Of the L2 guide's four
+components, two are already recoverable from existing data and are not stored
+again: movement functions come from `Movement` function roles, and volume of
+repetitions comes from the prescription (reps, rounds, distance, calories). The
+other two are stored explicitly.
+
+Loading intent is stored per movement as one of `unloaded`, `light`, `moderate`,
+or `heavy`, using the Programming Basics consecutive-reps lens — light is around
+20 or more unbroken reps for the intended athlete, moderate around 6-20, and
+heavy around 1-5. It is the coach's loading target and is distinct from the
+prescribed load value.
+
+Time frame is stored per workout as an expected-result range: a finish-time range
+for a task-priority workout, or an expected rounds/reps range for a time-priority
+workout, read in the workout's own score unit. A bare ceiling ("sub-8:00") sets
+only the high bound; a point estimate sets both bounds equal. It is distinct from
+`time_cap_seconds`, which is a hard boundary rather than an expected target and
+normally sits outside the expected range.
+
+Per movement, the stimulus may also record an intended break structure (a maximum
+number of unbroken sets, where one means unbroken) and a ceiling for a single
+effort (for example a 400-meter run in two minutes or less).
+
+CrossFit publishes the intended stimulus as a "Stimulus and Strategy" paragraph
+separate from the workout description. The app keeps that prose as the source of
+truth and treats the structured fields as its extracted, queryable projection.
+Each structured value carries its origin: `authored` (a coach entered it),
+`extracted` (pulled from the prose), `derived` (a rule-based estimate), or
+`predicted` (a model). Authored and extracted values are the workout's or
+exercise's own attributes; derived and predicted values are kept separately with
+a confidence signal and a version, so a coach's authored value always takes
+precedence and a model can be evaluated against it. See `decisions.md` for the
+schema.
+
 ## Time Domain
 
 The time domain is the expected duration of a workout, reflecting the metabolic

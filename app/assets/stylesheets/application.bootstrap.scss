@@ -9,6 +9,7 @@ $input-border-width: $border-width;
 @import "segments";
 @import "workouts";
 @import "schedules";
+@import "pull_to_refresh";
 
 .auth-links {
   li:not(:last-of-type):after {

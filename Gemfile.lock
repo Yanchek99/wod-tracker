@@ -345,8 +345,9 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sprockets (4.2.1)
-      concurrent-ruby (~> 1.0)
+    sprockets (4.4.1)
+      concurrent-ruby (~> 1.1)
+      logger
       rack (>= 2.2.4, < 4)
     sprockets-rails (3.5.2)
       actionpack (>= 6.1)
@@ -403,7 +404,6 @@ DEPENDENCIES
   devise
   jbuilder (~> 2.15)
   jsbundling-rails
-  json (< 4)
   kaminari
   local_time
   nokogiri

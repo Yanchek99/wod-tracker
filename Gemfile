@@ -66,10 +66,6 @@ gem 'local_time'
 gem 'simple_form'
 gem 'slim'
 
-# json 3.x made JSON.parse keyword-only, breaking ActiveSupport::JSON.decode's
-# positional-hash call on this Rails version. Pin below 3 until Rails supports it.
-gem 'json', '< 4'
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :windows]

@@ -27,6 +27,11 @@ module WorkoutExtraction
         25 feet down and 25 feet back" -> "distance": 50, "distance_unit": "foot"; sum the legs).
         Set it on the Shuttle Run exercise even when the length is in a separate sentence, and
         keep the rep count ("10 shuttle runs" -> reps 10).
+      - A load only applies to the exercise it's actually describing -- never copy it onto every
+        exercise in the same round just because they share a clock. E.g. "100 double-unders, 50
+        dumbbell snatches (♀35lb/♂50lb), 100 double-unders" puts female_load/male_load on the
+        Dumbbell Snatch exercise only; the two Double-under exercises stay bodyweight (no load)
+        even though they sit in the same round.
     CHEATSHEET
 
     def self.text

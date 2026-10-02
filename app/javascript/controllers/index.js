@@ -31,6 +31,9 @@ application.register("movement-select", MovementSelectController)
 import NestedFormController from "./nested_form_controller"
 application.register("nested-form", NestedFormController)
 
+import PullToRefreshController from "./pull_to_refresh_controller"
+application.register("pull-to-refresh", PullToRefreshController)
+
 import RepMaxRowController from "./rep_max_row_controller"
 application.register("rep-max-row", RepMaxRowController)
 

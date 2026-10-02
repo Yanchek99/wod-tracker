@@ -1,0 +1,25 @@
+.pull-to-refresh-indicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  z-index: 1050;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bs-primary);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  transform: translate(-50%, -60px);
+  transition: transform 0.25s ease;
+}
+
+.pull-to-refresh-indicator.pull-to-refresh-dragging {
+  transition: none;
+}
+
+.pull-to-refresh-indicator.pull-to-refresh-ready {
+  background: var(--bs-success);
+}

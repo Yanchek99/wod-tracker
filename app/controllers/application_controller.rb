@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :turbo_frame_request_variant
 
+  def after_sign_in_path_for(resource)
+    stored_location_for(resource) || schedules_path(date: Date.current)
+  end
+
   private
 
   def set_current_user

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_02_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_030000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -150,6 +150,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_120000) do
     t.index ["family"], name: "index_movements_on_family"
     t.index ["name"], name: "index_movements_on_name", unique: true
     t.index ["skill_level"], name: "index_movements_on_skill_level"
+  end
+
+  create_table "passkeys", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "external_id", null: false
+    t.string "label", null: false
+    t.datetime "last_used_at"
+    t.text "public_key", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["external_id"], name: "index_passkeys_on_external_id", unique: true
+    t.index ["user_id"], name: "index_passkeys_on_user_id"
   end
 
   create_table "programs", force: :cascade do |t|
@@ -369,9 +382,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_120000) do
     t.integer "sign_in_count", default: 0, null: false
     t.integer "unit_system", default: 0, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "webauthn_id"
     t.integer "weight"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
   end
 
   create_table "workout_imports", force: :cascade do |t|
@@ -410,6 +425,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_120000) do
   add_foreign_key "movement_logs", "movements"
   add_foreign_key "movement_substitutions", "movements"
   add_foreign_key "movement_substitutions", "movements", column: "substitute_movement_id"
+  add_foreign_key "passkeys", "users"
   add_foreign_key "schedules", "programs"
   add_foreign_key "schedules", "workouts"
   add_foreign_key "segments", "workouts"

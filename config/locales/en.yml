@@ -48,6 +48,9 @@ en:
       notice: Workout was successfully updated.
     destroy:
       notice: Workout was successfully destroyed.
+  passkeys:
+    destroy:
+      notice: Passkey was successfully removed.
   schedules:
     create:
       notice: Schedule was successfully created.

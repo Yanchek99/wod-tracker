@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: 'users/registrations' }
   get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest, defaults: { format: :json }
 
+  authenticated :user do
+    root to: 'schedules#index', as: :authenticated_root
+  end
   root to: 'workouts#index'
 
   resources :logs, only: [:index, :show, :destroy]

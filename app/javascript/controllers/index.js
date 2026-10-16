@@ -34,6 +34,9 @@ application.register("nested-form", NestedFormController)
 import PasskeyController from "./passkey_controller"
 application.register("passkey", PasskeyController)
 
+import PasswordToggleController from "./password_toggle_controller"
+application.register("password-toggle", PasswordToggleController)
+
 import RepMaxRowController from "./rep_max_row_controller"
 application.register("rep-max-row", RepMaxRowController)
 

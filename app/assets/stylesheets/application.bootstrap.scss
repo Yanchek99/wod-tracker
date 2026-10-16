@@ -10,9 +10,217 @@ $input-border-width: $border-width;
 @import "workouts";
 @import "schedules";
 
+// Pre-auth screens (devise layout). Brand green matches the PWA theme-color.
+$auth-green: #15803d;
+
+body.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #052e16 0%, $auth-green 100%) fixed;
+  --bs-primary: #{$auth-green};
+  --bs-primary-rgb: 21, 128, 61;
+  --bs-link-color-rgb: 21, 128, 61;
+  --bs-link-hover-color-rgb: 22, 101, 52;
+
+  .btn-primary {
+    --bs-btn-bg: #{$auth-green};
+    --bs-btn-border-color: #{$auth-green};
+    --bs-btn-hover-bg: #166534;
+    --bs-btn-hover-border-color: #166534;
+    --bs-btn-active-bg: #14532d;
+    --bs-btn-active-border-color: #14532d;
+  }
+
+  .btn-outline-secondary {
+    --bs-btn-color: #374151;
+    --bs-btn-border-color: #ced4da;
+    --bs-btn-hover-bg: #f3f4f6;
+    --bs-btn-hover-color: #111827;
+    --bs-btn-hover-border-color: #adb5bd;
+    --bs-btn-active-bg: #e5e7eb;
+    --bs-btn-active-color: #111827;
+    --bs-btn-active-border-color: #adb5bd;
+  }
+
+  .form-check-input:checked {
+    background-color: $auth-green;
+    border-color: $auth-green;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: $auth-green;
+    box-shadow: 0 0 0 .25rem rgba($auth-green, .2);
+  }
+}
+
+.auth-shell {
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 2rem;
+}
+
+.auth-brand {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.auth-logo {
+  width: 3.25rem;
+  height: 3.25rem;
+  margin: 0 auto .75rem;
+  border-radius: .875rem;
+  background: #fff;
+  color: $auth-green;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 3.25rem;
+}
+
+.auth-app-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.auth-tagline {
+  color: rgba(#fff, .75);
+  font-size: .9rem;
+}
+
+.auth-card {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2.5rem rgba(#000, .25);
+
+  .card-body {
+    padding: 1.75rem;
+  }
+
+  .form-control,
+  .form-select {
+    padding: .65rem .75rem;
+    border-radius: .5rem;
+  }
+
+  .btn {
+    padding: .65rem .75rem;
+    border-radius: .5rem;
+  }
+}
+
+.auth-options .boolean {
+  margin-bottom: 0 !important;
+}
+
+// Show/hide eye inside the password field's right padding. Safari draws its saved-passwords key at the
+// inner edge of that padding, so the two sit side by side; Edge's own reveal icon is hidden.
+.auth-password {
+  position: relative;
+
+  .form-control,
+  .form-control.is-invalid,
+  .form-control.is-valid {
+    padding-right: 2.75rem;
+    background-image: none; // Bootstrap's validation icon would sit under the eye
+  }
+
+  input::-ms-reveal {
+    display: none;
+  }
+}
+
+.auth-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: .5rem;
+  transform: translateY(-50%);
+  padding: .25rem;
+  border: 0;
+  background: none;
+  color: #6b7280;
+  line-height: 1;
+
+  &:hover,
+  &:focus-visible {
+    color: #111827;
+  }
+}
+
+// Login re-renders with the email filled in; simple_form would mark it (and "Remember me") as valid.
+.auth-plain {
+  .form-control.is-valid {
+    border-color: var(--bs-border-color);
+    background-image: none;
+    padding-right: .75rem;
+
+    &:focus {
+      border-color: $auth-green;
+      box-shadow: 0 0 0 .25rem rgba($auth-green, .2);
+    }
+  }
+
+  .form-check-input.is-valid {
+    border-color: var(--bs-border-color);
+
+    &:checked {
+      border-color: $auth-green;
+    }
+
+    ~ .form-check-label {
+      color: inherit;
+    }
+  }
+}
+
+// Number steppers would collide with the validation icon (e.g. weight on sign-up).
+.auth-card input[type="number"] {
+  appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
+// Every field on the auth forms is required, so the asterisks are just noise.
+.auth-card abbr[title="required"] {
+  display: none;
+}
+
+.auth-card .alert {
+  font-size: .9rem;
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
 .auth-links {
-  li:not(:last-of-type):after {
-    content: ' |';
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  text-align: center;
+
+  .auth-link {
+    margin-bottom: .5rem;
+    color: rgba(#fff, .85);
+    font-size: .9rem;
+  }
+
+  a {
+    color: #fff;
+    font-size: .9rem;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
   }
 }
 

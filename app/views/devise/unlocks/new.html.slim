@@ -1,9 +1,10 @@
 - content_for :header
-  | Resend unlock instructions
+  | Unlock your account
+p.text-center.text-muted.small.mb-4 Enter your email and we'll send you instructions to unlock your account.
 = simple_form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f|
   = f.error_notification
   = f.full_error :unlock_token
   .form-inputs
     = f.input :email, required: true, autofocus: true
-  .form-actions
-    = f.button :submit, "Resend unlock instructions"
+  .form-actions.d-grid
+    = f.button :submit, 'Send unlock instructions', class: 'btn btn-primary'

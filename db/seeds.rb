@@ -911,6 +911,11 @@ deficit_handstand_push_up = Movement.find_or_initialize_by(name: 'Deficit Handst
                              skill_level: :advanced)
   movement.save!
 end
+deficit_strict_handstand_push_up = Movement.find_or_initialize_by(name: 'Deficit Strict Handstand Push-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_push] },
+                             skill_level: :advanced)
+  movement.save!
+end
 dumbbell_burpee_deadlift = Movement.find_or_initialize_by(name: 'Dumbbell Burpee Deadlift').tap do |movement|
   movement.assign_attributes(family: :weightlifting,
                              function_roles: { primary: [:hinge, :horizontal_push] },

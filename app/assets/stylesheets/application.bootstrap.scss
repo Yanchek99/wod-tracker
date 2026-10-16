@@ -10,20 +10,13 @@ $input-border-width: $border-width;
 @import "workouts";
 @import "schedules";
 
-// Pre-auth screens (devise layout). Brand green matches the PWA theme-color.
+// Pre-auth screens (devise layout).
 $auth-green: #15803d;
 
-// iOS tints its status bar and toolbar from the page edges / theme-color (#15803d), so the gradient fades
-// to that same green before it reaches the top and bottom edges: no seams.
-// <html> carries the solid color because iOS ignores background-attachment: fixed.
-html.auth-html {
-  background-color: $auth-green;
-}
-
+// Solid brand green (same as the PWA theme-color) so the page, iOS status bar and toolbar always match.
 body.auth-page {
   min-height: 100vh;
-  min-height: 100dvh;
-  background: radial-gradient(ellipse 100% 60% at 50% 45%, #0d5427 0%, $auth-green 70%);
+  background-color: $auth-green;
   --bs-primary: #{$auth-green};
   --bs-primary-rgb: 21, 128, 61;
   --bs-link-color-rgb: 21, 128, 61;

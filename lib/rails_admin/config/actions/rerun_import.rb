@@ -28,7 +28,7 @@ module RailsAdmin
       class RerunHeuristic < RerunImport
         RailsAdmin::Config::Actions.register(self)
 
-        register_instance_option(:link_icon) { 'fas fa-cogs' }
+        register_instance_option(:link_icon) { 'fas fa-code' }
 
         def parser = :heuristic
       end

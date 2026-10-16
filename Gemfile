@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '4.0.6'
+ruby '4.0.7'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 8.1.3'
@@ -53,6 +53,7 @@ gem 'sassc-rails' # Requred by rails_admin
 
 gem 'cancancan'
 gem 'devise'
+gem 'webauthn' # Passkey (WebAuthn) sign-in
 
 # ActionMailer delivery method for transactional email (password resets, etc.)
 gem 'resend'
@@ -65,10 +66,6 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'local_time'
 gem 'simple_form'
 gem 'slim'
-
-# json 3.x made JSON.parse keyword-only, breaking ActiveSupport::JSON.decode's
-# positional-hash call on this Rails version. Pin below 3 until Rails supports it.
-gem 'json', '< 3'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -88,6 +85,6 @@ group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara'
   gem 'selenium-webdriver'
-  gem 'simplecov', '1.3.0', require: false # Version locked because of code climate issues
+  gem 'simplecov', '1.3.2', require: false # Version locked because of code climate issues
   gem 'webmock' # Stub and disable external HTTP in tests
 end

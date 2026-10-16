@@ -31,6 +31,9 @@ application.register("movement-select", MovementSelectController)
 import NestedFormController from "./nested_form_controller"
 application.register("nested-form", NestedFormController)
 
+import PasskeyController from "./passkey_controller"
+application.register("passkey", PasskeyController)
+
 import PullToRefreshController from "./pull_to_refresh_controller"
 application.register("pull-to-refresh", PullToRefreshController)
 

@@ -16,6 +16,7 @@
         h4 Import from SugarWOD
         p.text-muted Upload your SugarWOD CSV export to bring in your workout history.
         p = link_to 'Import from SugarWOD', new_sugarwod_import_path, class: 'btn btn-outline-secondary btn-sm'
+        = render 'devise/registrations/passkeys'
         hr
         h3 Change password
         = f.input :password, hint: "leave it blank if you don't want to change it", required: false, input_html: { autocomplete: "new-password" }

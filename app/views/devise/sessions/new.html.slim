@@ -8,3 +8,12 @@
     .col = f.input :remember_me, as: :boolean if devise_mapping.rememberable?
     .col-auto.form-actions.d-grid
       = f.button :submit, "Log in", class: 'btn btn-outline-primary'
+div data-controller="passkey" data-passkey-options-url-value=options_passkey_session_path data-passkey-url-value=passkey_session_path data-passkey-cancelled-message-value="No passkey was used. If you haven't added one yet, log in with your password, then add a passkey under Edit User."
+  div hidden=true data-passkey-target="supported"
+    .d-flex.align-items-center.text-muted.small.my-3
+      hr.flex-grow-1.m-0
+      span.px-3 or
+      hr.flex-grow-1.m-0
+    button.btn.btn-outline-secondary.w-100 type="button" data-action="passkey#authenticate" Log in with a passkey
+    .form-text.text-center Face ID, Touch ID, or your device's screen lock. Add one under Edit User after logging in.
+  p.text-danger.small.mt-2.mb-0 hidden=true role="alert" data-passkey-target="error"

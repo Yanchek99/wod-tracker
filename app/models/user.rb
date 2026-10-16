@@ -4,12 +4,21 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  has_many :passkeys, dependent: :destroy
+
   enum :role, { admin: 0, user: 1 }
   attribute :sex, :integer
   enum :sex, { female: 0, male: 1 }
   # Display preference for loads, which are stored canonically in pounds: imperial shows lb, metric
   # shows kg. Does not affect stored magnitude or workout identity.
   enum :unit_system, { imperial: 0, metric: 1 }, prefix: :unit_system
+
+  # WebAuthn user handle: a stable, random id (never the email or database id) that authenticators
+  # store alongside each passkey. Generated the first time a user adds a passkey.
+  def ensure_webauthn_id!
+    update!(webauthn_id: WebAuthn.generate_user_id) if webauthn_id.blank?
+    webauthn_id
+  end
 
   def load_display_unit
     unit_system_metric? ? :kg : :lb

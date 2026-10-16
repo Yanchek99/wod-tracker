@@ -89,6 +89,31 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_equal 0, WorkoutImport.count
   end
 
+  test 'with fallback disabled, a failing llm parser logs a WorkoutImport failure instead of trying the heuristic' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'llm boom' }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10), :llm, nil) }
+    end
+
+    workout_import = WorkoutImport.find_by!(workout_date: Date.new(2018, 1, 10))
+    assert_equal 'llm boom', workout_import.error_message
+    assert_nil Workout.find_by(name: 'CF-180110')
+  end
+
+  test 'with fallback disabled, a failing heuristic parser does not try the llm parser' do
+    stub_cf_wod_redirect('2026/06/20', '260620')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
+      .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
+
+    stub_llm_parser(->(*, **) { flunk 'llm parser must not be called' }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20), :heuristic, nil) }
+    end
+
+    assert_includes WorkoutImport.find_by!(workout_date: Date.new(2026, 6, 20)).error_message, 'unrecognized exercise line'
+  end
+
   test 'keeps the scraped Stimulus and Strategy prose and structures it into the stimulus fields' do
     stub_cf_wod_redirect('2025/06/18', '250618')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
@@ -287,7 +312,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       assert_raises(CfWod::Fetcher::FetchError) { job.perform }
     end
 
-    assert_equal [Date.new(2026, 1, 16), :llm], job.arguments
+    assert_equal [Date.new(2026, 1, 16), :llm, :heuristic], job.arguments
 
     travel_to Time.utc(2026, 1, 17, 12, 0, 0) do # two days later -- a freshly recomputed default would be Jan 18
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/01/16})

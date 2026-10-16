@@ -66,3 +66,13 @@ en:
       notice: Log was successfully updated.
     destroy:
       notice: Log was successfully destroyed.
+  admin:
+    actions:
+      rerun_heuristic:
+        title: Re-run heuristic parser
+        menu: Re-run (heuristic)
+        breadcrumb: Re-run (heuristic)
+      rerun_llm:
+        title: Re-run LLM parser
+        menu: Re-run (LLM)
+        breadcrumb: Re-run (LLM)

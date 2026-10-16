@@ -10,7 +10,6 @@ module RailsAdmin
         register_instance_option(:http_methods) { %i[get post] }
         register_instance_option(:template_name) { :rerun_import }
         register_instance_option(:authorization_key) { :update }
-        register_instance_option(:link_icon) { 'fas fa-redo' }
 
         register_instance_option :controller do
           proc do
@@ -29,11 +28,15 @@ module RailsAdmin
       class RerunHeuristic < RerunImport
         RailsAdmin::Config::Actions.register(self)
 
+        register_instance_option(:link_icon) { 'fas fa-cogs' }
+
         def parser = :heuristic
       end
 
       class RerunLlm < RerunImport
         RailsAdmin::Config::Actions.register(self)
+
+        register_instance_option(:link_icon) { 'fas fa-robot' }
 
         def parser = :llm
       end

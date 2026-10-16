@@ -15,6 +15,8 @@ class AdminWorkoutImportRerunTest < ActionDispatch::IntegrationTest
     get rails_admin.index_path(model_name: 'workout_import')
     assert_select 'a', text: 'Re-run (heuristic)'
     assert_select 'a', text: 'Re-run (LLM)'
+    assert_select 'a[href$=?] i.fa-cogs', '/rerun_heuristic'
+    assert_select 'a[href$=?] i.fa-robot', '/rerun_llm'
     assert_no_match(/translation missing/i, response.body)
 
     get rails_admin.rerun_llm_path(model_name: 'workout_import', id: @import.id)

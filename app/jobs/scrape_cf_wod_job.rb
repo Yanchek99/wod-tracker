@@ -60,7 +60,7 @@ class ScrapeCfWodJob < ApplicationJob
     page = CfWod::Fetcher.call(date)
     return if page.rest_day?
 
-    workout = extract_workout(page, date, parser, fallback_parser)
+    workout = extract_workout(page, date, [parser, fallback_parser])
     attach_intended_stimulus(workout, page)
     workout = persist(workout)
     extract_structured_stimulus(workout)
@@ -86,10 +86,12 @@ class ScrapeCfWodJob < ApplicationJob
   # Try the primary parser; if it fails with its own "couldn't extract a workout" error, retry
   # once with the other parser instead of failing the job outright. A failure from the fallback
   # itself is not rescued here -- it propagates to perform's own rescue clause, which logs the
-  # WorkoutImport failure once both strategies have been tried.
-  def extract_workout(page, date, parser, fallback_parser)
-    PARSERS.fetch(parser).call(page, date)
-  rescue *PARSER_ERRORS.fetch(parser)
+  # WorkoutImport failure once both strategies have been tried. `parsers` is the
+  # [primary, fallback] pair; a nil fallback re-raises the primary's failure.
+  def extract_workout(page, date, parsers)
+    primary, fallback_parser = parsers
+    PARSERS.fetch(primary).call(page, date)
+  rescue *PARSER_ERRORS.fetch(primary)
     raise unless fallback_parser
 
     PARSERS.fetch(fallback_parser).call(page, date)

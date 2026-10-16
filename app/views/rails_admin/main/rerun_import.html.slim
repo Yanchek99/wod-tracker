@@ -1,0 +1,11 @@
+h4
+  | Re-run the
+  =< @action.parser
+  |  parser for
+  =< @object.workout_date
+  | ? Only that parser will be tried (no fallback).
+= form_tag url_for(action: @action.action_name, model_name: @abstract_model.to_param, id: @object.id), method: :post do
+  .form-actions
+    button.btn.btn-primary type="submit" data-disable-with="Re-run"
+      i.fas.fa-check
+      |  Re-run

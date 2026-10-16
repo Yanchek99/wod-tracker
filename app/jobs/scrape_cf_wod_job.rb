@@ -4,7 +4,8 @@ class ScrapeCfWodJob < ApplicationJob
   # Keyed lookup of the two available extraction strategies, so `perform` can pick one at
   # runtime without hardcoding either parser's call signature inline. The primary strategy
   # defaults to Rails.application.config.workout_parser, overridable per call (e.g.
-  # `ScrapeCfWodJob.perform_later(date, :heuristic)`).
+  # `ScrapeCfWodJob.perform_later(date, :heuristic)`). Pass `nil` as the third argument
+  # (the fallback parser) to disable the fallback, so a manual re-run exercises exactly one parser.
   PARSERS = {
     llm: ->(page, date) { WorkoutExtraction::LlmParser.call(page.body_text, date: date) },
     heuristic: ->(page, _date) { CfWod::WorkoutParser.call(page) }
@@ -53,13 +54,13 @@ class ScrapeCfWodJob < ApplicationJob
   # retry that crosses local midnight in America/Los_Angeles would silently target a different
   # day's workout than the attempt before it -- and would silently fall back to the default parser
   # on retry if `parser` were left unpinned.
-  def perform(date = self.class.default_date, parser = Rails.application.config.workout_parser)
-    self.arguments = [date, parser]
+  def perform(date = self.class.default_date, parser = Rails.application.config.workout_parser, fallback_parser = FALLBACKS.fetch(parser))
+    self.arguments = [date, parser, fallback_parser]
 
     page = CfWod::Fetcher.call(date)
     return if page.rest_day?
 
-    workout = extract_workout(page, date, parser)
+    workout = extract_workout(page, date, parser, fallback_parser)
     attach_intended_stimulus(workout, page)
     workout = persist(workout)
     extract_structured_stimulus(workout)
@@ -86,10 +87,12 @@ class ScrapeCfWodJob < ApplicationJob
   # once with the other parser instead of failing the job outright. A failure from the fallback
   # itself is not rescued here -- it propagates to perform's own rescue clause, which logs the
   # WorkoutImport failure once both strategies have been tried.
-  def extract_workout(page, date, parser)
+  def extract_workout(page, date, parser, fallback_parser)
     PARSERS.fetch(parser).call(page, date)
   rescue *PARSER_ERRORS.fetch(parser)
-    PARSERS.fetch(FALLBACKS.fetch(parser)).call(page, date)
+    raise unless fallback_parser
+
+    PARSERS.fetch(fallback_parser).call(page, date)
   end
 
   # The "Stimulus and Strategy" paragraph is parsed into WodPage#description, but neither

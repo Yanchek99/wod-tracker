@@ -13,9 +13,17 @@ $input-border-width: $border-width;
 // Pre-auth screens (devise layout). Brand green matches the PWA theme-color.
 $auth-green: #15803d;
 
+// <html> gets a solid color (same as the gradient's start) so iOS shows green, not a white canvas,
+// behind its status bar and toolbar; the body gradient grows with the content instead of being
+// background-attachment: fixed, which iOS ignores.
+html.auth-html {
+  background-color: #052e16;
+}
+
 body.auth-page {
   min-height: 100vh;
-  background: linear-gradient(160deg, #052e16 0%, $auth-green 100%) fixed;
+  min-height: 100dvh;
+  background: linear-gradient(160deg, #052e16 0%, $auth-green 100%);
   --bs-primary: #{$auth-green};
   --bs-primary-rgb: 21, 128, 61;
   --bs-link-color-rgb: 21, 128, 61;

@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // hand it to the browser/OS (Face ID, Touch ID, Windows Hello...), then POST the result to the URL.
 export default class extends Controller {
   static targets = ["supported", "label", "error"]
-  static values = { optionsUrl: String, url: String }
+  static values = { optionsUrl: String, url: String, cancelledMessage: String }
 
   connect() {
     const supported = typeof PublicKeyCredential !== "undefined" &&
@@ -70,7 +70,7 @@ export default class extends Controller {
 
   messageFor(error) {
     switch (error.name) {
-      case "NotAllowedError": return "The passkey request was cancelled or timed out."
+      case "NotAllowedError": return this.cancelledMessageValue || "The passkey request was cancelled or timed out."
       case "InvalidStateError": return "A passkey for this account is already saved on this device."
       default: return error.message
     }

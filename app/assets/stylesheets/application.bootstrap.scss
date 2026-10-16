@@ -13,10 +13,13 @@ $input-border-width: $border-width;
 // Pre-auth screens (devise layout).
 $auth-green: #15803d;
 
-// Solid brand green (same as the PWA theme-color) so the page, iOS status bar and toolbar always match.
+// The layout uses viewport-fit=cover so the gradient runs edge to edge behind the iOS status bar and
+// toolbar; .auth-shell's padding keeps content clear of them. Top edge = theme-color, bottom edge = the
+// fallback color painted on the canvas, so neither end can show a seam.
 body.auth-page {
   min-height: 100vh;
-  background-color: $auth-green;
+  min-height: 100dvh;
+  background: $auth-green linear-gradient(180deg, #052e16 0%, $auth-green 100%) no-repeat;
   --bs-primary: #{$auth-green};
   --bs-primary-rgb: 21, 128, 61;
   --bs-link-color-rgb: 21, 128, 61;
@@ -58,7 +61,7 @@ body.auth-page {
   width: 100%;
   max-width: 26rem;
   margin: 0 auto;
-  padding: 2.5rem 1rem 2rem;
+  padding: max(2.5rem, env(safe-area-inset-top)) 1rem max(2rem, env(safe-area-inset-bottom));
 }
 
 .auth-brand {

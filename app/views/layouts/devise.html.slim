@@ -1,13 +1,13 @@
 doctype html
 html lang="en"
   head
-    meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
     meta charset="utf-8"
 
     title WOD Tracker
     = csrf_meta_tags
     = csp_meta_tag
-    = render 'layouts/pwa_head'
+    = render 'layouts/pwa_head', theme_color: '#052E16'
 
     = stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload'
     = javascript_include_tag 'application', 'data-turbo-track': 'reload'

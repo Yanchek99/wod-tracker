@@ -9,6 +9,18 @@ class AdminWorkoutImportRerunTest < ActionDispatch::IntegrationTest
     users(:brooke).update!(role: :admin)
   end
 
+  test 'index and confirmation pages have translated action labels' do
+    sign_in users(:brooke)
+
+    get rails_admin.index_path(model_name: 'workout_import')
+    assert_select 'a', text: 'Re-run (heuristic)'
+    assert_select 'a', text: 'Re-run (LLM)'
+    assert_no_match(/translation missing/i, response.body)
+
+    get rails_admin.rerun_llm_path(model_name: 'workout_import', id: @import.id)
+    assert_no_match(/translation missing/i, response.body)
+  end
+
   test 'GET renders a confirmation page without enqueueing' do
     sign_in users(:brooke)
 

@@ -418,6 +418,11 @@ l_sit = Movement.find_or_initialize_by(name: 'L-sit').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] }, skill_level: :intermediate)
   movement.save!
 end
+l_sit_muscle_up = Movement.find_or_initialize_by(name: 'L-sit Muscle-up').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:vertical_pull], secondary: [:vertical_push, :trunk_flexion] },
+                             equipment: :rings, skill_level: :advanced)
+  movement.save!
+end
 l_sit_on_rings = Movement.find_or_initialize_by(name: 'L-sit on Rings').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [:trunk_flexion] }, equipment: :rings,
                              skill_level: :intermediate)
@@ -811,6 +816,11 @@ bar_facing_burpee = Movement.find_or_initialize_by(name: 'Bar-facing Burpee').ta
   movement.save!
 end
 box_jump_over = Movement.find_or_initialize_by(name: 'Box Jump-over').tap do |movement|
+  movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :box,
+                             skill_level: :basic, breakable: false)
+  movement.save!
+end
+shuttle_box_jump_over = Movement.find_or_initialize_by(name: 'Shuttle Box Jump-over').tap do |movement|
   movement.assign_attributes(family: :gymnastics, function_roles: { primary: [] }, equipment: :box,
                              skill_level: :basic, breakable: false)
   movement.save!

@@ -57,5 +57,23 @@ module Devise
       assert_select 'h3', text: 'Change password'
       assert_select 'input[name="user[current_password]"]:not([required])'
     end
+
+    test 'edit page lists passkeys with a remove link and an add button' do
+      passkey = @user.passkeys.create!(external_id: 'cred-1', public_key: 'key', label: 'My iPhone')
+
+      get edit_user_registration_url
+
+      assert_select '.list-group-item .fw-semibold', text: 'My iPhone'
+      assert_select '.list-group-item small', text: 'Never used'
+      assert_select 'a[href=?][data-turbo-method="delete"]', passkey_path(passkey), text: 'Remove'
+      assert_select 'button[data-action="passkey#register"]', text: 'Add a passkey'
+    end
+
+    test 'edit page without passkeys shows no list' do
+      get edit_user_registration_url
+
+      assert_select '.list-group-item', count: 0
+      assert_select 'button[data-action="passkey#register"]'
+    end
   end
 end

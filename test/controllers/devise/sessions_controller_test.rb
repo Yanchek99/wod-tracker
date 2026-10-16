@@ -24,5 +24,14 @@ module Devise
 
       assert_redirected_to new_workout_url
     end
+
+    test 'login page offers log in with a passkey' do
+      get new_user_session_url
+
+      assert_response :success
+      assert_select '[data-controller="passkey"][data-passkey-options-url-value=?][data-passkey-url-value=?]',
+                    options_passkey_session_path, passkey_session_path
+      assert_select 'button[data-action="passkey#authenticate"]', text: 'Log in with a passkey'
+    end
   end
 end

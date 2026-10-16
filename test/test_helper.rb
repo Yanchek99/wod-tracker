@@ -5,6 +5,7 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 require 'webmock/minitest'
+require 'webauthn/fake_client'
 
 # Disable outbound HTTP in tests; localhost stays open for Capybara/Selenium.
 WebMock.disable_net_connect!(allow_localhost: true)

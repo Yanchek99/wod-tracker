@@ -53,6 +53,7 @@ gem 'sassc-rails' # Requred by rails_admin
 
 gem 'cancancan'
 gem 'devise'
+gem 'webauthn' # Passkey (WebAuthn) sign-in
 
 # ActionMailer delivery method for transactional email (password resets, etc.)
 gem 'resend'

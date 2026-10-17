@@ -1,3 +1,4 @@
+@import "tokens";
 @import "bootstrap/scss/bootstrap";
 @import "trix/dist/trix";
  // TomSelect Fix https://github.com/orchidjs/tom-select/pull/601
@@ -11,16 +12,14 @@ $input-border-width: $border-width;
 @import "schedules";
 
 // Pre-auth screens (devise layout).
-$auth-green: #15803d;
 
 // iOS 26 Safari colors its status bar from the root background color at the top of the page and paints
 // the root canvas behind its floating toolbar at the end of the page. The root color starts as the
 // gradient's dark start (status bar) and auth_backdrop_controller.js switches it to the bright end near
 // the bottom of the page. The image is taller than the page so the toolbar area is covered at rest.
-$auth-green-dark: #052e16;
 
 html.auth-html {
-  background: $auth-green-dark linear-gradient(180deg, $auth-green-dark 0%, $auth-green calc(100% - 15rem)) no-repeat;
+  background: $brand-green-dark linear-gradient(180deg, $brand-green-dark 0%, $brand-green calc(100% - 15rem)) no-repeat;
   background-size: 100% calc(100% + 15rem);
   transition: background-color .2s;
 }
@@ -28,14 +27,14 @@ html.auth-html {
 body.auth-page {
   min-height: calc(100vh + 7rem); // a toolbar's height of extra page, so the gradient (not the root color) is behind it at rest
   background: transparent;
-  --bs-primary: #{$auth-green};
+  --bs-primary: #{$brand-green};
   --bs-primary-rgb: 21, 128, 61;
   --bs-link-color-rgb: 21, 128, 61;
   --bs-link-hover-color-rgb: 22, 101, 52;
 
   .btn-primary {
-    --bs-btn-bg: #{$auth-green};
-    --bs-btn-border-color: #{$auth-green};
+    --bs-btn-bg: #{$brand-green};
+    --bs-btn-border-color: #{$brand-green};
     --bs-btn-hover-bg: #166534;
     --bs-btn-hover-border-color: #166534;
     --bs-btn-active-bg: #14532d;
@@ -54,14 +53,14 @@ body.auth-page {
   }
 
   .form-check-input:checked {
-    background-color: $auth-green;
-    border-color: $auth-green;
+    background-color: $brand-green;
+    border-color: $brand-green;
   }
 
   .form-control:focus,
   .form-select:focus {
-    border-color: $auth-green;
-    box-shadow: 0 0 0 .25rem rgba($auth-green, .2);
+    border-color: $brand-green;
+    box-shadow: 0 0 0 .25rem rgba($brand-green, .2);
   }
 }
 
@@ -84,7 +83,7 @@ body.auth-page {
   margin: 0 auto .75rem;
   border-radius: .875rem;
   background: #fff;
-  color: $auth-green;
+  color: $brand-green;
   font-size: 1.75rem;
   font-weight: 800;
   line-height: 3.25rem;
@@ -167,8 +166,8 @@ body.auth-page {
     padding-right: .75rem;
 
     &:focus {
-      border-color: $auth-green;
-      box-shadow: 0 0 0 .25rem rgba($auth-green, .2);
+      border-color: $brand-green;
+      box-shadow: 0 0 0 .25rem rgba($brand-green, .2);
     }
   }
 
@@ -176,7 +175,7 @@ body.auth-page {
     border-color: var(--bs-border-color);
 
     &:checked {
-      border-color: $auth-green;
+      border-color: $brand-green;
     }
 
     ~ .form-check-label {

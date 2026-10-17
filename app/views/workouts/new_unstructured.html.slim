@@ -1,3 +1,4 @@
+- content_for :wide, 'true'
 .container
   h1 New Workout
   = form_with url: extract_workouts_path, method: :post, local: true, data: { turbo: false } do |form|

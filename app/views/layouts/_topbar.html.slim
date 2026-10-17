@@ -1,0 +1,6 @@
+header.app-topbar
+  h1.app-topbar-title = page_title
+  .dropdown
+    button.app-topbar-account type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account"
+      = icon(:user)
+    = render 'layouts/account_menu', align_end: true

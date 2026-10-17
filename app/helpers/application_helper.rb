@@ -4,8 +4,13 @@ module ApplicationHelper
     bootstrap_types[flash_type.to_sym] || flash_type.to_s
   end
 
-  def nav_item_class(name)
-    "nav-item nav-link #{'active' if controller_name.to_sym.eql? name}"
+  # Title for the phone top bar: a page's own content_for(:title), else its nav label, else the controller name.
+  def page_title
+    content_for(:title).presence || nav_items.find { |item| nav_active?(item) }&.label || controller_name.titleize
+  end
+
+  def user_initials(user)
+    [user.first_name, user.last_name].compact_blank.map { |part| part[0] }.join.upcase
   end
 
   # Ids of movements whose forms should show the implement-count field. Memoized per request so

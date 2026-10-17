@@ -13,13 +13,15 @@ $input-border-width: $border-width;
 // Pre-auth screens (devise layout).
 $auth-green: #15803d;
 
-// The layout uses viewport-fit=cover so the gradient runs edge to edge behind the iOS status bar and
-// toolbar; .auth-shell's padding keeps content clear of them. Top edge = theme-color, bottom edge = the
-// fallback color painted on the canvas, so neither end can show a seam.
+// The gradient is a fixed, viewport-sized layer (it must not scroll with the page: iOS tints its status
+// bar and toolbar with one flat color each). Two thin fixed strips at the edges, matching the gradient's
+// end colors, are what iOS 26 Safari samples for those bars (it ignores theme-color); body's background
+// color is the fallback. The layout uses viewport-fit=cover so the layers run behind the bars.
+$auth-green-dark: #052e16;
+
 body.auth-page {
   min-height: 100vh;
-  min-height: 100dvh;
-  background: $auth-green linear-gradient(180deg, #052e16 0%, $auth-green 100%) no-repeat;
+  background-color: $auth-green;
   --bs-primary: #{$auth-green};
   --bs-primary-rgb: 21, 128, 61;
   --bs-link-color-rgb: 21, 128, 61;
@@ -55,6 +57,32 @@ body.auth-page {
     border-color: $auth-green;
     box-shadow: 0 0 0 .25rem rgba($auth-green, .2);
   }
+}
+
+.auth-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(180deg, $auth-green-dark 0%, $auth-green 100%);
+}
+
+.auth-tint {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.auth-tint-top {
+  top: 0;
+  background-color: $auth-green-dark;
+}
+
+.auth-tint-bottom {
+  bottom: 0;
+  background-color: $auth-green;
 }
 
 .auth-shell {

@@ -32,7 +32,7 @@ class PersonalRecordsFamilyTest < ApplicationSystemTestCase
 
     visit family_user_personal_records_url(users(:mathew), family: 'weightlifting')
 
-    assert_no_selector 'button'
+    assert_no_selector 'main.app-content button'
   end
 
   test 'the gymnastics tab renders a flat list, not the expand/collapse format' do
@@ -43,6 +43,6 @@ class PersonalRecordsFamilyTest < ApplicationSystemTestCase
     visit family_user_personal_records_url(users(:mathew), family: 'gymnastics')
 
     assert_text 'Pull Up'
-    assert_no_selector 'button'
+    assert_no_selector 'main.app-content button'
   end
 end

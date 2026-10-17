@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class WorkoutHistoryTest < ActiveSupport::TestCase
+class WorkoutHistoryModelTest < ActiveSupport::TestCase
   setup do
     @user = users(:mathew)
     @workout = workouts(:fran)

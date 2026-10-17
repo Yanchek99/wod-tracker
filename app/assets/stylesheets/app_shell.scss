@@ -30,7 +30,7 @@ body.app-shell {
   display: flex;
   align-items: center;
   gap: .75rem;
-  padding: calc(.75rem + env(safe-area-inset-top)) 1rem .75rem;
+  padding: calc(.75rem + env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .75rem max(1rem, env(safe-area-inset-left));
   background: rgba(#fff, .92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid $border-hairline;
@@ -54,7 +54,7 @@ body.app-shell {
 }
 
 .app-content {
-  padding: 1rem 1rem 1.5rem;
+  padding: 1rem max(1rem, env(safe-area-inset-right)) 1.5rem max(1rem, env(safe-area-inset-left));
 
   // Existing pages bring their own .container; let the shell own the width instead.
   .container {
@@ -72,7 +72,7 @@ body.app-shell {
   display: flex;
   background: #fff;
   border-top: 1px solid $border-hairline;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
   a {
     flex: 1;
@@ -123,7 +123,7 @@ body.app-shell {
     width: $sidebar-width;
     display: flex;
     flex-direction: column;
-    padding: 1rem .75rem;
+    padding: 1rem .75rem 1rem max(.75rem, env(safe-area-inset-left));
     background: #fafbfc;
     border-right: 1px solid $border-hairline;
   }
@@ -135,7 +135,7 @@ body.app-shell {
   .app-content {
     max-width: 78rem;
     margin: 0 auto;
-    padding: 1.75rem 2rem 3rem;
+    padding: 1.75rem max(2rem, env(safe-area-inset-right)) 3rem 2rem;
   }
 
   .app-content--wide {

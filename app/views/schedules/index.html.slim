@@ -37,12 +37,12 @@
           .panel-label Your history with #{workout.name}
           .stat
             span.text-muted Last result
-            b #{log_score_msg(history.last_log) || 'Logged'} · #{history.last_log.created_at.strftime('%b %-d')}
+            b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
           - if history.best_log
             .stat
               span.text-muted Best
               b
-                | #{log_score_msg(history.best_log)} 
+                | #{logged_result_msg(history.best_log)} 
                 span.chip.chip-pr PR
           .stat
             span.text-muted Times logged

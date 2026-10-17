@@ -8,4 +8,9 @@ module SchedulesHelper
   def workout_chips(workout)
     [SCORE_CHIPS[workout.score_type.to_s], ("Time cap #{workout.time_cap}" if workout.time_cap_seconds.present?)].compact
   end
+
+  # An unscored log has no result to show; log_score_msg would render it as "1 time".
+  def logged_result_msg(log)
+    log.score_value.nil? ? 'Logged' : log_score_msg(log)
+  end
 end

@@ -77,6 +77,18 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     assert_select '.empty-state', text: /No schedules/
   end
 
+  test 'index history panel says Logged for an unscored result and never crowns an unscored best' do
+    create_schedule_on('2026-08-10')
+    users(:mathew).logs.where(workout: workouts(:murph)).destroy_all
+    2.times { Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: 'time', score_value: nil) }
+
+    get schedules_url
+
+    assert_select '.workout-history', text: /Last result\s*Logged/
+    assert_select '.workout-history', text: /1 time/, count: 0
+    assert_select '.workout-history .chip-pr', count: 0
+  end
+
   private
 
   def create_schedule_on(date, workout: workouts(:murph))

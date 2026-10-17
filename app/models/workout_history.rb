@@ -21,6 +21,7 @@ class WorkoutHistory
   def best_log
     return if count < 2 || @logs.first.workout.score_weight?
 
-    @best_log ||= @logs.max_by(&:rank_value)
+    best = @logs.max_by(&:rank_value)
+    @best_log ||= best unless best.score_value.nil?
   end
 end

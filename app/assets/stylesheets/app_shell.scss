@@ -242,3 +242,16 @@ body.app-shell {
   line-height: 1.65rem;
   text-align: center;
 }
+
+// The workout builder's fixed toolbar must clear the tab bar on phones and the sidebar from md up.
+body.app-shell .workout-builder-toolbar {
+  bottom: calc(#{$tabbar-height} + env(safe-area-inset-bottom));
+  padding-bottom: .5rem;
+
+  @include media-breakpoint-up(md) {
+    bottom: 0;
+    left: $sidebar-width;
+    width: calc(100% - #{$sidebar-width});
+    padding-bottom: calc(.5rem + env(safe-area-inset-bottom));
+  }
+}

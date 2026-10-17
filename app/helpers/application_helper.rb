@@ -10,7 +10,7 @@ module ApplicationHelper
   end
 
   def user_initials(user)
-    [user.first_name, user.last_name].compact_blank.map { |part| part[0] }.join.upcase
+    [user.first_name, user.last_name].compact_blank.pluck(0).join.upcase
   end
 
   # Ids of movements whose forms should show the implement-count field. Memoized per request so

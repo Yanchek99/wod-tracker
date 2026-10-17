@@ -13,7 +13,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'link[data-turbo-track="reload"]'
     assert_select 'script[data-turbo-track="reload"]'
-    assert_select 'button.navbar-toggler[data-bs-toggle="collapse"][data-bs-target="#navbarSupportedContent"]'
+    assert_select 'button[data-bs-toggle="dropdown"]'
     assert_select 'a[href=?][data-turbo-method="delete"]', destroy_user_session_path
   end
 

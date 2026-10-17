@@ -1,7 +1,7 @@
 doctype html
 html lang="en"
   head
-    meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
     meta charset="utf-8"
 
     title WOD Tracker
@@ -11,29 +11,17 @@ html lang="en"
 
     = stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload'
     = javascript_include_tag 'application', 'data-turbo-track': 'reload', defer: true
-  body
+  body class=('app-shell' if user_signed_in?)
     - if user_signed_in?
-      nav.navbar.navbar-expand-sm.navbar-dark.bg-dark
-        .container-fluid
-          = link_to 'WODTracker', root_path, class: 'navbar-brand'
-          button.navbar-toggler type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-            span.navbar-toggler-icon
-          .collapse.navbar-collapse#navbarSupportedContent
-            .navbar-nav.me-auto
-              = link_to 'Schedule', schedules_path, class: nav_item_class(:schedules) unless Current.user.schedules.empty?
-              = link_to 'Programs', programs_path, class: nav_item_class(:programs)
-              = link_to 'Workouts', workouts_path, class: nav_item_class(:workouts)
-              = link_to 'PRs', family_user_personal_records_path(Current.user, family: 'weightlifting'), class: nav_item_class(:personal_records)
-              = link_to 'History', logs_path, class: nav_item_class(:logs)
-            .navbar-nav
-              .nav-item.dropdown
-                = link_to '#', class: 'nav-link dropdown-toggle', id: "navbarDropdownMenuLink", "data-bs-toggle": "dropdown", role: "button", aria: { expanded: "false" }
-                  i.fas.fa-user
-                .dropdown-menu.dropdown-menu-end aria-labelledby="navbarDropdownMenuLink"
-                  = link_to 'Admin', rails_admin_path, class: 'dropdown-item' if Current.user.admin?
-                  = link_to 'Edit Profile', edit_user_registration_path, class: 'dropdown-item'
-                  = link_to 'Logout', destroy_user_session_path, data: { turbo_method: :delete }, class: 'dropdown-item'
-    = render partial: 'flash', flash: flash
-    .mb-3
-    .container
-      = yield
+      = render 'layouts/sidebar'
+      .app-main
+        = render 'layouts/topbar'
+        main.app-content class=('app-content--wide' if content_for?(:wide))
+          = render partial: 'flash', flash: flash
+          = yield
+      = render 'layouts/tab_bar'
+    - else
+      = render partial: 'flash', flash: flash
+      .mb-3
+      .container
+        = yield

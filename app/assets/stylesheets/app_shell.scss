@@ -1,0 +1,257 @@
+// Signed-in shell: left sidebar from md up, compact top bar + bottom tab bar on phones.
+$sidebar-width: 14.5rem;
+$tabbar-height: 3.5rem;
+
+body.app-shell {
+  background: $surface-muted;
+  color: #0f172a;
+  font-feature-settings: "cv11", "ss01";
+  padding-bottom: calc(#{$tabbar-height} + env(safe-area-inset-bottom));
+
+  .icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: none;
+  }
+}
+
+.app-sidebar {
+  display: none;
+}
+
+.app-main {
+  min-width: 0;
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: calc(.75rem + env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .75rem max(1rem, env(safe-area-inset-left));
+  background: rgba(#fff, .92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid $border-hairline;
+}
+
+.app-topbar-title {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+
+.app-topbar-account {
+  padding: .45rem;
+  border: 1px solid $border-hairline;
+  border-radius: .5rem;
+  background: #fff;
+  color: $text-muted-ui;
+  line-height: 0;
+}
+
+.app-content {
+  padding: 1rem max(1rem, env(safe-area-inset-right)) 1.5rem max(1rem, env(safe-area-inset-left));
+
+  // Existing pages bring their own .container; let the shell own the width instead.
+  .container {
+    max-width: none;
+    padding-inline: 0;
+  }
+}
+
+.app-tabbar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid $border-hairline;
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+
+  a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .2rem;
+    height: $tabbar-height;
+    color: #94a3b8;
+    font-size: .65rem;
+    font-weight: 550;
+    text-decoration: none;
+
+    .icon {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    &.active {
+      color: $brand-green;
+    }
+  }
+}
+
+.app-account-menu {
+  --bs-dropdown-border-color: #{$border-hairline};
+  --bs-dropdown-border-radius: #{$radius-card};
+  --bs-dropdown-link-active-bg: #{$surface-muted};
+  --bs-dropdown-link-active-color: inherit;
+  box-shadow: 0 .5rem 1.5rem rgba(#000, .12);
+}
+
+@include media-breakpoint-up(md) {
+  body.app-shell {
+    padding-bottom: 0;
+  }
+
+  .app-tabbar,
+  .app-topbar {
+    display: none;
+  }
+
+  .app-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1030;
+    width: $sidebar-width;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem .75rem 1rem max(.75rem, env(safe-area-inset-left));
+    background: #fafbfc;
+    border-right: 1px solid $border-hairline;
+  }
+
+  .app-main {
+    margin-left: $sidebar-width;
+  }
+
+  .app-content {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 1.75rem max(2rem, env(safe-area-inset-right)) 3rem 2rem;
+  }
+
+  .app-content--wide {
+    max-width: none;
+  }
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .25rem .5rem 1.25rem;
+  color: inherit;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.app-logo {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: .45rem;
+  background: $brand-green;
+  color: #fff;
+  font-size: .85rem;
+  font-weight: 800;
+  line-height: 1.65rem;
+  text-align: center;
+}
+
+.app-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .45rem .55rem;
+    margin-bottom: 1px;
+    border-radius: .5rem;
+    color: #475569;
+    font-size: .875rem;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      background: #f1f3f5;
+    }
+
+    &.active {
+      background: #eef0f3;
+      color: #0f172a;
+
+      .icon {
+        color: $brand-green;
+      }
+    }
+  }
+}
+
+.app-nav-label {
+  padding: 1rem .55rem .25rem;
+  color: #94a3b8;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.app-user {
+  margin-top: auto;
+  padding-top: .75rem;
+  border-top: 1px solid $border-hairline;
+}
+
+.app-user-button {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  width: 100%;
+  padding: .45rem .5rem;
+  border: 0;
+  border-radius: .5rem;
+  background: transparent;
+  color: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  text-align: left;
+
+  &:hover {
+    background: #f1f3f5;
+  }
+}
+
+.app-avatar {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: $brand-green-hover;
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1.65rem;
+  text-align: center;
+}
+
+// The workout builder's fixed toolbar must clear the tab bar on phones and the sidebar from md up.
+body.app-shell .workout-builder-toolbar {
+  bottom: calc(#{$tabbar-height} + env(safe-area-inset-bottom));
+  padding-bottom: .5rem;
+
+  @include media-breakpoint-up(md) {
+    bottom: 0;
+    left: $sidebar-width;
+    width: calc(100% - #{$sidebar-width});
+    padding-bottom: calc(.5rem + env(safe-area-inset-bottom));
+  }
+}

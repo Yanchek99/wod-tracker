@@ -1,0 +1,5 @@
+.page-header
+  h1.page-header-title.d-none.d-md-block = title
+  - if local_assigns[:subtitle]
+    .page-header-subtitle = subtitle
+  .page-header-body = yield

@@ -1,0 +1,5 @@
+nav.app-tabbar aria-label="Primary"
+  - nav_items.each do |item|
+    = link_to item.path, class: ('active' if nav_active?(item)), aria: { current: ('page' if nav_active?(item)) } do
+      = icon(item.icon)
+      span = item.short_label

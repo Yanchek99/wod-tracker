@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AuthBackdropController from "./auth_backdrop_controller"
+application.register("auth-backdrop", AuthBackdropController)
+
 import ExerciseCardController from "./exercise_card_controller"
 application.register("exercise-card", ExerciseCardController)
 

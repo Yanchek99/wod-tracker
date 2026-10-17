@@ -11,7 +11,7 @@ html.auth-html lang="en"
 
     = stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload'
     = javascript_include_tag 'application', 'data-turbo-track': 'reload'
-  body.auth-page
+  body.auth-page data-controller="auth-backdrop"
     main.auth-shell
       .auth-brand
         .auth-logo W

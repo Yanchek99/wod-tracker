@@ -13,17 +13,20 @@ $input-border-width: $border-width;
 // Pre-auth screens (devise layout).
 $auth-green: #15803d;
 
-// iOS 26 Safari colors its status bar from the root background color at scroll position 0, and paints the
-// root canvas behind its floating toolbar, which sits below the layout viewport. So both ends of the page
-// are the root color: the gradient fades from dark green, through brand green, back to dark green.
+// iOS 26 Safari colors its status bar from the root background color at the top of the page and paints
+// the root canvas behind its floating toolbar at the end of the page. The root color starts as the
+// gradient's dark start (status bar) and auth_backdrop_controller.js switches it to the bright end near
+// the bottom of the page. The image is taller than the page so the toolbar area is covered at rest.
 $auth-green-dark: #052e16;
 
 html.auth-html {
-  background: $auth-green-dark linear-gradient(180deg, $auth-green-dark 0%, $auth-green 55%, $auth-green-dark 100%) no-repeat;
+  background: $auth-green-dark linear-gradient(180deg, $auth-green-dark 0%, $auth-green calc(100% - 15rem)) no-repeat;
+  background-size: 100% calc(100% + 15rem);
+  transition: background-color .2s;
 }
 
 body.auth-page {
-  min-height: 100vh;
+  min-height: calc(100vh + 7rem); // a toolbar's height of extra page, so the gradient (not the root color) is behind it at rest
   background: transparent;
   --bs-primary: #{$auth-green};
   --bs-primary-rgb: 21, 128, 61;

@@ -71,7 +71,10 @@ class SchedulesController < ApplicationController
 
   # One logs query serves every workout on the day: whether it was logged, the last result and the best.
   def workout_histories_for(schedules)
-    logs = Current.user.logs.where(workout_id: schedules.map(&:workout_id)).includes(:workout)
+    workouts = schedules.index_by(&:workout_id).transform_values(&:workout)
+    logs = Current.user.logs.where(workout_id: workouts.keys).to_a
+    # Reuse the schedules' already-loaded workouts so scoring a log doesn't reload their segments and exercises.
+    logs.each { |log| log.association(:workout).target = workouts[log.workout_id] }
     WorkoutHistory.for(logs)
   end
 

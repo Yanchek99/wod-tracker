@@ -17,7 +17,8 @@ class SchedulesController < ApplicationController
     @calendar_date = calendar_date_for(@date)
     @scheduled_dates = @schedules.posted_dates.pluck(:posted_at).map { |posted_at| calendar_date_for(posted_at) }
     @schedules = schedules_for_date
-    @logged_workout_ids = logged_workout_ids_for(@schedules)
+    @workout_histories = workout_histories_for(@schedules)
+    @today = @calendar_date == POSTED_AT_ZONE.today
   end
 
   # POST /schedules
@@ -68,9 +69,10 @@ class SchedulesController < ApplicationController
       )
   end
 
-  def logged_workout_ids_for(schedules)
-    workout_ids = schedules.map(&:workout_id)
-    Current.user.logs.where(workout_id: workout_ids).distinct.pluck(:workout_id)
+  # One logs query serves every workout on the day: whether it was logged, the last result and the best.
+  def workout_histories_for(schedules)
+    logs = Current.user.logs.where(workout_id: schedules.map(&:workout_id)).includes(:workout)
+    WorkoutHistory.for(logs)
   end
 
   def calendar_date_for(instant)

@@ -27,6 +27,13 @@ class Log < ApplicationRecord
     score_type
   end
 
+  # Higher is better: time scores are negated so the fastest log ranks highest; an unscored log ranks lowest.
+  def rank_value
+    return -Float::INFINITY if score_value.nil?
+
+    score_time? ? -score_value : score_value
+  end
+
   def score_value=(new_value)
     if new_value.is_a?(String) && new_value.include?(':')
       minutes, seconds = new_value.split(':', 2)

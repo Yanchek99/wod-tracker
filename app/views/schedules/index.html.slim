@@ -26,5 +26,5 @@
         .col-12
           .d-grid
             = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-outline-primary'
-            - if @logged_workout_ids.include?(schedule.workout_id)
+            - if @workout_histories.key?(schedule.workout_id)
               / = link_to 'See Previous Results', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-secondary'

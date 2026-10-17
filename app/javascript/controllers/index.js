@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AuthBackdropController from "./auth_backdrop_controller"
+application.register("auth-backdrop", AuthBackdropController)
+
 import ExerciseCardController from "./exercise_card_controller"
 application.register("exercise-card", ExerciseCardController)
 
@@ -33,6 +36,9 @@ application.register("nested-form", NestedFormController)
 
 import PasskeyController from "./passkey_controller"
 application.register("passkey", PasskeyController)
+
+import PasswordToggleController from "./password_toggle_controller"
+application.register("password-toggle", PasswordToggleController)
 
 import RepMaxRowController from "./rep_max_row_controller"
 application.register("rep-max-row", RepMaxRowController)

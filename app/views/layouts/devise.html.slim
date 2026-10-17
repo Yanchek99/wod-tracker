@@ -1,5 +1,5 @@
 doctype html
-html lang="en"
+html.auth-html lang="en"
   head
     meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
     meta charset="utf-8"
@@ -7,19 +7,19 @@ html lang="en"
     title WOD Tracker
     = csrf_meta_tags
     = csp_meta_tag
-    = render 'layouts/pwa_head'
+    = render 'layouts/pwa_head', theme_color: '#052E16'
 
     = stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload'
     = javascript_include_tag 'application', 'data-turbo-track': 'reload'
-  body
-    = render partial: 'flash', flash: flash
-    .container-fluid
-      .row.justify-content-center.mt-5
-        .col-11.col-sm-10.col-md-8.col-lg-6.col-xl-4
-          .card
-            .card-header
-              h2 = yield(:header)
-            .card-body
-              = yield
-          .text-center
-            = render "devise/shared/links"
+  body.auth-page data-controller="auth-backdrop"
+    main.auth-shell
+      .auth-brand
+        .auth-logo W
+        .auth-app-name WOD Tracker
+        .auth-tagline Log it. Track it. Beat it.
+      .card.auth-card
+        .card-body
+          h1.auth-title = yield(:header)
+          = render 'devise/shared/flash'
+          = yield
+      = render "devise/shared/links"

@@ -137,21 +137,14 @@
 }
 
 .schedule-exercises li {
-  padding: .3rem 0;
+  padding: .45rem 0;
+  border-top: 1px solid #f1f3f5;
 }
 
 .schedule-log {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
   margin-top: 1rem;
   padding: .65rem;
-
-  @include media-breakpoint-up(md) {
-    width: auto;
-    padding: .5rem 1rem;
-  }
 }
 
 .panel-label {

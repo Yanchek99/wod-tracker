@@ -32,30 +32,29 @@
           = render partial: 'exercises/exercises', locals: { workout: workout }
         = render partial: 'workouts/notes', locals: { workout: workout }
         = link_to 'Log workout', new_workout_log_path(workout), class: "btn btn-primary schedule-log #{'d-md-none' if @schedules.size == 1}"
-      .schedule-side
-        aside.workout-history
-          .panel-label Your history with #{workout.name}
+      - if history || index.zero?
+        .schedule-side
           - if history
-            .stat
-              span.text-muted Last result
-              b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
-            - if history.best_log
+            aside.workout-history
+              .panel-label Your history with #{workout.name}
               .stat
-                span.text-muted Best
-                b
-                  | #{logged_result_msg(history.best_log)} 
-                  span.chip.chip-pr PR
-            .stat
-              span.text-muted Times logged
-              b = history.count
-          - else
-            p.text-muted.mb-0 You haven't logged #{workout.name} yet.
-        - if index.zero?
-          aside.week-summary
-            .panel-label This week
-            .stat
-              span.text-muted Workouts logged
-              b #{@week.logged_count} of #{@week.scheduled_count}
-            .stat
-              span.text-muted New PRs
-              b = @week.new_pr_count
+                span.text-muted Last result
+                b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
+              - if history.best_log
+                .stat
+                  span.text-muted Best
+                  b
+                    | #{logged_result_msg(history.best_log)} 
+                    span.chip.chip-pr PR
+              .stat
+                span.text-muted Times logged
+                b = history.count
+          - if index.zero?
+            aside.week-summary
+              .panel-label This week
+              .stat
+                span.text-muted Workouts logged
+                b #{@week.logged_count} of #{@week.scheduled_count}
+              .stat
+                span.text-muted New PRs
+                b = @week.new_pr_count

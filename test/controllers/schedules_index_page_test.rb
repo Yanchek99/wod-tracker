@@ -40,7 +40,7 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     assert_select '.chip-today', text: 'Today'
   end
 
-  test 'index always shows a history panel, with an empty message until the workout is logged' do
+  test 'index shows a history panel only for workouts the user has logged' do
     create_schedule_on('2026-08-10')
     create_schedule_on('2026-08-11', workout: workouts(:fran))
 
@@ -51,9 +51,7 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
 
     get schedules_url(date: '2026-08-11')
 
-    assert_select '.workout-history', count: 1
-    assert_select '.workout-history', text: /You haven.t logged Fran yet/
-    assert_select '.workout-history .stat', count: 0
+    assert_select '.workout-history', count: 0
   end
 
   test 'index history panel shows best with a PR chip once a workout was logged twice' do

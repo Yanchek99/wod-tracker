@@ -96,6 +96,7 @@
 
 .schedule-main,
 .workout-history,
+.week-summary,
 .empty-state {
   padding: 1.1rem 1.25rem;
   border: 1px solid $border-hairline;
@@ -155,7 +156,14 @@
   text-transform: uppercase;
 }
 
-.workout-history .stat {
+.schedule-side {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.workout-history .stat,
+.week-summary .stat {
   display: flex;
   justify-content: space-between;
   gap: .75rem;

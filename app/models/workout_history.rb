@@ -24,4 +24,13 @@ class WorkoutHistory
     best = @logs.max_by(&:rank_value)
     @best_log ||= best unless best.score_value.nil?
   end
+
+  def logged_during?(period)
+    @logs.any? { |log| period.cover?(log.created_at) }
+  end
+
+  def best_during?(period)
+    best = best_log
+    best.present? && period.cover?(best.created_at)
+  end
 end

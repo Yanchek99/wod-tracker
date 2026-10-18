@@ -17,7 +17,7 @@
 - if @schedules.empty?
   .empty-state No schedules
 - else
-  - @schedules.each do |schedule|
+  - @schedules.each_with_index do |schedule, index|
     - workout = schedule.workout
     - history = @workout_histories[workout.id]
     article.schedule-card
@@ -32,18 +32,29 @@
           = render partial: 'exercises/exercises', locals: { workout: workout }
         = render partial: 'workouts/notes', locals: { workout: workout }
         = link_to 'Log workout', new_workout_log_path(workout), class: "btn btn-primary schedule-log #{'d-md-none' if @schedules.size == 1}"
-      - if history
-        aside.workout-history
-          .panel-label Your history with #{workout.name}
-          .stat
-            span.text-muted Last result
-            b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
-          - if history.best_log
-            .stat
-              span.text-muted Best
-              b
-                | #{logged_result_msg(history.best_log)} 
-                span.chip.chip-pr PR
-          .stat
-            span.text-muted Times logged
-            b = history.count
+      - if history || index.zero?
+        .schedule-side
+          - if history
+            aside.workout-history
+              .panel-label Your history with #{workout.name}
+              .stat
+                span.text-muted Last result
+                b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
+              - if history.best_log
+                .stat
+                  span.text-muted Best
+                  b
+                    | #{logged_result_msg(history.best_log)} 
+                    span.chip.chip-pr PR
+              .stat
+                span.text-muted Times logged
+                b = history.count
+          - if index.zero?
+            aside.week-summary
+              .panel-label This week
+              .stat
+                span.text-muted Workouts logged
+                b #{@week.logged_count} of #{@week.scheduled_count}
+              .stat
+                span.text-muted New PRs
+                b = @week.new_pr_count

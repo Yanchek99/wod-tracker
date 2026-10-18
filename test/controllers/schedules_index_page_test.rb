@@ -99,6 +99,31 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     assert_select '.schedule-stepper .btn-icon', count: 2
   end
 
+  test 'index shows a this-week panel with logged and scheduled counts' do
+    create_schedule_on('2026-08-10')
+    create_schedule_on('2026-08-12', workout: workouts(:fran))
+    users(:mathew).logs.where(workout: workouts(:murph)).destroy_all
+    Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: 'time', score_value: 3000,
+                created_at: Time.zone.local(2026, 8, 10, 20))
+
+    get schedules_url(date: '2026-08-10')
+
+    assert_select '.week-summary', count: 1
+    assert_select '.week-summary', text: /Workouts logged\s*1 of 2/
+    assert_select '.week-summary', text: /New PRs\s*0/
+  end
+
+  test 'index keeps one logs query with the this-week panel across several days' do
+    create_schedule_on('2026-08-10')
+    create_schedule_on('2026-08-12', workout: workouts(:fran))
+    queries = 0
+    counter = ->(*, payload) { queries += 1 if !payload[:cached] && payload[:sql].match?(/FROM "logs"/) }
+
+    ActiveSupport::Notifications.subscribed(counter, 'sql.active_record') { get schedules_url(date: '2026-08-10') }
+
+    assert_equal 1, queries
+  end
+
   private
 
   def create_schedule_on(date, workout: workouts(:murph))

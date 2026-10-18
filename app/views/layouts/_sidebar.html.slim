@@ -15,5 +15,7 @@ nav.app-sidebar aria-label="Primary"
   .dropup.app-user
     button.app-user-button type="button" data-bs-toggle="dropdown" aria-expanded="false"
       span.app-avatar = user_initials(Current.user)
-      span.app-user-name = Current.user.name
+      span.app-user-text
+        span.app-user-name = Current.user.name
+        span.app-user-sub Account &amp; sign out
     = render 'layouts/account_menu'

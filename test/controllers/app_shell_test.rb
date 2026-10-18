@@ -40,6 +40,7 @@ class AppShellTest < ActionDispatch::IntegrationTest
 
     assert_select '.app-avatar', text: 'MF'
     assert_select '.app-user-name', text: 'Mathew Fraser'
+    assert_select '.app-user-sub', text: 'Account & sign out'
   end
 
   test 'old bootstrap navbar is gone' do

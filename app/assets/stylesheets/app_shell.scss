@@ -255,3 +255,24 @@ body.app-shell .workout-builder-toolbar {
     padding-bottom: calc(.5rem + env(safe-area-inset-bottom));
   }
 }
+
+.app-user-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.app-user-name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-user-sub {
+  color: $text-muted-ui;
+  font-size: .7rem;
+  font-weight: 400;
+}

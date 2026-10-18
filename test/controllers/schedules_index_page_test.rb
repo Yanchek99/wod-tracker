@@ -89,6 +89,16 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     assert_select '.workout-history .chip-pr', count: 0
   end
 
+  test 'index renders the page header as a full-width bar above the content with both day buttons' do
+    create_schedule_on('2026-08-10')
+
+    get schedules_url
+
+    assert_select '.app-main > .page-header', count: 1
+    assert_select '.app-main > main.app-content .page-header', count: 0
+    assert_select '.schedule-stepper .btn-icon', count: 2
+  end
+
   private
 
   def create_schedule_on(date, workout: workouts(:murph))

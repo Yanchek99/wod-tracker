@@ -15,7 +15,13 @@
   flex-wrap: wrap;
   align-items: center;
   gap: .75rem 1rem;
-  margin-bottom: 1.25rem;
+  padding: .75rem max(1rem, env(safe-area-inset-right)) .75rem max(1rem, env(safe-area-inset-left));
+  background: #fff;
+  border-bottom: 1px solid $border-hairline;
+
+  @include media-breakpoint-up(md) {
+    padding: 1rem 2rem;
+  }
 }
 
 .page-header-title {

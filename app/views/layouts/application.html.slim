@@ -16,6 +16,7 @@ html lang="en"
       = render 'layouts/sidebar'
       .app-main
         = render 'layouts/topbar'
+        = yield :page_header
         main.app-content class=('app-content--wide' if content_for?(:wide))
           = render partial: 'flash', flash: flash
           = yield

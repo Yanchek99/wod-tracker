@@ -2,14 +2,14 @@
 = render layout: 'shared/page_header', locals: { title: 'Schedule' } do
   - unless @schedules.empty?
     .schedule-stepper
-      = link_to_next_page @dates, icon(:chevron_left), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Previous day'
+      = day_step_button link_to_next_page(@dates, icon(:chevron_left), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Previous day'), :chevron_left, 'Previous day'
       .schedule-date data-controller="schedule-date-picker" data-schedule-date-picker-date-value=@calendar_date.iso8601 data-schedule-date-picker-scheduled-value=@scheduled_dates.to_json
         h3.schedule-date-picker-trigger data-toggle=true
           = @calendar_date.strftime('%A %B %e, %Y')
         input type="hidden" data-input=true
       - if @today
         span.chip.chip-today Today
-      = link_to_prev_page @dates, icon(:chevron_right), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Next day'
+      = day_step_button link_to_prev_page(@dates, icon(:chevron_right), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Next day'), :chevron_right, 'Next day'
 - if @schedules.empty?
   .empty-state No schedules
 - else

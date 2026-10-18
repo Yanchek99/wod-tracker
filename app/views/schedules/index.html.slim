@@ -10,10 +10,6 @@
       - if @today
         span.chip.chip-today Today
       = link_to_prev_page @dates, icon(:chevron_right), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Next day'
-    - if @schedules.size == 1
-      = link_to new_workout_log_path(@schedules.first.workout), class: 'btn btn-primary ms-md-auto d-none d-md-inline-flex' do
-        = icon(:plus, class: 'me-1')
-        | Log workout
 - if @schedules.empty?
   .empty-state No schedules
 - else
@@ -31,7 +27,9 @@
         ul.list-unstyled.schedule-exercises
           = render partial: 'exercises/exercises', locals: { workout: workout }
         = render partial: 'workouts/notes', locals: { workout: workout }
-        = link_to 'Log workout', new_workout_log_path(workout), class: "btn btn-primary schedule-log #{'d-md-none' if @schedules.size == 1}"
+        = link_to new_workout_log_path(workout), class: 'btn btn-primary schedule-log' do
+          = icon(:plus, class: 'me-1')
+          | Log workout
       - if history
         aside.workout-history
           .panel-label Your history with #{workout.name}

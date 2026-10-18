@@ -136,9 +136,17 @@
 }
 
 .schedule-log {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   margin-top: 1rem;
   padding: .65rem;
+
+  @include media-breakpoint-up(md) {
+    width: auto;
+    padding: .5rem 1rem;
+  }
 }
 
 .panel-label {

@@ -7,16 +7,16 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     sign_in users(:mathew)
   end
 
-  test 'index shows the header log action for a single scheduled workout' do
+  test 'index puts the log action inside the workout card, not the page header' do
     create_schedule_on('2026-08-10')
 
     get schedules_url
 
-    assert_select '.page-header a[href=?]', new_workout_log_path(workouts(:murph)), text: /Log workout/
-    assert_select '.schedule-card a.schedule-log', count: 1
+    assert_select '.page-header a[href*="/logs/new"]', count: 0
+    assert_select '.schedule-card .schedule-main a.schedule-log[href=?]', new_workout_log_path(workouts(:murph)), text: /Log workout/
   end
 
-  test 'index puts a log button on each card and none in the header when a day has several workouts' do
+  test 'index gives each workout its own log button when a day has several workouts' do
     create_schedule_on('2026-08-10')
     create_schedule_on('2026-08-10', workout: workouts(:fran))
 

@@ -10,10 +10,6 @@
       - if @today
         span.chip.chip-today Today
       = day_step_button link_to_prev_page(@dates, icon(:chevron_right), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Next day'), :chevron_right, 'Next day'
-    - if @schedules.size == 1
-      = link_to new_workout_log_path(@schedules.first.workout), class: 'btn btn-primary ms-md-auto d-none d-md-inline-flex align-items-center' do
-        = icon(:plus, class: 'me-1')
-        | Log workout
 - if @schedules.empty?
   .empty-state No schedules
 - else
@@ -21,17 +17,21 @@
     - workout = schedule.workout
     - history = @workout_histories[workout.id]
     article.schedule-card
-      .schedule-main
-        .schedule-program = link_to schedule.program.name, schedule.program
-        h2.schedule-workout-name = workout.name
-        .chips
-          - workout_chips(workout).each do |chip|
-            span.chip = chip
-        p.schedule-objective = workout_objective workout
-        ul.list-unstyled.schedule-exercises
-          = render partial: 'exercises/exercises', locals: { workout: workout }
-        = render partial: 'workouts/notes', locals: { workout: workout }
-        = link_to 'Log workout', new_workout_log_path(workout), class: "btn btn-primary schedule-log #{'d-md-none' if @schedules.size == 1}"
+      .schedule-primary
+        .schedule-main
+          .schedule-program = link_to schedule.program.name, schedule.program
+          h2.schedule-workout-name = workout.name
+          .chips
+            - workout_chips(workout).each do |chip|
+              span.chip = chip
+          p.schedule-objective = workout_objective workout
+          ul.list-unstyled.schedule-exercises
+            = render partial: 'exercises/exercises', locals: { workout: workout }
+          = render partial: 'workouts/notes', locals: { workout: workout }
+          = link_to 'Log workout', new_workout_log_path(workout), class: 'btn btn-primary schedule-log d-md-none'
+        = link_to new_workout_log_path(workout), class: 'btn btn-primary schedule-log-desktop d-none d-md-inline-flex align-items-center' do
+          = icon(:plus, class: 'me-1')
+          | Log workout
       - if history || index.zero?
         .schedule-side
           - if history

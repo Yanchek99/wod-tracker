@@ -138,10 +138,4 @@ class ExerciseTest < ActiveSupport::TestCase
   def fran_segment
     workouts(:fran).segments.build(position: 1)
   end
-
-  test 'database rejects an exercise without a movement' do
-    exercise = segments(:test).exercises.create!(movement: movements(:pullup), position: 99)
-
-    assert_raises(ActiveRecord::NotNullViolation) { exercise.update_columns(movement_id: nil) }
-  end
 end

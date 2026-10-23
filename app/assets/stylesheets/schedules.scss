@@ -144,7 +144,9 @@
 .schedule-log-desktop {
   width: 100%;
   margin-top: 1rem;
-  padding: .65rem;
+  padding: .85rem 1.25rem;
+  border-radius: $radius-card;
+  font-weight: 600;
 }
 
 .schedule-log {

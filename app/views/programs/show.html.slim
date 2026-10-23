@@ -20,5 +20,5 @@
     .program-date = date.strftime('%a, %b %-d')
     - schedules.each do |schedule|
       article.schedule-card.schedule-card--solo
-        = render 'schedules/workout_card', schedule: schedule, show_program: false, log_button: @role.present?
+        = render 'schedules/workout_card', schedule: schedule, show_program: false, log_button: @role.present?, log_inside: true
   = paginate @schedules

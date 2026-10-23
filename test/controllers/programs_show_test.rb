@@ -20,6 +20,13 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
     assert_select '.schedule-workout-panel', count: 0
   end
 
+  test 'the Log workout button sits inside the workout card at every width, not under it' do
+    get program_url(programs(:crossfit))
+
+    assert_select '.schedule-main a.schedule-log:not(.d-md-none)', minimum: 1
+    assert_select '.schedule-log-desktop', count: 0
+  end
+
   test 'owner sees Delete with a confirm that spells out what goes, and the Schedule workout panel' do
     program = owned_program('Mine')
     schedule_on(program, workouts(:fran), 2.days.ago)

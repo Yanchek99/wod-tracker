@@ -20,6 +20,19 @@ class ProgramSchedulesTest < ActionDispatch::IntegrationTest
     assert_select 'a[href=?]', program_path(@program), text: 'Cancel'
   end
 
+  test 'the workout select is searchable and a new workout can be created from here' do
+    get new_program_schedule_url(@program)
+
+    assert_select 'select[data-controller="searchable-select"][name="schedule[workout_id]"]'
+    assert_select 'a[href=?]', new_workout_path(schedule_program_id: @program.id), text: /Create a new workout/
+  end
+
+  test 'a workout id in the URL is preselected' do
+    get new_program_schedule_url(@program, workout_id: workouts(:fran).id)
+
+    assert_select 'select[name="schedule[workout_id]"] option[selected][value=?]', workouts(:fran).id.to_s
+  end
+
   test 'coach can schedule too' do
     coached = Program.create!(name: 'Coached')
     coached.subscriptions.create!(user: @user, role: :coach)

@@ -19,8 +19,9 @@
   background: #fff;
   border-bottom: 1px solid $border-hairline;
 
+  // The bar spans the page but its content lines up with the (max-width, centered) content below it.
   @include media-breakpoint-up(md) {
-    padding: 1rem 2rem;
+    padding: 1rem max(2rem, calc((100% - #{$content-max-width}) / 2 + 2rem));
   }
 }
 

@@ -3,7 +3,7 @@ class ProgramSchedulesController < ApplicationController
   before_action :set_program
 
   def new
-    @schedule = @program.schedules.build
+    @schedule = @program.schedules.build(workout_id: params[:workout_id])
     authorize! :create, @schedule
   end
 

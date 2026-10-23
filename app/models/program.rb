@@ -4,5 +4,5 @@ class Program < ApplicationRecord
   has_many :subscriptions, dependent: :destroy
   has_many :users, through: :subscriptions
 
-  validates :name, uniqueness: true
+  validates :name, presence: true, uniqueness: true
 end

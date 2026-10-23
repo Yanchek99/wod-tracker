@@ -34,3 +34,119 @@
 form.button_to {
   display: inline;
 }
+
+.program-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+
+  @include media-breakpoint-up(md) {
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+.program-list {
+  border: 1px solid $border-hairline;
+  border-radius: $radius-card;
+  background: #fff;
+  overflow: hidden;
+}
+
+.program-group-label {
+  padding: 1rem 1.5rem .4rem;
+  color: #94a3b8;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.program-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "icon info" "actions actions";
+  gap: .9rem 1rem;
+  align-items: center;
+  padding: 1.1rem 1.25rem;
+  border-top: 1px solid #f1f3f5;
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "icon info actions";
+    padding: 1.25rem 1.5rem;
+    gap: 1.1rem;
+  }
+}
+
+.program-group-label + .program-row,
+.program-list > .program-row:first-child {
+  border-top: 0;
+}
+
+.program-icon {
+  grid-area: icon;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: .75rem;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.program-icon--followed {
+  background: #dcfce7;
+  color: $brand-green;
+}
+
+.program-info {
+  grid-area: info;
+  min-width: 0;
+}
+
+.program-name {
+  display: block;
+  color: #0f172a;
+  font-size: .95rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.program-facts {
+  margin-top: .2rem;
+  color: $text-muted-ui;
+  font-size: .8rem;
+
+  .icon {
+    width: .85rem;
+    height: .85rem;
+    vertical-align: -.1em;
+  }
+}
+
+.program-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+
+  .program-control {
+    flex: 1;
+    min-height: 2.75rem;
+  }
+
+  @include media-breakpoint-up(md) {
+    justify-content: flex-end;
+
+    .program-control {
+      flex: none;
+      min-height: 0;
+    }
+  }
+}

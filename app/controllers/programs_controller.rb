@@ -2,7 +2,7 @@ class ProgramsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @programs = Program.order(:name)
+    @rows = ProgramListing.for(Current.user)
   end
 
   def show; end

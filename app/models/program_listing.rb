@@ -11,22 +11,22 @@ class ProgramListing
     @user = user
   end
 
-  # Programs the user follows first, then the rest; each group alphabetical.
+  # Programs the user follows first, then the rest; each group alphabetical. Subscriptions are preloaded so the
+  # permission checks the views make per row don't query per program.
   def rows
-    programs = Program.order(:name).to_a
-    rows = programs.map { |program| row_for(program) }
+    rows = Program.includes(:subscriptions).order(:name).map { |program| row_for(program) }
     rows.partition(&:role).flatten
   end
 
   private
 
   def row_for(program)
-    Row.new(program: program, followers: follower_counts.fetch(program.id, 0), workouts: workout_counts.fetch(program.id, 0),
-            latest_posted_at: latest_posts[program.id], role: roles[program.id])
+    Row.new(program: program, followers: program.subscriptions.size, workouts: workout_counts.fetch(program.id, 0),
+            latest_posted_at: latest_posts[program.id], role: role_in(program))
   end
 
-  def follower_counts
-    @follower_counts ||= Subscription.group(:program_id).count
+  def role_in(program)
+    program.subscriptions.find { |subscription| subscription.user_id == @user.id }&.role
   end
 
   def workout_counts
@@ -35,9 +35,5 @@ class ProgramListing
 
   def latest_posts
     @latest_posts ||= Schedule.where(posted_at: ..Time.current).group(:program_id).maximum(:posted_at)
-  end
-
-  def roles
-    @roles ||= Subscription.where(user_id: @user.id).pluck(:program_id, :role).to_h
   end
 end

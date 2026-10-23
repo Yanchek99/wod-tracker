@@ -261,3 +261,14 @@ form.button_to {
     border-radius: .6rem;
   }
 }
+
+// Slimmer Log workout buttons on the program page (the Schedule page keeps its roomier ones).
+.schedule-card--solo {
+  .schedule-log,
+  .schedule-log-desktop {
+    margin-top: .6rem;
+    padding: .55rem 1rem;
+    border-radius: .65rem;
+    font-size: .875rem;
+  }
+}

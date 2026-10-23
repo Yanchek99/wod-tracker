@@ -1,0 +1,13 @@
+// Brand and surface tokens shared by the signed-out and signed-in screens. Imported before Bootstrap so
+// $primary recolors every .btn-primary, link and focus ring app-wide.
+$brand-green: #15803d;
+$brand-green-dark: #052e16;
+$brand-green-hover: #166534;
+$brand-green-active: #14532d;
+
+$surface-muted: #f6f7f8;
+$border-hairline: #e8ebef;
+$text-muted-ui: #64748b;
+$radius-card: .75rem;
+
+$primary: $brand-green;

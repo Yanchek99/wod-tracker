@@ -77,12 +77,6 @@ class User < ApplicationRecord
   end
 
   def best_log(workout_logs)
-    workout_logs.max_by { |log| log_rank_value(log) }
-  end
-
-  def log_rank_value(log)
-    return -Float::INFINITY if log.score_value.nil?
-
-    log.score_time? ? -log.score_value : log.score_value
+    workout_logs.max_by(&:rank_value)
   end
 end

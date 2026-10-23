@@ -5,7 +5,17 @@ class ProgramsController < ApplicationController
     @rows = ProgramListing.for(Current.user)
   end
 
-  def show; end
+  WORKOUTS_PER_PAGE = 10
+
+  def show
+    @role = @program.subscriptions.find_by(user_id: Current.user.id)&.role
+    @followers = @program.subscriptions.count
+    @workouts = @program.schedules.count
+    @schedules = @program.schedules.where(posted_at: ..Time.current).order(posted_at: :desc)
+                         .includes(workout: [:rich_text_notes, { segments: { exercises: :movement } }])
+                         .page(params[:page]).per(WORKOUTS_PER_PAGE)
+    @schedule_days = @schedules.group_by { |schedule| schedule.posted_at.in_time_zone(SchedulesController::POSTED_AT_ZONE).to_date }
+  end
 
   # GET /programs/new
   def new

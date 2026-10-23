@@ -44,10 +44,6 @@ class User < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
-  def subscribed?(program)
-    programs.include?(program)
-  end
-
   def logged_workout?(workout)
     workouts.find_by(id: workout.id).present?
   end

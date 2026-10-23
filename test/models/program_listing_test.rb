@@ -37,6 +37,18 @@ class ProgramListingTest < ActiveSupport::TestCase
     assert_equal past.posted_at.to_i, row_for(program).latest_posted_at.to_i
   end
 
+  test 'latest posted counts a workout scheduled for today before its 6pm Pacific anchor' do
+    zone = ActiveSupport::TimeZone['America/Los_Angeles']
+    program = programs(:crossfit)
+
+    travel_to zone.local(2026, 8, 10, 10) do
+      today = schedule(program, workouts(:murph), zone.local(2026, 8, 10, 18))
+      schedule(program, workouts(:fran), zone.local(2026, 8, 11, 18))
+
+      assert_equal today.posted_at.to_i, row_for(program).latest_posted_at.to_i
+    end
+  end
+
   test 'role is the users role, nil when not following' do
     assert_equal 'athlete', row_for(programs(:crossfit)).role
     assert_nil row_for(programs(:local_gym)).role

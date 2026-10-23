@@ -69,6 +69,18 @@ class ProgramsIndexTest < ActionDispatch::IntegrationTest
     assert_select row_for('Crossfit'), 'a.program-name[href=?]', program_path(programs(:crossfit))
   end
 
+  test 'following from the list returns to the list' do
+    post subscribe_program_url(programs(:local_gym)), headers: { 'HTTP_REFERER' => programs_url }
+
+    assert_redirected_to programs_url
+  end
+
+  test 'unfollowing from the list returns to the list' do
+    delete unsubscribe_program_url(programs(:crossfit)), headers: { 'HTTP_REFERER' => programs_url }
+
+    assert_redirected_to programs_url
+  end
+
   test 'header offers New program' do
     get programs_url
 

@@ -36,6 +36,6 @@ class ProgramListing
   end
 
   def latest_posts
-    @latest_posts ||= Schedule.where(posted_at: ..Time.current).group(:program_id).maximum(:posted_at)
+    @latest_posts ||= Schedule.posted_through_today.group(:program_id).maximum(:posted_at)
   end
 end

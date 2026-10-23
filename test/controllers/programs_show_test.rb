@@ -75,6 +75,21 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
     assert_select '.schedule-workout-name', text: 'Murph', count: 0
   end
 
+  test 'a workout scheduled for today shows before its 6pm Pacific anchor, tomorrows still does not' do
+    zone = SchedulesController::POSTED_AT_ZONE
+    program = owned_program('Today')
+
+    travel_to zone.local(2026, 8, 10, 10) do
+      schedule_on(program, workouts(:fran), zone.local(2026, 8, 10, 18))
+      schedule_on(program, workouts(:murph), zone.local(2026, 8, 11, 18))
+
+      get program_url(program)
+
+      assert_select '.schedule-card', count: 1
+      assert_select '.schedule-workout-name', text: 'Fran'
+    end
+  end
+
   test 'workouts are paginated ten to a page' do
     program = owned_program('Big')
     12.times { |i| schedule_on(program, workouts(:fran), (i + 1).days.ago) }

@@ -48,18 +48,18 @@ class ProgramsController < ApplicationController
 
   def subscribe
     @program.subscriptions.create(user: current_user, role: :athlete).save
-    redirect_to @program, status: :see_other
+    redirect_back_or_to @program, status: :see_other
   end
 
   def unsubscribe
     @program.subscriptions.find_by(user: current_user).destroy
-    redirect_to @program, status: :see_other
+    redirect_back_or_to @program, status: :see_other
   end
 
   private
 
   def load_past_schedules
-    @schedules = @program.schedules.where(posted_at: ..Time.current).order(posted_at: :desc)
+    @schedules = @program.schedules.posted_through_today.order(posted_at: :desc)
                          .includes(workout: [:rich_text_notes, { segments: { exercises: :movement } }])
                          .page(params[:page]).per(WORKOUTS_PER_PAGE)
     @schedule_days = @schedules.group_by { |schedule| schedule.posted_at.in_time_zone(SchedulesController::POSTED_AT_ZONE).to_date }

@@ -18,7 +18,7 @@
         .program-row
           .program-icon class=('program-icon--followed' if row.role) = icon(:clipboard_list)
           .program-info
-            = link_to row.program.name, row.program, class: 'program-name'
+            = link_to row.program.name, row.program, class: 'program-name stretched-link'
             .program-facts
               = icon(:user)
               |  #{pluralize(row.followers, 'follower')} · #{pluralize(row.workouts, 'workout')}

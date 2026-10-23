@@ -81,6 +81,13 @@ class ProgramsIndexTest < ActionDispatch::IntegrationTest
     assert_redirected_to programs_url
   end
 
+  test 'the whole row is clickable through the name link, with the actions kept above it' do
+    get programs_url
+
+    assert_select row_for('Crossfit'), 'a.program-name.stretched-link[href=?]', program_path(programs(:crossfit))
+    assert_select row_for('Crossfit'), '.program-actions'
+  end
+
   test 'header offers New program' do
     get programs_url
 

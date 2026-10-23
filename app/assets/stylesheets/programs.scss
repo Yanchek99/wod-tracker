@@ -24,6 +24,11 @@
   color: #166534;
 }
 
+.program-control,
+.program-actions form {
+  pointer-events: auto;
+}
+
 .program-control {
   display: inline-flex;
   align-items: center;
@@ -65,6 +70,7 @@ form.button_to {
 }
 
 .program-row {
+  position: relative; // anchors the name link's stretched click area
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas: "icon info" "actions actions";
@@ -108,6 +114,10 @@ form.button_to {
   min-width: 0;
 }
 
+.program-row:hover {
+  background: #fafbfc;
+}
+
 .program-name {
   display: block;
   color: #0f172a;
@@ -130,6 +140,9 @@ form.button_to {
 }
 
 .program-actions {
+  position: relative;
+  z-index: 2; // above the stretched name link so the buttons keep their own clicks
+  pointer-events: none; // the pill and the gaps pass clicks through to the row link
   grid-area: actions;
   display: flex;
   align-items: center;

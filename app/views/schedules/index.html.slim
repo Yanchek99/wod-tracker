@@ -29,7 +29,7 @@
             = render partial: 'exercises/exercises', locals: { workout: workout }
           = render partial: 'workouts/notes', locals: { workout: workout }
           = link_to 'Log workout', new_workout_log_path(workout), class: 'btn btn-primary schedule-log d-md-none'
-        = link_to new_workout_log_path(workout), class: 'btn btn-primary schedule-log-desktop d-none d-md-inline-flex align-items-center' do
+        = link_to new_workout_log_path(workout), class: 'btn btn-primary schedule-log-desktop d-none d-md-flex align-items-center justify-content-center' do
           = icon(:plus, class: 'me-1')
           | Log workout
       - if history || index.zero?

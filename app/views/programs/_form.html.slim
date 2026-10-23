@@ -1,7 +1,6 @@
-= simple_form_for @program, wrapper: :input_group do |f|
-  = f.error_notification
-  .form-inputs.row
-    .col-12 = f.input :name
-  .form-actions.d-grid.gap-2
-    = f.button :submit, class: 'btn btn-success'
-    = link_to 'Cancel', @program, class: 'btn btn-secondary'
+.form-card
+  = simple_form_for program do |f|
+    = f.input :name, required: false, placeholder: 'e.g. Mainsite Strength', input_html: { autofocus: true }
+    .d-flex.gap-2.mt-4
+      = f.button :submit, 'Create program', class: 'btn btn-primary'
+      = link_to 'Cancel', programs_path, class: 'btn btn-outline-secondary'

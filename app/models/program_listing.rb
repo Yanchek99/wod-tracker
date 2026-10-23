@@ -26,7 +26,9 @@ class ProgramListing
   end
 
   def role_in(program)
-    program.subscriptions.find { |subscription| subscription.user_id == @user.id }&.role
+    subscription = program.subscriptions.find { |candidate| candidate.user_id == @user.id }
+    # Roleless legacy subscriptions behave as athletes until the backfill has run everywhere.
+    subscription && (subscription.role || 'athlete')
   end
 
   def workout_counts

@@ -8,7 +8,8 @@ class ProgramsController < ApplicationController
   WORKOUTS_PER_PAGE = 10
 
   def show
-    @role = @program.subscriptions.find_by(user_id: Current.user.id)&.role
+    subscription = @program.subscriptions.find_by(user_id: Current.user.id)
+    @role = subscription && (subscription.role || 'athlete')
     @followers = @program.subscriptions.count
     @workouts = @program.schedules.count
     load_past_schedules
@@ -29,7 +30,7 @@ class ProgramsController < ApplicationController
         format.html { redirect_to @program, notice: t('.notice') }
         format.json { render :show, status: :created, location: @program }
       else
-        format.html { render :new }
+        format.html { render :new, status: :unprocessable_content }
         format.json { render json: @program.errors, status: :unprocessable_content }
       end
     end

@@ -242,3 +242,22 @@ form.button_to {
 .schedule-card--solo {
   grid-template-columns: minmax(0, 1fr);
 }
+
+.form-card {
+  max-width: 28rem;
+  padding: 1.5rem;
+  border: 1px solid $border-hairline;
+  border-radius: $radius-card;
+  background: #fff;
+
+  .form-control,
+  .form-select {
+    padding: .6rem .75rem;
+    border-radius: .5rem;
+  }
+
+  .btn {
+    padding: .6rem 1rem;
+    border-radius: .6rem;
+  }
+}

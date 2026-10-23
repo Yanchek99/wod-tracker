@@ -11,10 +11,7 @@ class ProgramsController < ApplicationController
     @role = @program.subscriptions.find_by(user_id: Current.user.id)&.role
     @followers = @program.subscriptions.count
     @workouts = @program.schedules.count
-    @schedules = @program.schedules.where(posted_at: ..Time.current).order(posted_at: :desc)
-                         .includes(workout: [:rich_text_notes, { segments: { exercises: :movement } }])
-                         .page(params[:page]).per(WORKOUTS_PER_PAGE)
-    @schedule_days = @schedules.group_by { |schedule| schedule.posted_at.in_time_zone(SchedulesController::POSTED_AT_ZONE).to_date }
+    load_past_schedules
   end
 
   # GET /programs/new
@@ -59,6 +56,13 @@ class ProgramsController < ApplicationController
   end
 
   private
+
+  def load_past_schedules
+    @schedules = @program.schedules.where(posted_at: ..Time.current).order(posted_at: :desc)
+                         .includes(workout: [:rich_text_notes, { segments: { exercises: :movement } }])
+                         .page(params[:page]).per(WORKOUTS_PER_PAGE)
+    @schedule_days = @schedules.group_by { |schedule| schedule.posted_at.in_time_zone(SchedulesController::POSTED_AT_ZONE).to_date }
+  end
 
   # Only allow a list of trusted parameters through.
   def program_params

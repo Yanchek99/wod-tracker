@@ -1,0 +1,36 @@
+// Programs list and program page.
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: .2rem .65rem;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.role-pill--owner {
+  background: #14532d;
+  color: #fff;
+}
+
+.role-pill--coach {
+  background: #e0ecff;
+  color: #1e40af;
+}
+
+.role-pill--athlete {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.program-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+form.button_to {
+  display: inline;
+}

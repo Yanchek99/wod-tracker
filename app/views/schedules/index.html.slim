@@ -17,21 +17,7 @@
     - workout = schedule.workout
     - history = @workout_histories[workout.id]
     article.schedule-card
-      .schedule-primary
-        .schedule-main
-          .schedule-program = link_to schedule.program.name, schedule.program
-          h2.schedule-workout-name = workout.name
-          .chips
-            - workout_chips(workout).each do |chip|
-              span.chip = chip
-          p.schedule-objective = workout_objective workout
-          ul.list-unstyled.schedule-exercises
-            = render partial: 'exercises/exercises', locals: { workout: workout }
-          = render partial: 'workouts/notes', locals: { workout: workout }
-          = link_to 'Log workout', new_workout_log_path(workout), class: 'btn btn-primary schedule-log d-md-none'
-        = link_to new_workout_log_path(workout), class: 'btn btn-primary schedule-log-desktop d-none d-md-flex align-items-center justify-content-center' do
-          = icon(:plus, class: 'me-1')
-          | Log workout
+      = render 'schedules/workout_card', schedule: schedule
       - if history || index.zero?
         .schedule-side
           - if history

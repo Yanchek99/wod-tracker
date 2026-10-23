@@ -1,4 +1,5 @@
-.container
-  h1 New Program
-  = render 'form', program: @program
-  = link_to 'Back', programs_path
+- content_for :title, 'Programs'
+- content_for :page_header do
+  .page-header.program-header
+    h1.program-title New program
+= render 'form', program: @program

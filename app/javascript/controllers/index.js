@@ -46,6 +46,9 @@ application.register("rep-max-row", RepMaxRowController)
 import ScheduleDatePickerController from "./schedule_date_picker_controller"
 application.register("schedule-date-picker", ScheduleDatePickerController)
 
+import SearchableSelectController from "./searchable_select_controller"
+application.register("searchable-select", SearchableSelectController)
+
 import SegmentCardController from "./segment_card_controller"
 application.register("segment-card", SegmentCardController)
 

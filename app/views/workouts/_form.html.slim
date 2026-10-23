@@ -1,9 +1,11 @@
 - cancel_path = @workout.persisted? ? workout_path(@workout) : workouts_path
-- toggle_path = @workout.persisted? ? edit_unstructured_workout_path(@workout) : new_unstructured_workouts_path
+- schedule_program_id = params[:schedule_program_id].presence
+- toggle_path = @workout.persisted? ? edit_unstructured_workout_path(@workout) : new_unstructured_workouts_path(schedule_program_id: schedule_program_id)
 - ladder_segment = @workout.segments.first
 - ladder_hidden = ladder_segment.blank? || ladder_segment.time_seconds.blank? || ladder_segment.rounds.present? || ladder_segment.interval_scheme.present?
 
 = simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form', data: { controller: 'ladder-fields' } } do |f|
+  = hidden_field_tag :schedule_program_id, schedule_program_id if schedule_program_id
   - tooltip_button = ->(title) { content_tag(:button, content_tag(:i, '', class: 'fa-solid fa-circle-info', aria: { hidden: true }), type: 'button', class: 'workout-form__help', data: { controller: 'tooltip', 'bs-animation': false, 'bs-toggle': 'tooltip', 'bs-title': title }, aria: { label: title }) }
   - field_label = ->(attribute, label, title) do
     - safe_join([f.label(attribute, label, class: 'form-label mb-0'), tooltip_button.call(title)], ' ')

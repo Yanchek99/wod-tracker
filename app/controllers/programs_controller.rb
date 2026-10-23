@@ -2,10 +2,18 @@ class ProgramsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @programs = Program.order(:name)
+    @rows = ProgramListing.for(Current.user)
   end
 
-  def show; end
+  WORKOUTS_PER_PAGE = 10
+
+  def show
+    subscription = @program.subscriptions.find_by(user_id: Current.user.id)
+    @role = subscription && (subscription.role || 'athlete')
+    @followers = @program.subscriptions.count
+    @workouts = @program.schedules.count
+    load_past_schedules
+  end
 
   # GET /programs/new
   def new
@@ -22,7 +30,7 @@ class ProgramsController < ApplicationController
         format.html { redirect_to @program, notice: t('.notice') }
         format.json { render :show, status: :created, location: @program }
       else
-        format.html { render :new }
+        format.html { render :new, status: :unprocessable_content }
         format.json { render json: @program.errors, status: :unprocessable_content }
       end
     end
@@ -40,15 +48,22 @@ class ProgramsController < ApplicationController
 
   def subscribe
     @program.subscriptions.create(user: current_user, role: :athlete).save
-    redirect_to @program, status: :see_other
+    redirect_back_or_to @program, status: :see_other
   end
 
   def unsubscribe
     @program.subscriptions.find_by(user: current_user).destroy
-    redirect_to @program, status: :see_other
+    redirect_back_or_to @program, status: :see_other
   end
 
   private
+
+  def load_past_schedules
+    @schedules = @program.schedules.posted_through_today.order(posted_at: :desc)
+                         .includes(workout: [:rich_text_notes, { segments: { exercises: :movement } }])
+                         .page(params[:page]).per(WORKOUTS_PER_PAGE)
+    @schedule_days = @schedules.group_by { |schedule| schedule.posted_at.in_time_zone(SchedulesController::POSTED_AT_ZONE).to_date }
+  end
 
   # Only allow a list of trusted parameters through.
   def program_params

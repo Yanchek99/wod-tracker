@@ -1,0 +1,287 @@
+// Programs list and program page.
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: .2rem .65rem;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.role-pill--owner {
+  background: #14532d;
+  color: #fff;
+}
+
+.role-pill--coach {
+  background: #e0ecff;
+  color: #1e40af;
+}
+
+.role-pill--athlete {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.program-control,
+.program-actions form {
+  pointer-events: auto;
+}
+
+.program-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+form.button_to {
+  display: inline;
+}
+
+.program-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+
+  @include media-breakpoint-up(md) {
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+.program-list {
+  border: 1px solid $border-hairline;
+  border-radius: $radius-card;
+  background: #fff;
+  overflow: hidden;
+}
+
+.program-group-label {
+  padding: 1rem 1.5rem .4rem;
+  color: #94a3b8;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.program-row {
+  position: relative; // anchors the name link's stretched click area
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "icon info" "actions actions";
+  gap: .9rem 1rem;
+  align-items: center;
+  padding: 1.1rem 1.25rem;
+  border-top: 1px solid #f1f3f5;
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "icon info actions";
+    padding: 1.25rem 1.5rem;
+    gap: 1.1rem;
+  }
+}
+
+.program-group-label + .program-row,
+.program-list > .program-row:first-child {
+  border-top: 0;
+}
+
+.program-icon {
+  grid-area: icon;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: .75rem;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.program-icon--followed {
+  background: #dcfce7;
+  color: $brand-green;
+}
+
+.program-info {
+  grid-area: info;
+  min-width: 0;
+}
+
+.program-row:hover {
+  background: #fafbfc;
+}
+
+.program-name {
+  display: block;
+  color: #0f172a;
+  font-size: .95rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.program-facts {
+  margin-top: .2rem;
+  color: $text-muted-ui;
+  font-size: .8rem;
+
+  .icon {
+    width: .85rem;
+    height: .85rem;
+    vertical-align: -.1em;
+  }
+}
+
+.program-actions {
+  position: relative;
+  z-index: 2; // above the stretched name link so the buttons keep their own clicks
+  pointer-events: none; // the pill and the gaps pass clicks through to the row link
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+
+  .program-control {
+    flex: 1;
+    min-height: 2.75rem;
+  }
+
+  @include media-breakpoint-up(md) {
+    justify-content: flex-end;
+
+    .program-control {
+      flex: none;
+      min-height: 0;
+    }
+  }
+}
+
+.program-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "title pill" "facts facts" "control control";
+  align-items: center;
+  gap: .35rem .75rem;
+
+  .program-title {
+    grid-area: title;
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    overflow-wrap: anywhere;
+  }
+
+  .program-facts {
+    grid-area: facts;
+    margin: 0;
+  }
+
+  .role-pill {
+    grid-area: pill;
+  }
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "title pill control" "facts facts facts";
+    column-gap: 1rem;
+  }
+}
+
+.program-header-control {
+  grid-area: control;
+  display: flex;
+  gap: .5rem;
+  margin-top: .65rem;
+
+  .program-control,
+  form {
+    flex: 1;
+  }
+
+  .program-control {
+    width: 100%;
+  }
+
+  @include media-breakpoint-up(md) {
+    margin-top: 0;
+
+    .program-control,
+    form {
+      flex: none;
+      width: auto;
+    }
+  }
+}
+
+.schedule-workout-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+  padding: .7rem 1rem;
+  border: 1.5px dashed #c5ccd6;
+  border-radius: .75rem;
+  background: #fff;
+  color: $brand-green;
+  font-size: .9rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    border-color: $brand-green;
+    background: #f7fdf9;
+  }
+}
+
+.program-date {
+  margin: 1.5rem 0 .75rem;
+  color: #94a3b8;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.schedule-card--solo {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.form-card {
+  max-width: 28rem;
+  padding: 1.5rem;
+  border: 1px solid $border-hairline;
+  border-radius: $radius-card;
+  background: #fff;
+
+  .form-control,
+  .form-select {
+    padding: .6rem .75rem;
+    border-radius: .5rem;
+  }
+
+  .btn {
+    padding: .6rem 1rem;
+    border-radius: .6rem;
+  }
+}
+
+// Slimmer Log workout buttons on the program page (the Schedule page keeps its roomier ones).
+.schedule-card--solo {
+  .schedule-log,
+  .schedule-log-desktop {
+    margin-top: .6rem;
+    padding: .55rem 1rem;
+    border-radius: .65rem;
+    font-size: .875rem;
+  }
+}

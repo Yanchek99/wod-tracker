@@ -1,24 +1,24 @@
-.container
-  .row.my-2
-    .col
-      h1 = @program.name
-    .col.text-right
-      .btn-toolbar.justify-content-end
-        .btn-group role="group"
-          = link_to '+Follow', subscribe_program_path(@program), class: 'btn btn-primary', data: { turbo_method: :post } if can? :subscribe, @program
-          = link_to '+Unfollow', unsubscribe_program_path(@program), class: 'btn btn-warning', data: { turbo_method: :delete } if can? :unsubscribe, @program
-          = link_to 'Delete', program_path(@program), class: 'btn btn-danger', data: { turbo_method: :delete } if can? :destroy, @program
-  - @program.schedules.order(posted_at: :desc).each do |schedule|
-    h4.mb-3.border-bottom = local_time(schedule.posted_at, '%B %e, %Y')
-    .row
-      .col
-        b #{schedule.workout.name}
-    .row
-      p.col #{workout_objective schedule.workout}
-    .row
-      ul.list-unstyled.col
-        = render partial: 'exercises/exercises', locals: { workout: schedule.workout }
-    .row
-      .col.d-grid
-        = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-outline-primary' if Current.user.subscribed? @program
-    br
+- content_for :title, 'Programs'
+- content_for :page_header do
+  .page-header.program-header
+    h1.program-title = @program.name
+    .program-facts #{pluralize(@workouts, 'workout')} · #{pluralize(@followers, 'follower')}
+    = role_pill(@role)
+    .program-header-control
+      = render 'programs/control', program: @program, role: @role, workouts: @workouts, followers: @followers
+      - if can?(:destroy, @program) && @role != 'owner'
+        = button_to program_path(@program), method: :delete, class: 'btn btn-outline-danger program-control', form: { data: { turbo_confirm: delete_confirm_message(@program, workouts: @workouts, followers: @followers) } } do
+          | Delete
+- if can? :create, Schedule.new(program: @program)
+  = link_to new_program_schedule_path(@program), class: 'schedule-workout-panel' do
+    = icon(:plus)
+    span Schedule workout
+- if @schedules.empty?
+  .empty-state No workouts posted yet
+- else
+  - @schedule_days.each do |date, schedules|
+    .program-date = date.strftime('%a, %b %-d')
+    - schedules.each do |schedule|
+      article.schedule-card.schedule-card--solo
+        = render 'schedules/workout_card', schedule: schedule, show_program: false, log_button: @role.present?, log_inside: true
+  = paginate @schedules

@@ -191,7 +191,7 @@ form.button_to {
 
   @include media-breakpoint-up(md) {
     grid-template-columns: minmax(0, 1fr) auto auto;
-    grid-template-areas: "title pill control" "facts facts facts";
+    grid-template-areas: "title pill control" "facts pill control"; // pill and control center against the title and facts together
     column-gap: 1rem;
   }
 }

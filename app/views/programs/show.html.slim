@@ -16,9 +16,4 @@
 - if @schedules.empty?
   .empty-state No workouts posted yet
 - else
-  - @schedule_days.each do |date, schedules|
-    .program-date = date.strftime('%a, %b %-d')
-    - schedules.each do |schedule|
-      article.schedule-card.schedule-card--solo
-        = render 'schedules/workout_card', schedule: schedule, show_program: false, log_button: @role.present?, log_inside: true
-  = paginate @schedules
+  = render 'schedules_page', program: @program, schedules: @schedules, days: @schedule_days, previous_day: @previous_day, role: @role

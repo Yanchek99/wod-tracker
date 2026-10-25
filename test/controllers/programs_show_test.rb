@@ -97,20 +97,6 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'workouts are paginated ten to a page' do
-    program = owned_program('Big')
-    12.times { |i| schedule_on(program, workouts(:fran), (i + 1).days.ago) }
-
-    get program_url(program)
-
-    assert_select '.schedule-card', count: 10
-    assert_select 'ul.pagination'
-
-    get program_url(program, page: 2)
-
-    assert_select '.schedule-card', count: 2
-  end
-
   test 'workout cards omit the program name and group under date headings' do
     program = owned_program('Grouped')
     schedule_on(program, workouts(:fran), 2.days.ago)

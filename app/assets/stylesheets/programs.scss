@@ -285,3 +285,10 @@ form.button_to {
     font-size: .875rem;
   }
 }
+
+// Plain, unboxed message for an empty program page.
+.empty-note {
+  padding: 1.5rem 0;
+  color: $text-muted-ui;
+  text-align: center;
+}

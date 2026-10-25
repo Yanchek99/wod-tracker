@@ -112,7 +112,8 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
 
     get program_url(program)
 
-    assert_select '.empty-state', text: /No workouts posted yet/
+    assert_select '.empty-note', text: /No workouts posted yet/
+    assert_select '.empty-state', count: 0
   end
 
   private

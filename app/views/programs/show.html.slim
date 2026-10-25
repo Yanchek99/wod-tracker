@@ -14,6 +14,6 @@
     = icon(:plus)
     span Schedule workout
 - if @schedules.empty?
-  .empty-state No workouts posted yet
+  .empty-note No workouts posted yet
 - else
   = render 'schedules_page', program: @program, schedules: @schedules, days: @schedule_days, previous_day: @previous_day, role: @role

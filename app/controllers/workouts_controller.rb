@@ -64,7 +64,7 @@ class WorkoutsController < ApplicationController
     respond_to do |format|
       if @workout.save
         @workout = @workout.absorb_duplicate!
-        format.html { redirect_to @workout, notice: t('.notice') }
+        format.html { redirect_to after_create_path, notice: t('.notice') }
         format.json { render :show, status: :created, location: @workout }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -110,6 +110,14 @@ class WorkoutsController < ApplicationController
   end
 
   private
+
+  # A workout created from a program's Schedule workout form goes back to that form with it selected.
+  def after_create_path
+    program = Program.find_by(id: params[:schedule_program_id])
+    return @workout unless program && can?(:create, Schedule.new(program: program))
+
+    new_program_schedule_path(program, workout_id: @workout.id)
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_workout

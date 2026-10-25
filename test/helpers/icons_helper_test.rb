@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class IconsHelperTest < ActionView::TestCase
-  NAMES = %i[calendar dumbbell clipboard_list trophy history user chevron_left chevron_right plus log_out shield settings].freeze
+  NAMES = %i[calendar dumbbell clipboard_list trophy history user chevron_left chevron_right plus check log_out shield settings].freeze
 
   test 'icon renders an aria-hidden inline svg' do
     html = icon(:calendar)

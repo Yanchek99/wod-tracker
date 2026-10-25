@@ -1,0 +1,24 @@
+/ The workout card shared by the Schedule and program pages. Locals: schedule, show_program (default true), log_button (default true),
+/ log_inside (default false: the Log button sits under the card on desktop; true keeps it inside the card at every width).
+- workout = schedule.workout
+- show_program = local_assigns.fetch(:show_program, true)
+- log_button = local_assigns.fetch(:log_button, true)
+- log_inside = local_assigns.fetch(:log_inside, false)
+.schedule-primary
+  .schedule-main
+    - if show_program
+      .schedule-program = link_to schedule.program.name, schedule.program
+    h2.schedule-workout-name = workout.name
+    .chips
+      - workout_chips(workout).each do |chip|
+        span.chip = chip
+    p.schedule-objective = workout_objective workout
+    ul.list-unstyled.schedule-exercises
+      = render partial: 'exercises/exercises', locals: { workout: workout }
+    = render partial: 'workouts/notes', locals: { workout: workout }
+    - if log_button
+      = link_to 'Log workout', new_workout_log_path(workout), class: "btn btn-primary schedule-log #{'d-md-none' unless log_inside}"
+  - if log_button && !log_inside
+    = link_to new_workout_log_path(workout), class: 'btn btn-primary schedule-log-desktop d-none d-md-flex align-items-center justify-content-center' do
+      = icon(:plus, class: 'me-1')
+      | Log workout

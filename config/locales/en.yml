@@ -54,6 +54,9 @@ en:
   schedules:
     create:
       notice: Schedule was successfully created.
+  program_schedules:
+    create:
+      notice: Workout scheduled.
   programs:
     create:
       notice: Program was successfully created.

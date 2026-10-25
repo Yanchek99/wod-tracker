@@ -51,6 +51,7 @@ Rails.application.routes.draw do
       post :subscribe
       delete :unsubscribe
     end
+    resources :schedules, only: [:new, :create], controller: 'program_schedules'
   end
 
   resources :schedules, only: [:index, :create]

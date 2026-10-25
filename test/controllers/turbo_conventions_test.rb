@@ -29,19 +29,19 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     get program_url(programs(:local_gym))
 
     assert_response :success
-    assert_select 'a[href=?][data-turbo-method="post"]', subscribe_program_path(programs(:local_gym))
+    assert_select 'form[action=?]', subscribe_program_path(programs(:local_gym))
 
     subscriptions(:one).update!(role: :athlete)
     get program_url(programs(:crossfit))
 
     assert_response :success
-    assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit))
+    assert_select 'form[action=?] input[name="_method"][value="delete"]', unsubscribe_program_path(programs(:crossfit))
 
     subscriptions(:one).update!(role: :owner)
     get program_url(programs(:crossfit))
 
     assert_response :success
-    assert_select 'a[href=?][data-turbo-method="delete"]', program_path(programs(:crossfit))
+    assert_select 'form[action=?] input[name="_method"][value="delete"]', program_path(programs(:crossfit))
   end
 
   test 'program actions allow legacy roleless subscribers to unsubscribe' do
@@ -51,7 +51,7 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
     get program_url(programs(:crossfit))
 
     assert_response :success
-    assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit))
+    assert_select 'form[action=?] input[name="_method"][value="delete"]', unsubscribe_program_path(programs(:crossfit))
   end
 
   test 'program unsubscribe redirects to reload action buttons' do
@@ -62,8 +62,8 @@ class TurboConventionsTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
 
-    assert_select 'a[href=?][data-turbo-method="delete"]', unsubscribe_program_path(programs(:crossfit)), false
-    assert_select 'a[href=?][data-turbo-method="post"]', subscribe_program_path(programs(:crossfit))
+    assert_select 'form[action=?]', unsubscribe_program_path(programs(:crossfit)), false
+    assert_select 'form[action=?]', subscribe_program_path(programs(:crossfit))
   end
 
   test 'log deletion uses turbo method' do

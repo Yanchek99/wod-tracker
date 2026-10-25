@@ -133,7 +133,7 @@ body.app-shell {
   }
 
   .app-content {
-    max-width: 78rem;
+    max-width: $content-max-width;
     margin: 0 auto;
     padding: 1.75rem max(2rem, env(safe-area-inset-right)) 3rem 2rem;
   }

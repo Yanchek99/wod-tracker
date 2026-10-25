@@ -237,6 +237,13 @@ form.button_to {
   font-weight: 600;
   text-decoration: none;
 
+  // Balances the plus icon with an equal empty space on the right so the label itself is centered.
+  &::after {
+    content: "";
+    flex: none;
+    width: 1.1rem;
+  }
+
   &:hover {
     border-color: $brand-green;
     background: #f7fdf9;

@@ -38,4 +38,15 @@ class WorkoutShowPanelsTest < ApplicationSystemTestCase
 
     assert_selector '.workout-stimulus .workout-collapsible-body', visible: :visible
   end
+
+  test 'rotating a phone to landscape opens a locked Intended stimulus panel and disables its toggle' do
+    page.driver.browser.manage.window.resize_to(390, 900)
+    visit workout_path(@workout)
+    assert_selector '.workout-stimulus .workout-collapsible-body', visible: :hidden
+
+    page.driver.browser.manage.window.resize_to(900, 700)
+
+    assert_selector '.workout-stimulus .workout-collapsible-body', visible: :visible
+    assert_selector '.workout-stimulus button[disabled]'
+  end
 end

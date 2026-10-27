@@ -73,6 +73,13 @@ class WorkoutShowTest < ActionDispatch::IntegrationTest
     assert_select '.workout-notes .workout-collapsible-preview', text: 'Unbroken thrusters if you can.'
   end
 
+  test 'the Intended stimulus preview shows < and & as typed, not as entities' do
+    @workout.update!(intended_stimulus_notes: 'Pace < 2:00 & go')
+    get workout_url(@workout)
+
+    assert_select '.workout-stimulus .workout-collapsible-preview', text: 'Pace < 2:00 & go'
+  end
+
   test 'shows the intended stimulus panel when a range is present' do
     @workout.update!(intended_stimulus_notes: 'Fast and unbroken.')
     get workout_url(@workout)

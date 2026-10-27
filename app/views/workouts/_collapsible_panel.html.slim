@@ -5,6 +5,6 @@ aside.workout-panel.workout-collapsible class=css_class data-controller="collaps
   button.workout-collapsible-header type="button" data-action="collapsible-panel#toggle" data-collapsible-panel-target="toggle" aria-expanded="true"
     span.panel-label = title
     = icon(:chevron_down, class: 'workout-collapsible-chevron')
-    span.workout-collapsible-preview data-collapsible-panel-target="preview" = preview
+    span.workout-collapsible-preview = preview
   .workout-collapsible-body data-collapsible-panel-target="body"
     = yield

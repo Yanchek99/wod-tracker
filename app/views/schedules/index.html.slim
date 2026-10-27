@@ -16,31 +16,36 @@
   - @schedules.each_with_index do |schedule, index|
     - workout = schedule.workout
     - history = @workout_histories[workout.id]
-    article.schedule-card
-      = render 'schedules/workout_card', schedule: schedule
-      - if history || index.zero?
-        .schedule-side
-          - if history
-            aside.workout-history
-              .panel-label Your history with #{workout.name}
+    article.workout-show.schedule-card
+      .workout-show-main
+        = render(layout: 'workouts/card', locals: { workout: workout, program: schedule.program }) { '' }
+        = link_to new_workout_log_path(workout), class: 'btn btn-primary workout-log-button' do
+          = icon(:plus, class: 'me-1')
+          | Log workout
+      .workout-show-side
+        - if history
+          aside.workout-history
+            .panel-label Your history with #{workout.name}
+            .stat
+              span.text-muted Last result
+              b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
+            - if history.best_log
               .stat
-                span.text-muted Last result
-                b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
-              - if history.best_log
-                .stat
-                  span.text-muted Best
-                  b
-                    | #{logged_result_msg(history.best_log)} 
-                    span.chip.chip-pr PR
-              .stat
-                span.text-muted Times logged
-                b = history.count
-          - if index.zero?
-            aside.week-summary
-              .panel-label This week
-              .stat
-                span.text-muted Workouts logged
-                b #{@week.logged_count} of #{@week.scheduled_count}
-              .stat
-                span.text-muted New PRs
-                b = @week.new_pr_count
+                span.text-muted Best
+                b
+                  | #{logged_result_msg(history.best_log)} 
+                  span.chip.chip-pr PR
+            .stat
+              span.text-muted Times logged
+              b = history.count
+        = render 'workouts/stimulus_panel', workout: workout
+        = render 'workouts/notes_panel', workout: workout
+        - if index.zero?
+          aside.week-summary
+            .panel-label This week
+            .stat
+              span.text-muted Workouts logged
+              b #{@week.logged_count} of #{@week.scheduled_count}
+            .stat
+              span.text-muted New PRs
+              b = @week.new_pr_count

@@ -88,6 +88,15 @@
   margin-bottom: 1.25rem;
 }
 
+// Labels each workout when a day has several, so a card's own panels read as belonging to it.
+.schedule-position {
+  margin: 1.5rem 0 .6rem;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
 .workout-history,
 .week-summary,
 .empty-state {

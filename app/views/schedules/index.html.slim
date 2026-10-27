@@ -13,9 +13,12 @@
 - if @schedules.empty?
   .empty-state No schedules
 - else
+  - day_count = @schedules.load.size
   - @schedules.each_with_index do |schedule, index|
     - workout = schedule.workout
     - history = @workout_histories[workout.id]
+    - if day_count > 1
+      p.panel-label.schedule-position Workout #{index + 1} of #{day_count}
     article.workout-show.schedule-card
       .workout-show-main
         = render(layout: 'workouts/card', locals: { workout: workout, program: schedule.program }) { '' }
@@ -40,7 +43,7 @@
               b = history.count
         = render 'workouts/stimulus_panel', workout: workout
         = render 'workouts/notes_panel', workout: workout
-        - if index.zero?
+        - if index == day_count - 1
           aside.week-summary
             .panel-label This week
             .stat

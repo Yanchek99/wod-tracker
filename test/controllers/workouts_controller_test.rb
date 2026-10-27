@@ -222,7 +222,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
 
     get workout_url(workout)
 
-    assert_select 'span', text: '2 rounds for total reps of'
+    assert_select '.workout-objective', text: '2 rounds for total reps of'
     assert_select 'li', text: 'AMRAP in 3:00', count: 3
   end
 

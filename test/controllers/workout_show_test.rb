@@ -21,7 +21,7 @@ class WorkoutShowTest < ActionDispatch::IntegrationTest
     assert_select '.workout-posted', text: /Posted/
     assert_select '.workout-posted', text: /Edited/, count: 0
 
-    @workout.update_columns(updated_at: @workout.created_at + 2.days)
+    travel_to(2.days.from_now) { @workout.update!(time_cap_seconds: 300) }
     get workout_url(@workout)
     assert_select '.workout-posted', text: /Edited/
   end
@@ -64,6 +64,13 @@ class WorkoutShowTest < ActionDispatch::IntegrationTest
 
     assert_select '.workout-notes', text: /Unbroken thrusters if you can\./
     assert_select '.workout-card .notes', count: 0
+  end
+
+  test 'the collapsed Notes preview is plain text without markup' do
+    @workout.update!(notes: '<div>Unbroken <strong>thrusters</strong> if you can.</div>')
+    get workout_url(@workout)
+
+    assert_select '.workout-notes .workout-collapsible-preview', text: 'Unbroken thrusters if you can.'
   end
 
   test 'shows the intended stimulus panel when a range is present' do

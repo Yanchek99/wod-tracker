@@ -1,60 +1,33 @@
-.container
-  nav aria-label="breadcrumb"
-    ol.breadcrumb
-      li.breadcrumb-item = link_to 'Workouts', workouts_path
-      li.breadcrumb-item.active aria-current="page" = @workout.name
-  .row
-    p.col-6.fs-8
-      b Posted:&nbsp;
-      i #{local_time_ago(@workout.created_at)}
-    - if @workout.updated?
-      p.col-6.text-end.fs-8
-        b Edited:&nbsp;
-        i #{local_time_ago(@workout.updated_at)}
-  .row
-    p.col
-      - if @workout.team?
-        span.badge.bg-secondary.me-2 = team_objective @workout
-      span = workout_objective @workout
-    .col.text-end
-      = link_to edit_workout_path(@workout)
-        i.fas.fa-edit
-  .row
-    .col
-      ul.list-unstyled.mb-3
+- content_for :title, @workout.name
+.workout-show
+  .workout-show-main
+    article.workout-card
+      .workout-name-row
+        h1.workout-name = @workout.name
+        .workout-actions
+          - if can? :create, Schedule
+            button.btn.btn-outline-secondary.btn-icon type="button" aria-label="Schedule" title="Schedule" data-bs-toggle="modal" data-bs-target="#scheduleModal"
+              = icon(:calendar)
+          = link_to edit_workout_path(@workout), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Edit', title: 'Edit' do
+            = icon(:pencil)
+      p.workout-posted
+        | Posted #{local_time(@workout.created_at, '%b %-d')}
+        - if @workout.updated?
+          |  · Edited #{local_time(@workout.updated_at, '%b %-d')}
+      p.workout-objective
+        - if @workout.team?
+          = "#{team_objective(@workout)} · "
+        = workout_objective @workout
+      ul.list-unstyled.workout-exercises
         = render partial: 'exercises/exercises', locals: { workout: @workout }
       - if @workout.time_cap_seconds.present?
-        p
-          b Time cap:
-          span  #{@workout.time_cap}
-      = render 'notes', workout: @workout
-      = render 'intended_stimulus', workout: @workout
-      .d-grid.gap-2
-        = link_to 'Schedule', nil, class: 'btn btn-secondary', "data-bs-toggle": "modal", "data-bs-target": "#scheduleModal" if can? :create, Schedule
-        = link_to 'Log', new_workout_log_path(@workout), class: 'btn btn-outline-primary'
-      - if Current.user.logged_workout? @workout
-        h2.mt-3 Results
-        table.table.table-hover
-          thead
-            tr
-              th scope="col" Date
-              th scope="col" Results
-          tbody
-            - Current.user.logs.where(workout: @workout).each do |log|
-              tr
-                th scope="row" = link_to local_time(log.created_at), log
-                td #{log_score_msg(log)}
-#scheduleModal.modal tabindex="-1" role="dialog" aria-hidden="true"
-  .modal-dialog role="document"
-    = simple_form_for @workout.schedules.build, wrapper: :input_group do |f|
-      .modal-content
-        .modal-header
-          h5.modal-title Schedule Workout
-          button.btn-close type="button" data-bs-dismiss="modal" aria-label="Close"
-        .modal-body
-          = f.input :program_id, collection: Current.user.programs.manageable
-          = f.input :posted_at
-          = f.input :workout_id, as: :hidden, value: @workout.id
-        .modal-footer
-          = link_to 'Cancel', nil, class: 'btn btn-secondary', "data-bs-dismiss": "modal"
-          = f.button :submit, 'Add to Schedule', class: 'btn btn-primary'
+        p.workout-time-cap
+          | Time cap #{@workout.time_cap}
+    = link_to new_workout_log_path(@workout), class: 'btn btn-primary workout-log-button' do
+      = icon(:plus, class: 'me-1')
+      | Log workout
+  .workout-show-side
+    = render 'results_panel', logs: @logs, best_log: @best_log
+    = render 'stimulus_panel', workout: @workout
+    = render 'notes_panel', workout: @workout
+= render 'schedule_modal', workout: @workout

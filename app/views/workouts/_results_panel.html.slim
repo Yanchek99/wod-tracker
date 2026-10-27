@@ -1,0 +1,10 @@
+- if logs.any?
+  aside.workout-panel.workout-results
+    .panel-label Your results
+    - logs.each do |log|
+      = link_to log, class: 'workout-result' do
+        b = logged_result_msg(log)
+        - if log == best_log
+          span.chip.chip-pr PR
+        span.workout-result-date = local_time(log.created_at, '%b %-d')
+        = icon(:chevron_right)

@@ -1,0 +1,3 @@
+- if workout.notes.present?
+  = render layout: 'collapsible_panel', locals: { title: 'Notes', preview: workout.notes.to_s.strip, css_class: 'workout-notes' } do
+    .notes = workout.notes

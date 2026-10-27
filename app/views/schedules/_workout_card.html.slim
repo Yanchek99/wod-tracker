@@ -5,16 +5,7 @@
 - log_button = local_assigns.fetch(:log_button, true)
 - log_inside = local_assigns.fetch(:log_inside, false)
 .schedule-primary
-  .schedule-main
-    - if show_program
-      .schedule-program = link_to schedule.program.name, schedule.program
-    h2.schedule-workout-name = workout.name
-    .chips
-      - workout_chips(workout).each do |chip|
-        span.chip = chip
-    p.schedule-objective = workout_objective workout
-    ul.list-unstyled.schedule-exercises
-      = render partial: 'exercises/exercises', locals: { workout: workout }
+  = render layout: 'workouts/card', locals: { workout: workout, program: (schedule.program if show_program) } do
     = render partial: 'workouts/notes', locals: { workout: workout }
     - if log_button
       = link_to 'Log workout', new_workout_log_path(workout), class: "btn btn-primary schedule-log #{'d-md-none' unless log_inside}"

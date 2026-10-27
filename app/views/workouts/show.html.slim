@@ -1,28 +1,7 @@
 - content_for :title, @workout.name
 .workout-show
   .workout-show-main
-    article.workout-card
-      .workout-name-row
-        h1.workout-name = @workout.name
-        .workout-actions
-          - if can? :create, Schedule
-            button.btn.btn-outline-secondary.btn-icon type="button" aria-label="Schedule" title="Schedule" data-bs-toggle="modal" data-bs-target="#scheduleModal"
-              = icon(:calendar)
-          = link_to edit_workout_path(@workout), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Edit', title: 'Edit' do
-            = icon(:pencil)
-      p.workout-posted
-        | Posted #{local_time(@workout.created_at, '%b %-d')}
-        - if @workout.updated?
-          |  · Edited #{local_time(@workout.updated_at, '%b %-d')}
-      p.workout-objective
-        - if @workout.team?
-          = "#{team_objective(@workout)} · "
-        = workout_objective @workout
-      ul.list-unstyled.workout-exercises
-        = render partial: 'exercises/exercises', locals: { workout: @workout }
-      - if @workout.time_cap_seconds.present?
-        p.workout-time-cap
-          | Time cap #{@workout.time_cap}
+    = render(layout: 'workouts/card', locals: { workout: @workout, heading: 'h1', actions: true, posted: true }) { '' }
     = link_to new_workout_log_path(@workout), class: 'btn btn-primary workout-log-button' do
       = icon(:plus, class: 'me-1')
       | Log workout

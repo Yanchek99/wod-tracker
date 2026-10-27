@@ -14,7 +14,7 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
 
     assert_select '.page-header a[href*="/logs/new"]', count: 0
     assert_select '.schedule-primary > a.schedule-log-desktop[href=?]', new_workout_log_path(workouts(:murph)), text: /Log workout/
-    assert_select '.schedule-main a.schedule-log.d-md-none', count: 1
+    assert_select '.workout-card a.schedule-log.d-md-none', count: 1
   end
 
   test 'index gives each workout its own log button under its card when a day has several workouts' do

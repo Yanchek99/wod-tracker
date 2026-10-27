@@ -95,7 +95,6 @@
   }
 }
 
-.schedule-main,
 .workout-history,
 .week-summary,
 .empty-state {
@@ -108,38 +107,6 @@
 .empty-state {
   color: $text-muted-ui;
   text-align: center;
-}
-
-.schedule-program {
-  color: $text-muted-ui;
-  font-size: .85rem;
-
-  a {
-    color: inherit;
-  }
-}
-
-.schedule-workout-name {
-  margin: .1rem 0 .5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -.02em;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .4rem;
-  margin-bottom: 1rem;
-}
-
-.schedule-objective {
-  margin-bottom: .5rem;
-  font-weight: 600;
-}
-
-.schedule-exercises li {
-  padding: .3rem 0;
 }
 
 .schedule-log-desktop {

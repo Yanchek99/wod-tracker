@@ -23,7 +23,7 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
   test 'the Log workout button sits inside the workout card at every width, not under it' do
     get program_url(programs(:crossfit))
 
-    assert_select '.schedule-main a.schedule-log:not(.d-md-none)', minimum: 1
+    assert_select '.workout-card a.schedule-log:not(.d-md-none)', minimum: 1
     assert_select '.schedule-log-desktop', count: 0
   end
 
@@ -78,8 +78,8 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
     get program_url(program)
 
     assert_select '.schedule-card', count: 1
-    assert_select '.schedule-workout-name', text: 'Fran'
-    assert_select '.schedule-workout-name', text: 'Murph', count: 0
+    assert_select '.workout-name', text: 'Fran'
+    assert_select '.workout-name', text: 'Murph', count: 0
   end
 
   test 'a workout scheduled for today shows before its 6pm Pacific anchor, tomorrows still does not' do
@@ -93,7 +93,7 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
       get program_url(program)
 
       assert_select '.schedule-card', count: 1
-      assert_select '.schedule-workout-name', text: 'Fran'
+      assert_select '.workout-name', text: 'Fran'
     end
   end
 
@@ -103,7 +103,7 @@ class ProgramsShowTest < ActionDispatch::IntegrationTest
 
     get program_url(program)
 
-    assert_select '.schedule-program', count: 0
+    assert_select '.workout-program', count: 0
     assert_select '.program-date', count: 1
   end
 

@@ -12,16 +12,13 @@ permissions:
   contents: read
   checks: write
 
-env:
-  DATABASE_PWD: password
-
 jobs:
   verify:
     name: Build
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: postgres://runner:${{ env.DATABASE_PWD }}@localhost:5432/gather_test
+      DATABASE_URL: postgres://runner:password@localhost:5432/wodtracker_test
 
     services:
       postgres:
@@ -31,7 +28,7 @@ jobs:
         env:
           POSTGRES_USER: runner
           POSTGRES_DB: wodtracker_test
-          POSTGRES_PASSWORD: ${{ env.DATABASE_PWD }}
+          POSTGRES_PASSWORD: password
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

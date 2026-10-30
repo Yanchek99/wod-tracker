@@ -13,8 +13,8 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     get schedules_url
 
     assert_select '.page-header a[href*="/logs/new"]', count: 0
-    assert_select '.schedule-primary > a.schedule-log-desktop[href=?]', new_workout_log_path(workouts(:murph)), text: /Log workout/
-    assert_select '.schedule-main a.schedule-log.d-md-none', count: 1
+    assert_select '.workout-show-main > a.workout-log-button[href=?]', new_workout_log_path(workouts(:murph)), text: /Log workout/
+    assert_select '.workout-card a', text: /Log workout/, count: 0
   end
 
   test 'index gives each workout its own log button under its card when a day has several workouts' do
@@ -24,7 +24,7 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     get schedules_url
 
     assert_select '.page-header a[href*="/logs/new"]', count: 0
-    assert_select '.schedule-primary > a.schedule-log-desktop', count: 2
+    assert_select '.workout-show-main > a.workout-log-button', count: 2
   end
 
   test 'index marks today with a chip only when showing the current calendar day' do

@@ -1,0 +1,10 @@
+/ A titled panel whose body collapses on phones. Locals: title, preview (one line shown while collapsed), css_class,
+/ locked (true: always open on desktop, false: collapsible there too). The body is the block.
+- locked = local_assigns.fetch(:locked, false)
+aside.workout-panel.workout-collapsible class=css_class data-controller="collapsible-panel" data-collapsible-panel-locked-value=locked.to_s
+  button.workout-collapsible-header type="button" data-action="collapsible-panel#toggle" data-collapsible-panel-target="toggle" aria-expanded="true"
+    span.panel-label = title
+    = icon(:chevron_down, class: 'workout-collapsible-chevron')
+    span.workout-collapsible-preview = preview
+  .workout-collapsible-body data-collapsible-panel-target="body"
+    = yield

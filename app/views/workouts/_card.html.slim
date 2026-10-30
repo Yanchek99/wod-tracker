@@ -1,0 +1,32 @@
+/ The workout card shared by the workout page, the Schedule and the program pages. Locals: workout, heading (default 'h2'),
+/ program (optional: shows its link above the name), actions (default false: Schedule and Edit icon buttons that open
+/ the workout page's #scheduleModal), posted (default false: the Posted/Edited line). The block renders below the time cap.
+- heading = local_assigns.fetch(:heading, 'h2')
+- program = local_assigns[:program]
+article.workout-card
+  - if program
+    .workout-program = link_to program.name, program
+  .workout-name-row
+    = content_tag heading, workout.name, class: 'workout-name'
+    - if local_assigns.fetch(:actions, false)
+      .workout-actions
+        - if can? :create, Schedule
+          button.btn.btn-outline-secondary.btn-icon type="button" aria-label="Schedule" title="Schedule" data-bs-toggle="modal" data-bs-target="#scheduleModal"
+            = icon(:calendar)
+        = link_to edit_workout_path(workout), class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Edit', title: 'Edit' do
+          = icon(:pencil)
+  - if local_assigns.fetch(:posted, false)
+    p.workout-posted
+      | Posted #{local_time(workout.created_at, '%b %-d')}
+      - if workout.updated?
+        |  · Edited #{local_time(workout.updated_at, '%b %-d')}
+  p.workout-objective
+    - if workout.team?
+      = "#{team_objective(workout)} · "
+    = workout_objective workout
+  ul.list-unstyled.workout-exercises
+    = render partial: 'exercises/exercises', locals: { workout: workout }
+  - if workout.time_cap_seconds.present?
+    p.workout-time-cap
+      | Time cap #{workout.time_cap}
+  = yield

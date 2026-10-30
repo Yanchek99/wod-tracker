@@ -1,0 +1,3 @@
+- if workout.notes.present?
+  = render layout: 'workouts/collapsible_panel', locals: { title: 'Notes', preview: workout.notes.to_plain_text.squish, css_class: 'workout-notes' } do
+    .notes = workout.notes

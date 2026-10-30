@@ -85,17 +85,18 @@
 }
 
 .schedule-card {
-  display: grid;
-  gap: 1rem;
   margin-bottom: 1.25rem;
+}
 
-  @include media-breakpoint-up(md) {
-    grid-template-columns: minmax(0, 1fr) 16rem;
-    align-items: start;
+// Labels each workout when a day has several, so a card's own panels read as belonging to it.
+.schedule-position {
+  margin: 1.5rem 0 .6rem;
+
+  &:first-of-type {
+    margin-top: 0;
   }
 }
 
-.schedule-main,
 .workout-history,
 .week-summary,
 .empty-state {
@@ -108,46 +109,6 @@
 .empty-state {
   color: $text-muted-ui;
   text-align: center;
-}
-
-.schedule-program {
-  color: $text-muted-ui;
-  font-size: .85rem;
-
-  a {
-    color: inherit;
-  }
-}
-
-.schedule-workout-name {
-  margin: .1rem 0 .5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -.02em;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .4rem;
-  margin-bottom: 1rem;
-}
-
-.schedule-objective {
-  margin-bottom: .5rem;
-  font-weight: 600;
-}
-
-.schedule-exercises li {
-  padding: .3rem 0;
-}
-
-.schedule-log-desktop {
-  width: 100%;
-  margin-top: 1rem;
-  padding: .85rem 1.25rem;
-  border-radius: $radius-card;
-  font-weight: 600;
 }
 
 .schedule-log {
@@ -163,12 +124,6 @@
   font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
-}
-
-.schedule-side {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
 }
 
 .workout-history .stat,

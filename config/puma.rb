@@ -37,8 +37,9 @@ plugin :tmp_restart
 # In other environments, only set the PID file if requested.
 pidfile ENV['PIDFILE'] if ENV['PIDFILE']
 
-# Process jobs in-process on staging and PR environments (no `worker` service).
-# Skip recurring so only production's worker runs the scheduled scrape.
+# Process jobs in-process (no separate `worker` service). Recurring tasks are skipped by
+# default so staging and PR environments don't run the scheduled scrape; production sets
+# SOLID_QUEUE_SKIP_RECURRING=false to run it.
 if ENV['SOLID_QUEUE_IN_PUMA']
   ENV['SOLID_QUEUE_SKIP_RECURRING'] ||= 'true'
   plugin :solid_queue

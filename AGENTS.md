@@ -42,7 +42,7 @@ Production app (for reproducing reported bugs, especially UI/rendering issues): 
 
 Hosted on Railway (see issue #1781 for full history). Three environments: `production` (always-on), `staging` (seeded via `db:seed`, safe test data only), and ephemeral PR environments (auto-created per PR, cloned from `staging`, serverless). Use the `railway` CLI (`railway logs`, `railway status`, `railway variables`) for production debugging.
 
-Only `production` runs a dedicated Solid Queue `worker` service (Procfile). `staging` is the template PR environments are cloned from: it has no `worker` service and sets `SOLID_QUEUE_IN_PUMA=1` as a shared variable, so `staging` and every PR environment process jobs inside Puma instead (see `config/puma.rb`) and can scale to zero, with the recurring scheduler skipped.
+No environment runs a dedicated `worker` service: every environment processes Solid Queue jobs inside Puma (`SOLID_QUEUE_IN_PUMA=1`, see `config/puma.rb`). `production` also sets `SOLID_QUEUE_SKIP_RECURRING=false` and `DB_POOL=10` so web runs the scheduled scrape and has enough connections for Puma plus job threads. `staging` is the template PR environments are cloned from; it and every PR environment skip the recurring scheduler and can scale to zero.
 
 ## Rails Engineering Guidelines
 

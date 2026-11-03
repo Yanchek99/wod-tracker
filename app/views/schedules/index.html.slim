@@ -13,14 +13,6 @@
 - if @schedules.empty?
   .empty-state No schedules
 - else
-  aside.week-summary
-    span.panel-label This week
-    span.stat
-      span.text-muted Workouts logged
-      b #{@week.logged_count} of #{@week.scheduled_count}
-    span.stat
-      span.text-muted New PRs
-      b = @week.new_pr_count
   - if @schedules.size > 1
     nav.schedule-tabs aria-label="Workouts today"
       - @schedules.each_with_index do |schedule, index|

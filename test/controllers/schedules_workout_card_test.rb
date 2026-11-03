@@ -88,16 +88,6 @@ class SchedulesWorkoutCardTest < ActionDispatch::IntegrationTest
     assert_select '.schedule-stepper a[href*="workout"]', count: 0
   end
 
-  test 'the week summary is a strip above the day on every day' do
-    two_workouts_on_one_day
-
-    get schedules_url
-
-    assert_select '.week-summary', count: 1
-    assert_select '.week-summary', text: /Workouts logged\s*0 of 2/
-    assert_select '.workout-show-side .week-summary', count: 0
-  end
-
   test 'a day with one workout has no tabs' do
     Schedule.create!(program: programs(:crossfit), workout: workouts(:murph),
                      posted_at: ActiveSupport::TimeZone['America/Los_Angeles'].local(2026, 8, 10, 18))
@@ -105,7 +95,7 @@ class SchedulesWorkoutCardTest < ActionDispatch::IntegrationTest
     get schedules_url
 
     assert_select '.schedule-tabs', count: 0
-    assert_select '.week-summary', count: 1
+    assert_select '.week-summary', count: 0
   end
 
   private

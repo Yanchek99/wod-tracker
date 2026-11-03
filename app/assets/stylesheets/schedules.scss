@@ -88,32 +88,6 @@
   margin-bottom: 1.25rem;
 }
 
-// One-line summary of the week above the day's workout.
-.week-summary {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: .25rem 1.25rem;
-  margin-bottom: .75rem;
-  padding: .7rem 1.25rem;
-  font-size: .9rem;
-
-  // On a phone the label takes its own line so the two stats don't wrap unevenly.
-  .panel-label {
-    flex: 0 0 100%;
-    margin: 0;
-
-    @include media-breakpoint-up(md) {
-      flex: none;
-    }
-  }
-
-  .stat {
-    display: inline-flex;
-    gap: .4rem;
-  }
-}
-
 // Numbered switcher between the day's workouts; the tab names the workout for screen readers.
 .schedule-tabs {
   display: inline-flex;
@@ -141,7 +115,6 @@
 }
 
 .workout-history,
-.week-summary,
 .empty-state {
   padding: 1.1rem 1.25rem;
   border: 1px solid $border-hairline;

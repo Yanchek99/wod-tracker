@@ -19,7 +19,6 @@
 .workout-log-button { order: 4; }
 .workout-results,
 .workout-history { order: 5; }
-.week-summary { order: 6; }
 
 .workout-panel {
   border: 1px solid $border-hairline;
@@ -147,8 +146,7 @@
   .workout-stimulus,
   .workout-log-button,
   .workout-results,
-  .workout-history,
-  .week-summary {
+  .workout-history {
     order: 0;
   }
 

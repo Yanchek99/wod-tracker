@@ -35,27 +35,85 @@ class SchedulesWorkoutCardTest < ActionDispatch::IntegrationTest
     assert_select '.workout-card .workout-inline-notes', count: 0
   end
 
-  test 'a day with several workouts numbers them and puts the week summary after the last one' do
-    posted_at = ActiveSupport::TimeZone['America/Los_Angeles'].local(2026, 8, 10, 18)
-    Schedule.create!(program: programs(:crossfit), workout: workouts(:murph), posted_at: posted_at)
-    Schedule.create!(program: programs(:crossfit), workout: workouts(:fran), posted_at: posted_at)
+  test 'a day with several workouts shows numbered tabs and only the selected workout' do
+    two_workouts_on_one_day
 
     get schedules_url
 
-    assert_select '.schedule-position', count: 2
-    assert_select '.schedule-position', text: 'Workout 1 of 2'
-    assert_select '.schedule-position', text: 'Workout 2 of 2'
-    assert_select '.schedule-card:last-of-type .week-summary', count: 1
-    assert_select '.week-summary', count: 1
+    assert_select '.schedule-tabs a', count: 2
+    assert_select '.schedule-tabs a[aria-current="page"]', text: '1'
+    assert_select '.workout-card .workout-name', count: 1
+    assert_select '.workout-card .workout-name', text: 'Murph'
+    assert_select '.workout-log-button', count: 1
   end
 
-  test 'a day with one workout has no numbering' do
+  test 'the workout param picks the tab and the tab links keep it in the URL' do
+    two_workouts_on_one_day
+
+    get schedules_url(workout: 2)
+
+    assert_select '.schedule-tabs a[aria-current="page"]', text: '2'
+    assert_select '.workout-card .workout-name', text: 'Fran'
+    assert_select ".schedule-tabs a[href*='workout=1']", text: '1'
+  end
+
+  test 'the default tab is the first workout not yet logged' do
+    two_workouts_on_one_day
+    Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: 'time', score_value: 3000)
+
+    get schedules_url
+
+    assert_select '.schedule-tabs a[aria-current="page"]', text: '2'
+    assert_select '.workout-card .workout-name', text: 'Fran'
+  end
+
+  test 'the default tab is the first when every workout is logged, and a bad param falls back to the default' do
+    two_workouts_on_one_day
+    [workouts(:murph), workouts(:fran)].each do |w|
+      Log.create!(user: users(:mathew), workout: w, score_type: 'time', score_value: 3000)
+    end
+
+    get schedules_url(workout: 9)
+
+    assert_select '.schedule-tabs a[aria-current="page"]', text: '1'
+  end
+
+  test 'the day navigation drops the workout param so a new day picks its own default tab' do
+    two_workouts_on_one_day
+    Schedule.create!(program: programs(:crossfit), workout: workouts(:fran),
+                     posted_at: ActiveSupport::TimeZone['America/Los_Angeles'].local(2026, 8, 11, 18))
+
+    get schedules_url(workout: 2, date: '2026-08-11')
+
+    assert_select '.schedule-stepper a[href*="workout"]', count: 0
+  end
+
+  test 'the week summary is a strip above the day on every day' do
+    two_workouts_on_one_day
+
+    get schedules_url
+
+    assert_select '.week-summary', count: 1
+    assert_select '.week-summary', text: /Workouts logged\s*0 of 2/
+    assert_select '.workout-show-side .week-summary', count: 0
+  end
+
+  test 'a day with one workout has no tabs' do
     Schedule.create!(program: programs(:crossfit), workout: workouts(:murph),
                      posted_at: ActiveSupport::TimeZone['America/Los_Angeles'].local(2026, 8, 10, 18))
 
     get schedules_url
 
-    assert_select '.schedule-position', count: 0
+    assert_select '.schedule-tabs', count: 0
     assert_select '.week-summary', count: 1
+  end
+
+  private
+
+  def two_workouts_on_one_day
+    users(:mathew).logs.where(workout: [workouts(:murph), workouts(:fran)]).destroy_all
+    posted_at = ActiveSupport::TimeZone['America/Los_Angeles'].local(2026, 8, 10, 18)
+    Schedule.create!(program: programs(:crossfit), workout: workouts(:murph), posted_at: posted_at)
+    Schedule.create!(program: programs(:crossfit), workout: workouts(:fran), posted_at: posted_at)
   end
 end

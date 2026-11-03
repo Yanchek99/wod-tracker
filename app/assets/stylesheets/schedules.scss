@@ -88,12 +88,55 @@
   margin-bottom: 1.25rem;
 }
 
-// Labels each workout when a day has several, so a card's own panels read as belonging to it.
-.schedule-position {
-  margin: 1.5rem 0 .6rem;
+// One-line summary of the week above the day's workout.
+.week-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .25rem 1.25rem;
+  margin-bottom: .75rem;
+  padding: .7rem 1.25rem;
+  font-size: .9rem;
 
-  &:first-of-type {
-    margin-top: 0;
+  // On a phone the label takes its own line so the two stats don't wrap unevenly.
+  .panel-label {
+    flex: 0 0 100%;
+    margin: 0;
+
+    @include media-breakpoint-up(md) {
+      flex: none;
+    }
+  }
+
+  .stat {
+    display: inline-flex;
+    gap: .4rem;
+  }
+}
+
+// Numbered switcher between the day's workouts; the tab names the workout for screen readers.
+.schedule-tabs {
+  display: inline-flex;
+  gap: .25rem;
+  margin-bottom: .75rem;
+  padding: .2rem;
+  border-radius: .65rem;
+  background: #e9ecef;
+
+  a {
+    min-width: 2.5rem;
+    padding: .35rem .9rem;
+    border-radius: .5rem;
+    color: $text-muted-ui;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+
+    &[aria-current="page"] {
+      background: #fff;
+      color: #0f172a;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+    }
   }
 }
 
@@ -126,8 +169,7 @@
   text-transform: uppercase;
 }
 
-.workout-history .stat,
-.week-summary .stat {
+.workout-history .stat {
   display: flex;
   justify-content: space-between;
   gap: .75rem;

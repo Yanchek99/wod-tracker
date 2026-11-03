@@ -6,6 +6,8 @@ class SchedulesController < ApplicationController
   # anchored in instead.
   POSTED_AT_ZONE = ActiveSupport::TimeZone['America/Los_Angeles'].freeze
 
+  helper_method :selected_schedule
+
   # GET /schedules
   # GET /schedules.json
   def index
@@ -60,6 +62,7 @@ class SchedulesController < ApplicationController
   def schedules_for_date
     @schedules
       .where(posted_at: @date.beginning_of_day...@date.end_of_day)
+      .order(:posted_at, :id)
       .includes(
         :program,
         workout: [
@@ -67,6 +70,14 @@ class SchedulesController < ApplicationController
           { segments: { exercises: :movement } }
         ]
       )
+  end
+
+  # The day's workout shown: the numbered one in the `workout` param, else the first the user hasn't logged, else the first.
+  def selected_schedule
+    @selected_schedule ||= begin
+      chosen = @schedules.to_a[params[:workout].to_i - 1] if params[:workout].to_i.positive?
+      chosen || @schedules.find { |schedule| @workout_histories[schedule.workout_id].nil? } || @schedules.first
+    end
   end
 
   def load_histories_and_week

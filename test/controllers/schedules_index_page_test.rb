@@ -17,16 +17,6 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     assert_select '.workout-card a', text: /Log workout/, count: 0
   end
 
-  test 'index gives each workout its own log button under its card when a day has several workouts' do
-    create_schedule_on('2026-08-10')
-    create_schedule_on('2026-08-10', workout: workouts(:fran))
-
-    get schedules_url
-
-    assert_select '.page-header a[href*="/logs/new"]', count: 0
-    assert_select '.workout-show-main > a.workout-log-button', count: 2
-  end
-
   test 'index marks today with a chip only when showing the current calendar day' do
     create_schedule_on('2026-08-10')
 

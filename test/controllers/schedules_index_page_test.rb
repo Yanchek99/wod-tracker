@@ -39,6 +39,7 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
 
     assert_select '.workout-history', count: 1
     assert_select '.workout-history', text: /Times logged\s*1/
+    assert_select '.workout-history time[data-local]', minimum: 1
 
     get schedules_url(date: '2026-08-11')
 

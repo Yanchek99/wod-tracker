@@ -28,7 +28,7 @@
 .page-header-title {
   margin: 0;
   font-size: 1.35rem;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: -.015em;
 }
 
@@ -135,22 +135,15 @@
 
 .panel-label {
   margin-bottom: .5rem;
-  color: #94a3b8;
-  font-size: .68rem;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  color: $text-muted-ui;
+  font-size: .75rem;
+  font-weight: 500;
 }
 
 .workout-history .stat {
   display: flex;
   justify-content: space-between;
   gap: .75rem;
-  padding: .5rem 0;
-  border-top: 1px solid #f1f3f5;
+  padding: .25rem 0;
   font-size: .9rem;
-
-  &:first-of-type {
-    border-top: 0;
-  }
 }

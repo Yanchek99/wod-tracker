@@ -31,7 +31,7 @@
           .panel-label Your history with #{workout.name}
           .stat
             span.text-muted Last result
-            b #{logged_result_msg(history.last_log)} · #{history.last_log.created_at.strftime('%b %-d')}
+            b #{logged_result_msg(history.last_log)} · #{local_time(history.last_log.created_at, '%b %-d')}
           - if history.best_log
             .stat
               span.text-muted Best

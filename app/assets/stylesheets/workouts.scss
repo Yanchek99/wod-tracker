@@ -122,9 +122,7 @@
 .exercise-editor__eyebrow {
   color: var(--bs-secondary-color);
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 500;
 }
 
 .exercise-editor__delete {
@@ -155,7 +153,7 @@
   display: inline-flex;
   flex: 0 0 1.5rem;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 500;
   height: 1.5rem;
   justify-content: center;
   line-height: 1;
@@ -205,7 +203,7 @@
   border-top: 0.3em solid currentcolor;
   content: "";
   display: inline-block;
-  transition: transform 0.15s ease-in-out;
+  transition: transform 0.15s $ease-out;
 }
 
 .exercise-editor__optional-toggle:not(.collapsed) .exercise-editor__optional-toggle-meta {

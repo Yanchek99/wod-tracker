@@ -40,8 +40,7 @@ body.app-shell {
   flex: 1;
   margin: 0;
   font-size: 1.1rem;
-  font-weight: 650;
-  letter-spacing: -.01em;
+  font-weight: 600;
 }
 
 .app-topbar-account {
@@ -82,9 +81,9 @@ body.app-shell {
     justify-content: center;
     gap: .2rem;
     height: $tabbar-height;
-    color: #94a3b8;
-    font-size: .65rem;
-    font-weight: 550;
+    color: $text-muted-ui;
+    font-size: .6875rem;
+    font-weight: 500;
     text-decoration: none;
 
     .icon {
@@ -103,7 +102,7 @@ body.app-shell {
   --bs-dropdown-border-radius: #{$radius-card};
   --bs-dropdown-link-active-bg: #{$surface-muted};
   --bs-dropdown-link-active-color: inherit;
-  box-shadow: 0 .5rem 1.5rem rgba(#000, .12);
+  box-shadow: 0 .5rem 1.5rem rgba(#000, .06);
 }
 
 @include media-breakpoint-up(md) {
@@ -146,22 +145,22 @@ body.app-shell {
 .app-brand {
   display: flex;
   align-items: center;
-  gap: .6rem;
-  padding: .25rem .5rem 1.25rem;
+  gap: .625rem;
+  padding: .25rem .5rem 1.5rem;
   color: inherit;
-  font-weight: 650;
+  font-weight: 600;
   text-decoration: none;
 }
 
 .app-logo {
-  width: 1.65rem;
-  height: 1.65rem;
-  border-radius: .45rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: .5rem;
   background: $brand-green;
   color: #fff;
-  font-size: .85rem;
-  font-weight: 800;
-  line-height: 1.65rem;
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.75rem;
   text-align: center;
 }
 
@@ -173,14 +172,16 @@ body.app-shell {
   a {
     display: flex;
     align-items: center;
-    gap: .65rem;
-    padding: .45rem .55rem;
-    margin-bottom: 1px;
+    gap: .625rem;
+    padding: .5rem;
+    margin-bottom: .125rem;
     border-radius: .5rem;
     color: #475569;
     font-size: .875rem;
     font-weight: 500;
     text-decoration: none;
+
+    transition: background-color .15s $ease-out, color .15s $ease-out;
 
     &:hover {
       background: #f1f3f5;
@@ -198,7 +199,7 @@ body.app-shell {
 }
 
 .app-nav-label {
-  padding: 1rem .5rem .25rem;
+  padding: 1.5rem .5rem .5rem;
   color: $text-muted-ui;
   font-size: .75rem;
   font-weight: 500;
@@ -213,15 +214,15 @@ body.app-shell {
 .app-user-button {
   display: flex;
   align-items: center;
-  gap: .6rem;
+  gap: .625rem;
   width: 100%;
-  padding: .45rem .5rem;
+  padding: .5rem;
   border: 0;
   border-radius: .5rem;
   background: transparent;
   color: inherit;
-  font-size: .85rem;
-  font-weight: 600;
+  font-size: .875rem;
+  font-weight: 500;
   text-align: left;
 
   &:hover {
@@ -230,14 +231,14 @@ body.app-shell {
 }
 
 .app-avatar {
-  width: 1.65rem;
-  height: 1.65rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 50%;
   background: #dcfce7;
   color: $brand-green-hover;
-  font-size: .68rem;
-  font-weight: 700;
-  line-height: 1.65rem;
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1.75rem;
   text-align: center;
 }
 
@@ -264,13 +265,13 @@ body.app-shell .workout-builder-toolbar {
 
 .app-user-name {
   overflow: hidden;
-  font-weight: 600;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .app-user-sub {
   color: $text-muted-ui;
-  font-size: .7rem;
+  font-size: .75rem;
   font-weight: 400;
 }

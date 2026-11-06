@@ -4,7 +4,7 @@
   align-items: center;
   padding: .2rem .65rem;
   border-radius: 99px;
-  font-size: .72rem;
+  font-size: .75rem;
   font-weight: 650;
   line-height: 1.3;
 }
@@ -62,11 +62,9 @@ form.button_to {
 
 .program-group-label {
   padding: 1rem 1.5rem .4rem;
-  color: #94a3b8;
-  font-size: .68rem;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  color: $text-muted-ui;
+  font-size: .75rem;
+  font-weight: 500;
 }
 
 .program-row {
@@ -121,7 +119,7 @@ form.button_to {
 .program-name {
   display: block;
   color: #0f172a;
-  font-size: .95rem;
+  font-size: 1rem;
   font-weight: 650;
   overflow-wrap: anywhere;
   text-decoration: none;
@@ -130,7 +128,7 @@ form.button_to {
 .program-facts {
   margin-top: .2rem;
   color: $text-muted-ui;
-  font-size: .8rem;
+  font-size: .875rem;
 
   .icon {
     width: .85rem;
@@ -174,9 +172,8 @@ form.button_to {
   .program-title {
     grid-area: title;
     margin: 0;
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
+    font-size: 1.375rem;
+    font-weight: 500;
     overflow-wrap: anywhere;
   }
 
@@ -233,7 +230,7 @@ form.button_to {
   border-radius: .75rem;
   background: #fff;
   color: $brand-green;
-  font-size: .9rem;
+  font-size: .875rem;
   font-weight: 600;
   text-decoration: none;
 
@@ -252,11 +249,9 @@ form.button_to {
 
 .program-date {
   margin: 1.5rem 0 .75rem;
-  color: #94a3b8;
-  font-size: .68rem;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  color: $text-muted-ui;
+  font-size: .75rem;
+  font-weight: 500;
 }
 
 .form-card {

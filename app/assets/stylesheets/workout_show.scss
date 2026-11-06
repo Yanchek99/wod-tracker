@@ -59,14 +59,14 @@
   .icon {
     width: .9rem;
     height: .9rem;
-    color: #94a3b8;
+    color: $text-muted-ui;
   }
 }
 
 .workout-result-date {
   margin-left: auto;
   color: $text-muted-ui;
-  font-size: .8rem;
+  font-size: .875rem;
 }
 
 .workout-collapsible {
@@ -93,8 +93,8 @@
 .workout-collapsible-chevron {
   width: 1rem;
   height: 1rem;
-  color: #94a3b8;
-  transition: transform .15s;
+  color: $text-muted-ui;
+  transition: transform .15s $ease-out;
   transform-origin: center;
 }
 
@@ -109,7 +109,7 @@
   margin-top: .25rem;
   overflow: hidden;
   color: $text-muted-ui;
-  font-size: .8rem;
+  font-size: .875rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

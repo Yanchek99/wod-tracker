@@ -5,7 +5,7 @@
       .program-date = date.strftime('%a, %b %-d')
     - day_schedules.each do |schedule|
       article.schedule-card.schedule-card--solo
-        = render 'schedules/workout_card', schedule: schedule, show_program: false, log_button: role.present?, log_inside: true
+        = render 'schedules/workout_card', schedule: schedule, show_program: false, log_button: role.present?
   - if schedules.next_page
     = turbo_frame_tag "program_schedules_page_#{schedules.next_page}", loading: :lazy, src: program_path(program, page: schedules.next_page) do
       .d-flex.justify-content-center.my-3

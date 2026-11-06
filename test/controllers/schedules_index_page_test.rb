@@ -13,18 +13,8 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     get schedules_url
 
     assert_select '.page-header a[href*="/logs/new"]', count: 0
-    assert_select '.schedule-primary > a.schedule-log-desktop[href=?]', new_workout_log_path(workouts(:murph)), text: /Log workout/
-    assert_select '.schedule-main a.schedule-log.d-md-none', count: 1
-  end
-
-  test 'index gives each workout its own log button under its card when a day has several workouts' do
-    create_schedule_on('2026-08-10')
-    create_schedule_on('2026-08-10', workout: workouts(:fran))
-
-    get schedules_url
-
-    assert_select '.page-header a[href*="/logs/new"]', count: 0
-    assert_select '.schedule-primary > a.schedule-log-desktop', count: 2
+    assert_select '.workout-show-main > a.workout-log-button[href=?]', new_workout_log_path(workouts(:murph)), text: /Log workout/
+    assert_select '.workout-card a', text: /Log workout/, count: 0
   end
 
   test 'index marks today with a chip only when showing the current calendar day' do
@@ -49,6 +39,7 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
 
     assert_select '.workout-history', count: 1
     assert_select '.workout-history', text: /Times logged\s*1/
+    assert_select '.workout-history time[data-local]', minimum: 1
 
     get schedules_url(date: '2026-08-11')
 
@@ -100,21 +91,7 @@ class SchedulesIndexPageTest < ActionDispatch::IntegrationTest
     assert_select '.schedule-stepper .btn-icon', count: 2
   end
 
-  test 'index shows a this-week panel with logged and scheduled counts' do
-    create_schedule_on('2026-08-10')
-    create_schedule_on('2026-08-12', workout: workouts(:fran))
-    users(:mathew).logs.where(workout: workouts(:murph)).destroy_all
-    Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: 'time', score_value: 3000,
-                created_at: Time.zone.local(2026, 8, 10, 20))
-
-    get schedules_url(date: '2026-08-10')
-
-    assert_select '.week-summary', count: 1
-    assert_select '.week-summary', text: /Workouts logged\s*1 of 2/
-    assert_select '.week-summary', text: /New PRs\s*0/
-  end
-
-  test 'index keeps one logs query with the this-week panel across several days' do
+  test 'index keeps one logs query across several days' do
     create_schedule_on('2026-08-10')
     create_schedule_on('2026-08-12', workout: workouts(:fran))
     queries = 0

@@ -6,6 +6,8 @@ class SchedulesController < ApplicationController
   # anchored in instead.
   POSTED_AT_ZONE = ActiveSupport::TimeZone['America/Los_Angeles'].freeze
 
+  helper_method :selected_schedule
+
   # GET /schedules
   # GET /schedules.json
   def index
@@ -17,7 +19,7 @@ class SchedulesController < ApplicationController
     @calendar_date = calendar_date_for(@date)
     @scheduled_dates = @schedules.posted_dates.pluck(:posted_at).map { |posted_at| calendar_date_for(posted_at) }
     @schedules = schedules_for_date
-    load_histories_and_week
+    @workout_histories = workout_histories_for(@schedules)
     @today = @calendar_date == POSTED_AT_ZONE.today
   end
 
@@ -60,6 +62,7 @@ class SchedulesController < ApplicationController
   def schedules_for_date
     @schedules
       .where(posted_at: @date.beginning_of_day...@date.end_of_day)
+      .order(:posted_at, :id)
       .includes(
         :program,
         workout: [
@@ -69,29 +72,21 @@ class SchedulesController < ApplicationController
       )
   end
 
-  def load_histories_and_week
-    week_workout_ids = week_workout_ids_for(@calendar_date)
-    @workout_histories = workout_histories_for(@schedules, week_workout_ids)
-    @week = ScheduleWeek.new(workout_ids: week_workout_ids, histories: @workout_histories, period: week_period(@calendar_date))
+  # The day's workout shown: the numbered one in the `workout` param, else the first the user hasn't logged, else the first.
+  def selected_schedule
+    @selected_schedule ||= begin
+      chosen = @schedules.to_a[params[:workout].to_i - 1] if params[:workout].to_i.positive?
+      chosen || @schedules.find { |schedule| @workout_histories[schedule.workout_id].nil? } || @schedules.first
+    end
   end
 
-  # One logs query serves the day's workouts and the rest of the week's: whether each was logged, the last
-  # result and the best.
-  def workout_histories_for(schedules, week_workout_ids)
+  # One logs query serves the day's workouts: whether each was logged, the last result and the best.
+  def workout_histories_for(schedules)
     workouts = schedules.index_by(&:workout_id).transform_values(&:workout)
-    logs = Current.user.logs.where(workout_id: workouts.keys | week_workout_ids).includes(:workout).to_a
+    logs = Current.user.logs.where(workout_id: workouts.keys).includes(:workout).to_a
     # Reuse the schedules' already-loaded workouts so scoring a log doesn't reload their segments and exercises.
     logs.each { |log| log.association(:workout).target = workouts[log.workout_id] if workouts.key?(log.workout_id) }
     WorkoutHistory.for(logs)
-  end
-
-  def week_workout_ids_for(calendar_date)
-    Current.user.schedules.where(posted_at: week_period(calendar_date)).distinct.pluck(:workout_id)
-  end
-
-  # Monday through Sunday around the shown calendar day, in the zone schedules are anchored to.
-  def week_period(calendar_date)
-    calendar_date.beginning_of_week.in_time_zone(POSTED_AT_ZONE)...(calendar_date.end_of_week + 1).in_time_zone(POSTED_AT_ZONE)
   end
 
   def calendar_date_for(instant)

@@ -28,7 +28,7 @@
 .page-header-title {
   margin: 0;
   font-size: 1.35rem;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: -.015em;
 }
 
@@ -85,19 +85,36 @@
 }
 
 .schedule-card {
-  display: grid;
-  gap: 1rem;
   margin-bottom: 1.25rem;
+}
 
-  @include media-breakpoint-up(md) {
-    grid-template-columns: minmax(0, 1fr) 16rem;
-    align-items: start;
+// Numbered switcher between the day's workouts; the tab names the workout for screen readers.
+.schedule-tabs {
+  display: inline-flex;
+  gap: .25rem;
+  margin-bottom: .75rem;
+  padding: .2rem;
+  border-radius: .65rem;
+  background: #e9ecef;
+
+  a {
+    min-width: 2.5rem;
+    padding: .35rem .9rem;
+    border-radius: .5rem;
+    color: $text-muted-ui;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+
+    &[aria-current="page"] {
+      background: #fff;
+      color: #0f172a;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+    }
   }
 }
 
-.schedule-main,
 .workout-history,
-.week-summary,
 .empty-state {
   padding: 1.1rem 1.25rem;
   border: 1px solid $border-hairline;
@@ -110,46 +127,6 @@
   text-align: center;
 }
 
-.schedule-program {
-  color: $text-muted-ui;
-  font-size: .85rem;
-
-  a {
-    color: inherit;
-  }
-}
-
-.schedule-workout-name {
-  margin: .1rem 0 .5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -.02em;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .4rem;
-  margin-bottom: 1rem;
-}
-
-.schedule-objective {
-  margin-bottom: .5rem;
-  font-weight: 600;
-}
-
-.schedule-exercises li {
-  padding: .3rem 0;
-}
-
-.schedule-log-desktop {
-  width: 100%;
-  margin-top: 1rem;
-  padding: .85rem 1.25rem;
-  border-radius: $radius-card;
-  font-weight: 600;
-}
-
 .schedule-log {
   width: 100%;
   margin-top: 1rem;
@@ -158,29 +135,15 @@
 
 .panel-label {
   margin-bottom: .5rem;
-  color: #94a3b8;
-  font-size: .68rem;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  color: $text-muted-ui;
+  font-size: .75rem;
+  font-weight: 500;
 }
 
-.schedule-side {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-}
-
-.workout-history .stat,
-.week-summary .stat {
+.workout-history .stat {
   display: flex;
   justify-content: space-between;
   gap: .75rem;
-  padding: .5rem 0;
-  border-top: 1px solid #f1f3f5;
+  padding: .25rem 0;
   font-size: .9rem;
-
-  &:first-of-type {
-    border-top: 0;
-  }
 }

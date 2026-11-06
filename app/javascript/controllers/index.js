@@ -60,3 +60,5 @@ application.register("tooltip", TooltipController)
 
 import WorkoutSearchController from "./workout_search_controller"
 application.register("workout-search", WorkoutSearchController)
+import CollapsiblePanelController from "./collapsible_panel_controller"
+application.register("collapsible-panel", CollapsiblePanelController)

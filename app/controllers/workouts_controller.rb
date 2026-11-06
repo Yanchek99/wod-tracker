@@ -14,7 +14,10 @@ class WorkoutsController < ApplicationController
 
   # GET /workouts/1
   # GET /workouts/1.json
-  def show; end
+  def show
+    @logs = Current.user.logs.where(workout: @workout).order(created_at: :desc).to_a
+    @best_log = WorkoutHistory.new(@logs).best_log
+  end
 
   # GET /workouts/new
   def new

@@ -13,6 +13,6 @@
 div data-controller="passkey" data-passkey-options-url-value=options_passkey_session_path data-passkey-url-value=passkey_session_path data-passkey-cancelled-message-value="No passkey was used. If you haven't added one yet, log in with your password, then add a passkey under Edit User."
   div hidden=true data-passkey-target="supported"
     button.btn.btn-outline-secondary.w-100.mt-3 type="button" data-action="passkey#authenticate"
-      span.me-2 aria-hidden="true" 🔑
+      = icon(:key_round, class: 'me-2')
       | Log in with a passkey
   p.text-danger.small.mt-2.mb-0 hidden=true role="alert" data-passkey-target="error"

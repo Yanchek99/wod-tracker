@@ -89,24 +89,24 @@ body.auth-page {
   background: #fff;
   color: $brand-green;
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 3.25rem;
 }
 
 .auth-app-name {
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .auth-tagline {
   color: rgba(#fff, .75);
-  font-size: .9rem;
+  font-size: .875rem;
 }
 
 .auth-card {
   border: 0;
   border-radius: 1rem;
-  box-shadow: 0 1.25rem 3rem rgba(#000, .5), 0 .25rem .75rem rgba(#000, .25);
+  box-shadow: 0 .5rem 1.5rem rgba(#000, .16);
 
   .card-body {
     padding: 1.75rem;
@@ -205,12 +205,12 @@ body.auth-page {
 }
 
 .auth-card .alert {
-  font-size: .9rem;
+  font-size: .875rem;
 }
 
 .auth-title {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 500;
   margin-bottom: 1.25rem;
   text-align: center;
 }
@@ -224,12 +224,12 @@ body.auth-page {
   .auth-link {
     margin-bottom: .5rem;
     color: rgba(#fff, .85);
-    font-size: .9rem;
+    font-size: .875rem;
   }
 
   a {
     color: #fff;
-    font-size: .9rem;
+    font-size: .875rem;
     text-decoration: none;
 
     &:hover,

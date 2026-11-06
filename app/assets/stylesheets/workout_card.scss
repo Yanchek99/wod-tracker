@@ -17,7 +17,7 @@
 .workout-program {
   margin-bottom: .1rem;
   color: $text-muted-ui;
-  font-size: .85rem;
+  font-size: .875rem;
 
   a {
     color: inherit;
@@ -35,8 +35,7 @@
   flex: 1;
   margin: 0;
   font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: -.02em;
+  font-weight: 500;
 }
 
 .workout-actions {
@@ -54,7 +53,7 @@
 .workout-posted {
   margin: 0 0 1rem;
   color: $text-muted-ui;
-  font-size: .8rem;
+  font-size: .875rem;
 }
 
 .workout-objective {

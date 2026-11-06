@@ -5,6 +5,7 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 require 'webmock/minitest'
+require 'webauthn/fake_client'
 
 # Disable outbound HTTP in tests; localhost stays open for Capybara/Selenium.
 WebMock.disable_net_connect!(allow_localhost: true)
@@ -25,6 +26,14 @@ module ActiveSupport
     def stub_cf_wod_redirect(legacy_path, slug)
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/#{legacy_path}})
         .to_return(status: 301, headers: { 'Location' => "/#{slug}" })
+    end
+
+    # ScrapeCfWodJob anchors Schedule#posted_at to 6pm Pacific on the target date (see
+    # posted_at_for), not midnight UTC, so a UTC-calendar-day range (Date#all_day) doesn't
+    # reliably contain it -- during PST (UTC-8) 6pm Pacific falls after midnight UTC, i.e. on the
+    # *next* UTC calendar day. Match against the Pacific calendar day instead.
+    def posted_at_range_for(date)
+      ActiveSupport::TimeZone['America/Los_Angeles'].local(date.year, date.month, date.day).all_day
     end
 
     # Object#stub (from minitest/mock) isn't available here -- minitest 6 dropped mock.rb into a

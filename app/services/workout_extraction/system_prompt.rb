@@ -15,6 +15,23 @@ module WorkoutExtraction
         symbol/label, not position, to assign female_load/male_load. A bare, unlabeled split like
         "65/95" is female/male (female_load/male_load) -- female value first, male value second.
         A single number applies to both sexes equally via "load".
+      - A box height for box jumps or box step-ups (e.g. "♀ 20-inch box / ♂ 24-inch box", or a bare
+        "24/20 in") is a distance in inches, never a load: use female_distance/male_distance (or a
+        single "distance") with distance_unit "inch". Do not put box height in female_load/male_load
+        even though it looks like a sex-split load pattern.
+      - A wall-ball target height ("♀ 9-foot target / ♂ 10-foot target", "10-ft. target") is a
+        distance in feet: female_distance/male_distance (or a single "distance") with distance_unit
+        "foot". Keep BOTH sex-specific values when the source splits them, exactly as for a
+        sex-split load -- never collapse "♀ 9-foot / ♂ 10-foot" down to one number.
+      - A shuttle run has a per-rep distance, stated as one leg out and back ("One shuttle run is
+        25 feet down and 25 feet back" -> "distance": 50, "distance_unit": "foot"; sum the legs).
+        Set it on the Shuttle Run exercise even when the length is in a separate sentence, and
+        keep the rep count ("10 shuttle runs" -> reps 10).
+      - A load only applies to the exercise it's actually describing -- never copy it onto every
+        exercise in the same round just because they share a clock. E.g. "100 double-unders, 50
+        dumbbell snatches (♀35lb/♂50lb), 100 double-unders" puts female_load/male_load on the
+        Dumbbell Snatch exercise only; the two Double-under exercises stay bodyweight (no load)
+        even though they sit in the same round.
     CHEATSHEET
 
     def self.text
@@ -29,7 +46,7 @@ module WorkoutExtraction
         #{workout_field_lines},
           "segments": [
             {
-              "name": "<string, required>",
+              "name": "<string, optional>",
         #{segment_field_lines},
               "exercises": [ <exercise, see shape below> ]
             }
@@ -51,11 +68,22 @@ module WorkoutExtraction
         fit; an honest "extractable": false is far more useful than a wrong workout.
 
         Rules (when "extractable" is true):
+        - "name" is the workout's own title -- use it whenever the source text has a title line
+          above the prescription: a hero-workout name ("Murph"), a numbered series/event title
+          ("Community Cup Workout 3", "Open Workout 25.1"), or a quoted nickname ("Tank Top Time").
+          Copy it verbatim into "name". Omit "name" only when there is genuinely no such title line;
+          never use a prescription/rep-scheme line, a movement line, or a section heading like
+          "Stimulus and Strategy" as the name. The app supplies a date-based fallback when "name"
+          is absent.
         - "score_type" must be exactly one of: #{Metric.workout_measurements.join(', ')}. Use "time" for
           for-time workouts, including rounds-for-time (e.g. "5 RFT") -- these are scored by elapsed
           time, not round count. Use "rep" for AMRAP/max-rep workouts scored by total reps, "round"
           only for AMRAP-style workouts actually scored by rounds completed, "weight" for max-load
           workouts, "calorie" for calorie-based workouts.
+        - "for max reps" / "for total reps" always means "rep", even with a fixed round count: a
+          workout like "3 rounds for max reps of:" (e.g. Fight Gone Bad) is "rep" with "rounds": 3,
+          NOT "time". "time" is only for workouts actually scored by elapsed time; do not let a
+          leading "N rounds" pull a max-reps workout to "time".
         - "interval" holds a rep scheme like "21-15-9" when the workout is an ascending or descending
           conditioning rep ladder across rounds; leave it out otherwise.
         - For load-scored lifting set schemes (e.g. "Back squat 5-5-5-5-5 reps" or
@@ -73,6 +101,22 @@ module WorkoutExtraction
           "male_calories" -- a placeholder is never sex-specific, even if the workout has
           sex-specific values elsewhere (e.g. a load on a different movement). The real per-round
           values come from the interval scheme itself, not from a stored count on the exercise.
+        - An exercise prefixed "Max"/"Maximum" (e.g. "Max chest-to-bar pull-ups", "Max power
+          snatches") inside a timed AMRAP window is scored by whatever reps the athlete completes,
+          not a fixed count -- set that exercise's "reps" to 0, the app's own "max reps" sentinel.
+          Never 1: that is the interval-placeholder value from the rule above, and it does NOT
+          apply here -- a "Max" movement has no per-round count to stand in for. Apply this in
+          every segment that has a "Max" movement, however many there are: a workout of three
+          4-minute windows (max power snatches, then max overhead squats, then max squat snatches),
+          each also holding 10 shuttle runs and 21 toes-to-bars, gets "reps": 0 on the
+          snatch/overhead-squat exercise of all three segments while the shuttle runs stay 10 and
+          the toes-to-bars stay 21.
+        - A time-boxed station with no rep target has the same "0" sentinel even without a "Max"
+          prefix: in "3 rounds for max reps of: 1 minute of wall-ball shots ... 1 minute of rowing
+          for calories", every station is a minute-long max effort -- set "reps" 0 on each (or
+          "calories" 0 for a calorie-scored movement like Row), never 1. The "= 1" placeholder is
+          only for an exercise driven by an explicit interval rep scheme (a "21-15-9" ladder), not
+          for a plain timed station.
         - "rounds" is a fixed round count (e.g. "5 rounds for time"); leave it out for AMRAPs, single-round
           workouts, or interval-ladder workouts (use "interval" instead).
         - "time" is a time cap or AMRAP duration in seconds; "time_cap" is a "MM:SS" string cap on a
@@ -84,6 +128,31 @@ module WorkoutExtraction
           one list of movements (e.g. "6 rounds of: 1 minute rowing, 1 minute burpees, 1 minute
           rest") is NOT multiple parts -- that's a flat list of top-level exercises, each with its
           own "duration_seconds"; do not wrap them in a segment just to hold a shared note.
+        - A "Rest N minute(s)" line inside such a per-round list is one of those top-level
+          exercises, not something to drop: emit a "Rest" exercise in list order with
+          "duration_seconds" set ("Rest 1 minute" -> movement_name "Rest", duration_seconds 60).
+          This applies even when the rest sits at the end of the round (e.g. Fight Gone Bad's
+          "1 minute of rowing ... Rest 1 minute") -- keep the Rest exercise.
+        - IMPORTANT, and easy to get wrong -- contrast this with the case directly above: when an
+          outer round count instead wraps several already-distinct, separately-timed parts (e.g.
+          "2 rounds for total reps of:" followed by three different "On a 3-minute clock:" blocks,
+          each with its own movements), those blocks DO need their own segments (per the rule
+          above) AND the round count applies to the whole group of them together. There is no
+          schema field for "repeat this group of segments N times" -- the only way to represent it
+          is to emit the same segment objects again, in the same order, N times total in the
+          "segments" array. Concretely: "2 rounds for total reps of: [3-min run+pull-up block]
+          Rest 1 minute [3-min run+push-up block] Rest 1 minute" is 4 segments in this exact
+          order -- [run+pull-up], [run+push-up], [run+pull-up] (repeated), [run+push-up]
+          (repeated) -- never 2. Do not drop the repeat or emit only one pass through the group.
+        - A segment's "name" is a short label copied verbatim from the source's own heading for
+          that part -- "Part A", "Buy-in", "On a 3-minute clock", "0:00-5:00". Omit "name"
+          entirely when the source gives the part no heading of its own. Never invent a name that
+          summarizes the part's movements or scheme (NOT "Block 1: Run + Max Pull-ups", NOT
+          "3-minute AMRAP") -- those movements are already listed in the segment's "exercises".
+        - A "Rest N minutes" (or "Rest N minute") line after a timed segment's exercises is that
+          segment's own "rest_seconds" -- this still applies to the LAST part in a repeated group
+          (the rule above), even though the same rest also precedes the next repetition of the
+          first part. Do not omit "rest_seconds" on a segment just because it happens to be last.
         - A strength/lifting scheme immediately followed by a distinct conditioning piece is TWO
           parts even with no "Part A/Part B" labels -- the boundary is the change of scheme, often
           marked by "Then," or a blank line (e.g. "Overhead squat 8-8-8-8 reps" then "AMRAP 6 of:
@@ -103,6 +172,11 @@ module WorkoutExtraction
           source text (miles, yards, kilometers) to meters before writing "distance" (e.g. "1 mile"
           is 1600 meters -- CrossFit's own rounded convention, not the physics-exact 1609.34) --
           never write a "distance_unit" outside those three values.
+        - A movement's "distance" counts as specified even when its length sits in a separate
+          sentence, not inline with the rep count -- still set "distance"/"distance_unit" on that
+          exercise. Most common case: a shuttle run given as one leg out and back -- "One shuttle
+          run is 25 feet down and 25 feet back" means every "Shuttle Run" exercise gets
+          "distance": 50 (the two legs summed), "distance_unit": "foot", plus its rep count.
         - Only include a field when the source text specifies it; omit fields you're not confident about
           rather than guessing a value.
 
@@ -120,16 +194,16 @@ module WorkoutExtraction
     end
 
     def self.exercise_field_lines
-      field_lines(WorkoutExtraction::LlmParser::EXERCISE_SCHEMA[:properties].except(:movement_name))
+      field_lines(WorkoutExtraction::LlmParser.exercise_schema[:properties].except(:movement_name))
     end
 
     def self.workout_field_lines
-      field_lines(WorkoutExtraction::LlmParser::WORKOUT_SCHEMA[:properties]
+      field_lines(WorkoutExtraction::LlmParser.workout_schema[:properties]
         .except(:extractable, :gap_reason, :segments, :exercises))
     end
 
     def self.segment_field_lines
-      field_lines(WorkoutExtraction::LlmParser::SEGMENT_SCHEMA[:properties].except(:name, :exercises))
+      field_lines(WorkoutExtraction::LlmParser.segment_schema[:properties].except(:name, :exercises))
     end
   end
 end

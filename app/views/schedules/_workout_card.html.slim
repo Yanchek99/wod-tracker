@@ -1,0 +1,8 @@
+/ The workout card used in the program page's list. Locals: schedule, show_program (default true), log_button (default true).
+- workout = schedule.workout
+- show_program = local_assigns.fetch(:show_program, true)
+- log_button = local_assigns.fetch(:log_button, true)
+= render layout: 'workouts/card', locals: { workout: workout, program: (schedule.program if show_program) } do
+  = render partial: 'workouts/notes', locals: { workout: workout }
+  - if log_button
+    = link_to 'Log workout', new_workout_log_path(workout), class: 'btn btn-primary schedule-log'

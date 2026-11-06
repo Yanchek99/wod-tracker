@@ -117,7 +117,7 @@ SimpleForm.setup do |config|
     b.use :html5
     b.optional :readonly
     b.use :label, class: 'form-label'
-    b.use :input, class: 'form-select'#, error_class: 'is-invalid', valid_class: 'is-valid'
+    b.use :input, class: 'form-select', error_class: 'is-invalid'#, valid_class: 'is-valid'
     b.use :full_error, wrap_with: { class: 'invalid-feedback' }
     b.use :hint, wrap_with: { class: 'form-text' }
   end

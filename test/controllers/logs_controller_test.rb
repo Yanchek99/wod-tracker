@@ -8,6 +8,103 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:mathew)
   end
 
+  test 'index shows only the current user logs' do
+    get logs_url
+
+    assert_response :success
+    assert_select 'a[href=?]', workout_path(workouts(:murph))
+    assert_select 'a[href=?]', workout_path(workouts(:amrap_couplet))
+    assert_select 'a[href=?]', workout_path(workouts(:fran)), count: 0
+  end
+
+  test 'index orders history newest first' do
+    logs(:matt_murph).update!(created_at: 2.days.ago)
+    logs(:matt_amrap).update!(created_at: 1.day.ago)
+
+    get logs_url
+
+    assert_operator response.body.index(workout_path(workouts(:amrap_couplet))),
+                    :<,
+                    response.body.index(workout_path(workouts(:murph)))
+  end
+
+  test 'index row links to the log show page and shows the score' do
+    get logs_url
+
+    assert_select 'a[href=?]', log_path(logs(:matt_murph))
+    assert_select 'a[href=?]', log_path(logs(:matt_amrap))
+    assert_select '.fw-semibold', text: '01:00:00'
+    assert_select '.fw-semibold', text: '8 + 2 (202 reps)'
+  end
+
+  test 'index shows an empty state when the user has no logs' do
+    Log.where(user: users(:mathew)).destroy_all
+
+    get logs_url
+
+    assert_response :success
+    assert_select 'p', text: 'No workouts logged yet.'
+  end
+
+  test 'nav links to the workout history' do
+    get logs_url
+
+    assert_select 'nav a[href=?]', logs_path, text: 'History'
+  end
+
+  test 'index page one renders a lazy frame chaining to the next page' do
+    30.times do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    end
+
+    get logs_url
+
+    assert_response :success
+    assert_select 'turbo-frame#logs_page_1'
+    assert_select 'turbo-frame#logs_page_2[loading="lazy"][src=?]', logs_path(page: 2)
+  end
+
+  test 'index last page renders no further lazy frame' do
+    30.times do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200)
+    end
+
+    get logs_url(page: 2)
+
+    assert_response :success
+    assert_select 'turbo-frame#logs_page_2'
+    assert_select 'turbo-frame[loading="lazy"]', count: 0
+  end
+
+  test 'index paginates same-timestamp logs in descending ID order' do
+    timestamp = Time.zone.parse('2100-01-01 12:00:00')
+    logs = Array.new(26) do
+      Log.create!(user: users(:mathew), workout: workouts(:murph), score_type: :time, score_value: 1200,
+                  created_at: timestamp)
+    end
+
+    get logs_url
+
+    assert_response :success
+    logs.last(25).reverse_each do |log|
+      assert_select "a[href='#{log_path(log)}']"
+    end
+    assert_select "a[href='#{log_path(logs.first)}']", count: 0
+
+    get logs_url(page: 2)
+
+    assert_response :success
+    assert_select "a[href='#{log_path(logs.first)}']"
+  end
+
+  test 'turbo frame request renders only the page frame without the heading' do
+    get logs_url, headers: { 'Turbo-Frame' => 'logs_page_1' }
+
+    assert_response :success
+    assert_select 'h1', count: 0
+    assert_select 'turbo-frame#logs_page_1'
+  end
+
   test 'should create log with direct movement recordings' do
     assert_difference(['Log.count', 'MovementLog.count'], 1) do
       post workout_logs_url(@workout), params: { log: {
@@ -28,6 +125,81 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     movement_log = Log.last.movement_logs.first
     assert_equal movements(:pullup), movement_log.movement
     assert_equal 45, movement_log.reps
+  end
+
+  test 'submitting a set-based lifting day with a blank set_breakdown_text still auto-populates set_breakdown' do
+    workout = workouts(:back_squat_5x5)
+
+    post workout_logs_url(workout), params: { log: {
+      score_type: :weight,
+      movement_logs_attributes: {
+        '0' => { movement_id: movements(:back_squat).id, reps: 5, load: 225, set_breakdown_text: '' },
+        '1' => { movement_id: movements(:back_squat).id, reps: 5, load: 235, set_breakdown_text: '' },
+        '2' => { movement_id: movements(:back_squat).id, reps: 5, load: 245, set_breakdown_text: '' },
+        '3' => { movement_id: movements(:back_squat).id, reps: 5, load: 245, set_breakdown_text: '' },
+        '4' => { movement_id: movements(:back_squat).id, reps: 5, load: 245, set_breakdown_text: '' }
+      }
+    } }
+
+    assert_redirected_to log_url(Log.last)
+    Log.last.movement_logs.each do |movement_log|
+      assert_equal [5], movement_log.set_breakdown
+    end
+  end
+
+  test 'creates log with a set breakdown' do
+    assert_difference(['Log.count', 'MovementLog.count'], 1) do
+      post workout_logs_url(@workout), params: { log: {
+        score_type: :time,
+        score_value: '5:30',
+        movement_logs_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            reps: 45,
+            set_breakdown_text: '21,15,9'
+          }
+        }
+      } }
+    end
+
+    assert_redirected_to log_url(Log.last)
+    movement_log = Log.last.movement_logs.first
+    assert_equal [21, 15, 9], movement_log.set_breakdown
+  end
+
+  test 'rejects a log whose set breakdown does not sum to reps' do
+    assert_no_difference('Log.count') do
+      post workout_logs_url(@workout), params: { log: {
+        score_type: :time,
+        score_value: '5:30',
+        movement_logs_attributes: {
+          '0' => {
+            movement_id: movements(:pullup).id,
+            reps: 45,
+            set_breakdown_text: '21,15'
+          }
+        }
+      } }
+    end
+
+    assert_response :unprocessable_content
+  end
+
+  test 'rejects a set breakdown containing non-numeric characters' do
+    post workout_logs_url(@workout), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:pullup).id,
+          reps: 21,
+          set_breakdown_text: '8,seven,6'
+        }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    assert_select '.invalid-feedback', text: /can only contain numbers, commas, dashes, and spaces/
   end
 
   test 'should not show another user log' do
@@ -110,6 +282,110 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     assert_select pullup_card, "input[name$='[load]']" do |elements|
       assert elements.first.ancestors('[hidden]').any?
     end
+  end
+
+  test 'new log form shows the set breakdown field when reps are not auto-populated' do
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+
+    # Fran: Thruster and Pullup both aggregate to 45 reps via the interval scheme, and neither
+    # is auto-populated (multi-exercise workout) -- see test/fixtures/exercises.yml.
+    thruster_card = css_select('.card.mb-3')[0]
+    assert_select thruster_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'new log form hides the set breakdown field for an auto-populated single-lift day' do
+    get new_workout_log_url(workouts(:back_squat_5x5))
+
+    assert_response :success
+    card = css_select('.card.mb-3').first
+    assert_select card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'new log form shows the set breakdown field for a reps == 1 AMRAP-repeated movement' do
+    workout = Workout.create!(name: 'Reps One AMRAP Field Test', score_type: :rep)
+    segment = workout.segments.create!(time_seconds: 600, position: 1)
+    segment.exercises.create!(movement: movements(:rope_climb), position: 1, reps: 1)
+    segment.exercises.create!(movement: movements(:pushup), position: 2, reps: 10)
+
+    get new_workout_log_url(workout)
+
+    assert_response :success
+    rope_card = css_select('.card.mb-3')[0]
+    assert_select rope_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_not elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'new log form hides the set breakdown field for a non-breakable movement' do
+    movements(:pullup).update!(breakable: false)
+
+    get new_workout_log_url(workouts(:fran))
+
+    assert_response :success
+    pullup_card = css_select('.card.mb-3')[1] # Pullups: reps only -- see test/fixtures/exercises.yml
+    assert_select pullup_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert elements.first.ancestors('[hidden]').any?
+    end
+  end
+
+  test 'failed submission redisplays the set breakdown field with the submitted value' do
+    post workout_logs_url(workouts(:fran)), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:thruster).id,
+          reps: 45,
+          set_breakdown_text: '21,15'
+        }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    thruster_card = css_select('.card.mb-3')[0]
+    assert_select thruster_card, "input[name$='[set_breakdown_text]']" do |elements|
+      assert_equal '21, 15', elements.first['value']
+    end
+  end
+
+  test 'auto-populated set breakdown persists through the hidden repeater input on create' do
+    assert_difference('MovementLog.count', 5) do
+      post workout_logs_url(workouts(:back_squat_5x5)), params: { log: {
+        score_type: :weight,
+        movement_logs_attributes: {
+          '0' => { movement_id: movements(:back_squat).id, reps: 5, load: 135, set_breakdown: ['5'] },
+          '1' => { movement_id: movements(:back_squat).id, reps: 5, load: 145, set_breakdown: ['5'] },
+          '2' => { movement_id: movements(:back_squat).id, reps: 5, load: 155, set_breakdown: ['5'] },
+          '3' => { movement_id: movements(:back_squat).id, reps: 5, load: 165, set_breakdown: ['5'] },
+          '4' => { movement_id: movements(:back_squat).id, reps: 5, load: 175, set_breakdown: ['5'] }
+        }
+      } }
+    end
+
+    Log.last.movement_logs.each { |ml| assert_equal [5], ml.set_breakdown }
+  end
+
+  test 'submitting a malformed set breakdown entry does not crash' do
+    post workout_logs_url(@workout), params: { log: {
+      score_type: :time,
+      score_value: '5:30',
+      movement_logs_attributes: {
+        '0' => {
+          movement_id: movements(:pullup).id,
+          reps: 21,
+          set_breakdown_text: '21,,'
+        }
+      }
+    } }
+
+    assert_response :redirect
+    assert_equal [21], Log.last.movement_logs.first.set_breakdown
   end
 
   test 're-rendered new form falls back to showing all fields when a movement log has no matching exercise' do

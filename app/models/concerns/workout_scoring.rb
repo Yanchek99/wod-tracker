@@ -22,16 +22,10 @@ module WorkoutScoring
   end
 
   def exercises_for_log_recording
-    return exercises unless set_based_lifting?
+    return collapsed_repeat_exercises || exercises unless set_based_lifting?
     return governing_segment_exercises unless fixed_set_based_lifting_structure?
 
     governing_segment.rounds.times.flat_map { governing_segment_exercises }
-  end
-
-  def set_based_lifting_set_count
-    return governing_segment_exercises.size if variable_set_based_lifting_structure?
-
-    governing_segment&.rounds.to_i
   end
 
   def lifting_score(movement_logs)
@@ -42,6 +36,19 @@ module WorkoutScoring
 
   def governing_segment_exercises
     governing_segment&.exercises || []
+  end
+
+  # A bare "how many/how far" achievement test -- MaxRepDetector's reps: 0 sentinel or
+  # MaxDistanceDetector's distance_unit-with-no-value sentinel -- has no time or round structure
+  # to announce, so workout_objective routes it away from the for-time/clock format guesses. A
+  # timed governing segment (e.g. an AMRAP of max-rep burpees) does have a clock to announce, so
+  # it's excluded here and left to clock_objective/amrap_objective instead.
+  def single_achievement_test?
+    exercises = governing_segment_exercises.to_a
+    return false unless exercises.one?
+    return false if governing_segment&.time_seconds.present?
+
+    Measurable::LeadingPrescription.new(exercises.first.prescription_metrics).achievement_test?
   end
 
   def amrap_score_components

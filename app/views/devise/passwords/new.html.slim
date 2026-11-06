@@ -1,8 +1,9 @@
 - content_for :header
-  | Forgot your password?
+  | Reset your password
+p.text-center.text-muted.small.mb-4 Enter your email and we'll send you a link to reset your password.
 = simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
   = f.error_notification
   .form-inputs
     = f.input :email, required: true, autofocus: true
   .form-actions.d-grid
-    = f.button :submit, "Send me reset password instructions", class: 'btn btn-outline-primary'
+    = f.button :submit, "Send reset link", class: 'btn btn-primary'

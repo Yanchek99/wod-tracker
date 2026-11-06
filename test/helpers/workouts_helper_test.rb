@@ -31,21 +31,38 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal 'For Time', workout_objective(workout)
   end
 
+  test 'renders a bare max-rep achievement test as for max reps, not for time' do
+    workout = Workout.new(name: 'Max Toes to Bar', score_type: :rep)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    assert_equal 'For max reps', workout_objective(workout)
+  end
+
+  test 'renders a bare max-height achievement test as for max height, not for time' do
+    box_jump = Movement.create!(name: 'Box Jump')
+    workout = Workout.new(name: 'Max Box Jump Height', score_type: :inch)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: box_jump, position: 1, distance_unit: :inch)
+
+    assert_equal 'For max height', workout_objective(workout)
+  end
+
   test 'renders a segment-less workout with a generic fallback objective' do
     workout = Workout.new(name: 'Empty Workout', score_type: :time)
 
     assert_equal 'For time', workout_objective(workout)
   end
 
-  test 'renders set-based lifting workouts as sets for load' do
+  test 'renders set-based lifting workouts as for load' do
     workout = Workout.new(name: 'Back Squat 5x5', score_type: :weight)
     segment = workout.segments.build(rounds: 5, position: 1)
     segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 5, load: 0)
 
-    assert_equal '5 sets for load', workout_objective(workout)
+    assert_equal 'For load', workout_objective(workout)
   end
 
-  test 'renders variable set-based lifting workouts as sets for load' do
+  test 'renders variable set-based lifting workouts as for load' do
     workout = Workout.new(name: 'Power Clean Heavy Day', score_type: :weight)
     segment = workout.segments.build(position: 1)
     movement = Movement.find_or_create_by!(name: 'Power Clean')
@@ -53,25 +70,80 @@ class WorkoutsHelperTest < ActionView::TestCase
       segment.exercises.build(movement: movement, position: index + 1, reps: reps)
     end
 
-    assert_equal '8 sets for load', workout_objective(workout)
+    assert_equal 'For load', workout_objective(workout)
   end
 
-  test 'renders weight-scored rounds as sets for load without a prescribed load' do
+  test 'renders weight-scored rounds as for load without a prescribed load' do
     workout = Workout.create!(name: 'Back Squat 5x5', score_type: :weight)
     segment = workout.segments.create!(rounds: 5, position: 1)
     segment.exercises.create!(movement: movements(:back_squat), position: 1, reps: 5, load: 0)
 
     workout.exercises.each { |exercise| exercise.update!(load: nil, load_unit: nil, female_load: nil, male_load: nil) }
 
-    assert_equal '5 sets for load', workout_objective(workout.reload)
+    assert_equal 'For load', workout_objective(workout.reload)
   end
 
-  test 'renders timed max-finding workouts as max load clocks' do
+  test 'collapses single-movement set-based lifting sets into one rep-scheme line' do
+    workout = Workout.new(name: 'Deadlift Heavy Day', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    [10, 10, 7, 7, 3, 3, 3].each.with_index do |reps, index|
+      segment.exercises.build(movement: movements(:deadlift), position: index + 1, reps: reps, load: 0)
+    end
+
+    assert_equal '10-10-7-7-3-3-3 Deadlift', lifting_sets_line(workout)
+  end
+
+  test 'collapses fixed-rep set-based lifting rounds into a repeated rep-scheme line' do
+    workout = Workout.new(name: 'Back Squat 5x5', score_type: :weight)
+    segment = workout.segments.build(rounds: 5, position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 5, load: 0)
+
+    assert_equal '5-5-5-5-5 Back Squat', lifting_sets_line(workout)
+  end
+
+  test 'does not collapse a set-based lifting scheme that carries prescribed loads' do
+    workout = Workout.new(name: 'Deadlift Percentages', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    [5, 5, 5].each.with_index do |reps, index|
+      segment.exercises.build(movement: movements(:deadlift), position: index + 1, reps: reps,
+                              female_load: 135, male_load: 185)
+    end
+
+    assert_nil lifting_sets_line(workout)
+  end
+
+  test 'renders untimed max-finding workouts as for load' do
     workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
     segment = workout.segments.build(position: 1)
     segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
                             duration_seconds: 240, load_unit: :lb)
     workout.valid? # canonicalizes load_unit into the load: 0 find-a-max sentinel
+
+    assert_equal 'For load', workout_objective(workout)
+  end
+
+  test 'renders timed max-finding workouts as max load clocks' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    segment = workout.segments.build(position: 1, time_seconds: 240)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 4,
+                            duration_seconds: 240, load_unit: :lb)
+    workout.valid? # canonicalizes load_unit into the load: 0 find-a-max sentinel
+
+    assert_equal 'Find a max load in 4 minutes', workout_objective(workout)
+  end
+
+  test 'renders a bare untimed single-lift weight workout as for load, not for time' do
+    workout = Workout.new(name: 'Back Squat Max', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 1, load: 0)
+
+    assert_equal 'For load', workout_objective(workout)
+  end
+
+  test 'renders a weight-scored workout with a ladder step as for load, not an ascending ladder' do
+    workout = Workout.new(name: 'Loaded Ladder', score_type: :weight, ladder_step: 3)
+    segment = workout.segments.build(position: 1)
+    segment.exercises.build(movement: movements(:back_squat), position: 1, reps: 1, load: 0)
 
     assert_equal 'For load', workout_objective(workout)
   end
@@ -83,6 +155,14 @@ class WorkoutsHelperTest < ActionView::TestCase
     segment.exercises.build(movement: movements(:pushup), position: 2, reps: 15)
 
     assert_equal 'As many rounds and reps as possible in 10 minutes', workout_objective(workout)
+  end
+
+  test 'renders a timed single-movement max-rep amrap with its time, not as a bare achievement test' do
+    workout = Workout.new(name: 'Open 12.1', score_type: :rep)
+    segment = workout.segments.build(time_seconds: 420, position: 1)
+    segment.exercises.build(movement: movements(:burpee), position: 1, reps: 0)
+
+    assert_equal 'As many reps as possible in 7 minutes', workout_objective(workout)
   end
 
   test 'renders segmented rep-scored clocks as total reps' do
@@ -109,6 +189,32 @@ class WorkoutsHelperTest < ActionView::TestCase
     second.exercises.build(movement: movements(:pullup), position: 2, reps: 0)
 
     assert_equal 'On a 10-minute clock for total reps', workout_objective(workout)
+  end
+
+  test 'renders a repeated block group as rounds for total reps rather than a summed clock' do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup].each_with_index do |movement, block|
+        segment = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, position: (round * 2) + block + 1)
+        segment.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.build(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    assert_equal '2 rounds for total reps of', workout_objective(workout)
+  end
+
+  test 'renders rest-separated non-repeating total-reps interval blocks without a summed clock' do
+    workout = Workout.new(name: 'Community Cup 3', score_type: :rep)
+
+    first = workout.segments.build(time_seconds: 240, rest_seconds: 120, position: 1)
+    first.exercises.build(movement: movements(:run), position: 1, reps: 1, distance: 200, distance_unit: :meter)
+    first.exercises.build(movement: movements(:pushup), position: 2, reps: 0)
+
+    second = workout.segments.build(time_seconds: 240, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    assert_equal 'For total reps', workout_objective(workout)
   end
 
   test 'renders a sequential workout with one inner rounds segment as for time' do
@@ -162,6 +268,30 @@ class WorkoutsHelperTest < ActionView::TestCase
     assert_equal "CFJ-181202\nFor Time\n800 meter Run\nThen, 10 rounds of\n10 Handstand Push-ups\n" \
                  "10 Single-leg Squats\n800 meter Run",
                  workout_as_text(cfj_181202_workout)
+  end
+
+  test "includes a segment's trailing rest as its own line in the paste-text-box text" do
+    workout = Workout.new(name: 'CF-260825', score_type: :rep)
+    first = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 1)
+    first.exercises.build(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+    second = workout.segments.build(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 2)
+    second.exercises.build(movement: movements(:pullup), position: 1, reps: 0)
+
+    lines = workout_as_text(workout).split("\n")
+
+    assert_equal 2, lines.count('Rest 1 minute')
+    assert_equal '400 meter Run', lines[lines.index('Rest 1 minute') - 1]
+    assert_equal 'Rest 1 minute', lines.last
+  end
+
+  test 'renders set-based lifting text as a collapsed rep-scheme line' do
+    workout = Workout.new(name: 'Deadlift Heavy Day', score_type: :weight)
+    segment = workout.segments.build(position: 1)
+    [10, 10, 7, 7, 3, 3, 3].each.with_index do |reps, index|
+      segment.exercises.build(movement: movements(:deadlift), position: index + 1, reps: reps, load: 0)
+    end
+
+    assert_equal "Deadlift Heavy Day\nFor load\n10-10-7-7-3-3-3 Deadlift", workout_as_text(workout)
   end
 
   test 'includes time cap and notes in the paste-text-box text' do

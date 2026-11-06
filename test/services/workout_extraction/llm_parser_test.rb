@@ -42,6 +42,112 @@ module WorkoutExtraction
       assert_equal 'CF-260115', workout.name
     end
 
+    test 'falls back to a date-based name when the LLM uses the first prescription line as the name' do
+      stub_llm_response(
+        extractable: true, name: '1,600-meter run x2', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: movements(:run).name, distance: 1600, distance_unit: 'meter')]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('For time: 1,600-meter run x2', date: Date.new(2026, 7, 27))
+
+      assert_equal 'CF-260727', workout.name
+    end
+
+    test 'falls back when the leaked prescription line uses other common CrossFit formats' do
+      deadlift = movements(:deadlift)
+      examples = {
+        '95-lb Thruster x21' => exercise_payload(movement_name: @movement.name, reps: 21, load: 95),
+        '225-pound Deadlift x5' => exercise_payload(movement_name: deadlift.name, reps: 5, load: 225),
+        '800m Run x4' => exercise_payload(movement_name: movements(:run).name, distance: 800, distance_unit: 'meter'),
+        '4 x 400m Run' => exercise_payload(movement_name: movements(:run).name, distance: 400, distance_unit: 'meter'),
+        '21-15-9' => exercise_payload(movement_name: @movement.name, reps: 1)
+      }
+
+      examples.each do |name, exercise|
+        stub_llm_response(
+          extractable: true, name: name, score_type: 'time', rounds: nil, time: nil, interval: nil,
+          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+          exercises: [exercise]
+        )
+
+        workout = WorkoutExtraction::LlmParser.call(name, date: Date.new(2026, 7, 27))
+
+        assert_equal 'CF-260727', workout.name, "#{name.inspect} should use the date fallback"
+      end
+    end
+
+    test 'preserves legitimate short names with leading numbers' do
+      ['Open 26.1', '5K Gone Bad'].each do |name|
+        stub_llm_response(
+          extractable: true, name: name, score_type: 'time', rounds: nil, time: nil, interval: nil,
+          time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+          exercises: [exercise_payload(movement_name: @movement.name, reps: 1)]
+        )
+
+        workout = WorkoutExtraction::LlmParser.call(name, date: DATE)
+
+        assert_equal name, workout.name
+      end
+    end
+
+    test 'recovers a dropped title line as the workout name from the source text' do
+      stub_llm_response(
+        extractable: true, name: nil, score_type: 'rep', rounds: nil, time: 240, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 0)]
+      )
+      source = "Community Cup Workout 3\n\nAs many reps as possible in 4 minutes of:\n10 shuttle runs\nMax thrusters"
+
+      workout = WorkoutExtraction::LlmParser.call(source, date: DATE)
+
+      assert_equal 'Community Cup Workout 3', workout.name
+    end
+
+    test 'still uses the date fallback when a single-piece prose paste has no title line' do
+      stub_llm_response(
+        extractable: true, name: nil, score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: @movement.name, reps: 20)]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call("21 Thrusters\n21 Pull-ups", date: DATE)
+
+      assert_equal 'CF-260115', workout.name
+    end
+
+    test 'backfills the shuttle-run distance from a down-and-back sentence the LLM leaves in prose' do
+      shuttle_run = Movement.find_or_create_by!(name: 'Shuttle Run')
+      stub_llm_response(
+        extractable: true, name: 'Community Cup Workout 3', score_type: 'rep', rounds: nil, time: 240,
+        interval: nil, time_cap: nil, ladder_step: nil, team_size: nil,
+        notes: 'One shuttle run is 25 feet down and 25 feet back.', gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: shuttle_run.name, reps: 10)]
+      )
+      source = "As many reps as possible in 4 minutes of:\n10 shuttle runs\n\nOne shuttle run is 25 feet down and 25 feet back."
+
+      workout = WorkoutExtraction::LlmParser.call(source, date: DATE)
+      exercise = workout_exercises(workout).first
+
+      assert_equal 50, exercise.distance
+      assert_equal 'foot', exercise.distance_unit
+    end
+
+    test 'leaves a shuttle-run distance the LLM already provided untouched' do
+      shuttle_run = Movement.find_or_create_by!(name: 'Shuttle Run')
+      stub_llm_response(
+        extractable: true, name: 'Shuttle Sprint', score_type: 'time', rounds: nil, time: nil, interval: nil,
+        time_cap: nil, ladder_step: nil, team_size: nil, notes: nil, gap_reason: nil, segments: [],
+        exercises: [exercise_payload(movement_name: shuttle_run.name, reps: 10, distance: 25, distance_unit: 'meter')]
+      )
+
+      workout = WorkoutExtraction::LlmParser.call('10 shuttle runs, 25 meters down and 25 meters back', date: DATE)
+      exercise = workout_exercises(workout).first
+
+      assert_equal 25, exercise.distance
+      assert_equal 'meter', exercise.distance_unit
+    end
+
     test 'wraps a flat workout in one implicit unnamed segment carrying its scheme' do
       stub_llm_response(
         extractable: true, name: 'Cindy', score_type: 'round', rounds: nil, time: 1200, interval: nil,
@@ -145,6 +251,8 @@ module WorkoutExtraction
       assert_nil segment.interval_scheme
       assert_equal [3, 3, 2, 2, 1, 1, 1, 1], segment.exercises.map(&:reps)
       assert_equal [movement], segment.exercises.map(&:movement).uniq
+      # Every set carries the find-a-max load sentinel so the log form shows a Load field per set.
+      assert_equal [0] * 8, segment.exercises.map(&:load)
     end
 
     # Regression guard for CF-260422 (workout 405): a strength scheme ("Overhead squat 8-8-8-8
@@ -159,7 +267,7 @@ module WorkoutExtraction
       stub_llm_response(
         extractable: true, name: 'CF-260422', score_type: 'rep',
         segments: [
-          { name: 'Overhead squat', rounds: 4, exercises: [ohs.call(8)] },
+          { name: nil, rounds: 4, exercises: [ohs.call(8)] },
           { name: nil, time_seconds: 360, exercises: [ohs.call(40), deficit] }
         ],
         exercises: []
@@ -171,7 +279,7 @@ module WorkoutExtraction
       assert_equal 'rep', workout.score_type
       strength, amrap = workout.segments.sort_by(&:position)
       assert_equal 2, workout.segments.size
-      assert_equal 'Overhead squat', strength.name
+      assert_nil strength.name
       assert_equal 4, strength.rounds
       assert_equal [overhead_squat], strength.exercises.map(&:movement)
       assert_equal [8], strength.exercises.map(&:reps)

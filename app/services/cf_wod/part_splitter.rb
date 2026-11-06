@@ -6,7 +6,11 @@ module CfWod
       # Recurring rep-partitioning boilerplate (e.g. "Partition the pull-up and deadlift reps
       # any way." / "Partition the reps any way you like."): tells athletes how to split reps
       # already specified on the exercise lines, so it adds no exercise data of its own.
-      /\Apartition (?:the |your )?(?:.+ )?reps any way(?:\s+you\s+\w+)?\.?\z/i
+      /\Apartition (?:the |your )?(?:.+ )?reps any way(?:\s+you\s+\w+)?\.?\z/i,
+      # Recurring rest-interval boilerplate on rounds-of-AMRAP workouts (e.g. "Rest 1 minute
+      # between rounds."): describes the rest between rounds already captured by the segment's
+      # rounds/time scheme, so it adds no exercise data of its own.
+      /\ARest\s+\d+\s+minutes?\s+between\s+rounds\.?\z/i
     ].freeze
 
     TIME_WINDOW = /\A(\d{1,2}:\d{2})-(\d{1,2}:\d{2}):\z/

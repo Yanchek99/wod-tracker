@@ -51,7 +51,7 @@ class MeasurableLeadingPrescriptionIntegrationTest < ActionView::TestCase
                                                                 reps: 1, distance: 80, distance_unit: :foot,
                                                                 female_load: 35, male_load: 50, load_unit: :lb)
 
-    assert_equal '80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)', measurable_message(exercise)
+    assert_equal '80ft Dumbbell Overhead Walking Lunge (♀︎35lb / ♂︎50lb)', measurable_message(exercise)
   end
 
   test 'renders 40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)' do
@@ -61,7 +61,7 @@ class MeasurableLeadingPrescriptionIntegrationTest < ActionView::TestCase
                                                                 female_distance: 30, male_distance: 40,
                                                                 female_load: 35, male_load: 50, load_unit: :lb)
 
-    assert_equal '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)', measurable_message(exercise)
+    assert_equal '40/30ft Dumbbell Overhead Walking Lunge (♀︎35lb / ♂︎50lb)', measurable_message(exercise)
   end
 end
 

@@ -1,0 +1,17 @@
+hr
+h3 Passkeys
+p.text-muted Sign in with Face ID, Touch ID, or your device's screen lock instead of typing your password.
+- if resource.passkeys.any?
+  ul.list-group.mb-3
+    - resource.passkeys.order(:created_at).each do |passkey|
+      li.list-group-item.d-flex.justify-content-between.align-items-center
+        div
+          .fw-semibold = passkey.label
+          small.text-muted = passkey.last_used_at ? "Last used #{time_ago_in_words(passkey.last_used_at)} ago" : 'Never used'
+        = link_to 'Remove', passkey_path(passkey), data: { turbo_method: :delete, turbo_confirm: 'Remove this passkey?' }, class: 'btn btn-outline-danger btn-sm'
+div data-controller="passkey" data-passkey-options-url-value=options_passkeys_path data-passkey-url-value=passkeys_path
+  div hidden=true data-passkey-target="supported"
+    .input-group
+      input.form-control type="text" maxlength="50" placeholder="Name (e.g. iPhone)" aria-label="Passkey name" data-passkey-target="label" data-action="keydown.enter->passkey#register"
+      button.btn.btn-outline-primary type="button" data-action="passkey#register" Add a passkey
+  p.text-danger.small.mt-2 hidden=true role="alert" data-passkey-target="error"

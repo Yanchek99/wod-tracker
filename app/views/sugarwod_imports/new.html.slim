@@ -1,0 +1,11 @@
+.container
+  h1 Import from SugarWOD
+  p.text-muted
+    | Upload the CSV export from your SugarWOD account. Workouts already in the catalog (benchmarks, hero WODs,
+    | the Open) are matched by name; everything else is parsed automatically where possible, and anything that
+    | can't be parsed is listed on the results page so you can review it.
+  = form_with url: sugarwod_imports_path, method: :post, multipart: true do |f|
+    .mb-3
+      = f.label :file, 'SugarWOD CSV export', class: 'form-label'
+      = f.file_field :file, class: 'form-control', required: true
+    = f.submit 'Import', class: 'btn btn-outline-primary'

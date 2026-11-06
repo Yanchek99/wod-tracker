@@ -1,0 +1,23 @@
+- content_for :title, 'Programs'
+- content_for :page_header do
+  .page-header.program-header
+    h1.program-title Schedule a workout
+    .program-facts = @program.name
+.form-card
+  - if @schedule.errors.any?
+    .alert.alert-danger
+      - @schedule.errors.full_messages.each do |message|
+        div = message
+  = form_with model: @schedule, url: program_schedules_path(@program), scope: :schedule do |f|
+    .mb-3
+      = f.label :workout_id, 'Workout', class: 'form-label'
+      = f.select :workout_id, options_from_collection_for_select(Workout.order(:name), :id, :name, @schedule.workout_id), { include_blank: 'Choose a workout' }, class: 'form-select', data: { controller: 'searchable-select' }
+      .form-text.mt-2
+        ' Not in the list?
+        = link_to 'Create a new workout', new_workout_path(schedule_program_id: @program.id)
+    .mb-4
+      = label_tag 'schedule_posted_on', 'Date', class: 'form-label'
+      = date_field_tag 'schedule[posted_on]', params.dig(:schedule, :posted_on), class: 'form-control'
+    .d-flex.gap-2
+      = f.submit 'Schedule workout', class: 'btn btn-primary'
+      = link_to 'Cancel', program_path(@program), class: 'btn btn-outline-secondary'

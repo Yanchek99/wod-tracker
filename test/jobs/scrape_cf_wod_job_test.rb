@@ -13,9 +13,22 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
     end
 
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
     assert_equal workouts(:fran), schedule.workout
     assert_equal 0, WorkoutImport.count
+  end
+
+  test "posted_at doesn't roll back a day when localized to a US timezone" do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/07/28})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 7, 28)) }
+    end
+
+    posted_at = @program.schedules.find_by!(workout: workouts(:fran)).posted_at
+    assert_equal Date.new(2026, 7, 28), posted_at.in_time_zone('America/Los_Angeles').to_date
+    assert_equal Date.new(2026, 7, 28), posted_at.in_time_zone('America/New_York').to_date
   end
 
   test 'calls the LLM parser with the page body text and the resolved date' do
@@ -43,7 +56,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10), :heuristic) }
 
     workout = Workout.find_by!(name: 'CF-180110')
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
     assert_equal workout, schedule.workout
     assert_equal 0, WorkoutImport.count
   end
@@ -57,7 +70,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     end
 
     workout = Workout.find_by!(name: 'CF-180110')
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
     assert_equal workout, schedule.workout
     assert_equal 0, WorkoutImport.count
   end
@@ -71,9 +84,95 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20), :heuristic) }
     end
 
-    schedule = @program.schedules.find_by!(posted_at: Date.new(2026, 6, 20))
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2026, 6, 20)))
     assert_equal workouts(:fran), schedule.workout
     assert_equal 0, WorkoutImport.count
+  end
+
+  test 'with fallback disabled, a failing llm parser logs a WorkoutImport failure instead of trying the heuristic' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    stub_llm_parser(->(*, **) { raise WorkoutExtraction::LlmParser::ExtractionError, 'llm boom' }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10), :llm, nil) }
+    end
+
+    workout_import = WorkoutImport.find_by!(workout_date: Date.new(2018, 1, 10))
+    assert_equal 'llm boom', workout_import.error_message
+    assert_nil Workout.find_by(name: 'CF-180110')
+  end
+
+  test 'with fallback disabled, a failing heuristic parser does not try the llm parser' do
+    stub_cf_wod_redirect('2026/06/20', '260620')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
+      .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
+
+    stub_llm_parser(->(*, **) { flunk 'llm parser must not be called' }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20), :heuristic, nil) }
+    end
+
+    assert_includes WorkoutImport.find_by!(workout_date: Date.new(2026, 6, 20)).error_message, 'unrecognized exercise line'
+  end
+
+  test 'keeps the scraped Stimulus and Strategy prose and structures it into the stimulus fields' do
+    stub_cf_wod_redirect('2025/06/18', '250618')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
+      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
+    stub_stimulus_extraction(range_low: 300, range_high: 480, movements: [])
+
+    stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
+    end
+
+    workout = Workout.find_by!(name: 'CF-250618')
+    assert_includes workout.intended_stimulus_notes, 'four sprint-style efforts'
+    assert_not_includes workout.intended_stimulus_notes, 'Stimulus and Strategy'
+    assert_equal [300, 480, 'extracted'],
+                 workout.values_at(:stimulus_range_low, :stimulus_range_high, :stimulus_source)
+  end
+
+  test 'strips the source page\'s "Stimulus and Strategy" section label from the stored prose' do
+    stub_cf_wod_redirect('2025/06/18', '250618')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
+      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
+    stub_stimulus_extraction(range_low: nil, range_high: nil, movements: [])
+
+    stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
+    end
+
+    notes = Workout.find_by!(name: 'CF-250618').intended_stimulus_notes
+    assert_match(/\AToday.s workout is four sprint-style efforts/, notes)
+  end
+
+  test 'a failed structured-stimulus extraction does not fail the import' do
+    stub_cf_wod_redirect('2025/06/18', '250618')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
+      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
+    stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(status: 500)
+
+    stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
+    end
+
+    workout = Workout.find_by!(name: 'CF-250618')
+    assert_includes workout.intended_stimulus_notes, 'four sprint-style efforts'
+    assert_not_includes workout.intended_stimulus_notes, 'Stimulus and Strategy'
+    assert_nil workout.stimulus_range_high
+    assert_equal 0, WorkoutImport.count
+  end
+
+  test 'does not overwrite an existing catalog workout stimulus notes on scrape' do
+    stub_cf_wod_redirect('2025/06/18', '250618')
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
+      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
+    workouts(:fran).update!(intended_stimulus_notes: 'Curated Fran stimulus.', stimulus_source: :authored)
+
+    stub_llm_parser(workouts(:fran)) do
+      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
+    end
+
+    assert_equal 'Curated Fran stimulus.', workouts(:fran).reload.intended_stimulus_notes
   end
 
   test 're-running the same date is idempotent: no duplicate Schedule or Workout' do
@@ -86,8 +185,41 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       end
     end
 
-    assert_equal 1, @program.schedules.where(posted_at: Date.new(2018, 1, 10)).count
-    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: Date.new(2018, 1, 10)).workout
+    assert_equal 1, @program.schedules.where(posted_at: posted_at_range_for(Date.new(2018, 1, 10))).count
+    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10))).workout
+  end
+
+  test 'a scraped workout whose name matches a catalogued benchmark resolves to that record instead of duplicating it' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    extracted = Workout.new(name: workouts(:fran).name, score_type: :rep)
+
+    assert_no_difference('Workout.count') do
+      stub_llm_parser(extracted) do
+        perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+      end
+    end
+
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
+    assert_equal workouts(:fran), schedule.workout
+    assert_equal 0, WorkoutImport.count
+  end
+
+  test 'a scraped workout whose name is not in the catalogue is persisted as a new Workout' do
+    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2018/01/10})
+      .to_return(status: 200, body: cf_wod_fixture('legacy_with_scaling.html'))
+
+    extracted = Workout.new(name: 'Uncatalogued Grinder', score_type: :rep)
+
+    assert_difference('Workout.count', 1) do
+      stub_llm_parser(extracted) do
+        perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2018, 1, 10)) }
+      end
+    end
+
+    schedule = @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10)))
+    assert_equal 'Uncatalogued Grinder', schedule.workout.name
   end
 
   test 'a rest day is skipped: no Workout, Schedule, or WorkoutImport row' do
@@ -180,7 +312,7 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       assert_raises(CfWod::Fetcher::FetchError) { job.perform }
     end
 
-    assert_equal [Date.new(2026, 1, 16), :llm], job.arguments
+    assert_equal [Date.new(2026, 1, 16), :llm, :heuristic], job.arguments
 
     travel_to Time.utc(2026, 1, 17, 12, 0, 0) do # two days later -- a freshly recomputed default would be Jan 18
       stub_request(:get, %r{\Ahttps://www\.crossfit\.com/workout/2026/01/16})
@@ -189,6 +321,17 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
       stub_llm_parser(workouts(:fran)) { job.perform(*job.arguments) }
     end
 
-    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: Date.new(2026, 1, 16)).workout
+    assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2026, 1, 16))).workout
+  end
+
+  private
+
+  def stub_stimulus_extraction(payload)
+    stub_request(:post, 'https://api.anthropic.com/v1/messages')
+      .to_return(status: 200, headers: { 'Content-Type' => 'application/json' }, body: {
+        id: 'msg_x', type: 'message', role: 'assistant', model: 'claude-haiku-4-5',
+        content: [{ type: 'text', text: payload.to_json }], stop_reason: 'end_turn',
+        usage: { input_tokens: 100, output_tokens: 50 }
+      }.to_json)
   end
 end

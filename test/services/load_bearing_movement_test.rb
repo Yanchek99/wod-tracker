@@ -37,6 +37,6 @@ class LoadBearingMovementTest < ActiveSupport::TestCase
   private
 
   def seeded_movement_names
-    Rails.root.join('db/seeds.rb').read.scan(/Movement\.find_or_create_by\(name: '([^']+)'\)/).flatten
+    Rails.root.join('db/seeds.rb').read.scan(/Movement\.find_or_(?:create|initialize)_by\(name: '([^']+)'\)/).flatten
   end
 end

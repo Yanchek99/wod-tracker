@@ -1,3 +1,5 @@
+require Rails.root.join('lib/rails_admin/config/actions/rerun_import')
+
 RailsAdmin.config do |config|
   config.asset_source = :sprockets
 
@@ -34,6 +36,8 @@ RailsAdmin.config do |config|
     edit
     delete
     show_in_app
+    rerun_heuristic
+    rerun_llm
 
     ## With an audit adapter, you can add:
     # history_index

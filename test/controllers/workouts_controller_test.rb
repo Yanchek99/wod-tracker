@@ -13,6 +13,47 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index batches logged workout lookup for rendered workouts' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    query_counts = count_matching_queries(logs: /FROM "logs"/) do
+      get workouts_url
+    end
+
+    assert_response :success
+    assert_equal 1, query_counts[:logs]
+  end
+
+  test 'index page one renders a lazy frame chaining to the next page' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    get workouts_url
+
+    assert_response :success
+    assert_select 'turbo-frame#workouts_page_1'
+    assert_select 'turbo-frame#workouts_page_2[loading="lazy"][src=?]', workouts_path(page: 2)
+    assert_select 'turbo-frame#workouts_page_2 .spinner-border'
+  end
+
+  test 'index last page renders no further lazy frame' do
+    30.times { |i| Workout.create!(name: "Filler WOD #{i}", score_type: :time) }
+
+    last_page = (Workout.count.to_f / Kaminari.config.default_per_page).ceil
+    get workouts_url(page: last_page)
+
+    assert_response :success
+    assert_select 'turbo-frame[loading="lazy"]', count: 0
+  end
+
+  test 'search carries the query into the next-page lazy frame' do
+    30.times { |i| Workout.create!(name: "Cindy Variant #{i}", score_type: :round) }
+
+    get workouts_url(query: 'Cindy')
+
+    assert_response :success
+    assert_select 'turbo-frame#workouts_page_2[src=?]', workouts_path(page: 2, query: 'Cindy')
+  end
+
   test 'should get new' do
     get new_workout_url
     assert_response :success
@@ -158,6 +199,41 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'li', text: '21-15-9 of', count: 0
   end
 
+  test "renders a segment's trailing rest as its own line" do
+    workout = Workout.create!(name: 'CF-260825', score_type: :rep)
+    segment = workout.segments.create!(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60, position: 1)
+    segment.exercises.create!(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+
+    get workout_url(workout)
+
+    assert_select 'li', text: 'Rest 1 minute'
+  end
+
+  test 'shows a repeated total-reps group once under a rounds objective' do
+    workout = Workout.create!(name: 'CF-260825', score_type: :rep)
+    2.times do |round|
+      %i[pullup pushup squat].each_with_index do |movement, block|
+        segment = workout.segments.create!(name: 'On a 3-minute clock', time_seconds: 180, rest_seconds: 60,
+                                           position: (round * 3) + block + 1)
+        segment.exercises.create!(movement: movements(:run), position: 1, distance: 400, distance_unit: :meter)
+        segment.exercises.create!(movement: movements(movement), position: 2, reps: 0)
+      end
+    end
+
+    get workout_url(workout)
+
+    assert_select '.workout-objective', text: '2 rounds for total reps of'
+    assert_select 'li', text: 'AMRAP in 3:00', count: 3
+  end
+
+  test 'collapses a set-based lifting workout into a for-load rep-scheme line' do
+    get workout_url(workouts(:back_squat_5x5))
+
+    assert_select 'p', text: 'For load'
+    assert_select 'li', text: '5-5-5-5-5 Back Squat'
+    assert_select 'li', text: '5 Back Squat', count: 0
+  end
+
   test 'should get edit' do
     get edit_workout_url(@workout)
     assert_response :success
@@ -181,6 +257,36 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to workout_url(@workout)
     assert_equal 'Break up the pull-ups early.', @workout.reload.notes.to_plain_text.strip
+  end
+
+  test 'update persists the intended stimulus and stamps its source authored' do
+    patch workout_url(@workout), params: { workout: {
+      name: @workout.name, score_type: @workout.score_type,
+      intended_stimulus_notes: 'Sprint the thrusters; keep the pull-ups in big sets.',
+      stimulus_range_low: 180, stimulus_range_high: 300,
+      segments_attributes: {
+        '0' => { id: @workout.segments.first.id, position: 1, interval_scheme: '21-15-9', exercises_attributes: {
+          '0' => { id: exercises(:fran_thruster).id, movement_id: movements(:thruster).id, position: 1,
+                   stimulus_loading: 'moderate', stimulus_sets_max: 1, stimulus_duration_max: '' }
+        } }
+      }
+    } }
+
+    assert_redirected_to workout_url(@workout)
+    assert_equal [180, 300, 'authored'],
+                 @workout.reload.values_at(:stimulus_range_low, :stimulus_range_high, :stimulus_source)
+    assert_equal 'Sprint the thrusters; keep the pull-ups in big sets.', @workout.intended_stimulus_notes
+    assert_equal %w[moderate authored],
+                 exercises(:fran_thruster).reload.values_at(:stimulus_loading, :stimulus_source)
+    assert_equal 1, exercises(:fran_thruster).stimulus_sets_max
+    assert_nil exercises(:fran_thruster).stimulus_duration_max
+  end
+
+  test 'update leaves the stimulus source unset when no stimulus fields are submitted' do
+    patch workout_url(@workout), params: { workout: { name: @workout.name, stimulus_range_low: '', stimulus_range_high: '' } }
+
+    assert_redirected_to workout_url(@workout)
+    assert_nil @workout.reload.stimulus_source
   end
 
   test 'submitting a blank interval field keeps a timed-rounds segment timed-rounds' do
@@ -256,5 +362,18 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       distance_units_per_rep: nil, calories: nil, female_calories: nil, male_calories: nil,
       ladder_step_every: nil, ladder_exempt: nil
     }.merge(overrides)
+  end
+
+  def count_matching_queries(patterns, &)
+    counts = patterns.transform_values { 0 }
+    callback = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == 'SCHEMA'
+
+      patterns.each { |name, pattern| counts[name] += 1 if payload[:sql].match?(pattern) }
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, 'sql.active_record', &)
+
+    counts
   end
 end

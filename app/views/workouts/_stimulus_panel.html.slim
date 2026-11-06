@@ -1,0 +1,10 @@
+- range = intended_stimulus_range(workout)
+- if range || workout.intended_stimulus_notes.present?
+  - preview = [("Expected #{range}" if range), workout.intended_stimulus_notes.to_s.squish].compact_blank.join('. ')
+  = render layout: 'workouts/collapsible_panel', locals: { title: 'Intended stimulus', preview: preview, css_class: 'workout-stimulus', locked: true } do
+    - if range
+      p.mb-1
+        | Expected&nbsp;
+        b = range
+    - if workout.intended_stimulus_notes.present?
+      .notes = simple_format(workout.intended_stimulus_notes)

@@ -1,17 +1,23 @@
 class WorkoutsController < ApplicationController
   LOAD_FIELDS = %i[load female_load male_load].freeze
+  WORKOUT_STIMULUS_FIELDS = %i[stimulus_range_low stimulus_range_high].freeze
+  EXERCISE_STIMULUS_FIELDS = %i[stimulus_loading stimulus_sets_max stimulus_duration_max].freeze
 
   before_action :set_workout, only: [:show, :edit, :edit_unstructured, :re_extract, :update, :destroy]
 
   # GET /workouts
   # GET /workouts.json
   def index
-    @workouts = Workout.search_by_name(params[:query]).order(created_at: :desc)
+    @workouts = Workout.search_by_name(params[:query]).order(created_at: :desc).page(params[:page])
+    @logged_workout_ids = logged_workout_ids_for(@workouts)
   end
 
   # GET /workouts/1
   # GET /workouts/1.json
-  def show; end
+  def show
+    @logs = Current.user.logs.where(workout: @workout).order(created_at: :desc).to_a
+    @best_log = WorkoutHistory.new(@logs).best_log
+  end
 
   # GET /workouts/new
   def new
@@ -61,7 +67,7 @@ class WorkoutsController < ApplicationController
     respond_to do |format|
       if @workout.save
         @workout = @workout.absorb_duplicate!
-        format.html { redirect_to @workout, notice: t('.notice') }
+        format.html { redirect_to after_create_path, notice: t('.notice') }
         format.json { render :show, status: :created, location: @workout }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -108,9 +114,21 @@ class WorkoutsController < ApplicationController
 
   private
 
+  # A workout created from a program's Schedule workout form goes back to that form with it selected.
+  def after_create_path
+    program = Program.find_by(id: params[:schedule_program_id])
+    return @workout unless program && can?(:create, Schedule.new(program: program))
+
+    new_program_schedule_path(program, workout_id: @workout.id)
+  end
+
   # Use callbacks to share common setup or constraints between actions.
   def set_workout
     @workout = Workout.includes(segments: :exercises).find(params.expect(:id))
+  end
+
+  def logged_workout_ids_for(workouts)
+    Current.user.logs.where(workout_id: workouts.map(&:id)).distinct.pluck(:workout_id)
   end
 
   # Only allow a list of trusted parameters through.
@@ -119,14 +137,31 @@ class WorkoutsController < ApplicationController
                        :reps, :duration_seconds, :ladder_step_every, :ladder_exempt,
                        :load, :female_load, :male_load, :implement_count,
                        :distance, :female_distance, :male_distance, :distance_unit,
-                       :calories, :female_calories, :male_calories, :notes]
+                       :calories, :female_calories, :male_calories, :notes,
+                       *EXERCISE_STIMULUS_FIELDS]
 
     attributes = params.expect(workout: [:name, :notes, :time_cap, :score_type, :ladder_step, :team_size,
+                                         :intended_stimulus_notes, *WORKOUT_STIMULUS_FIELDS,
                                          { segments_attributes: [[:id, :name, :rounds, :time_seconds, :interval_scheme,
                                                                   :rest_seconds, :notes, :position, :_destroy,
                                                                   { exercises_attributes: [exercise_params] }]] }])
     canonicalize_submitted_loads(attributes)
+    stamp_authored_stimulus(attributes)
     attributes
+  end
+
+  # A stimulus value that comes in through the form is coach-authored. Stamp the row's source
+  # so a later importer/model run treats it as an override rather than something to refill.
+  def stamp_authored_stimulus(attributes)
+    attributes[:stimulus_source] = :authored if stimulus_present?(attributes, WORKOUT_STIMULUS_FIELDS)
+
+    submitted_exercise_attributes(attributes).each do |exercise|
+      exercise[:stimulus_source] = :authored if stimulus_present?(exercise, EXERCISE_STIMULUS_FIELDS)
+    end
+  end
+
+  def stimulus_present?(attrs, fields)
+    fields.any? { |field| attrs[field].present? }
   end
 
   # Loads are stored canonically in pounds. A metric athlete enters kilograms, so normalize the
@@ -144,6 +179,16 @@ class WorkoutsController < ApplicationController
   end
 
   def submitted_exercise_attributes(attributes)
-    Array(attributes[:segments_attributes]).flat_map { |segment| Array(segment[:exercises_attributes]) }
+    nested_children(attributes[:segments_attributes])
+      .flat_map { |segment| nested_children(segment[:exercises_attributes]) }
+  end
+
+  # Nested attributes arrive either as an array or as a "0","1",... keyed hash
+  # (fields_for's default, and what a real form submits); normalize both to the
+  # list of child param hashes so callers can iterate and mutate them.
+  def nested_children(nested)
+    return [] if nested.blank?
+
+    nested.respond_to?(:values) ? nested.values : nested
   end
 end

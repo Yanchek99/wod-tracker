@@ -63,7 +63,7 @@ module WorkoutDragOrderingSystemHelpers
   end
 
   def assert_text_order(*texts)
-    list_text = find('ul.list-unstyled.mb-3').text
+    list_text = find('ul.workout-exercises').text
     indexes = texts.map { |text| list_text.index(text) }
 
     assert indexes.all?, "expected #{list_text.inspect} to include #{texts.inspect}"

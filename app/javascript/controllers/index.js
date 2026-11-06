@@ -4,38 +4,61 @@
 
 import { application } from "./application"
 
-import WorkoutSearchController from "./workout_search_controller.js"
-application.register("workout-search", WorkoutSearchController)
+import AuthBackdropController from "./auth_backdrop_controller"
+application.register("auth-backdrop", AuthBackdropController)
 
-import TooltipController from "./tooltip_controller.js"
-application.register("tooltip", TooltipController)
-
-import MovementSelectController from "./movement_select_controller.js"
-application.register("movement-select", MovementSelectController)
-
-import ExerciseFormController from "./exercise_form_controller.js"
-application.register("exercise-form", ExerciseFormController)
-
-import ExerciseCardController from "./exercise_card_controller.js"
+import ExerciseCardController from "./exercise_card_controller"
 application.register("exercise-card", ExerciseCardController)
 
-import ImplementCountController from "./implement_count_controller.js"
+import ExerciseFormController from "./exercise_form_controller"
+application.register("exercise-form", ExerciseFormController)
+
+import ImplementCountController from "./implement_count_controller"
 application.register("implement-count", ImplementCountController)
 
-import LadderFieldsController from "./ladder_fields_controller.js"
+import LadderFieldsController from "./ladder_fields_controller"
 application.register("ladder-fields", LadderFieldsController)
 
-import LadderStepController from "./ladder_step_controller.js"
+import LadderStepController from "./ladder_step_controller"
 application.register("ladder-step", LadderStepController)
 
-import LogExerciseController from "./log_exercise_controller.js"
+import LiftingScoreController from "./lifting_score_controller"
+application.register("lifting-score", LiftingScoreController)
+
+import LogExerciseController from "./log_exercise_controller"
 application.register("log-exercise", LogExerciseController)
 
-import SegmentCardController from "./segment_card_controller.js"
-application.register("segment-card", SegmentCardController)
+import MovementSelectController from "./movement_select_controller"
+application.register("movement-select", MovementSelectController)
 
-import NestedFormController from "./nested_form_controller.js"
+import NestedFormController from "./nested_form_controller"
 application.register("nested-form", NestedFormController)
 
-import SortableListController from "./sortable_list_controller.js"
+import PasskeyController from "./passkey_controller"
+application.register("passkey", PasskeyController)
+
+import PasswordToggleController from "./password_toggle_controller"
+application.register("password-toggle", PasswordToggleController)
+
+import RepMaxRowController from "./rep_max_row_controller"
+application.register("rep-max-row", RepMaxRowController)
+
+import ScheduleDatePickerController from "./schedule_date_picker_controller"
+application.register("schedule-date-picker", ScheduleDatePickerController)
+
+import SearchableSelectController from "./searchable_select_controller"
+application.register("searchable-select", SearchableSelectController)
+
+import SegmentCardController from "./segment_card_controller"
+application.register("segment-card", SegmentCardController)
+
+import SortableListController from "./sortable_list_controller"
 application.register("sortable-list", SortableListController)
+
+import TooltipController from "./tooltip_controller"
+application.register("tooltip", TooltipController)
+
+import WorkoutSearchController from "./workout_search_controller"
+application.register("workout-search", WorkoutSearchController)
+import CollapsiblePanelController from "./collapsible_panel_controller"
+application.register("collapsible-panel", CollapsiblePanelController)

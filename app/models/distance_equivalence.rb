@@ -20,7 +20,7 @@ module DistanceEquivalence
     case unit.to_s
     when '', 'meter' then value.round
     when 'km' then (value * METERS_PER_KM).round
-    when 'mile' then value * MILE_METERS
+    when 'mile' then (value * MILE_METERS).round
     else raise ArgumentError, "unknown travel-distance unit: #{unit.inspect}"
     end
   end

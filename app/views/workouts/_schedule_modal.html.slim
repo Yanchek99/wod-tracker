@@ -1,0 +1,14 @@
+#scheduleModal.modal tabindex="-1" role="dialog" aria-hidden="true"
+  .modal-dialog role="document"
+    = simple_form_for workout.schedules.build, wrapper: :input_group do |f|
+      .modal-content
+        .modal-header
+          h5.modal-title Schedule Workout
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label="Close"
+        .modal-body
+          = f.input :program_id, collection: Current.user.programs.manageable
+          = f.input :posted_at
+          = f.input :workout_id, as: :hidden, value: workout.id
+        .modal-footer
+          = link_to 'Cancel', nil, class: 'btn btn-secondary', "data-bs-dismiss": "modal"
+          = f.button :submit, 'Add to Schedule', class: 'btn btn-primary'

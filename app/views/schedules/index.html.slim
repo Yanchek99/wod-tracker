@@ -1,28 +1,45 @@
-.container.my-3
-  - if @schedules.empty?
-    .my-2.alert.alert-warning No schedules
-  - else
-    .row.flex-nowrap
-      .col.text-start = link_to_next_page @dates, '<', class: 'btn btn-primary'
-      h3.col.text-center = local_time(@date, '%A %B %e, %Y')
-      .col.text-end = link_to_prev_page @dates, '>', class: 'btn btn-primary'
-    - @schedules.each do |schedule|
-      .row.my-3.pt-3.border-top
-        h1.col.text-start
-          = schedule.workout.name
-        i.col.text-end
-          = link_to schedule.program.name, schedule.program
-      - if schedule.workout.notes.present?
-        .row
-          .col = schedule.workout.notes
-      .row
-        p.col #{workout_objective schedule.workout}
-      .row
-        ul.list-unstyled.col
-          = render partial: 'exercises/exercises', locals: { workout: schedule.workout }
-      .row
-        .col-12
-          .d-grid
-            = link_to 'Log', new_workout_log_path(schedule.workout), class: 'btn btn-outline-primary'
-            - if @logged_workout_ids.include?(schedule.workout_id)
-              / = link_to 'See Previous Results', new_workout_log_path(schedule.workout), class: 'btn btn-block btn-secondary'
+- content_for :title, 'Schedule'
+= render layout: 'shared/page_header', locals: { title: 'Schedule' } do
+  - unless @schedules.empty?
+    .schedule-stepper
+      = day_step_button link_to_next_page(@dates, icon(:chevron_left), params: { workout: nil }, class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Previous day'), :chevron_left, 'Previous day'
+      .schedule-date data-controller="schedule-date-picker" data-schedule-date-picker-date-value=@calendar_date.iso8601 data-schedule-date-picker-scheduled-value=@scheduled_dates.to_json
+        h3.schedule-date-picker-trigger data-toggle=true
+          = @calendar_date.strftime('%A %B %e, %Y')
+        input type="hidden" data-input=true
+      - if @today
+        span.chip.chip-today Today
+      = day_step_button link_to_prev_page(@dates, icon(:chevron_right), params: { workout: nil }, class: 'btn btn-outline-secondary btn-icon', 'aria-label': 'Next day'), :chevron_right, 'Next day'
+- if @schedules.empty?
+  .empty-state No schedules
+- else
+  - if @schedules.size > 1
+    nav.schedule-tabs aria-label="Workouts today"
+      - @schedules.each_with_index do |schedule, index|
+        = link_to index + 1, url_for(request.query_parameters.merge(workout: index + 1)), 'aria-current': ('page' if schedule == selected_schedule), 'aria-label': schedule.workout.name, title: schedule.workout.name
+  - workout = selected_schedule.workout
+  - history = @workout_histories[workout.id]
+  article.workout-show.schedule-card
+    .workout-show-main
+      = render(layout: 'workouts/card', locals: { workout: workout, program: selected_schedule.program }) { '' }
+      = link_to new_workout_log_path(workout), class: 'btn btn-primary workout-log-button' do
+        = icon(:plus, class: 'me-1')
+        | Log workout
+    .workout-show-side
+      - if history
+        aside.workout-history
+          .panel-label Your history with #{workout.name}
+          .stat
+            span.text-muted Last result
+            b #{logged_result_msg(history.last_log)} · #{local_time(history.last_log.created_at, '%b %-d')}
+          - if history.best_log
+            .stat
+              span.text-muted Best
+              b
+                | #{logged_result_msg(history.best_log)} 
+                span.chip.chip-pr PR
+          .stat
+            span.text-muted Times logged
+            b = history.count
+      = render 'workouts/stimulus_panel', workout: workout
+      = render 'workouts/notes_panel', workout: workout

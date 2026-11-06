@@ -13,7 +13,9 @@ module CfWod
     def burpee_box_jump_over = Movement.find_or_create_by(name: 'Burpee Box Jump-over')
     def wall_ball_shot = Movement.find_or_create_by(name: 'Wall-ball Shot')
     def muscle_up = Movement.find_or_create_by(name: 'Muscle-up')
-    def bike = Movement.find_or_create_by(name: 'Bike')
+    def bike = Movement.find_or_create_by(name: 'Air Bike')
+    def alternating_dumbbell_hang_snatch = Movement.find_or_create_by(name: 'Alternating Dumbbell Hang Snatch')
+    def dumbbell_facing_burpee = Movement.find_or_create_by(name: 'Dumbbell-facing Burpee')
 
     # Exercises are built via `segment.exercises.build(...)` (see CfWod::WorkoutParser), not
     # `workout.exercises.build(segment:)`, because a has_many :through :segments association
@@ -279,6 +281,30 @@ module CfWod
       workout = WorkoutParser.call(page)
 
       assert_equal named, workout
+    end
+
+    test '260729: a rounds-of-AMRAP header with rest boilerplate between rounds' do
+      body = "For 5 rounds, as many reps as possible in 3 minutes of:\n" \
+             "15/20-calorie row\n20 alternating dumbbell hang snatches\nMax dumbbell-facing burpees\n" \
+             "Rest 1 minute between rounds.\n\n♀ 35-lb dumbbell\n♂ 50-lb dumbbell\n\nPost reps to comments."
+      page = wod_page(slug: '260729', body_text: body)
+      hang_snatch = alternating_dumbbell_hang_snatch
+      burpee = dumbbell_facing_burpee
+
+      workout = WorkoutParser.call(page)
+
+      assert workout.valid?
+      assert_equal 'rep', workout.score_type
+      assert_equal 5, workout.governing_segment.rounds
+      assert_equal 180, workout.governing_segment.time_seconds
+      assert_equal 3, workout_exercises(workout).length
+
+      row_exercise, snatch_exercise, burpee_exercise = workout_exercises(workout).sort_by(&:position)
+      assert_equal [movements(:row), 1], [row_exercise.movement, row_exercise.reps]
+      assert_equal [1, 15, 20], [row_exercise.reps, row_exercise.female_calories, row_exercise.male_calories]
+      assert_equal [hang_snatch, 20], [snatch_exercise.movement, snatch_exercise.reps]
+      assert_equal [burpee, 0], [burpee_exercise.movement, burpee_exercise.reps]
+      assert_equal [35, 50], [snatch_exercise.female_load, snatch_exercise.male_load]
     end
 
     test "260101: a bare-number rerun doesn't loosely match a trailing-letter catalog variant" do

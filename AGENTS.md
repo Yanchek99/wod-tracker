@@ -4,7 +4,7 @@
 
 WOD Tracker is a Ruby on Rails app for tracking CrossFit workouts, logs, movements, metrics, programs, and schedules.
 
-- Ruby 4.0.5
+- Ruby 4.0.7
 - Rails 8.1
 - PostgreSQL
 - Node 24.x
@@ -19,7 +19,7 @@ Use the project binaries and Bundler where possible.
 
 Local shells may default to another Ruby. When running Ruby, Rails, Bundler, or test commands from an agent shell, use the project RVM gemset explicitly:
 
-- `rvm 4.0.5@wod-tracker do bundle exec rails test`
+- `rvm 4.0.7@wod-tracker do bundle exec rails test`
 
 - Install Ruby gems: `bundle install`
 - Install JavaScript packages: `yarn install`
@@ -39,6 +39,10 @@ Verification commands:
 CI loads the test schema, runs `bundle exec rails test:all`, and runs RuboCop through reviewdog. Keep local changes compatible with those checks.
 
 Production app (for reproducing reported bugs, especially UI/rendering issues): https://cf.mattyanchek.com
+
+Hosted on Railway (see issue #1781 for full history). Three environments: `production` (always-on), `staging` (seeded via `db:seed`, safe test data only), and ephemeral PR environments (auto-created per PR, cloned from `staging`, serverless). Use the `railway` CLI (`railway logs`, `railway status`, `railway variables`) for production debugging.
+
+No environment runs a dedicated `worker` service: every environment processes Solid Queue jobs inside Puma (`SOLID_QUEUE_IN_PUMA=1`, see `config/puma.rb`). `production` also sets `SOLID_QUEUE_SKIP_RECURRING=false` and `DB_POOL=10` so web runs the scheduled scrape and has enough connections for Puma plus job threads. `staging` is the template PR environments are cloned from; it and every PR environment skip the recurring scheduler and can scale to zero.
 
 ## Rails Engineering Guidelines
 

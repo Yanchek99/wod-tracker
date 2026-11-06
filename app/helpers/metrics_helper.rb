@@ -87,14 +87,29 @@ module MetricsHelper
 
   def sex_specific_metric_unit_msg(metric)
     if load_metric?(metric)
-      return "♀#{load_input_value(metric.female_value)}#{load_display_unit} / " \
-             "♂#{load_input_value(metric.male_value)}#{load_display_unit}"
+      return "♀︎#{load_input_value(metric.female_value)}#{load_display_unit} / " \
+             "♂︎#{load_input_value(metric.male_value)}#{load_display_unit}"
     end
 
     unit = metric.measurement.singularize
     separator = Metric::LOAD_MEASUREMENTS.include?(unit) ? '' : '-'
 
-    "♀#{metric.female_value}#{separator}#{unit} / ♂#{metric.male_value}#{separator}#{unit}"
+    "♀︎#{metric.female_value}#{separator}#{unit} / ♂︎#{metric.male_value}#{separator}#{unit}"
+  end
+
+  def sex_specific_metrics_msg(metrics)
+    ordered_metrics = metrics.sort_by { |metric| sex_specific_metric_display_order(metric) }
+    female_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.female_value) }
+    male_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.male_value) }
+
+    "♀︎#{female_values.join(' + ')} / ♂︎#{male_values.join(' + ')}"
+  end
+
+  def sex_specific_metric_value_msg(metric, value)
+    return "#{load_input_value(value)}#{load_display_unit}" if load_metric?(metric)
+    return "#{value}ft" if metric.foot? # Rails has no foot -> feet inflection
+
+    "#{value}-#{metric.measurement.singularize}"
   end
 
   def additional_metric_display_order(metric)

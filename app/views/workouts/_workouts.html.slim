@@ -1,2 +1,2 @@
-= turbo_frame_tag 'workouts', class: 'list-group my-3' do
-  = render workouts
+= turbo_frame_tag 'workouts', class: 'my-3' do
+  = render 'page', workouts: workouts, query: params[:query]

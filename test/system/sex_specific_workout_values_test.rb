@@ -30,7 +30,7 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
       fill_in 'Female load (lb)', with: '65'
       fill_in 'Male load (lb)', with: '95'
       click_on 'Done'
-      assert_text 'Thruster (♀65lb / ♂95lb)'
+      assert_text 'Thruster (♀︎65lb / ♂︎95lb)'
       assert_no_field 'Female load'
     end
 
@@ -38,6 +38,6 @@ class SexSpecificWorkoutValuesTest < ApplicationSystemTestCase
 
     assert_current_path %r{/workouts/\d+}
     assert_text 'Sex Specific System Test Workout'
-    assert_text 'Thruster (♀65lb / ♂95lb)'
+    assert_text 'Thruster (♀︎65lb / ♂︎95lb)'
   end
 end

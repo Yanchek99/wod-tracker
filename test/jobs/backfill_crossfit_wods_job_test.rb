@@ -35,7 +35,7 @@ class BackfillCrossfitWodsJobTest < ActiveJob::TestCase
       perform_enqueued_jobs { BackfillCrossfitWodsJob.perform_later(Date.new(2018, 1, 10), Date.new(2018, 1, 12)) }
     end
 
-    schedules = program.schedules.where(posted_at: [Date.new(2018, 1, 10), Date.new(2018, 1, 12)])
+    schedules = program.schedules.where(posted_at: posted_at_range_for(Date.new(2018, 1, 10)).begin..posted_at_range_for(Date.new(2018, 1, 12)).end)
     assert_equal 2, schedules.count
     assert_equal [workouts(:fran).id], schedules.map(&:workout_id).uniq
     workout_import = WorkoutImport.find_by!(workout_date: Date.new(2018, 1, 11))
@@ -46,7 +46,7 @@ class BackfillCrossfitWodsJobTest < ActiveJob::TestCase
       perform_enqueued_jobs { BackfillCrossfitWodsJob.perform_later(Date.new(2018, 1, 10), Date.new(2018, 1, 12)) }
     end
 
-    schedules = program.schedules.where(posted_at: [Date.new(2018, 1, 10), Date.new(2018, 1, 12)])
+    schedules = program.schedules.where(posted_at: posted_at_range_for(Date.new(2018, 1, 10)).begin..posted_at_range_for(Date.new(2018, 1, 12)).end)
     assert_equal 2, schedules.count
     assert_equal [workouts(:fran).id], schedules.map(&:workout_id).uniq
     assert_equal 1, WorkoutImport.count

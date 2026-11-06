@@ -1,0 +1,18 @@
+/ The one action a user gets for a program: Delete (owner), Following/unfollow (coach, athlete) or Follow.
+- role = local_assigns[:role]
+- if role == 'owner' && can?(:destroy, program)
+  = button_to program_path(program), method: :delete, class: 'btn btn-outline-danger program-control', form: { data: { turbo_confirm: delete_confirm_message(program, workouts: workouts, followers: followers) } } do
+    | Delete
+- elsif role.present?
+  - if can?(:unsubscribe, program)
+    = button_to unsubscribe_program_path(program), method: :delete, class: 'btn btn-outline-secondary program-control', form: { data: { turbo_confirm: unfollow_confirm_message(program) } } do
+      = icon(:check, class: 'me-1')
+      | Following
+  - else
+    button.btn.btn-outline-secondary.program-control type="button" disabled=true
+      = icon(:check, class: 'me-1')
+      | Following
+- elsif can?(:subscribe, program)
+  = button_to subscribe_program_path(program), method: :post, class: 'btn btn-primary program-control' do
+    = icon(:plus, class: 'me-1')
+    | Follow

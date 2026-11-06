@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "deploy": {
+    // The ffi gem (native ext, required via sassc -> sassc-rails, which
+    // rails_admin's Sprockets asset pipeline needs) links against
+    // libffi.so.8 at boot. Railpack doesn't auto-detect libffi as a
+    // runtime dependency, and Railpack v0.37.0's move to Debian 13
+    // (Trixie) base images stopped carrying it into the deploy image,
+    // crashing web and worker on boot. "..." extends Railpack's
+    // auto-detected apt package list rather than replacing it.
+    "aptPackages": ["...", "libffi8"]
+  }
+}

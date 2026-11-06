@@ -1,0 +1,21 @@
+nav.app-sidebar aria-label="Primary"
+  = link_to root_path, class: 'app-brand' do
+    span.app-logo W
+    span WOD Tracker
+  ul.app-nav
+    - progress_label_shown = false
+    - nav_items.each do |item|
+      - if item.group == :progress && !progress_label_shown
+        - progress_label_shown = true
+        li.app-nav-label Progress
+      li
+        = link_to item.path, class: ('active' if nav_active?(item)), aria: { current: ('page' if nav_active?(item)) } do
+          = icon(item.icon)
+          span = item.label
+  .dropup.app-user
+    button.app-user-button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+      span.app-avatar = user_initials(Current.user)
+      span.app-user-text
+        span.app-user-name = Current.user.name
+        span.app-user-sub Account &amp; sign out
+    = render 'layouts/account_menu'

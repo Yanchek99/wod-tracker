@@ -27,6 +27,25 @@ class WorkoutFingerprintTest < ActiveSupport::TestCase
     assert_equal build_fran('Plain').content_fingerprint, noted.content_fingerprint
   end
 
+  test 'workout stimulus columns do not change the fingerprint' do
+    stimulated = build_fran('Stimulated')
+    stimulated.assign_attributes(
+      stimulus_range_low: 120, stimulus_range_high: 300,
+      intended_stimulus_notes: 'Fast and light.', stimulus_source: :authored
+    )
+
+    assert_equal build_fran('Plain').content_fingerprint, stimulated.content_fingerprint
+  end
+
+  test 'exercise stimulus columns do not change the fingerprint' do
+    stimulated = build_fran('Stimulated')
+    stimulated.segments.first.exercises.first.assign_attributes(
+      stimulus_loading: :heavy, stimulus_sets_max: 3, stimulus_duration_max: 90, stimulus_source: :extracted
+    )
+
+    assert_equal build_fran('Plain').content_fingerprint, stimulated.content_fingerprint
+  end
+
   test 'excludes exercises marked for destruction from the fingerprint' do
     workout = build_fran('Trimmed')
     workout.save!

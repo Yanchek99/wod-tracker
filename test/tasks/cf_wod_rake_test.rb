@@ -54,7 +54,7 @@ class CfWodRakeTest < ActiveSupport::TestCase
     end
 
     assert_includes output, 'Scraped 2018-01-10 successfully'
-    assert_equal workouts(:fran), program.schedules.find_by!(posted_at: Date.new(2018, 1, 10)).workout
+    assert_equal workouts(:fran), program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2018, 1, 10))).workout
   end
 
   test 'scrape aborts with a usage message when no date is given' do

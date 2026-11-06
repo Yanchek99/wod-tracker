@@ -1,3 +1,4 @@
+- content_for :wide, 'true'
 .container
   h1 Editing Workout
   = form_with url: re_extract_workout_path(@workout), method: :patch, local: true, data: { turbo: false } do |form|

@@ -1,15 +1,29 @@
-.container
-  .row.align-items-center.my-2
-    h1.col.mb-0 Programs
-    - if can? :create, Program
-      .col-auto
-        = link_to new_program_path, class: 'btn btn-primary'
-          i.fas.fa-plus
-  #programs.list-group
-    - @programs.each do |program|
-      = link_to program, class: "list-group-item list-group-item-action" do
-        .row
-          .col = program.name
-          .col.text-end
-            - if Current.user.subscribed? program
-              i.far.fa-check-square
+- content_for :title, 'Programs'
+= render layout: 'shared/page_header', locals: { title: 'Programs' } do
+  - if can? :create, Program
+    = link_to new_program_path, class: 'btn btn-primary ms-auto program-new', 'aria-label': 'New program' do
+      = icon(:plus, class: 'me-md-1')
+      span.d-none.d-md-inline New program
+- if @rows.empty?
+  .empty-state No programs yet
+- else
+  - followed, others = @rows.partition(&:role)
+  - show_labels = followed.any? && others.any?
+  .program-list
+    - [['Following', followed], ['Other programs', others]].each do |label, rows|
+      - next if rows.empty?
+      - if show_labels
+        .program-group-label = label
+      - rows.each do |row|
+        .program-row
+          .program-icon class=('program-icon--followed' if row.role) = icon(:clipboard_list)
+          .program-info
+            = link_to row.program.name, row.program, class: 'program-name stretched-link'
+            .program-facts
+              = icon(:user)
+              |  #{pluralize(row.followers, 'follower')} · #{pluralize(row.workouts, 'workout')}
+              - if row.latest_posted_at
+                span.d-none.d-md-inline  · latest #{row.latest_posted_at.in_time_zone('America/Los_Angeles').strftime('%b %-d')}
+          .program-actions
+            = role_pill(row.role)
+            = render 'programs/control', program: row.program, role: row.role, workouts: row.workouts, followers: row.followers

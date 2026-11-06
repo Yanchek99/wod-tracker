@@ -18,7 +18,7 @@ fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
                   'The clock does not reset or stop between exercises. ' \
                   'On the call of "rotate," the athlete(s) must move to the next station immediately for a good score. ' \
                   'One point is given for each rep, except on the rower where each calorie is 1 point.'
-  segment = workout.segments.build(rounds: 3, time_seconds: 1080, position: 1)
+  segment = workout.segments.build(rounds: 3, position: 1)
   segment.exercises.build(movement: wall_ball_shot, position: 1, reps: 0, duration_seconds: 60,
                           female_load: 14, male_load: 20, load_unit: :lb, female_distance: 9, male_distance: 10,
                           distance_unit: :foot)
@@ -27,11 +27,11 @@ fight_gone_bad = Workout.find_or_create_by(name: 'Fight Gone Bad') do |workout|
   segment.exercises.build(movement: box_jump, position: 3, reps: 0, duration_seconds: 60, distance: 20, distance_unit: :inch)
   segment.exercises.build(movement: push_press, position: 4, reps: 0, duration_seconds: 60,
                           female_load: 55, male_load: 75, load_unit: :lb)
-  segment.exercises.build(movement: row, position: 5, reps: 1, calories: 0, duration_seconds: 60)
+  segment.exercises.build(movement: row, position: 5, calories: 0, duration_seconds: 60)
   segment.exercises.build(movement: rest, position: 6, reps: 1, duration_seconds: 60)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: fight_gone_bad).update(posted_at: Date.new(2018, 2, 1))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: fight_gone_bad).update(posted_at: posted_at_on.call(Date.new(2018, 2, 1)))
 
 # ==============================================================================
 # The Girl Workouts
@@ -51,7 +51,7 @@ angie = Workout.find_or_create_by(name: 'Angie') do |workout|
   segment.exercises.build(movement: air_squat, position: 4, reps: 100)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: angie).update(posted_at: Date.new(2018, 1, 30))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: angie).update(posted_at: posted_at_on.call(Date.new(2018, 1, 30)))
 
 # ==============================================================================
 # Barbara
@@ -71,7 +71,7 @@ barbara = Workout.find_or_create_by(name: 'Barbara') do |workout|
   segment.exercises.build(movement: rest, position: 5, reps: 1, duration_seconds: 180)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: barbara).update(posted_at: Date.new(2018, 1, 29))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: barbara).update(posted_at: posted_at_on.call(Date.new(2018, 1, 29)))
 
 # ==============================================================================
 # Chelsea
@@ -87,7 +87,7 @@ chelsea = Workout.find_or_create_by(name: 'Chelsea') do |workout|
   segment.exercises.build(movement: air_squat, position: 3, reps: 15)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: chelsea).update(posted_at: Date.new(2018, 1, 28))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: chelsea).update(posted_at: posted_at_on.call(Date.new(2018, 1, 28)))
 
 # ==============================================================================
 # Cindy
@@ -103,7 +103,7 @@ cindy = Workout.find_or_create_by(name: 'Cindy') do |workout|
   segment.exercises.build(movement: air_squat, position: 3, reps: 15)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: cindy).update(posted_at: Date.new(2018, 1, 27))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: cindy).update(posted_at: posted_at_on.call(Date.new(2018, 1, 27)))
 
 # ==============================================================================
 # Diane
@@ -117,7 +117,7 @@ diane = Workout.find_or_create_by(name: 'Diane') do |workout|
   segment.exercises.build(movement: handstand_push_up, position: 2, reps: 1)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: diane).update(posted_at: Date.new(2018, 1, 26))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: diane).update(posted_at: posted_at_on.call(Date.new(2018, 1, 26)))
 
 # ==============================================================================
 # Elizabeth
@@ -131,7 +131,7 @@ elizabeth = Workout.find_or_create_by(name: 'Elizabeth') do |workout|
   segment.exercises.build(movement: ring_dip, position: 2, reps: 1)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: elizabeth).update(posted_at: Date.new(2018, 1, 25))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: elizabeth).update(posted_at: posted_at_on.call(Date.new(2018, 1, 25)))
 
 # ==============================================================================
 # Fran
@@ -145,7 +145,7 @@ fran = Workout.find_or_create_by(name: 'Fran') do |workout|
   segment.exercises.build(movement: pull_up, position: 2, reps: 1)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: fran).update(posted_at: Date.new(2018, 1, 24))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: fran).update(posted_at: posted_at_on.call(Date.new(2018, 1, 24)))
 
 # ==============================================================================
 # Grace
@@ -157,7 +157,7 @@ grace = Workout.find_or_create_by(name: 'Grace') do |workout|
   segment.exercises.build(movement: clean_and_jerk, position: 1, reps: 30, female_load: 95, male_load: 135, load_unit: :lb)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: grace).update(posted_at: Date.new(2018, 1, 23))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: grace).update(posted_at: posted_at_on.call(Date.new(2018, 1, 23)))
 
 # ==============================================================================
 # Helen
@@ -173,7 +173,7 @@ helen = Workout.find_or_create_by(name: 'Helen') do |workout|
   segment.exercises.build(movement: pull_up, position: 3, reps: 12)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: helen).update(posted_at: Date.new(2018, 1, 22))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: helen).update(posted_at: posted_at_on.call(Date.new(2018, 1, 22)))
 
 # ==============================================================================
 # Isabel
@@ -185,7 +185,7 @@ isabel = Workout.find_or_create_by(name: 'Isabel') do |workout|
   segment.exercises.build(movement: snatch, position: 1, reps: 30, female_load: 95, male_load: 135, load_unit: :lb)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: isabel).update(posted_at: Date.new(2018, 1, 21))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: isabel).update(posted_at: posted_at_on.call(Date.new(2018, 1, 21)))
 
 # ==============================================================================
 # Jackie
@@ -201,7 +201,7 @@ jackie = Workout.find_or_create_by(name: 'Jackie') do |workout|
   segment.exercises.build(movement: pull_up, position: 3, reps: 30)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: jackie).update(posted_at: Date.new(2018, 1, 20))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: jackie).update(posted_at: posted_at_on.call(Date.new(2018, 1, 20)))
 
 # ==============================================================================
 # Karen
@@ -215,7 +215,7 @@ karen = Workout.find_or_create_by(name: 'Karen') do |workout|
                           distance_unit: :foot)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: karen).update(posted_at: Date.new(2018, 1, 19))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: karen).update(posted_at: posted_at_on.call(Date.new(2018, 1, 19)))
 
 # ==============================================================================
 # Linda (a.k.a. 3 Bars of Death)
@@ -231,7 +231,7 @@ linda = Workout.find_or_create_by(name: 'Linda') do |workout|
   segment.exercises.build(movement: clean, position: 3, reps: 1, notes: '3/4 body weight')
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: linda).update(posted_at: Date.new(2018, 1, 18))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: linda).update(posted_at: posted_at_on.call(Date.new(2018, 1, 18)))
 
 # ==============================================================================
 # Mary
@@ -247,7 +247,7 @@ mary = Workout.find_or_create_by(name: 'Mary') do |workout|
   segment.exercises.build(movement: pull_up, position: 3, reps: 15)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: mary).update(posted_at: Date.new(2018, 1, 17))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: mary).update(posted_at: posted_at_on.call(Date.new(2018, 1, 17)))
 
 # ==============================================================================
 # Nancy
@@ -261,7 +261,21 @@ nancy = Workout.find_or_create_by(name: 'Nancy') do |workout|
   segment.exercises.build(movement: overhead_squat, position: 2, reps: 15, female_load: 65, male_load: 95, load_unit: :lb)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: nancy).update(posted_at: Date.new(2018, 1, 16))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: nancy).update(posted_at: posted_at_on.call(Date.new(2018, 1, 16)))
+
+# ==============================================================================
+# Nasty Girls
+# 3 rounds for time
+# Air squats, 50 reps
+# Muscle-ups, 7 reps
+# 135-lb. hang power cleans, 10 reps
+Workout.find_or_create_by(name: 'Nasty Girls') do |workout|
+  workout.score_type = :time
+  segment = workout.segments.build(rounds: 3, position: 1)
+  segment.exercises.build(movement: air_squat, position: 1, reps: 50)
+  segment.exercises.build(movement: muscle_up, position: 2, reps: 7)
+  segment.exercises.build(movement: hang_power_clean, position: 3, reps: 10, female_load: 95, male_load: 135, load_unit: :lb)
+end
 
 # The New Girls Workouts
 
@@ -277,7 +291,7 @@ annie = Workout.find_or_create_by(name: 'Annie') do |workout|
   segment.exercises.build(movement: sit_up, position: 2, reps: 1)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: annie).update(posted_at: Date.new(2018, 1, 15))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: annie).update(posted_at: posted_at_on.call(Date.new(2018, 1, 15)))
 
 # ==============================================================================
 # Eva
@@ -293,7 +307,7 @@ eva = Workout.find_or_create_by(name: 'Eva') do |workout|
   segment.exercises.build(movement: pull_up, position: 3, reps: 30)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: eva).update(posted_at: Date.new(2018, 1, 14))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: eva).update(posted_at: posted_at_on.call(Date.new(2018, 1, 14)))
 
 # ==============================================================================
 # Kelly
@@ -311,7 +325,7 @@ kelly = Workout.find_or_create_by(name: 'Kelly') do |workout|
                           distance_unit: :foot)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: kelly).update(posted_at: Date.new(2018, 1, 13))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: kelly).update(posted_at: posted_at_on.call(Date.new(2018, 1, 13)))
 
 # ==============================================================================
 # Lynne
@@ -326,7 +340,7 @@ lynne = Workout.find_or_create_by(name: 'Lynne') do |workout|
   segment.exercises.build(movement: pull_up, position: 2, reps: 30)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: lynne).update(posted_at: Date.new(2018, 1, 12))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: lynne).update(posted_at: posted_at_on.call(Date.new(2018, 1, 12)))
 
 # ==============================================================================
 # Nicole
@@ -341,7 +355,7 @@ nicole = Workout.find_or_create_by(name: 'Nicole') do |workout|
   segment.exercises.build(movement: pull_up, position: 2, reps: 0)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: nicole).update(posted_at: Date.new(2018, 1, 11))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: nicole).update(posted_at: posted_at_on.call(Date.new(2018, 1, 11)))
 
 # ==============================================================================
 # Amanda
@@ -355,7 +369,7 @@ amanda = Workout.find_or_create_by(name: 'Amanda') do |workout|
   segment.exercises.build(movement: snatch, position: 2, reps: 1, female_load: 95, male_load: 135, load_unit: :lb)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: amanda).update(posted_at: Date.new(2018, 1, 10))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: amanda).update(posted_at: posted_at_on.call(Date.new(2018, 1, 10)))
 
 # ==============================================================================
 # Gwen
@@ -369,7 +383,7 @@ gwen = Workout.find_or_create_by(name: 'Gwen') do |workout|
   segment.exercises.build(movement: clean_and_jerk, position: 1, reps: 1, load_unit: :lb)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: gwen).update(posted_at: Date.new(2018, 1, 9))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: gwen).update(posted_at: posted_at_on.call(Date.new(2018, 1, 9)))
 
 # ==============================================================================
 # Marguerita
@@ -385,7 +399,7 @@ marguerita = Workout.find_or_create_by(name: 'Marguerita') do |workout|
   segment.exercises.build(movement: handstand, position: 5, reps: 1)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: marguerita).update(posted_at: Date.new(2018, 1, 8))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: marguerita).update(posted_at: posted_at_on.call(Date.new(2018, 1, 8)))
 
 # ==============================================================================
 # Candy
@@ -401,7 +415,7 @@ candy = Workout.find_or_create_by(name: 'Candy') do |workout|
   segment.exercises.build(movement: air_squat, position: 3, reps: 60)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: candy).update(posted_at: Date.new(2018, 1, 7))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: candy).update(posted_at: posted_at_on.call(Date.new(2018, 1, 7)))
 
 # ==============================================================================
 # Maggie
@@ -417,7 +431,7 @@ maggie = Workout.find_or_create_by(name: 'Maggie') do |workout|
   segment.exercises.build(movement: single_leg_squat_pistol, position: 3, reps: 60)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: maggie).update(posted_at: Date.new(2018, 1, 6))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: maggie).update(posted_at: posted_at_on.call(Date.new(2018, 1, 6)))
 
 ## =============================================================================
 # Hope
@@ -450,4 +464,57 @@ hope = Workout.find_or_create_by(name: 'Hope') do |workout|
   segment.exercises.build(movement: rest, position: 6, reps: 1, duration_seconds: 60)
 end
 
-CF_PROGRAM.schedules.find_or_initialize_by(workout: hope).update(posted_at: Date.new(2018, 1, 5))
+CF_PROGRAM.schedules.find_or_initialize_by(workout: hope).update(posted_at: posted_at_on.call(Date.new(2018, 1, 5)))
+
+# ==============================================================================
+# The Ghost
+# 6 rounds of:
+# 1 minute of rowing
+# 1 minute of burpees
+# 1 minute of double-unders
+# 1 minute rest
+# Score is total reps across all rounds and exercises (rowing counted as reps per this
+# workout's own scoring convention, same as the calorie-scored stations in Fight Gone Bad).
+Workout.find_or_create_by(name: 'The Ghost') do |workout|
+  workout.score_type = :rep
+  workout.notes = 'Try for as many reps as possible of EACH exercise, not just total score. ' \
+                  'Post separate totals of calories rowed, burpee reps, and double-under reps completed.'
+  segment = workout.segments.build(rounds: 6, time_seconds: 1440, position: 1)
+  segment.exercises.build(movement: row, position: 1, reps: 1, calories: 0, duration_seconds: 60)
+  segment.exercises.build(movement: burpee, position: 2, reps: 0, duration_seconds: 60)
+  segment.exercises.build(movement: double_under, position: 3, reps: 0, duration_seconds: 60)
+  segment.exercises.build(movement: rest, position: 4, reps: 1, duration_seconds: 60)
+end
+
+# ==============================================================================
+# CrossFit Total
+# The heaviest possible total of:
+# 1-rep-max back squat
+# 1-rep-max shoulder press
+# 1-rep-max deadlift
+Workout.find_or_create_by(name: 'CrossFit Total') do |workout|
+  workout.score_type = :weight
+  workout.notes = 'Establish a 1-rep-max back squat, shoulder press, and deadlift, in that order. ' \
+                  'Post the sum of the three heaviest successful lifts.'
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: back_squat, position: 1, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: shoulder_press, position: 2, reps: 1, load_unit: :lb)
+  segment.exercises.build(movement: deadlift, position: 3, reps: 1, load_unit: :lb)
+end
+
+# ==============================================================================
+# Andi (source: a real user's SugarWOD history; not a verified CrossFit.com benchmark)
+# For time:
+# 100 hang power snatches
+# 100 push presses
+# 100 sumo deadlift high pulls
+# 100 front squats
+# 45 / 65 lb.
+Workout.find_or_create_by(name: 'Andi') do |workout|
+  workout.score_type = :time
+  segment = workout.segments.build(position: 1)
+  segment.exercises.build(movement: hang_power_snatch, position: 1, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: push_press, position: 2, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: sumo_deadlift_high_pull, position: 3, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+  segment.exercises.build(movement: front_squat, position: 4, reps: 100, female_load: 45, male_load: 65, load_unit: :lb)
+end

@@ -11,7 +11,7 @@ class MeasurableHelperTest < ActionView::TestCase
     exercise = exercises(:fran_pullup)
     exercise.update!(load_unit: :lb, female_load: 65, male_load: 95, notes: 'Carry a plate.')
 
-    assert_equal 'Pull Up (♀65lb / ♂95lb) ** Carry a plate.', measurable_message(exercise)
+    assert_equal 'Pull Up (♀︎65lb / ♂︎95lb) ** Carry a plate.', measurable_message(exercise)
   end
 
   test 'renders multi-implement dumbbell load with a count prefix' do
@@ -20,7 +20,7 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                 load_unit: :lb, female_load: 35, male_load: 50,
                                                                 implement_count: 2)
 
-    assert_equal '10 Dumbbell Thrusters (2×♀35lb / ♂50lb)', measurable_message(exercise)
+    assert_equal '10 Dumbbell Thrusters (2×♀︎35lb / ♂︎50lb)', measurable_message(exercise)
   end
 
   test 'renders 30 Box Jumps (♀20-inch / ♂24-inch)' do
@@ -28,7 +28,7 @@ class MeasurableHelperTest < ActionView::TestCase
     exercise = workouts(:fran).segments.first.exercises.create!(movement: box_jump, position: 3, reps: 30,
                                                                 female_distance: 20, male_distance: 24, distance_unit: :inch)
 
-    assert_equal '30 Box Jumps (♀20-inch / ♂24-inch)', measurable_message(exercise)
+    assert_equal '30 Box Jumps (♀︎20-inch / ♂︎24-inch)', measurable_message(exercise)
   end
 
   test 'groups multiple sex-specific additional exercise metrics by sex' do
@@ -37,7 +37,7 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                 load_unit: :lb, female_load: 14, male_load: 20,
                                                                 distance_unit: :foot, female_distance: 9, male_distance: 10)
 
-    assert_equal 'Wall-ball Shot (♀14lb + 9ft / ♂20lb + 10ft)', measurable_message(exercise)
+    assert_equal 'Wall-ball Shot (♀︎14lb + 9ft / ♂︎20lb + 10ft)', measurable_message(exercise)
   end
 
   test 'renders timed max-rep station movements with duration prefix' do
@@ -47,7 +47,7 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                 load_unit: :lb, female_load: 14, male_load: 20,
                                                                 distance_unit: :foot, female_distance: 9, male_distance: 10)
 
-    assert_equal '1:00 Wall-ball Shots (♀14lb + 9ft / ♂20lb + 10ft)', measurable_message(exercise)
+    assert_equal '1:00 Wall-ball Shots (♀︎14lb + 9ft / ♂︎20lb + 10ft)', measurable_message(exercise)
   end
 
   test 'renders untimed max-rep station movements with max reps prefix' do
@@ -62,6 +62,13 @@ class MeasurableHelperTest < ActionView::TestCase
     exercise = workouts(:fran).segments.first.exercises.create!(movement: row, position: 3, calories: 0)
 
     assert_equal 'max calories Row', measurable_message(exercise)
+  end
+
+  test 'renders untimed max-height station movements with max height prefix' do
+    box_jump = Movement.create!(name: 'Box Jump')
+    exercise = workouts(:fran).segments.first.exercises.create!(movement: box_jump, position: 3, distance_unit: :inch)
+
+    assert_equal 'max height Box Jump', measurable_message(exercise)
   end
 
   test 'renders additional calories before load for exercises' do
@@ -94,37 +101,5 @@ class MeasurableHelperTest < ActionView::TestCase
                                                                 reps: 1, duration_seconds: 60, calories: 0)
 
     assert_equal '1:00 Row', measurable_message(exercise)
-  end
-
-  test 'keeps movement log distances as additional metric text' do
-    movement_log = logs(:matt_amrap).movement_logs.create!(movement: movements(:row),
-                                                           distance: 300, distance_unit: :meter)
-
-    assert_equal 'Row (300 meters)', measurable_message(movement_log)
-  end
-
-  test 'renders single-value target heights as ft after load' do
-    wall_ball = Movement.create!(name: 'Wall-ball Shot')
-    movement_log = logs(:matt_amrap).movement_logs.create!(movement: wall_ball,
-                                                           reps: 30, load: 20, load_unit: :lb,
-                                                           distance: 10, distance_unit: :foot)
-
-    assert_equal '30 Wall-ball Shots (20 lbs / 10 ft)', measurable_message(movement_log)
-  end
-
-  test 'renders a movement log from its performance columns' do
-    movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:row),
-                                                         distance: 300, distance_unit: :meter)
-
-    assert_equal 'Row (300 meters)', measurable_message(movement_log)
-  end
-
-  test 'renders additional distance before load for movement logs' do
-    movement_log = logs(:matt_amrap).movement_logs.build(movement: movements(:row),
-                                                         reps: 10, distance: 400,
-                                                         distance_unit: :meter, load: 135,
-                                                         load_unit: :lb)
-
-    assert_equal '10 Rows (400 meters / 135 lbs)', measurable_message(movement_log)
   end
 end

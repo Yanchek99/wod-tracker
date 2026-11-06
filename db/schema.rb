@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_23_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,11 +69,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
     t.integer "male_calories"
     t.integer "male_distance"
     t.integer "male_load"
-    t.bigint "movement_id"
+    t.bigint "movement_id", null: false
     t.string "notes"
     t.integer "position", null: false
     t.integer "reps"
     t.bigint "segment_id", null: false
+    t.integer "stimulus_duration_max"
+    t.integer "stimulus_loading"
+    t.integer "stimulus_sets_max"
+    t.integer "stimulus_source"
     t.datetime "updated_at", precision: nil, null: false
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
     t.index ["position", "segment_id"], name: "index_exercises_on_position_and_segment_id", unique: true
@@ -82,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
 
   create_table "logs", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
+    t.text "notes"
     t.integer "reps_per_round"
     t.integer "score_type", null: false
     t.integer "score_value"
@@ -90,6 +95,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
     t.bigint "workout_id"
     t.index ["user_id"], name: "index_logs_on_user_id"
     t.index ["workout_id"], name: "index_logs_on_workout_id"
+  end
+
+  create_table "movement_function_roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "movement_function", null: false
+    t.bigint "movement_id", null: false
+    t.integer "role", null: false
+    t.datetime "updated_at", null: false
+    t.index ["movement_function"], name: "index_movement_function_roles_on_movement_function"
+    t.index ["movement_id", "movement_function"], name: "idx_movement_function_roles_unique", unique: true
+    t.index ["movement_id"], name: "index_movement_function_roles_on_movement_id"
+    t.index ["role"], name: "index_movement_function_roles_on_role"
   end
 
   create_table "movement_logs", force: :cascade do |t|
@@ -104,16 +121,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
     t.bigint "movement_id"
     t.string "notes"
     t.integer "reps"
+    t.integer "set_breakdown", default: [], null: false, array: true
     t.datetime "updated_at", precision: nil, null: false
     t.index ["log_id"], name: "index_movement_logs_on_log_id"
     t.index ["movement_id"], name: "index_movement_logs_on_movement_id"
   end
 
+  create_table "movement_substitutions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "direction", null: false
+    t.bigint "movement_id", null: false
+    t.bigint "substitute_movement_id", null: false
+    t.datetime "updated_at", null: false
+    t.index "LEAST(movement_id, substitute_movement_id), GREATEST(movement_id, substitute_movement_id)", name: "idx_movement_substitutions_unique_unordered_pair", unique: true
+    t.index ["movement_id"], name: "index_movement_substitutions_on_movement_id"
+    t.index ["substitute_movement_id"], name: "index_movement_substitutions_on_substitute_movement_id"
+  end
+
   create_table "movements", force: :cascade do |t|
+    t.boolean "breakable", default: true, null: false
     t.datetime "created_at", precision: nil, null: false
+    t.integer "equipment"
+    t.integer "family"
     t.string "name"
+    t.integer "skill_level"
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["equipment"], name: "index_movements_on_equipment"
+    t.index ["family"], name: "index_movements_on_family"
     t.index ["name"], name: "index_movements_on_name", unique: true
+    t.index ["skill_level"], name: "index_movements_on_skill_level"
+  end
+
+  create_table "passkeys", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "external_id", null: false
+    t.string "label", null: false
+    t.datetime "last_used_at"
+    t.text "public_key", null: false
+    t.bigint "sign_count", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["external_id"], name: "index_passkeys_on_external_id", unique: true
+    t.index ["user_id"], name: "index_passkeys_on_user_id"
   end
 
   create_table "programs", force: :cascade do |t|
@@ -271,6 +320,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "stimulus_predictions", force: :cascade do |t|
+    t.decimal "confidence", precision: 4, scale: 3
+    t.datetime "created_at", null: false
+    t.boolean "current", default: false, null: false
+    t.bigint "exercise_id"
+    t.string "model_version", null: false
+    t.integer "source", null: false
+    t.integer "stimulus_duration_max"
+    t.integer "stimulus_loading"
+    t.integer "stimulus_range_high"
+    t.integer "stimulus_range_low"
+    t.integer "stimulus_sets_max"
+    t.datetime "updated_at", null: false
+    t.bigint "workout_id"
+    t.index ["exercise_id", "model_version", "created_at"], name: "index_stimulus_predictions_exercise_history"
+    t.index ["exercise_id"], name: "index_stimulus_predictions_current_exercise", where: "current"
+    t.index ["workout_id", "model_version", "created_at"], name: "index_stimulus_predictions_workout_history"
+    t.index ["workout_id"], name: "index_stimulus_predictions_current_workout", where: "current"
+    t.check_constraint "num_nonnulls(workout_id, exercise_id) = 1", name: "stimulus_predictions_exactly_one_target"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.bigint "program_id"
@@ -280,6 +350,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
     t.index ["program_id", "user_id"], name: "index_subscriptions_on_program_id_and_user_id", unique: true
     t.index ["program_id"], name: "index_subscriptions_on_program_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
+  create_table "sugarwod_imports", force: :cascade do |t|
+    t.integer "already_imported_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "imported_count", default: 0, null: false
+    t.integer "skipped_count", default: 0, null: false
+    t.jsonb "skipped_rows", default: [], null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sugarwod_imports_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -300,9 +382,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
     t.integer "sign_in_count", default: 0, null: false
     t.integer "unit_system", default: 0, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "webauthn_id"
     t.integer "weight"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
   end
 
   create_table "workout_imports", force: :cascade do |t|
@@ -318,9 +402,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
   create_table "workouts", force: :cascade do |t|
     t.string "content_key"
     t.datetime "created_at", precision: nil, null: false
+    t.text "intended_stimulus_notes"
     t.integer "ladder_step"
     t.string "name"
     t.integer "score_type", null: false
+    t.integer "stimulus_range_high"
+    t.integer "stimulus_range_low"
+    t.integer "stimulus_source"
     t.integer "team_size"
     t.integer "time_cap_seconds"
     t.datetime "updated_at", precision: nil, null: false
@@ -331,8 +419,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "exercises", "movements"
   add_foreign_key "exercises", "segments"
+  add_foreign_key "logs", "workouts"
+  add_foreign_key "movement_function_roles", "movements"
   add_foreign_key "movement_logs", "logs"
   add_foreign_key "movement_logs", "movements"
+  add_foreign_key "movement_substitutions", "movements"
+  add_foreign_key "movement_substitutions", "movements", column: "substitute_movement_id"
+  add_foreign_key "passkeys", "users"
   add_foreign_key "schedules", "programs"
   add_foreign_key "schedules", "workouts"
   add_foreign_key "segments", "workouts"
@@ -342,6 +435,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_180000) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "stimulus_predictions", "exercises"
+  add_foreign_key "stimulus_predictions", "workouts"
   add_foreign_key "subscriptions", "programs"
   add_foreign_key "subscriptions", "users"
+  add_foreign_key "sugarwod_imports", "users"
 end

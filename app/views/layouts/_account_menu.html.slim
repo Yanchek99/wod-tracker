@@ -1,0 +1,11 @@
+ul.dropdown-menu.app-account-menu class=('dropdown-menu-end' if local_assigns[:align_end])
+  - if Current.user.admin?
+    li = link_to rails_admin_path, class: 'dropdown-item' do
+      = icon(:shield, class: 'me-2')
+      | Admin
+  li = link_to edit_user_registration_path, class: 'dropdown-item' do
+    = icon(:settings, class: 'me-2')
+    | Edit Profile
+  li = link_to destroy_user_session_path, class: 'dropdown-item', data: { turbo_method: :delete } do
+    = icon(:log_out, class: 'me-2')
+    | Logout

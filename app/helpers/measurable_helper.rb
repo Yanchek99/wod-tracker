@@ -1,6 +1,7 @@
 module MeasurableHelper
   def measurable_message(measurable)
-    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable), measurable_notes(measurable)].compact.join(' ')
+    [measurable_movement_msg(measurable), measurable_additional_metrics(measurable), measurable_set_breakdown(measurable),
+     measurable_notes(measurable)].compact.join(' ')
   end
 
   def measurable_movement_msg(measurable)
@@ -39,6 +40,8 @@ module MeasurableHelper
 
   def measurable_reps_msg(measurable)
     rep_metric = measurable.prescription_metrics.find(&:rep?)
+    return unless rep_metric
+
     metric_unit_msg(rep_metric)
   end
 
@@ -48,6 +51,18 @@ module MeasurableHelper
     return "(#{sex_specific_metrics_msg(metrics)})" if grouped_sex_specific_metrics?(metrics)
 
     "(#{metrics.map { |metric| metric_unit_msg(metric) }.join(' / ')})"
+  end
+
+  # A single set (one round, one entry, e.g. one line of a "5x5 Back Squat") isn't a "breakdown"
+  # at all -- it's just restating the reps count, so showing "[5]" would be noise rather than
+  # information. Only render once there's more than one recorded set to actually reveal.
+  def measurable_set_breakdown(measurable)
+    return unless measurable.respond_to?(:set_breakdown_rounds)
+
+    rounds = measurable.set_breakdown_rounds
+    return if rounds.blank? || rounds.sum(&:size) <= 1
+
+    "[#{rounds.map { |round| round.join('-') }.join(', ')}]"
   end
 
   def measurable_notes(measurable)
@@ -95,21 +110,6 @@ module MeasurableHelper
     return rep_movement_msg(measurable, rep_metric) if leading.metric.rep?
 
     [leading.text, measurable.movement.name].compact_blank.join(' ')
-  end
-
-  def sex_specific_metrics_msg(metrics)
-    ordered_metrics = metrics.sort_by { |metric| sex_specific_metric_display_order(metric) }
-    female_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.female_value) }
-    male_values = ordered_metrics.map { |metric| sex_specific_metric_value_msg(metric, metric.male_value) }
-
-    "♀#{female_values.join(' + ')} / ♂#{male_values.join(' + ')}"
-  end
-
-  def sex_specific_metric_value_msg(metric, value)
-    return "#{load_input_value(value)}#{load_display_unit}" if load_metric?(metric)
-    return "#{value}ft" if metric.foot? # Rails has no foot -> feet inflection
-
-    "#{value}-#{metric.measurement.singularize}"
   end
 
   def pluralize_movement?(metric)

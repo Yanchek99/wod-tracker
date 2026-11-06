@@ -42,7 +42,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
 
-  test 'uses a full-width toolbar bar with container-width actions' do
+  test 'uses a toolbar bar spanning the content area with container-width actions' do
     page.driver.browser.manage.window.resize_to(1400, 900)
     visit new_workout_url
 
@@ -55,6 +55,7 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
         return {
           toolbarLeft: toolbar.left,
           toolbarRight: toolbar.right,
+          sidebarRight: document.querySelector('.app-sidebar').getBoundingClientRect().right,
           viewportWidth: document.documentElement.clientWidth,
           actionsWidth: actions.width,
           actionsCenter: actions.left + (actions.width / 2)
@@ -62,10 +63,10 @@ class WorkoutBuilderToolbarTest < ApplicationSystemTestCase
       })()
     JS
 
-    assert_in_delta 0, layout['toolbarLeft'], 1
+    assert_in_delta layout['sidebarRight'], layout['toolbarLeft'], 1
     assert_in_delta layout['viewportWidth'], layout['toolbarRight'], 1
     assert_operator layout['actionsWidth'], :<=, 1320
-    assert_in_delta layout['viewportWidth'] / 2, layout['actionsCenter'], 1
+    assert_in_delta (layout['sidebarRight'] + layout['viewportWidth']) / 2, layout['actionsCenter'], 1
   ensure
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end

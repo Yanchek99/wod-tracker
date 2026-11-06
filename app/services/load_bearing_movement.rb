@@ -7,7 +7,7 @@ module LoadBearingMovement
   LOAD_BEARING_MOVEMENTS = [
     'Back Squat', 'Barbell Back-rack Step-up', 'Barbell Carry', 'Barbell Front-rack Lunge',
     'Barbell Step-up', 'Bench Press', 'Bent-over Row', 'Clean', 'Clean and Jerk', 'Clean and Push Jerk',
-    'Clean Squat',
+    'Squat Clean',
     'Deadlift', 'Stiff-legged Deadlift', 'Sumo Deadlift', 'Sumo Deadlift High Pull',
     'Front Squat', 'Good Morning', 'Ground to Overhead',
     'Hang Clean', 'Hang Clean and Push Jerk', 'Hang Power Clean', 'Hang Power Snatch', 'Hang Snatch',

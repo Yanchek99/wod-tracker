@@ -19,6 +19,11 @@ module ExerciseCardSummaryFormattingSystemHelpers
   rescue Selenium::WebDriver::Error::ElementClickInterceptedError
     execute_script('arguments[0].click()', toggle)
   end
+
+  def select_movement(name)
+    find('.ts-control input').set(name)
+    find('.ts-dropdown .option', text: name).click
+  end
 end
 
 class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
@@ -59,7 +64,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
-      save_exercise_card '100/80 meter Run (♀65lb / ♂95lb)'
+      save_exercise_card '100/80 meter Run (♀︎65lb / ♂︎95lb)'
     end
   end
 
@@ -74,6 +79,12 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female distance', with: '80'
       fill_in 'Male distance', with: '100'
       select 'meter', from: 'Distance unit'
+
+      # Typing into the sex-specific distance fields toggles derived distance UI before the
+      # card can be saved. Wait for the final field value to settle so the Done click is not
+      # racing the exercise-form controller update in CI.
+      assert_field 'Male distance', with: '100'
+
       save_exercise_card '100/80 meter Run'
     end
   end
@@ -91,7 +102,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       open_optional_group 'Load'
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
-      save_exercise_card '80ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+      save_exercise_card '80ft Dumbbell Overhead Walking Lunge (♀︎35lb / ♂︎50lb)'
     end
   end
 
@@ -120,7 +131,7 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Female load (lb)', with: '35'
       fill_in 'Male load (lb)', with: '50'
 
-      save_exercise_card '40/30ft Dumbbell Overhead Walking Lunge (♀35lb / ♂50lb)'
+      save_exercise_card '40/30ft Dumbbell Overhead Walking Lunge (♀︎35lb / ♂︎50lb)'
     end
   end
 
@@ -134,12 +145,5 @@ class ExerciseCardSummaryFormattingTest < ApplicationSystemTestCase
       fill_in 'Calories', with: '0'
       save_exercise_card 'max calories Row'
     end
-  end
-
-  private
-
-  def select_movement(name)
-    find('.ts-control input').set(name)
-    find('.ts-dropdown .option', text: name).click
   end
 end

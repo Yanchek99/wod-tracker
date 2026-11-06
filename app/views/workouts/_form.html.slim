@@ -1,9 +1,11 @@
 - cancel_path = @workout.persisted? ? workout_path(@workout) : workouts_path
-- toggle_path = @workout.persisted? ? edit_unstructured_workout_path(@workout) : new_unstructured_workouts_path
+- schedule_program_id = params[:schedule_program_id].presence
+- toggle_path = @workout.persisted? ? edit_unstructured_workout_path(@workout) : new_unstructured_workouts_path(schedule_program_id: schedule_program_id)
 - ladder_segment = @workout.segments.first
 - ladder_hidden = ladder_segment.blank? || ladder_segment.time_seconds.blank? || ladder_segment.rounds.present? || ladder_segment.interval_scheme.present?
 
 = simple_form_for @workout, wrapper: :vertical_form, html: { class: 'workout-form', data: { controller: 'ladder-fields' } } do |f|
+  = hidden_field_tag :schedule_program_id, schedule_program_id if schedule_program_id
   - tooltip_button = ->(title) { content_tag(:button, content_tag(:i, '', class: 'fa-solid fa-circle-info', aria: { hidden: true }), type: 'button', class: 'workout-form__help', data: { controller: 'tooltip', 'bs-animation': false, 'bs-toggle': 'tooltip', 'bs-title': title }, aria: { label: title }) }
   - field_label = ->(attribute, label, title) do
     - safe_join([f.label(attribute, label, class: 'form-label mb-0'), tooltip_button.call(title)], ' ')
@@ -24,6 +26,18 @@
     .col-12
       = f.label :notes, class: 'form-label'
       = f.rich_text_area :notes
+  hr
+  h3 Intended stimulus
+  .form-inputs.row.g-2
+    .col-12
+      = f.label :intended_stimulus_notes, 'Notes', class: 'form-label mb-0'
+      = f.input :intended_stimulus_notes, as: :text, label: false, hint: 'The effect the workout should produce — the target a coach scales toward. Not a prescribed pace.', input_html: { rows: 3 }
+    .col-6.col-md-3
+      .workout-form__field-label = field_label.call(:stimulus_range_low, 'Expected result (low)', "in the workout's score unit: seconds, total reps, or rounds")
+      = f.input :stimulus_range_low, label: false, hint: false
+    .col-6.col-md-3
+      .workout-form__field-label = field_label.call(:stimulus_range_high, 'Expected result (high)', 'high end of the range, or a lone ceiling on its own')
+      = f.input :stimulus_range_high, label: false, hint: false
   hr
   h3 Exercises
   #workout-parts data-controller="nested-form sortable-list" data-action="nested-form:add->sortable-list#refresh nested-form:remove->sortable-list#refresh" data-nested-form-position-segments-value="true" data-sortable-list-draggable-selector-value=".workout-part:not([hidden])"

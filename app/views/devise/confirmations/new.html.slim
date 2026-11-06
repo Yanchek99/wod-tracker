@@ -1,9 +1,10 @@
 - content_for :header
-  | Resend confirmation instructions
+  | Resend confirmation
+p.text-center.text-muted.small.mb-4 Enter your email and we'll send the confirmation instructions again.
 = simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f|
   = f.error_notification
   = f.full_error :confirmation_token
   .form-inputs
     = f.input :email, required: true, autofocus: true
-  .form-actions
-    = f.button :submit, 'Resend confirmation instructions'
+  .form-actions.d-grid
+    = f.button :submit, 'Resend confirmation', class: 'btn btn-primary'

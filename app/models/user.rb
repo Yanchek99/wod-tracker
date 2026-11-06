@@ -4,12 +4,21 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  has_many :passkeys, dependent: :destroy
+
   enum :role, { admin: 0, user: 1 }
   attribute :sex, :integer
   enum :sex, { female: 0, male: 1 }
   # Display preference for loads, which are stored canonically in pounds: imperial shows lb, metric
   # shows kg. Does not affect stored magnitude or workout identity.
   enum :unit_system, { imperial: 0, metric: 1 }, prefix: :unit_system
+
+  # WebAuthn user handle: a stable, random id (never the email or database id) that authenticators
+  # store alongside each passkey. Generated the first time a user adds a passkey.
+  def ensure_webauthn_id!
+    update!(webauthn_id: WebAuthn.generate_user_id) if webauthn_id.blank?
+    webauthn_id
+  end
 
   def load_display_unit
     unit_system_metric? ? :kg : :lb
@@ -20,6 +29,7 @@ class User < ApplicationRecord
   has_many :workouts, -> { distinct }, through: :logs
   has_many :movements, -> { distinct }, through: :movement_logs
   has_many :subscriptions, dependent: :destroy
+  has_many :sugarwod_imports, dependent: :destroy
   has_many :programs, through: :subscriptions do
     def manageable
       where(subscriptions: { role: [:owner, :coach] })
@@ -34,19 +44,35 @@ class User < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
-  def subscribed?(program)
-    programs.include?(program)
-  end
-
   def logged_workout?(workout)
     workouts.find_by(id: workout.id).present?
   end
 
   def personal_records
-    movement_logs
-      .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \
-             'OR calories IS NOT NULL OR duration_seconds IS NOT NULL')
-      .order(Arel.sql('COALESCE(load, distance, calories, duration_seconds, reps)'))
-      .uniq(&:movement_id)
+    candidates = movement_logs
+                 .where('reps IS NOT NULL OR load IS NOT NULL OR distance IS NOT NULL ' \
+                        'OR calories IS NOT NULL OR duration_seconds IS NOT NULL')
+                 .reorder(nil)
+    MovementRecordSet.new(candidates).records
+  end
+
+  def workout_records
+    logs
+      .group_by(&:workout_id)
+      .values
+      .select { |workout_logs| repeated_metcon?(workout_logs) }
+      .map { |workout_logs| best_log(workout_logs) }
+  end
+
+  private
+
+  # Lift workouts are already represented on the movement PR page (grouped by rep count), and a
+  # workout logged only once has nothing to be a "record" against.
+  def repeated_metcon?(workout_logs)
+    workout_logs.size > 1 && !workout_logs.first.workout.score_weight?
+  end
+
+  def best_log(workout_logs)
+    workout_logs.max_by(&:rank_value)
   end
 end

@@ -90,7 +90,10 @@ module WorkoutExtraction
           "Power clean 3-3-2-2-1-1-1-1 reps"), use "score_type": "weight" and do not set
           "interval". When all sets use the same reps, set top-level "rounds" to the set count and
           include one exercise with that reps value. When reps vary by set, omit "rounds" and list
-          one exercise per set in order, each with that set's reps.
+          one exercise per set in order, each with that set's reps. (When the lifting scheme is only
+          ONE part of a larger workout -- see the strength-then-conditioning rule below -- put its
+          "rounds"/exercise on that part's own segment, and let the workout "score_type" follow the
+          scored conditioning piece rather than "weight".)
         - For an exercise driven by an interval scheme (the workout's own "interval", or its
           segment's "interval_scheme"), set that exercise's plain "reps" -- or plain "calories" for
           a calorie-scored movement like a Calorie Row -- to 1, a structural placeholder, never the
@@ -150,6 +153,15 @@ module WorkoutExtraction
           segment's own "rest_seconds" -- this still applies to the LAST part in a repeated group
           (the rule above), even though the same rest also precedes the next repetition of the
           first part. Do not omit "rest_seconds" on a segment just because it happens to be last.
+        - A strength/lifting scheme immediately followed by a distinct conditioning piece is TWO
+          parts even with no "Part A/Part B" labels -- the boundary is the change of scheme, often
+          marked by "Then," or a blank line (e.g. "Overhead squat 8-8-8-8 reps" then "AMRAP 6 of:
+          40 overhead squats, 30 deficit push-ups"). Emit one segment for the strength work and a
+          second segment for the conditioning work, each carrying its own
+          rounds/time_seconds/interval_scheme; never fold the strength sets into the conditioning
+          segment (that wrongly counts them as part of the metcon). Set the workout "score_type"
+          from the scored conditioning piece (e.g. "rep" for a closing AMRAP), not "weight" -- the
+          strength segment still lists its own loaded exercise(s) with their loads.
         - "movement_name" must be copied verbatim from this exact list of recognized movements (case and
           spelling matter):
           #{Movement.pluck(:name).sort.join(', ')}

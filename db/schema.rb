@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_07_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,6 +59,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.integer "distance"
     t.integer "distance_unit"
     t.integer "duration_seconds"
+    t.integer "implement_count"
     t.integer "kind", null: false
     t.integer "load"
     t.string "model_version", null: false
@@ -68,10 +69,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
     t.integer "source", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index "user_id, movement_id, source, COALESCE(load, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer)", name: "index_athlete_capabilities_unique_unbroken", unique: true, where: "(kind = 1)"
-    t.index "user_id, movement_id, source, COALESCE(reps, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer), COALESCE(load, '-1'::integer)", name: "index_athlete_capabilities_unique_timed", unique: true, where: "(kind = 3)"
+    t.index "user_id, movement_id, source, COALESCE(implement_count, '-1'::integer)", name: "index_athlete_capabilities_unique_max_effort", unique: true, where: "(kind = 0)"
+    t.index "user_id, movement_id, source, COALESCE(load, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer), COALESCE(implement_count, '-1'::integer)", name: "index_athlete_capabilities_unique_unbroken", unique: true, where: "(kind = 1)"
+    t.index "user_id, movement_id, source, COALESCE(reps, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer), COALESCE(load, '-1'::integer), COALESCE(implement_count, '-1'::integer)", name: "index_athlete_capabilities_unique_timed", unique: true, where: "(kind = 3)"
     t.index ["user_id", "movement_id", "source"], name: "index_athlete_capabilities_unique_cannot_do", unique: true, where: "(kind = 2)"
-    t.index ["user_id", "movement_id", "source"], name: "index_athlete_capabilities_unique_max_effort", unique: true, where: "(kind = 0)"
     t.index ["user_id", "movement_id"], name: "index_athlete_capabilities_on_user_id_and_movement_id"
   end
 

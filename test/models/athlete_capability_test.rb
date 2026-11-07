@@ -89,4 +89,29 @@ class AthleteCapabilityTest < ActiveSupport::TestCase
 
     assert_nothing_raised { build_row(kind: :unbroken, reps: 8).save!(validate: false) }
   end
+
+  test 'implement_count must be above 1 and needs a load' do
+    assert build_row(kind: :unbroken, reps: 5, load: 53, implement_count: 2).valid?
+    assert_not build_row(kind: :unbroken, reps: 5, load: 53, implement_count: 1).valid?
+    assert_not build_row(kind: :unbroken, reps: 5, implement_count: 2).valid?
+  end
+
+  test 'single and double implement points at the same setting coexist, duplicates do not' do
+    build_row(kind: :unbroken, reps: 10, load: 53).save!
+    build_row(kind: :unbroken, reps: 6, load: 53, implement_count: 2).save!
+
+    assert_raises(ActiveRecord::RecordNotUnique) do
+      build_row(kind: :unbroken, reps: 8, load: 53, implement_count: 2).save!(validate: false)
+    end
+  end
+
+  test 'max_effort rows are unique per implement count' do
+    build_row(kind: :max_effort, load: 70).save!
+    assert_nothing_raised { build_row(kind: :max_effort, load: 50, implement_count: 2).save! }
+  end
+
+  test 'timed rows are unique per implement count' do
+    build_row(kind: :timed, reps: 10, load: 45, duration_seconds: 60).save!
+    assert_nothing_raised { build_row(kind: :timed, reps: 10, load: 45, implement_count: 2, duration_seconds: 80).save! }
+  end
 end

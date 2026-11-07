@@ -14,7 +14,7 @@ class CapabilityEstimator
     # per-round placeholder of a distance movement (Murph's 1600 m run), not an unbroken-reps result.
     def self.eligible?(movement_log)
       reps = reps(movement_log)
-      reps.present? && movement_log.movement.breakable && Setting.comparable?(movement_log) &&
+      reps.present? && movement_log.movement.breakable &&
         !(reps == 1 && Setting.valid_distance?(movement_log))
     end
 

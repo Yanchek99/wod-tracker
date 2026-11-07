@@ -60,10 +60,17 @@ class CapabilityEstimatorUnbrokenTest < ActiveSupport::TestCase
     assert_equal 2, rows.size
   end
 
-  test 'a multi-implement load is left out of load-based points' do
+  test 'a double-implement load is its own setting' do
+    create_log(@fran, { movement: @deadlift, reps: 1, load: 50 })
     create_log(@fran, { movement: @deadlift, reps: 1, load: 50, implement_count: 2 })
 
-    assert_empty rows
+    assert_equal [nil, 2], rows.pluck(:implement_count).sort_by(&:to_i)
+  end
+
+  test 'an implement count without a load is dropped' do
+    create_log(@fran, { movement: @deadlift, reps: 1, implement_count: 2 })
+
+    assert_nil rows.sole[:implement_count]
   end
 
   test 'a single rep at a distance is a placeholder, not an unbroken result' do

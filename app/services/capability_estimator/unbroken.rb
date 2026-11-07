@@ -13,8 +13,7 @@ class CapabilityEstimator
     end
 
     def self.setting(movement_log)
-      { movement_id: movement_log.movement_id, load: movement_log.load,
-        distance: movement_log.distance, distance_unit: movement_log.distance_unit }
+      { movement_id: movement_log.movement_id, **Setting.for(movement_log) }
     end
   end
 end

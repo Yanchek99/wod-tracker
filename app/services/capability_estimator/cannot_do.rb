@@ -4,7 +4,8 @@ class CapabilityEstimator
   #  (a) an easier substitute logged in place of the prescribed movement in >= MIN_SUBSTITUTION_LOGS
   #      logs, with no later successful log of the prescribed movement; or
   #  (b) every logged attempt of the movement was verifiably singles (<= TINY_SET) despite >= 5 reps.
-  # Reps with no captured set_breakdown are unverifiable (nil), so they never count as tiny sets.
+  # Reps with no captured set_breakdown are unverifiable (nil), so they never count as tiny sets, but
+  # any later log of the movement with reps counts as a success (unverifiable is not failure).
   module CannotDo
     MIN_VOLUME_REPS = 5
 
@@ -25,20 +26,26 @@ class CapabilityEstimator
     end
 
     def self.singles(samples)
-      samples.movement_logs.group_by(&:movement_id).filter_map do |movement_id, movement_logs|
+      breakable = samples.movement_logs.select { |movement_log| movement_log.movement.breakable }
+      breakable.group_by(&:movement_id).filter_map do |movement_id, movement_logs|
         row(movement_id, movement_logs.size) if movement_logs.all? { |movement_log| tiny_set?(movement_log) }
       end
     end
 
+    # Singles only count against the athlete when the workout asked for bigger sets: an EMOM of one
+    # muscle-up per minute is logged as singles by everyone. An unknown structure is not evidence.
     def self.tiny_set?(movement_log)
       verified = movement_log.verified_unbroken_reps
-      !verified.nil? && verified <= TINY_SET && movement_log.reps.to_i >= MIN_VOLUME_REPS
+      return false unless !verified.nil? && verified <= TINY_SET && movement_log.reps.to_i >= MIN_VOLUME_REPS
+
+      round_sizes = movement_log.log.round_sizes_for_set_breakdown(movement_log)
+      round_sizes.present? && round_sizes.all? { |size| size > TINY_SET }
     end
 
     def self.succeeded_since?(samples, movement_id, since)
       samples.movement_logs.any? do |movement_log|
         movement_log.movement_id == movement_id && movement_log.log.created_at > since &&
-          movement_log.verified_unbroken_reps.to_i >= 1
+          movement_log.reps.to_i.positive?
       end
     end
 

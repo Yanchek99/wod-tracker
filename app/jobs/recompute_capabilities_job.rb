@@ -3,6 +3,10 @@
 class RecomputeCapabilitiesJob < ApplicationJob
   queue_as :default
 
+  # Two recomputes for one user racing would collide on the unique indexes and the older snapshot
+  # could win; serialize them per user.
+  limits_concurrency to: 1, key: ->(user_id) { user_id }
+
   def perform(user_id)
     user = User.find_by(id: user_id)
     return unless user

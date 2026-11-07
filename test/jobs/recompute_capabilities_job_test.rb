@@ -16,4 +16,8 @@ class RecomputeCapabilitiesJobTest < ActiveJob::TestCase
   test 'does nothing for a user deleted after enqueue' do
     assert_nothing_raised { RecomputeCapabilitiesJob.perform_now(0) }
   end
+
+  test 'recomputes for one user never run concurrently' do
+    assert_equal 1, RecomputeCapabilitiesJob.concurrency_limit
+  end
 end

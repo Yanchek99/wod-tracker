@@ -58,4 +58,29 @@ class CapabilityEstimatorTimedTest < ActiveSupport::TestCase
     5.times { create_log(@fran, { movement: @run, distance: 400, distance_unit: :meter, duration_seconds: 99 }) }
     assert_in_delta 0.8, rows.sole[:confidence]
   end
+
+  test 'a reps 0 placeholder with a distance setting keeps only the usable setting' do
+    create_log(@fran, { movement: movements(:burpee), reps: 0, distance: 24, distance_unit: :inch, duration_seconds: 60 })
+
+    row = rows.sole
+    assert_nil row[:reps]
+    assert_equal [24, 'inch', 60], [row[:distance], row[:distance_unit].to_s, row[:duration_seconds]]
+  end
+
+  test 'a unitless distance with no reps is not a usable timed point' do
+    create_log(@fran, { movement: @run, distance: 1600, distance_unit: nil, duration_seconds: 300 })
+
+    assert_empty rows
+  end
+
+  test 'a duration copied from the exercise prescription is not the athlete result' do
+    workout = Workout.new(name: 'Timed Cleans', score_type: :time)
+    workout.segments.build(position: 1).exercises.build(movement: movements(:clean), position: 1, reps: 5, duration_seconds: 60)
+    workout.save!
+    create_log(workout, { movement: movements(:clean), reps: 5, duration_seconds: 60 })
+    assert_empty rows
+
+    create_log(workout, { movement: movements(:clean), reps: 5, duration_seconds: 45 })
+    assert_equal [45], rows.pluck(:duration_seconds)
+  end
 end

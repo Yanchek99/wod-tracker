@@ -51,4 +51,12 @@ class CapabilityEstimatorUnbrokenTest < ActiveSupport::TestCase
 
     assert_empty rows
   end
+
+  test 'zero placeholders and unitless distances are dropped from the setting' do
+    create_log(@fran, { movement: @deadlift, reps: 1, load: 0 })
+    create_log(@fran, { movement: movements(:run), reps: 1, distance: 1600, distance_unit: nil })
+
+    assert(rows.all? { |row| row[:load].nil? && row[:distance].nil? && row[:distance_unit].nil? })
+    assert_equal 2, rows.size
+  end
 end

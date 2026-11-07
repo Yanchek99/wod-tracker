@@ -27,4 +27,12 @@ class LogCapabilityRecomputeTest < ActiveJob::TestCase
       movement_log.update!(load: 95)
     end
   end
+
+  test 'bulk imports can defer the recompute' do
+    assert_no_enqueued_jobs only: RecomputeCapabilitiesJob do
+      Current.set(defer_capability_recompute: true) do
+        workouts(:fran).logs.create!(user: @user, score_type: :time, score_value: 300)
+      end
+    end
+  end
 end

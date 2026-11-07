@@ -10,6 +10,8 @@ module RecomputesCapabilities
   private
 
   def enqueue_capability_recompute
+    return if Current.defer_capability_recompute
+
     RecomputeCapabilitiesJob.perform_later(user_id)
   end
 end

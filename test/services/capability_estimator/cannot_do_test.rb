@@ -57,17 +57,34 @@ class CapabilityEstimatorCannotDoTest < ActiveSupport::TestCase
     assert_empty rows
   end
 
-  test 'every log of a movement being singles when volume was prescribed marks it' do
+  test 'singles logged when the workout asked for bigger sets mark the movement' do
     fill_to_minimum
-    create_log(@fran, { movement: movements(:burpee), reps: 5, set_breakdown: [1, 1, 1, 1, 1] })
+    create_log(@fran, { movement: movements(:pullup), reps: 45, set_breakdown: [1] * 45 })
 
-    assert_equal [movements(:burpee).id], rows.pluck(:movement_id)
+    assert_equal [movements(:pullup).id], rows.pluck(:movement_id)
+  end
+
+  test 'singles are not evidence for unbreakable movements or an unknown workout structure' do
+    fill_to_minimum
+    movements(:pullup).update!(breakable: false)
+    create_log(@fran, { movement: movements(:pullup), reps: 45, set_breakdown: [1] * 45 })
+    create_log(workouts(:murph), { movement: movements(:burpee), reps: 5, set_breakdown: [1, 1, 1, 1, 1] })
+
+    assert_empty rows
+  end
+
+  test 'a later log with reps but no set_breakdown still clears a substitution mark' do
+    fill_to_minimum
+    2.times { |i| substituted_log(created_at: (10 - i).days.ago) }
+    create_log(@fran, { movement: @prescribed, reps: 45 }, created_at: 1.day.ago)
+
+    assert_empty rows
   end
 
   test 'one log with a bigger set prevents the singles rule' do
     fill_to_minimum
-    create_log(@fran, { movement: movements(:burpee), reps: 5, set_breakdown: [1, 1, 1, 1, 1] })
-    create_log(@fran, { movement: movements(:burpee), reps: 5, set_breakdown: [3, 2] })
+    create_log(@fran, { movement: movements(:pullup), reps: 45, set_breakdown: [1] * 45 })
+    create_log(@fran, { movement: movements(:pullup), reps: 5, set_breakdown: [3, 2] })
 
     assert_empty rows
   end

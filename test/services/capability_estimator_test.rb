@@ -56,4 +56,12 @@ class CapabilityEstimatorTest < ActiveSupport::TestCase
 
     assert_equal 0, @user.athlete_capabilities.count
   end
+
+  test 'an invalid row is skipped without blocking the others or failing the recompute' do
+    invalid = { movement_id: movements(:run).id, kind: :unbroken, reps: 0 }
+
+    CapabilityEstimator.call(@user, rules: [stub_rule(invalid, unbroken_row(@movement))])
+
+    assert_equal [@movement.id], @user.athlete_capabilities.pluck(:movement_id)
+  end
 end

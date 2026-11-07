@@ -22,7 +22,7 @@ class CapabilityEstimator
     end
 
     def self.confidence(count)
-      [CONFIDENCE[:base] + CONFIDENCE[:per_extra_log] * (count - 1), CONFIDENCE[:cap]].min
+      [CONFIDENCE[:base] + (CONFIDENCE[:per_extra_log] * (count - 1)), CONFIDENCE[:cap]].min
     end
   end
 end

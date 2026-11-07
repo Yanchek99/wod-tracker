@@ -44,14 +44,18 @@ class CapabilityEstimator
 
     # { prescribed movement id => logs where an easier substitute was logged instead }
     def self.substitution_logs(samples)
-      easier = easier_pairs
+      events = substitution_events(samples, easier_pairs)
+      events.uniq.group_by(&:first).transform_values { |pairs| pairs.map(&:last) }
+    end
+
+    # [prescribed movement id, log] for each exercise the athlete swapped for an easier movement.
+    def self.substitution_events(samples, easier)
       exercises = Hash.new { |cache, workout| cache[workout] = workout.exercises_for_log_recording.to_a }
-      events = samples.movement_logs.group_by(&:log).flat_map do |log, movement_logs|
+      samples.movement_logs.group_by(&:log).flat_map do |log, movement_logs|
         exercises[log.workout].zip(movement_logs).filter_map do |exercise, movement_log|
           [exercise.movement_id, log] if movement_log && easier.include?([exercise.movement_id, movement_log.movement_id])
         end
       end
-      events.uniq.group_by(&:first).transform_values { |pairs| pairs.map(&:last) }
     end
 
     # [prescribed movement id, easier movement id] pairs, whichever way the substitution row is stored.

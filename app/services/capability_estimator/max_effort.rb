@@ -17,7 +17,7 @@ class CapabilityEstimator
       reps = movement_log.verified_unbroken_reps
       return unless movement_log.load.to_i.positive? && reps.to_i.positive?
 
-      value = reps == 1 ? movement_log.load : movement_log.load * (1 + [reps, EPLEY_REP_CAP].min / 30.0)
+      value = reps == 1 ? movement_log.load : movement_log.load * (1 + ([reps, EPLEY_REP_CAP].min / 30.0))
       [value, max_effort_source?(movement_log)]
     end
 

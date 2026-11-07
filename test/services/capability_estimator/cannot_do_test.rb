@@ -46,7 +46,7 @@ class CapabilityEstimatorCannotDoTest < ActiveSupport::TestCase
     fill_to_minimum
     2.times { substituted_log }
 
-    assert_equal [@prescribed.id], rows.map { |row| row[:movement_id] }
+    assert_equal [@prescribed.id], rows.pluck(:movement_id)
   end
 
   test 'a later success on the prescribed movement clears it' do
@@ -61,7 +61,7 @@ class CapabilityEstimatorCannotDoTest < ActiveSupport::TestCase
     fill_to_minimum
     create_log(@fran, { movement: movements(:burpee), reps: 5, set_breakdown: [1, 1, 1, 1, 1] })
 
-    assert_equal [movements(:burpee).id], rows.map { |row| row[:movement_id] }
+    assert_equal [movements(:burpee).id], rows.pluck(:movement_id)
   end
 
   test 'one log with a bigger set prevents the singles rule' do

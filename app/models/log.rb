@@ -3,6 +3,7 @@ class Log < ApplicationRecord
   include LogAmrapRoundSizing
   include LogAscendingLadderSizing
   include LogSetBreakdown
+  include RecomputesCapabilities
 
   belongs_to :user, default: -> { Current.user }
   belongs_to :workout
@@ -16,7 +17,6 @@ class Log < ApplicationRecord
   validates :score_type, presence: true
 
   before_save :backfill_lifting_loads_from_score
-  after_commit :enqueue_capability_recompute
 
   def build_movement_logs
     workout.exercises_for_log_recording.each do |exercise|
@@ -57,10 +57,6 @@ class Log < ApplicationRecord
   end
 
   private
-
-  def enqueue_capability_recompute
-    RecomputeCapabilitiesJob.perform_later(user_id)
-  end
 
   def backfill_lifting_loads_from_score
     return unless manually_scored_lifting_workout?

@@ -25,6 +25,7 @@ class User < ApplicationRecord
   end
 
   has_many :logs, dependent: :destroy
+  has_many :athlete_capabilities, dependent: :destroy
   has_many :movement_logs, through: :logs
   has_many :workouts, -> { distinct }, through: :logs
   has_many :movements, -> { distinct }, through: :movement_logs

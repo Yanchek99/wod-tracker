@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_23_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_07_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_210000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "athlete_capabilities", force: :cascade do |t|
+    t.datetime "computed_at", null: false
+    t.decimal "confidence", precision: 4, scale: 3
+    t.datetime "created_at", null: false
+    t.integer "distance"
+    t.integer "distance_unit"
+    t.integer "duration_seconds"
+    t.integer "kind", null: false
+    t.integer "load"
+    t.string "model_version", null: false
+    t.bigint "movement_id", null: false
+    t.integer "reps"
+    t.integer "sample_count", default: 0, null: false
+    t.integer "source", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index "user_id, movement_id, source, COALESCE(load, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer)", name: "index_athlete_capabilities_unique_unbroken", unique: true, where: "(kind = 1)"
+    t.index "user_id, movement_id, source, COALESCE(reps, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer), COALESCE(load, '-1'::integer)", name: "index_athlete_capabilities_unique_timed", unique: true, where: "(kind = 3)"
+    t.index ["user_id", "movement_id", "source"], name: "index_athlete_capabilities_unique_cannot_do", unique: true, where: "(kind = 2)"
+    t.index ["user_id", "movement_id", "source"], name: "index_athlete_capabilities_unique_max_effort", unique: true, where: "(kind = 0)"
+    t.index ["user_id", "movement_id"], name: "index_athlete_capabilities_on_user_id_and_movement_id"
   end
 
   create_table "exercises", force: :cascade do |t|
@@ -417,6 +440,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_210000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "athlete_capabilities", "movements"
+  add_foreign_key "athlete_capabilities", "users"
   add_foreign_key "exercises", "movements"
   add_foreign_key "exercises", "segments"
   add_foreign_key "logs", "workouts"

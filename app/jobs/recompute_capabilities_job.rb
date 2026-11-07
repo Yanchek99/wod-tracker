@@ -12,5 +12,8 @@ class RecomputeCapabilitiesJob < ApplicationJob
     return unless user
 
     CapabilityEstimator.call(user)
+  rescue ActiveRecord::InvalidForeignKey
+    # The user was deleted while this recompute was running.
+    raise if User.exists?(user_id)
   end
 end

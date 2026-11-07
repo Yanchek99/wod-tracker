@@ -64,4 +64,21 @@ class CapabilityEstimatorTest < ActiveSupport::TestCase
 
     assert_equal [@movement.id], @user.athlete_capabilities.pluck(:movement_id)
   end
+
+  test 'building samples does not query once per workout' do
+    log_on = ->(workout) { Log.create!(user: @user, workout:, score_type: :time).tap { |log| log.movement_logs.create!(movement: @movement, reps: 1) } }
+    log_on.call(workouts(:fran))
+    one_workout = count_queries { CapabilityEstimator.samples_for(@user) }
+
+    log_on.call(workouts(:murph))
+    log_on.call(workouts(:amrap_couplet))
+    assert_equal(one_workout, count_queries { CapabilityEstimator.samples_for(@user) })
+  end
+
+  def count_queries(&)
+    count = 0
+    counter = ->(*, payload) { count += 1 unless %w[SCHEMA TRANSACTION].include?(payload[:name]) || payload[:cached] }
+    ActiveSupport::Notifications.subscribed(counter, 'sql.active_record', &)
+    count
+  end
 end

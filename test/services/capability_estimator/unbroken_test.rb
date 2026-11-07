@@ -59,4 +59,24 @@ class CapabilityEstimatorUnbrokenTest < ActiveSupport::TestCase
     assert(rows.all? { |row| row[:load].nil? && row[:distance].nil? && row[:distance_unit].nil? })
     assert_equal 2, rows.size
   end
+
+  test 'a multi-implement load is left out of load-based points' do
+    create_log(@fran, { movement: @deadlift, reps: 1, load: 50, implement_count: 2 })
+
+    assert_empty rows
+  end
+
+  test 'a single rep at a distance is a placeholder, not an unbroken result' do
+    create_log(@fran, { movement: movements(:run), reps: 1, distance: 1600, distance_unit: :meter })
+
+    assert_empty rows
+  end
+
+  test 'sample_count only counts logs that back the point with verified reps' do
+    create_log(@fran, { movement: @pullup, reps: 1 })
+    create_log(@fran, { movement: @pullup, reps: 21 })
+
+    row = rows.sole
+    assert_equal [1, 1], [row[:reps], row[:sample_count]]
+  end
 end

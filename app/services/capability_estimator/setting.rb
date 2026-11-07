@@ -11,6 +11,12 @@ class CapabilityEstimator
         distance_unit: (movement_log.distance_unit if distance) }
     end
 
+    # Loads are per implement, so a double-dumbbell load is not comparable with a single-implement one
+    # and is left out of every load-based point (the capability table has no implement count).
+    def self.comparable?(movement_log)
+      movement_log.load.to_i <= 0 || movement_log.implement_count.to_i <= 1
+    end
+
     def self.positive(value) = (value if value.to_i.positive?)
 
     def self.valid_distance?(movement_log)

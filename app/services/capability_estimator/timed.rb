@@ -15,7 +15,7 @@ class CapabilityEstimator
     # A prescribed duration is copied onto the movement log when the log form is built, so a duration
     # equal to the exercise's own prescribed time is the prescription, not something the athlete entered.
     def self.timed?(movement_log, samples)
-      movement_log.duration_seconds.to_i.positive? && !prescribed_duration?(movement_log, samples) &&
+      movement_log.duration_seconds.to_i.positive? && Setting.comparable?(movement_log) && !prescribed_duration?(movement_log, samples) &&
         (movement_log.reps.to_i.positive? || Setting.valid_distance?(movement_log))
     end
 

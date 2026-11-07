@@ -83,4 +83,10 @@ class CapabilityEstimatorTimedTest < ActiveSupport::TestCase
     create_log(workout, { movement: movements(:clean), reps: 5, duration_seconds: 45 })
     assert_equal [45], rows.pluck(:duration_seconds)
   end
+
+  test 'a multi-implement load is left out' do
+    create_log(@fran, { movement: @run, reps: 10, load: 45, implement_count: 2, duration_seconds: 60 })
+
+    assert_empty rows
+  end
 end

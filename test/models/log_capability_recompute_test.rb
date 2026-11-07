@@ -35,4 +35,10 @@ class LogCapabilityRecomputeTest < ActiveJob::TestCase
       end
     end
   end
+
+  test 'deleting a user does not enqueue a recompute per log' do
+    assert_no_enqueued_jobs only: RecomputeCapabilitiesJob do
+      @user.destroy!
+    end
+  end
 end

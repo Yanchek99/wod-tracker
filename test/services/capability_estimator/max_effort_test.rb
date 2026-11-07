@@ -66,4 +66,10 @@ class CapabilityEstimatorMaxEffortTest < ActiveSupport::TestCase
 
     assert_empty rows
   end
+
+  test 'a multi-implement load is not comparable and contributes nothing' do
+    create_log(@lifting, { movement: @squat, reps: 3, load: 50, implement_count: 2 }, score_type: :weight)
+
+    assert_empty rows
+  end
 end

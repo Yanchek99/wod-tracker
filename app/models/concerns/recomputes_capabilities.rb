@@ -11,6 +11,8 @@ module RecomputesCapabilities
 
   def enqueue_capability_recompute
     return if Current.defer_capability_recompute
+    # Deleting a user cascades to their logs; there is nothing left to recompute.
+    return if destroyed_by_association&.active_record == User
 
     RecomputeCapabilitiesJob.perform_later(user_id)
   end

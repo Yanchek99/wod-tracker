@@ -103,4 +103,15 @@ class CapabilityEstimatorCannotDoTest < ActiveSupport::TestCase
 
     assert_empty rows
   end
+
+  test 'more movement logs than the workout has exercises do not shift the pairing' do
+    fill_to_minimum
+    2.times do
+      attrs = @fran.exercises_for_log_recording.map { |exercise| { movement: exercise.movement } }
+      attrs.first[:movement] = @substitute
+      create_log(@fran, *attrs, { movement: @prescribed })
+    end
+
+    assert_equal [@prescribed.id], rows.pluck(:movement_id)
+  end
 end

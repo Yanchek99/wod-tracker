@@ -20,4 +20,18 @@ class RecomputeCapabilitiesJobTest < ActiveJob::TestCase
   test 'recomputes for one user never run concurrently' do
     assert_equal 1, RecomputeCapabilitiesJob.concurrency_limit
   end
+
+  test 'a foreign key failure because the user was deleted mid-run is ignored, otherwise it raises' do
+    user = User.create!(email: 'gone@wod-tracker.com', password: 'password123', first_name: 'A', last_name: 'B', weight: 150, sex: :female)
+    original = CapabilityEstimator.method(:call)
+    CapabilityEstimator.define_singleton_method(:call) { |target, **| target.destroy! && raise(ActiveRecord::InvalidForeignKey) }
+
+    assert_nothing_raised { RecomputeCapabilitiesJob.perform_now(user.id) }
+
+    survivor = users(:mathew)
+    CapabilityEstimator.define_singleton_method(:call) { |_target, **| raise ActiveRecord::InvalidForeignKey }
+    assert_raises(ActiveRecord::InvalidForeignKey) { RecomputeCapabilitiesJob.perform_now(survivor.id) }
+  ensure
+    CapabilityEstimator.define_singleton_method(:call, original)
+  end
 end

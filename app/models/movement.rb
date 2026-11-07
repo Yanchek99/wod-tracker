@@ -55,6 +55,7 @@ class Movement < ApplicationRecord
 
   has_many :exercises, dependent: :destroy
   has_many :movement_logs, dependent: :destroy
+  has_many :athlete_capabilities, dependent: :destroy
   has_many :movement_substitutions, dependent: :destroy
   has_many :substitutes, through: :movement_substitutions, source: :substitute_movement
   has_many :inverse_movement_substitutions,

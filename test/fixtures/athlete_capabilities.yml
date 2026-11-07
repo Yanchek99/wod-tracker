@@ -1,0 +1,41 @@
+# One performance point per kind for brooke. Fixture names: <user>_<movement>_<kind>.
+brooke_back_squat_max_effort:
+  user: brooke
+  movement: back_squat
+  kind: max_effort
+  load: 185
+  source: heuristic
+  model_version: heuristic-v1
+  sample_count: 1
+  computed_at: 2026-11-01 12:00:00
+
+brooke_pullup_unbroken:
+  user: brooke
+  movement: pullup
+  kind: unbroken
+  reps: 8
+  source: heuristic
+  model_version: heuristic-v1
+  sample_count: 1
+  computed_at: 2026-11-01 12:00:00
+
+brooke_run_mile_timed:
+  user: brooke
+  movement: run
+  kind: timed
+  distance: 1609
+  distance_unit: meter
+  duration_seconds: 302
+  source: heuristic
+  model_version: heuristic-v1
+  sample_count: 1
+  computed_at: 2026-11-01 12:00:00
+
+brooke_hspu_cannot_do:
+  user: brooke
+  movement: hspu
+  kind: cannot_do
+  source: heuristic
+  model_version: heuristic-v1
+  sample_count: 1
+  computed_at: 2026-11-01 12:00:00

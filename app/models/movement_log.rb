@@ -1,7 +1,7 @@
 class MovementLog < ApplicationRecord
   include MovementLogPerformance
 
-  belongs_to :log
+  belongs_to :log, touch: true
   belongs_to :movement
 
   SET_BREAKDOWN_TEXT_PATTERN = /\A[\d,\-\s]*\z/

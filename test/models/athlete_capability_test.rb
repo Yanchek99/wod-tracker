@@ -1,6 +1,9 @@
 require 'test_helper'
+require_relative '../support/athlete_capability_rows'
 
 class AthleteCapabilityTest < ActiveSupport::TestCase
+  include AthleteCapabilityRows
+
   test 'for returns only that user\'s rows for that movement' do
     assert_equal [athlete_capabilities(:brooke_run_mile_timed)],
                  AthleteCapability.for(users(:brooke), movements(:run)).to_a
@@ -85,15 +88,5 @@ class AthleteCapabilityTest < ActiveSupport::TestCase
     build_row(kind: :max_effort, load: 185).save!(validate: false)
 
     assert_nothing_raised { build_row(kind: :unbroken, reps: 8).save!(validate: false) }
-  end
-
-  private
-
-  # mathew has no capability fixtures, so these rows never collide with the fixture data.
-  def build_row(kind:, **attrs)
-    AthleteCapability.new(
-      { user: users(:mathew), movement: movements(:run), source: :heuristic, model_version: 'heuristic-v1',
-        computed_at: Time.current, kind: kind }.merge(attrs)
-    )
   end
 end

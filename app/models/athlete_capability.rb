@@ -43,9 +43,17 @@ class AthleteCapability < ApplicationRecord
     rule = MEASUREMENT_RULES[kind&.to_sym]
     return unless rule
 
-    Array(rule[:required]).each { |column| errors.add(column, :blank) if self[column].blank? }
-    Array(rule[:forbidden]).each { |column| errors.add(column, :present) if self[column].present? }
+    check_required(rule[:required])
+    check_forbidden(rule[:forbidden])
     check_one_of(rule)
+  end
+
+  def check_required(columns)
+    Array(columns).each { |column| errors.add(column, :blank) if self[column].blank? }
+  end
+
+  def check_forbidden(columns)
+    Array(columns).each { |column| errors.add(column, :present) if self[column].present? }
   end
 
   def check_one_of(rule)

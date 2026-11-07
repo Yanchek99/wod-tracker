@@ -12,7 +12,7 @@ class CapabilityEstimator
   # Everything a rule may read. movement_logs are preloaded so rules make no per-row queries.
   Samples = Data.define(:user, :movement_logs, :total_logs)
 
-  RULES = [MaxEffort, Unbroken, Timed].freeze
+  RULES = [MaxEffort, Unbroken, Timed, CannotDo].freeze
 
   def self.call(user, rules: RULES)
     new(user, rules).call

@@ -3,6 +3,7 @@ class Log < ApplicationRecord
   include LogAmrapRoundSizing
   include LogAscendingLadderSizing
   include LogSetBreakdown
+  include RecomputesCapabilities
 
   belongs_to :user, default: -> { Current.user }
   belongs_to :workout

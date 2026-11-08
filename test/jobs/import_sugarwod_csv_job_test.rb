@@ -75,4 +75,17 @@ class ImportSugarwodCsvJobTest < ActiveJob::TestCase
     assert_equal movements(:back_squat), movement_log.movement
     assert_equal 205, movement_log.load
   end
+
+  test 'enqueues a single capability recompute for the whole import, not one per imported log' do
+    sugarwod_import = SugarwodImport.create!(user: @user, status: :pending)
+    rows = %w[01/02/2018 01/03/2018].map do |date|
+      { 'date' => date, 'title' => 'Fran', 'description' => '21-15-9 reps for time of:• Thruster 95/65#• Pull-ups',
+        'best_result_raw' => '378', 'best_result_display' => '6:18', 'score_type' => '', 'barbell_lift' => '', 'notes' => '' }
+    end
+
+    ImportSugarwodCsvJob.perform_now(sugarwod_import.id, rows)
+
+    assert_equal 2, sugarwod_import.reload.imported_count
+    assert_enqueued_jobs 1, only: RecomputeCapabilitiesJob
+  end
 end

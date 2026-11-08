@@ -28,10 +28,17 @@ class AthleteCapability < ApplicationRecord
   validates(*MEASUREMENTS, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true)
   validates :confidence, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true
   validates :sample_count, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :implement_count, numericality: { only_integer: true, greater_than: 1 }, allow_nil: true
+  validate :implement_count_requires_load
   validate :distance_and_unit_given_together
   validate :measurements_match_kind
 
   private
+
+  # Blank means a single implement (as on exercises and movement_logs); the load is per implement.
+  def implement_count_requires_load
+    errors.add(:implement_count, :blank) if implement_count.present? && load.blank?
+  end
 
   def distance_and_unit_given_together
     return if distance.present? == distance_unit.present?

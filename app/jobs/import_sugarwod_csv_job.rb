@@ -17,20 +17,22 @@ class ImportSugarwodCsvJob < ApplicationJob
 
   def import_rows(rows, user)
     tally = { imported: 0, already_imported: 0, skipped_rows: [] }
-    rows.each do |row|
-      result = begin
-        SugarwodImport::RowImporter.call(symbolize_row(row), user: user)
-      rescue StandardError => e
-        SugarwodImport::RowImporter::Result.new(status: :skipped, reason: e.message)
-      end
-
-      case result.status
-      when :imported then tally[:imported] += 1
-      when :already_imported then tally[:already_imported] += 1
-      when :skipped then tally[:skipped_rows] << { 'date' => row['date'], 'title' => row['title'], 'reason' => result.reason }
-      end
-    end
+    rows.each { |row| record(tally, row, import_row(row, user)) }
     tally
+  end
+
+  def import_row(row, user)
+    SugarwodImport::RowImporter.call(symbolize_row(row), user: user)
+  rescue StandardError => e
+    SugarwodImport::RowImporter::Result.new(status: :skipped, reason: e.message)
+  end
+
+  def record(tally, row, result)
+    case result.status
+    when :imported then tally[:imported] += 1
+    when :already_imported then tally[:already_imported] += 1
+    when :skipped then tally[:skipped_rows] << { 'date' => row['date'], 'title' => row['title'], 'reason' => result.reason }
+    end
   end
 
   def symbolize_row(row)

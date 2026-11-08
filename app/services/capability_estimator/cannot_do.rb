@@ -18,11 +18,12 @@ class CapabilityEstimator
 
     def self.substituted(samples)
       substitution_logs(samples).filter_map do |movement_id, logs|
-        next if logs.size < MIN_SUBSTITUTION_LOGS
-        next if succeeded_since?(samples, movement_id, logs.map(&:created_at).min)
-
-        row(movement_id, logs.size)
+        row(movement_id, logs.size) if substituted_for_good?(samples, movement_id, logs)
       end
+    end
+
+    def self.substituted_for_good?(samples, movement_id, logs)
+      logs.size >= MIN_SUBSTITUTION_LOGS && !succeeded_since?(samples, movement_id, logs.map(&:created_at).min)
     end
 
     def self.singles(samples)

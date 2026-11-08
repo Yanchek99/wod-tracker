@@ -26,7 +26,11 @@ class AddImplementCountToAthleteCapabilities < ActiveRecord::Migration[8.1]
     INDEXES.each { |name, (kind, _before, after)| rebuild_index(name, kind, after) }
   end
 
+  # The old schema cannot tell a double from a single, so multi-implement points are dropped before
+  # the old unique indexes return (they would otherwise collide with their single-implement twins).
+  # Heuristic rows come back on the next recompute (`capabilities:backfill`); learned ones do not.
   def down
+    execute 'DELETE FROM athlete_capabilities WHERE implement_count IS NOT NULL'
     INDEXES.each { |name, (kind, before, _after)| rebuild_index(name, kind, before) }
     remove_column :athlete_capabilities, :implement_count
   end

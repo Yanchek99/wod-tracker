@@ -59,7 +59,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_180000) do
     t.integer "distance"
     t.integer "distance_unit"
     t.integer "duration_seconds"
-    t.integer "implement_count"
     t.integer "kind", null: false
     t.integer "load"
     t.string "model_version", null: false
@@ -69,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_180000) do
     t.integer "source", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.integer "implement_count"
     t.index "user_id, movement_id, source, COALESCE(implement_count, '-1'::integer)", name: "index_athlete_capabilities_unique_max_effort", unique: true, where: "(kind = 0)"
     t.index "user_id, movement_id, source, COALESCE(load, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer), COALESCE(implement_count, '-1'::integer)", name: "index_athlete_capabilities_unique_unbroken", unique: true, where: "(kind = 1)"
     t.index "user_id, movement_id, source, COALESCE(reps, '-1'::integer), COALESCE(distance, '-1'::integer), COALESCE(distance_unit, '-1'::integer), COALESCE(load, '-1'::integer), COALESCE(implement_count, '-1'::integer)", name: "index_athlete_capabilities_unique_timed", unique: true, where: "(kind = 3)"

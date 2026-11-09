@@ -125,7 +125,7 @@ GEM
     crass (1.0.8)
     cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
-    csv (3.3.6)
+    csv (3.3.7)
     date (3.6.0)
     devise (5.0.4)
       bcrypt (~> 3.0)
@@ -294,7 +294,7 @@ GEM
     regexp_parser (2.13.1)
     reline (0.7.0)
       io-console (~> 0.5)
-    resend (1.18.0)
+    resend (1.19.0)
       base64
       httparty (>= 0.22.0)
     responders (3.2.0)

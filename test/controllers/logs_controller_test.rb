@@ -354,6 +354,21 @@ class LogsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'failed submission redisplays a time score as minutes and seconds' do
+    post workout_logs_url(workouts(:fran)), params: { log: {
+      score_type: :time,
+      score_value: '14:59',
+      movement_logs_attributes: {
+        '0' => { movement_id: movements(:thruster).id, reps: 45, set_breakdown_text: '21,15' }
+      }
+    } }
+
+    assert_response :unprocessable_content
+    assert_select "input[name='log[score_value]']" do |elements|
+      assert_equal '14:59', elements.first['value']
+    end
+  end
+
   test 'auto-populated set breakdown persists through the hidden repeater input on create' do
     assert_difference('MovementLog.count', 5) do
       post workout_logs_url(workouts(:back_squat_5x5)), params: { log: {

@@ -550,4 +550,34 @@ class LogTest < ActiveSupport::TestCase
 
     assert_equal [[3, 2]], movement_log.set_breakdown_rounds
   end
+
+  test 'accepts a set_breakdown covering every round of a fixed-rounds workout' do
+    workout = Workout.new(name: 'Fixed Rounds Test', score_type: :time)
+    segment = workout.segments.build(position: 1, rounds: 3)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 21)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: '10:12')
+    log.build_movement_logs
+    movement_log = log.movement_logs.first
+    movement_log.set_breakdown_text = '21,21,21'
+
+    assert log.valid?, log.errors.full_messages.to_sentence
+    assert_equal [[21], [21], [21]], movement_log.set_breakdown_rounds
+  end
+
+  test 'rejects a fixed-rounds set_breakdown that does not cover every round' do
+    workout = Workout.new(name: 'Fixed Rounds Mismatch Test', score_type: :time)
+    segment = workout.segments.build(position: 1, rounds: 3)
+    segment.exercises.build(movement: movements(:pullup), position: 1, reps: 21)
+    workout.save!
+
+    log = workout.logs.build(user: users(:mathew), score_type: :time, score_value: '10:12')
+    log.build_movement_logs
+    movement_log = log.movement_logs.first
+    movement_log.set_breakdown_text = '21,21'
+
+    assert_not log.valid?
+    assert_includes movement_log.errors[:set_breakdown], 'must sum to reps'
+  end
 end

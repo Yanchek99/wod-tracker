@@ -18,7 +18,7 @@
         = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false, disabled: true, input_html: { value: load_input_value(@log.score_value), data: { 'lifting-score-target': 'score' }, aria: { label: 'Calculated score' } }
         p.form-text Score will be calculated from the heaviest successful load.
     - else
-      .col = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false
+      .col = f.input :score_value, as: :group, prepend: @log.score_measurement, label: false, input_html: { value: score_input_value(@log) }
   h2.mt-3 Exercise Recordings
   - exercises = @workout.exercises_for_log_recording
   = f.simple_fields_for :movement_logs do |ml_form|

@@ -14,6 +14,16 @@ module MetricsHelper
     Current.user&.unit_system_metric? ? LoadEquivalence.lb_to_kg(pounds) : pounds
   end
 
+  # A log's score for pre-filling the form input. Time scores are stored as seconds but typed as
+  # m:ss (see Log#score_value=), so redisplaying after a validation error or on edit must round-trip
+  # that format instead of showing e.g. 899 for 14:59.
+  def score_input_value(log)
+    return log.score_value unless log.score_time? && log.score_value.present?
+
+    minutes, seconds = log.score_value.divmod(60)
+    format('%<minutes>d:%<seconds>02d', minutes:, seconds:)
+  end
+
   def metric_unit_msg(metric)
     "#{implement_count_prefix(metric)}#{metric_value_msg(metric)}"
   end

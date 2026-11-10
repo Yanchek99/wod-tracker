@@ -3,6 +3,7 @@ module LogSetBreakdown
 
   included do
     before_validation :resync_trivial_set_breakdown
+    before_validation :assign_fixed_rounds_set_breakdown_targets
   end
 
   # The sequence of round sizes to chunk a movement log's flat set_breakdown array against for
@@ -11,17 +12,49 @@ module LogSetBreakdown
   # set_breakdown stays one ungrouped round.
   def round_sizes_for_set_breakdown(movement_log)
     index = movement_logs.index(movement_log)
-    return [] unless index
-
-    exercise = workout.exercises_for_log_recording[index]
+    exercise = workout.exercises_for_log_recording[index] if index
     return [] unless exercise
-    return exercise.segment.interval_scheme.split('-').map(&:to_i) if exercise.reps_defined_by_interval?
-    return ladder_round_sizes_for(exercise) if exercise.ladder_participant?
 
-    amrap_round_sizes_for(index)
+    structured_round_sizes_for(exercise, movement_log) || amrap_round_sizes_for(index)
   end
 
   private
+
+  # Round sizes for a movement whose rounds come from the segment itself: an interval scheme, an
+  # ascending ladder, or a fixed round count. nil when none applies, so the caller can fall back
+  # to AMRAP sizing.
+  def structured_round_sizes_for(exercise, movement_log)
+    return exercise.segment.interval_scheme.split('-').map(&:to_i) if exercise.reps_defined_by_interval?
+    return ladder_round_sizes_for(exercise) if exercise.ladder_participant?
+
+    rounds = fixed_round_count(exercise)
+    Array.new(rounds, movement_log.reps.to_i) if rounds > 1
+  end
+
+  # For a plain fixed-rounds segment (e.g. Helen's 3 rounds), MovementLog#reps holds one round's
+  # reps, so a set_breakdown covering the whole effort (21, 21, 21) must be validated against
+  # reps across every round rather than against reps alone.
+  def assign_fixed_rounds_set_breakdown_targets
+    exercises = workout.exercises_for_log_recording
+    movement_logs.each_with_index do |movement_log, index|
+      rounds = fixed_round_count(exercises[index])
+      next unless rounds > 1 && movement_log.set_breakdown.present?
+
+      movement_log.set_breakdown_target_reps = movement_log.reps.to_i * rounds
+    end
+  end
+
+  # Rounds a movement repeats at a flat per-round rep count; 1 when its reps are a lifetime total
+  # or are governed by another structure (see #governed_by_other_round_structure?).
+  def fixed_round_count(exercise)
+    return 1 if exercise.nil? || governed_by_other_round_structure?(exercise)
+
+    [exercise.segment.rounds.to_i, 1].max
+  end
+
+  def governed_by_other_round_structure?(exercise)
+    structured_round_repeat?(exercise) || exercise.reps_defined_by_interval? || workout.set_based_lifting?
+  end
 
   # A single logged rep, or a set within a dedicated set-based lifting workout (see
   # Workout#set_based_lifting? -- a fixed "5x5 Back Squat", or a variable build like "Back Squat:

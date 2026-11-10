@@ -18,6 +18,18 @@ class MetricsHelperTest < ActionView::TestCase
     assert_equal '202 reps', log_score_msg(log)
   end
 
+  test 'pre-fills a time score input as minutes and seconds rather than raw seconds' do
+    log = Log.new(score_type: :time, score_value: '14:59')
+
+    assert_equal 899, log.score_value
+    assert_equal '14:59', score_input_value(log)
+  end
+
+  test 'pre-fills a non-time score input with the raw value' do
+    assert_equal 202, score_input_value(Log.new(score_type: :rep, score_value: 202))
+    assert_nil score_input_value(Log.new(score_type: :time))
+  end
+
   test 'renders paired female and male load values' do
     metric = Metric.new(measurement: :lb, female_value: 65, male_value: 95)
 

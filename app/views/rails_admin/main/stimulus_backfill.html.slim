@@ -15,7 +15,7 @@ p
   .row.mb-3
     .col
       = label_tag :start_date, 'Scrape from', class: 'form-label'
-      = date_field_tag :start_date, @backfill.start_date, class: 'form-control'
+      = date_field_tag :start_date, @backfill.start_date || StimulusBackfillForm::STIMULUS_ARCHIVE_START, class: 'form-control'
     .col
       = label_tag :end_date, 'Scrape to', class: 'form-label'
       = date_field_tag :end_date, @backfill.end_date || Date.current, class: 'form-control'

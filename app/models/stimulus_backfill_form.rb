@@ -1,6 +1,10 @@
 # The RailsAdmin stimulus backfill form's params, read into a step, dates and flags, plus the
 # counts a dry run reports instead of enqueueing anything.
 class StimulusBackfillForm
+  # CrossFit.com daily pages carry a Stimulus and Strategy section from about mid-December 2024
+  # (probed 2026-11-12: 2024-12-04 has none, 2024-12-18 onward does).
+  STIMULUS_ARCHIVE_START = Date.new(2024, 12, 1)
+
   attr_reader :step, :start_date, :end_date
 
   def initialize(params)

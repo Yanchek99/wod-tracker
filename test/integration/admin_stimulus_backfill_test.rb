@@ -21,6 +21,14 @@ class AdminStimulusBackfillTest < ActionDispatch::IntegrationTest
     assert_no_match(/translation missing/i, response.body)
   end
 
+  test 'the scrape range defaults to when CrossFit.com began posting Stimulus and Strategy' do
+    sign_in users(:brooke)
+
+    get rails_admin.stimulus_backfill_path(model_name: 'workout')
+
+    assert_select 'input[name=start_date][value=?]', '2024-12-01'
+  end
+
   test 'a dry run shows counts and enqueues nothing' do
     sign_in users(:brooke)
 

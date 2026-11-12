@@ -79,6 +79,8 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     stub_cf_wod_redirect('2026/06/20', '260620')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/260620})
       .to_return(status: 200, body: cf_wod_fixture('modern_multi_part.html'))
+    # Fran has no notes, so the page's stimulus prose lands on it and is extracted.
+    stub_stimulus_extraction(range_low: nil, range_high: nil, movements: [])
 
     stub_llm_parser(workouts(:fran)) do
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2026, 6, 20), :heuristic) }

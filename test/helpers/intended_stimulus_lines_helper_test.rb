@@ -58,7 +58,17 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
                      stimulus_rest_max_seconds: 30, stimulus_effort: :sprint, stimulus_source: :extracted)
 
     assert_includes stimulus_movement_lines(workouts(:fran)),
-                    ['Thruster', 'Moderate · 3 sets or fewer · ≤ 2:00 · rest ≤ 0:30 · Sprint', false]
+                    ['Thruster', [['Moderate', false], ['3 sets or fewer', false], ['≤ 2:00', false],
+                                  ['rest ≤ 0:30', false], ['Sprint', false]]]
+  end
+
+  test 'an extracted value next to a predicted one tags only the predicted value' do
+    exercise = exercises(:fran_thruster)
+    exercise.update!(stimulus_loading: :light, stimulus_source: :extracted)
+    exercise.stimulus_predictions.create!(source: :predicted, model_version: 'learned-v1', stimulus_effort: :hard,
+                                          current: true)
+
+    assert_includes stimulus_movement_lines(workouts(:fran)), ['Thruster', [['Light', false], ['Hard', true]]]
   end
 
   test 'a movement line from a prediction is calculated and unbroken reads as unbroken' do
@@ -66,6 +76,6 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
                                                          stimulus_loading: :unloaded, stimulus_sets_max: 1,
                                                          current: true)
 
-    assert_includes stimulus_movement_lines(workouts(:fran)), ['Pull Up', 'Unloaded · unbroken', true]
+    assert_includes stimulus_movement_lines(workouts(:fran)), ['Pull Up', [['Unloaded', true], ['unbroken', true]]]
   end
 end

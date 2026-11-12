@@ -21,12 +21,15 @@
           =< render 'workouts/stimulus_calculated_tag'
     - if movement_lines.any?
       ul.stimulus-movements.list-unstyled.mb-1
-        - movement_lines.each do |name, text, calculated|
+        - movement_lines.each do |name, parts|
           li
             = name
             | :&nbsp;
-            = text
-            - if calculated
-              =< render 'workouts/stimulus_calculated_tag'
+            - parts.each_with_index do |(text, calculated), index|
+              - if index.positive?
+                |  ·&nbsp;
+              = text
+              - if calculated
+                =< render 'workouts/stimulus_calculated_tag'
     - if notes
       .notes = simple_format(notes)

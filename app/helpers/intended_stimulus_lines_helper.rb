@@ -8,6 +8,11 @@ module IntendedStimulusLinesHelper
     'heavy_find_max' => 'Heavy day: find a max', 'skill_practice' => 'Skill practice'
   }.freeze
 
+  # Per-movement fields in display order.
+  STIMULUS_MOVEMENT_FIELDS = %w[
+    stimulus_loading stimulus_sets_max stimulus_duration_max stimulus_rest_max_seconds stimulus_effort
+  ].freeze
+
   # [label, calculated] or nil.
   def stimulus_goal(workout)
     goal = workout.intended_stimulus_for(:stimulus_goal)
@@ -31,13 +36,17 @@ module IntendedStimulusLinesHelper
     ].compact
   end
 
-  # [[movement name, text, calculated], ...] for each exercise with any stimulus value.
+  # [[movement name, [[text, calculated], ...]], ...] for each exercise with any stimulus
+  # value. Each value carries its own calculated flag, so a predicted effort beside CrossFit's
+  # extracted loading tags only the effort.
   def stimulus_movement_lines(workout)
     workout.segments.flat_map(&:exercises).filter_map do |exercise|
-      resolved = Exercise::STIMULUS_FIELDS.index_with { |field| exercise.intended_stimulus_for(field) }.compact
-      resolved.select! { |_, stimulus_value| stimulus_value.value }
-      parts = stimulus_movement_parts(resolved.transform_values(&:value))
-      [exercise.movement.name, parts.join(' · '), resolved.values.any? { |value| stimulus_calculated?(value) }] if parts.any?
+      resolved = Exercise::STIMULUS_FIELDS.index_with { |field| exercise.intended_stimulus_for(field) }
+      parts = STIMULUS_MOVEMENT_FIELDS.filter_map do |field|
+        value = resolved[field]
+        [stimulus_movement_text(field, value.value), stimulus_calculated?(value)] if value&.value
+      end
+      [exercise.movement.name, parts] if parts.any?
     end
   end
 
@@ -60,19 +69,12 @@ module IntendedStimulusLinesHelper
     [label, format(template, clock_duration(resolved.value)), stimulus_calculated?(resolved)] if resolved&.value
   end
 
-  def stimulus_movement_parts(values)
-    [
-      values['stimulus_loading']&.humanize,
-      stimulus_sets_text(values['stimulus_sets_max']),
-      ("≤ #{clock_duration(values['stimulus_duration_max'])}" if values['stimulus_duration_max']),
-      ("rest ≤ #{clock_duration(values['stimulus_rest_max_seconds'])}" if values['stimulus_rest_max_seconds']),
-      values['stimulus_effort']&.humanize
-    ].compact
-  end
-
-  def stimulus_sets_text(sets)
-    return unless sets
-
-    sets == 1 ? 'unbroken' : "#{sets} sets or fewer"
+  def stimulus_movement_text(field, value)
+    case field
+    when 'stimulus_sets_max' then value == 1 ? 'unbroken' : "#{value} sets or fewer"
+    when 'stimulus_duration_max' then "≤ #{clock_duration(value)}"
+    when 'stimulus_rest_max_seconds' then "rest ≤ #{clock_duration(value)}"
+    else value.humanize
+    end
   end
 end

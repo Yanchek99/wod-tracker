@@ -1,5 +1,87 @@
 # Decisions
 
+## 2026-11-11: Every Workout Has An Intended Stimulus
+
+The 2026-09-02 decision modeled the stimulus as an expected-result range plus
+per-movement loading, sets, and single-effort ceiling. That covers a
+conditioning workout but leaves a heavy day, an interval session, or a skill
+day without a stimulus. Every workout has one (#1992); what it contains
+depends on the kind of workout.
+
+The L2 guide's "Heavy Days" section is the source for the strength side. Heavy
+days use small sets, most often 1 to 5 repetitions, totaling roughly 7 to 25
+working repetitions. Working sets generally occur at or above 80-85 percent of
+a 1-repetition maximum, which the guide calls "not an exact percentage". The
+worked Clean and Jerk 3-3-3-3-3 example prescribes 3-5 minutes of rest between
+sets. The guide names three ways to approach the working sets (increase the
+load every set, hold a certain percentage across all sets, or find a new
+N-repetition maximum) and says the trainer needs to state which intent
+applies on a given day.
+
+The stimulus adds:
+
+- A workout goal, `workouts.stimulus_goal`, an integer enum: `for_time`,
+  `amrap`, `intervals`, `heavy_ascending`, `heavy_hold_percent`,
+  `heavy_find_max`, `skill_practice`. The three heavy-day goals are the L2
+  guide's three approaches.
+- Workout targets, as integer low/high pairs:
+  - `stimulus_round_seconds_low/high`: target time per round.
+  - `stimulus_percent_1rm_low/high`: working-set load as a percent of 1RM,
+    1-100.
+  - `stimulus_working_sets_low/high`: number of working sets.
+  - `stimulus_rest_seconds_low/high`: rest between heavy sets.
+- Interval targets: `stimulus_interval_work_seconds` (target work time per
+  interval) and `stimulus_interval_rest_seconds_min` (minimum rest per
+  interval).
+- Per movement: `exercises.stimulus_rest_max_seconds`, a ceiling on rest
+  between sets ("no more than a 30-second break"), and `stimulus_effort`, an
+  integer enum of `sprint`, `hard`, `threshold`, `steady`.
+
+`stimulus_predictions` carries the same columns. Every low/high pair must be
+ordered. None of the new columns enter the content fingerprint, for the same
+reason given in the 2026-09-02 decision.
+
+For a weight-scored workout, `stimulus_range_low/high` holds the expected
+scored result as a percent of the athlete's 1RM (1-100), not a load. A 3RM is
+"about 85-90%", not "225 lb". An absolute weight is athlete-specific, while a
+percent is the workout's own target. The working-set percent and the result
+range stay separate. The first describes the load across working sets ("all
+sets at least 70%"); the second describes where the scored lift should land.
+On a hold-a-percentage day they often match.
+
+### Learned predictions
+
+A workout without CrossFit's Stimulus and Strategy text gets predicted values.
+The predictions are learned from CrossFit's own published examples: the
+prescription paired with the extracted (or authored) stimulus. They are not
+learned from athlete logs, because a programmer writes the stimulus before
+anyone has logged the workout. The learner is plain Ruby, with no model
+service and no LLM at prediction time.
+
+- Loading is learned per movement from the prescribed loads CrossFit labeled
+  light, moderate, or heavy for that movement. A movement with no prescribed
+  load that is not a load-bearing movement is `unloaded` by definition (rule
+  `rules-v1`, source `derived`).
+- Expected time follows Programming Basics' calculation: sum each movement's
+  time and multiply by rounds. Per-movement paces are fit with non-negative
+  least squares against CrossFit's stated ranges. A workout gets a range only
+  when every movement has a learned pace.
+- The other fields take the majority label (categorical) or the
+  interquartile range (numeric) of matching examples.
+- Learning is per movement only, with no fallback to movement groups. Below a
+  conservative minimum example count the field stays blank, and the panel
+  shows nothing for it.
+- Output is one `current` prediction row per target, holding every predicted
+  field, with `model_version` `learned-v1` and source `predicted`. A row that
+  carries only the unloaded rule is `derived`. Re-running with identical values
+  writes nothing. Confidence is `min(1, n / (2 x threshold))`.
+
+The rep-count loading rule proposed in #1992 (light at 20+ prescribed reps,
+moderate at 6-20, heavy at 1-5) is dropped. The Programming Basics lens counts
+consecutive reps the intended athlete could complete at the load, not
+prescribed reps, so the rule would label Grace's 30 clean and jerks at 135 lb
+"light".
+
 ## 2026-09-02: Model Intended Stimulus As Row Attributes Plus A Predictions Table
 
 `terminology.md` defines a workout's intended stimulus from the L1/L2 guides — the

@@ -19,8 +19,8 @@ module WorkoutExtraction
         type: 'object',
         properties: ModelSchema.properties_for(
           Exercise,
-          except: %w[id workout_id movement_id segment_id created_at updated_at position notes
-                     stimulus_loading stimulus_sets_max stimulus_duration_max stimulus_source],
+          except: %w[id workout_id movement_id segment_id created_at updated_at position notes stimulus_source] +
+                  Exercise::STIMULUS_FIELDS,
           overrides: { movement_name: { type: 'string' } }
         ),
         required: %w[movement_name],
@@ -43,8 +43,8 @@ module WorkoutExtraction
         type: 'object',
         properties: ModelSchema.properties_for(
           Workout,
-          except: %w[id created_at updated_at content_key time_cap_seconds
-                     stimulus_range_low stimulus_range_high intended_stimulus_notes stimulus_source],
+          except: %w[id created_at updated_at content_key time_cap_seconds intended_stimulus_notes stimulus_source] +
+                  Workout::STIMULUS_FIELDS,
           overrides: workout_schema_overrides
         ).merge(
           segments: { type: 'array', items: segment_schema },

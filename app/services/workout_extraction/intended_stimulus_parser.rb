@@ -1,27 +1,30 @@
 module WorkoutExtraction
   # Reads a persisted workout's intended_stimulus_notes prose and fills the structured
   # stimulus columns (stimulus_source: :extracted) via one LLM call. Rows that already carry
-  # an :authored value are left alone. Raises ExtractionError on an LLM/parse failure so the
-  # caller can decide whether that is fatal -- the scrape path treats it as best-effort.
+  # an :authored value are left alone; an already-extracted workout is re-extracted only
+  # when forced. A successful call always stamps the workout :extracted, even when the prose
+  # held nothing structurable, so a backfill doesn't re-spend the call on it. Raises
+  # ExtractionError on an LLM/parse failure so the caller can decide whether that is fatal --
+  # the scrape path treats it as best-effort.
   class IntendedStimulusParser
     class ExtractionError < StandardError; end
 
     MODEL = 'claude-haiku-4-5'.freeze
     MAX_TOKENS = 1024
-    LOADINGS = IntendedStimulus::LOADINGS.keys.map(&:to_s).freeze
 
-    def self.call(workout, logger: nil) = new(workout, logger: logger).parse
+    def self.call(workout, logger: nil, force: false) = new(workout, logger:, force:).parse
 
-    def initialize(workout, logger: nil)
+    def initialize(workout, logger: nil, force: false)
       @workout = workout
       @logger = logger
+      @force = force
     end
 
     def parse
-      return if workout.intended_stimulus_notes.blank?
+      return unless extractable?
 
       data = fetch
-      apply_range(data)
+      workout.update!(**IntendedStimulusFields.workout_attrs(data, workout), stimulus_source: :extracted)
       apply_movements(data[:movements] || [])
       workout
     rescue Anthropic::Errors::APIStatusError, Anthropic::Errors::APIConnectionError => e
@@ -34,7 +37,13 @@ module WorkoutExtraction
 
     private
 
-    attr_reader :workout, :logger
+    attr_reader :workout, :logger, :force
+
+    def extractable?
+      return false if workout.intended_stimulus_notes.blank? || workout.stimulus_source_authored?
+
+      force || !workout.stimulus_source_extracted?
+    end
 
     def fetch
       response = client.messages.create(
@@ -48,17 +57,9 @@ module WorkoutExtraction
       JSON.parse(strip_fences(block.text), symbolize_names: true)
     end
 
-    def apply_range(data)
-      bounds = [data[:range_low], data[:range_high]].filter_map { |value| positive_int(value) }.sort
-      return if bounds.empty?
-
-      low, high = bounds.one? ? [nil, bounds.first] : [bounds.first, bounds.last]
-      workout.update!(stimulus_range_low: low, stimulus_range_high: high, stimulus_source: :extracted)
-    end
-
     def apply_movements(entries)
       entries.each do |entry|
-        attrs = movement_attrs(entry)
+        attrs = IntendedStimulusFields.movement_attrs(entry)
         next if attrs.empty?
 
         exercises_named(entry[:movement_name]).each do |exercise|
@@ -67,23 +68,10 @@ module WorkoutExtraction
       end
     end
 
-    def movement_attrs(entry)
-      {
-        stimulus_loading: (entry[:loading].to_s if LOADINGS.include?(entry[:loading].to_s)),
-        stimulus_sets_max: positive_int(entry[:sets_max]),
-        stimulus_duration_max: positive_int(entry[:duration_max_seconds])
-      }.compact
-    end
-
     def exercises_named(name)
       return [] if name.blank?
 
       workout.segments.flat_map(&:exercises).select { |exercise| exercise.movement.name.casecmp?(name.to_s) }
-    end
-
-    def positive_int(value)
-      integer = Integer(value, exception: false)
-      integer if integer&.positive?
     end
 
     def strip_fences(text)

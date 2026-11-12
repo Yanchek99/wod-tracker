@@ -51,6 +51,29 @@ module StimulusLearner
       assert_equal({}, Pace.new(Examples.load, min_examples: 5).predict(target_workout('T', movements: [run_leg(400)])))
     end
 
+    test 'returns nothing when a movement has no countable volume' do
+      target = target_workout('Max Reps Target', rounds: 2,
+                                                 movements: [run_leg(400), { movement: movements(:deadlift), reps: 0,
+                                                                             load: 185 }])
+
+      assert_equal({}, pace.predict(target))
+    end
+
+    test 'returns nothing for a team workout' do
+      target = target_workout('Team Target', rounds: 2, movements: [run_leg(400), deadlift(15)])
+      target.update!(team_size: 2)
+
+      assert_equal({}, pace.predict(target))
+    end
+
+    test 'a team example does not train paces' do
+      labeled_workout('Team Example', rounds: 1, team_size: 2, movements: [deadlift(100)],
+                                      stimulus_range_low: 1000, stimulus_range_high: 1000)
+      target = target_workout('Target', rounds: 2, movements: [run_leg(400), deadlift(15)])
+
+      assert_in_delta 300, pace.predict(target)[:stimulus_range_high], 2
+    end
+
     private
 
     def pace = Pace.new(Examples.load)

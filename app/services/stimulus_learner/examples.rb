@@ -18,13 +18,15 @@ module StimulusLearner
 
     # Total prescribed work for one exercise across its segment's rounds: reps, distance (keyed
     # by unit, e.g. :distance_meter), calories, and seconds. An interval scheme such as Fran's
-    # 21-15-9 supplies the reps (the exercise itself stores reps: 1).
+    # 21-15-9 supplies the reps (the exercise itself stores reps: 1). Sex-split distance and
+    # calories use the male side, as Loading does for load. Empty when nothing is countable
+    # (e.g. a max-reps station), which callers treat as "volume unknown".
     def self.volume(exercise)
       rounds = exercise.segment.rounds || 1
       {
         reps: reps(exercise, rounds),
-        "distance_#{exercise.distance_unit || 'meter'}": exercise.distance.to_i * rounds,
-        calories: exercise.calories.to_i * rounds,
+        "distance_#{exercise.distance_unit || 'meter'}": (exercise.distance || exercise.male_distance).to_i * rounds,
+        calories: (exercise.calories || exercise.male_calories).to_i * rounds,
         seconds: exercise.duration_seconds.to_i * rounds
       }.select { |_, value| value.positive? }
     end

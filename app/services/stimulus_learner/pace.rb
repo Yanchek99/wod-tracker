@@ -6,8 +6,9 @@ module StimulusLearner
   # labeled rounds-scored AMRAP is one equation for one round (= time cap / expected rounds).
   # Paces are solved jointly with non-negative least squares.
   #
-  # A workout gets a prediction only when every movement in it has a learned pace; a partial
-  # sum would understate the time. Weight-scored workouts get none (their range is a % of 1RM).
+  # A workout gets a prediction only when every movement in it has countable volume and a
+  # learned pace; a partial sum would understate the time. Weight-scored and team workouts get
+  # none (a weight range is a % of 1RM; team volume is shared), and neither trains paces.
   class Pace
     MIN_PACE_EXAMPLES = 3
 
@@ -17,7 +18,7 @@ module StimulusLearner
     end
 
     def predict(workout)
-      return {} if workout.score_weight? || @paces.empty?
+      return {} if workout.score_weight? || workout.team? || @paces.empty?
 
       if workout.amrap?
         predict_amrap(workout)
@@ -33,16 +34,19 @@ module StimulusLearner
     # [features, target_seconds] for a labeled example, or nil when it can't serve as one.
     def equation(workout)
       target = target_value(workout)
-      return unless target
+      features = features(workout) unless workout.team?
+      return unless target && features
 
-      if workout.amrap?
-        cap = workout.governing_segment.time_seconds
-        return unless workout.score_round? && cap
+      seconds = target_seconds(workout, target)
+      [features, seconds] if seconds
+    end
 
-        [features(workout), cap.to_f / target]
-      elsif workout.score_time?
-        [features(workout), target.to_f]
-      end
+    # A For Time example's expected time, or one round's time for a rounds-scored AMRAP.
+    def target_seconds(workout, target)
+      return target.to_f if workout.score_time? && !workout.amrap?
+
+      cap = workout.governing_segment&.time_seconds
+      cap.to_f / target if workout.amrap? && workout.score_round? && cap
     end
 
     def target_value(workout)
@@ -53,12 +57,18 @@ module StimulusLearner
       high ? (low + high) / 2.0 : low
     end
 
-    # { [movement_id, unit] => volume } summed across the workout. An AMRAP segment has no
-    # rounds, so for one this is the volume of a single round.
+    # { [movement_id, unit] => volume } summed across the workout, or nil when any movement's
+    # volume can't be counted. An AMRAP segment has no rounds, so for one this is the volume of a
+    # single round.
     def features(workout)
-      workout.segments.flat_map(&:exercises).each_with_object(Hash.new(0)) do |exercise, totals|
-        Examples.volume(exercise).each { |unit, volume| totals[[exercise.movement_id, unit]] += volume }
-      end
+      volumes = workout.segments.flat_map(&:exercises).map { |exercise| [exercise.movement_id, Examples.volume(exercise)] }
+      return if volumes.empty? || volumes.any? { |_, volume| volume.empty? }
+
+      volumes.each_with_object(Hash.new(0)) { |(movement_id, volume), totals| add_volume(totals, movement_id, volume) }
+    end
+
+    def add_volume(totals, movement_id, volume)
+      volume.each { |unit, amount| totals[[movement_id, unit]] += amount }
     end
 
     def fit(equations)
@@ -99,7 +109,7 @@ module StimulusLearner
     end
 
     def seconds_for(features)
-      return if features.empty? || features.keys.any? { |column| !@paces.key?(column) }
+      return if features.blank? || features.keys.any? { |column| !@paces.key?(column) }
 
       features.sum { |column, volume| volume * @paces[column] }
     end

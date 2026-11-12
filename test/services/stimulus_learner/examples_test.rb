@@ -31,5 +31,16 @@ module StimulusLearner
       assert_equal ['Labeled'], examples.workouts.map(&:name)
       assert_equal 1, examples.exercises.size
     end
+
+    test 'volume reads the male side of sex-split calories and distance' do
+      workout = target_workout('Split Volume', rounds: 2,
+                                               movements: [{ movement: movements(:row), male_calories: 15, female_calories: 12 },
+                                                           { movement: movements(:run), male_distance: 400, female_distance: 300,
+                                                             distance_unit: :meter }])
+      row, run = workout.exercises.to_a
+
+      assert_equal({ calories: 30 }, Examples.volume(row))
+      assert_equal({ distance_meter: 800 }, Examples.volume(run))
+    end
   end
 end

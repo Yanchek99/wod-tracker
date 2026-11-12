@@ -23,9 +23,7 @@ module WorkoutExtraction
     def parse
       return unless extractable?
 
-      data = fetch
-      workout.update!(**IntendedStimulusFields.workout_attrs(data, workout), stimulus_source: :extracted)
-      apply_movements(data[:movements] || [])
+      apply(fetch)
       workout
     rescue Anthropic::Errors::APIStatusError, Anthropic::Errors::APIConnectionError => e
       log("Anthropic API error: #{e.message}")
@@ -54,7 +52,17 @@ module WorkoutExtraction
       block = response.content.find { |content_block| content_block.type == :text }
       raise ExtractionError, 'no text content in Anthropic response' unless block
 
-      JSON.parse(strip_fences(block.text), symbolize_names: true)
+      data = JSON.parse(strip_fences(block.text), symbolize_names: true)
+      raise ExtractionError, 'Anthropic response JSON is not an object' unless data.is_a?(Hash)
+
+      data
+    end
+
+    def apply(data)
+      Workout.transaction do
+        workout.update!(**IntendedStimulusFields.workout_attrs(data, workout), stimulus_source: :extracted)
+        apply_movements(Array(data[:movements]).grep(Hash))
+      end
     end
 
     def apply_movements(entries)

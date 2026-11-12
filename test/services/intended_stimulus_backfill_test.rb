@@ -56,6 +56,18 @@ class IntendedStimulusBackfillTest < ActiveSupport::TestCase
     assert_equal [2, 1, 1], [result.targeted, result.extracted, result.failed]
   end
 
+  test 'an invalid legacy row is counted as failed and does not stop the rest' do
+    broken = workout_with_notes('Legacy Invalid', notes: 'Legacy prose.')
+    broken.team_size = 1
+    broken.save!(validate: false) # a legacy row that no longer passes validation
+    stub_stimulus_response(movements: [])
+
+    result = IntendedStimulusBackfill.call
+
+    assert_equal [2, 1, 1], [result.targeted, result.extracted, result.failed]
+    assert_equal 'extracted', @pending.reload.stimulus_source
+  end
+
   private
 
   def workout_with_notes(name, notes: 'Keep it fast.')

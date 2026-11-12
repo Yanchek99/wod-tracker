@@ -95,6 +95,17 @@ module WorkoutExtraction
       assert_equal [nil, 85], @workout.reload.values_at(:stimulus_range_low, :stimulus_range_high)
     end
 
+    test 'a JSON response that is not an object raises ExtractionError' do
+      stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        .to_return(status: 200, headers: { 'Content-Type' => 'application/json' }, body: {
+          id: 'msg_x', type: 'message', role: 'assistant', model: 'claude-haiku-4-5',
+          content: [{ type: 'text', text: '[1, 2]' }], stop_reason: 'end_turn',
+          usage: { input_tokens: 1, output_tokens: 1 }
+        }.to_json)
+
+      assert_raises(IntendedStimulusParser::ExtractionError) { IntendedStimulusParser.call(@workout) }
+    end
+
     private
 
     def stub_stimulus_response(payload)

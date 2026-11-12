@@ -25,6 +25,6 @@ class StimulusScrapeJob < ApplicationJob
 
   def scheduled_on(date)
     day = ActiveSupport::TimeZone['America/Los_Angeles'].local(date.year, date.month, date.day).all_day
-    Program.find_by(name: 'Crossfit.com')&.schedules&.where(posted_at: day)&.first
+    Schedule.joins(:program).where(programs: { name: 'Crossfit.com' }, posted_at: day).first
   end
 end

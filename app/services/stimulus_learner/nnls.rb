@@ -4,48 +4,76 @@ module StimulusLearner
   # inner unconstrained solves use normal equations with Gaussian elimination. (The `matrix`
   # gem is only bundled for tests, so production can't lean on it.)
   module Nnls
-    TOLERANCE = 1e-10
     MAX_ITERATIONS = 500
+    # Relative ridge added to the normal equations' diagonal so duplicate or collinear columns
+    # stay solvable instead of producing a singular system.
+    RIDGE = 1e-9
 
     module_function
 
+    # Every loop is bounded: the outer loop by MAX_ITERATIONS, the inner one because each pass
+    # drops at least one column from the passive set. A column that falls straight back out right
+    # after joining is not retried, which stops add/drop cycling on degenerate systems.
     def solve(rows, targets)
       solution = Array.new(rows.first&.size.to_i, 0.0)
+      tolerance = tolerance(rows, targets)
       passive = []
+      rejected = []
       MAX_ITERATIONS.times do
-        candidate = next_column(rows, targets, solution, passive)
+        candidate = next_column(rows, targets, solution, passive + rejected, tolerance)
         break unless candidate
 
         passive << candidate
-        solution = refine(rows, targets, solution, passive)
+        solution = refine(rows, targets, solution, passive, tolerance)
+        rejected << candidate unless passive.include?(candidate)
+      end
+      solution.map { |value| value.finite? && value > tolerance ? value : 0.0 }
+    end
+
+    # Scale-aware zero: the data's magnitude decides what counts as zero.
+    def tolerance(rows, targets)
+      scale = [rows.flatten.map(&:abs).max.to_f, targets.map(&:abs).max.to_f, 1.0].max
+      scale * rows.size * 1e-12
+    end
+
+    # The inactive column whose gradient most wants to grow, or nil once none does.
+    def next_column(rows, targets, solution, excluded, tolerance)
+      gradient = gradient(rows, targets, solution)
+      candidate = solution.each_index.reject { |j| excluded.include?(j) }.max_by { |j| gradient[j] }
+      candidate if candidate && gradient[candidate] > tolerance
+    end
+
+    # Solve on the passive set; while the unconstrained answer is not positive, step back toward
+    # feasibility, zero the blocking column(s) and drop them.
+    def refine(rows, targets, solution, passive, tolerance)
+      passive.size.times do
+        trial = least_squares(rows, targets, passive, solution.size)
+        return trial if passive.all? { |j| trial[j] > tolerance }
+
+        solution = step_toward(solution, trial, passive, tolerance)
+        passive.reject! { |j| solution[j] <= tolerance }
+        return solution if passive.empty?
       end
       solution
     end
 
-    # The inactive column whose gradient most wants to grow, or nil once none does.
-    def next_column(rows, targets, solution, passive)
-      gradient = gradient(rows, targets, solution)
-      candidate = solution.each_index.reject { |j| passive.include?(j) }.max_by { |j| gradient[j] }
-      candidate if candidate && gradient[candidate] > TOLERANCE
+    # Moves from solution toward trial as far as feasibility allows, and zeroes every passive
+    # column that is non-positive at that point (always at least the blocking one).
+    def step_toward(solution, trial, passive, tolerance)
+      blocked = passive.select { |j| trial[j] <= tolerance }
+      step = feasible_step(solution, trial, blocked, tolerance)
+      moved = solution.each_index.map { |j| solution[j] + ((step || 0.0) * (trial[j] - solution[j])) }
+      blocked.each { |j| moved[j] = 0.0 if step.nil? || moved[j] <= tolerance }
+      moved
     end
 
-    # Solve on the passive set; while the unconstrained answer goes negative, step back toward
-    # feasibility and drop the columns that reach zero.
-    def refine(rows, targets, solution, passive)
-      loop do
-        trial = least_squares(rows, targets, passive, solution.size)
-        return trial if passive.all? { |j| trial[j] > TOLERANCE }
-
-        solution = step_toward(solution, trial, passive)
-        passive.reject! { |j| solution[j] <= TOLERANCE }
-        return solution if passive.empty?
-      end
-    end
-
-    def step_toward(solution, trial, passive)
-      blocked = passive.select { |j| trial[j] <= TOLERANCE }
-      step = blocked.map { |j| solution[j] / (solution[j] - trial[j]) }.min
-      solution.each_index.map { |j| solution[j] + (step * (trial[j] - solution[j])) }
+    # The largest step that keeps every blocked column non-negative; nil when no blocked column
+    # can move (e.g. a column already at zero whose trial value is also zero).
+    def feasible_step(solution, trial, blocked, tolerance)
+      blocked.filter_map do |j|
+        denominator = solution[j] - trial[j]
+        solution[j] / denominator if denominator > tolerance
+      end.min
     end
 
     def gradient(rows, targets, solution)
@@ -59,7 +87,9 @@ module StimulusLearner
     end
 
     def normal_matrix(rows, passive)
-      passive.map { |a| passive.map { |b| rows.sum { |row| row[a] * row[b] } } }
+      matrix = passive.map { |a| passive.map { |b| rows.sum { |row| row[a] * row[b] } } }
+      ridge = RIDGE * [matrix.each_with_index.map { |row, i| row[i] }.max.to_f, 1.0].max
+      matrix.each_with_index { |row, i| row[i] += ridge }
     end
 
     def normal_rhs(rows, targets, passive)
@@ -74,7 +104,7 @@ module StimulusLearner
 
     def eliminate(augmented, col)
       pivot_row = swap_pivot(augmented, col)
-      return if pivot_row[col].abs < TOLERANCE
+      return if pivot_row[col].abs < Float::EPSILON
 
       ((col + 1)...augmented.size).each do |r|
         augmented[r] = subtract_scaled(augmented[r], pivot_row, augmented[r][col] / pivot_row[col])
@@ -95,7 +125,7 @@ module StimulusLearner
     def back_substitute(augmented, size)
       values = Array.new(size, 0.0)
       (size - 1).downto(0) do |r|
-        next if augmented[r][r].abs < TOLERANCE
+        next if augmented[r][r].abs < Float::EPSILON
 
         known = ((r + 1)...size).sum { |c| augmented[r][c] * values[c] }
         values[r] = (augmented[r][size] - known) / augmented[r][r]

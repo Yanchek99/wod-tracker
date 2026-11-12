@@ -23,17 +23,17 @@ module StimulusLearner
 
     def predict(workout)
       prediction = Prediction.new
-      goal = workout.stimulus_goal || learn(workout, prediction, @goal, %w[stimulus_goal])[:stimulus_goal]
+      goal = workout.stimulus_goal || learn(workout, prediction, @goal)[:stimulus_goal]
       predict_range(workout, prediction)
-      @heavy.each { |learner| learn(workout, prediction, learner, learner.fields) } if HEAVY_GOALS.include?(goal)
-      @interval.each { |learner| learn(workout, prediction, learner, learner.fields) } if goal == 'intervals'
+      @heavy.each { |learner| learn(workout, prediction, learner) } if HEAVY_GOALS.include?(goal)
+      @interval.each { |learner| learn(workout, prediction, learner) } if goal == 'intervals'
       prediction
     end
 
     private
 
     def predict_range(workout, prediction)
-      return learn(workout, prediction, @result_range, %w[stimulus_range_low stimulus_range_high]) if workout.score_weight?
+      return learn(workout, prediction, @result_range) if workout.score_weight?
 
       predict_paced_range(workout, prediction) if workout.stimulus_range_low.nil? && workout.stimulus_range_high.nil?
     end
@@ -49,8 +49,8 @@ module StimulusLearner
     end
 
     # Predicts with the learner only when none of its fields has the workout's own value.
-    def learn(workout, prediction, learner, fields)
-      return {} unless fields.all? { |field| workout[field].nil? }
+    def learn(workout, prediction, learner)
+      return {} unless learner.fields.all? { |field| workout[field].nil? }
 
       values = learner.predict(workout)
       prediction.learned(values, StimulusLearner.confidence(learner.support(workout), FieldLearner::MIN_FIELD_EXAMPLES))

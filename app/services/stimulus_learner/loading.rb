@@ -41,6 +41,10 @@ module StimulusLearner
       label ? { stimulus_loading: label } : {}
     end
 
+    def support(exercise)
+      @loads_by_movement.fetch(exercise.movement_id, []).size
+    end
+
     private
 
     def label_for(load, groups)

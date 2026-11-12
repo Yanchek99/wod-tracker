@@ -8,15 +8,22 @@ module StimulusLearner
 
     # target: a Workout or Exercise. values: stimulus field => value, nils already removed.
     def write(target, values:, source:, model_version:, confidence:)
-      return :skipped if values.empty?
+      outcome = outcome(target, values:, source:, model_version:)
+      return outcome unless outcome == :created
 
       current = target.stimulus_predictions.current.first
-      return :unchanged if same?(current, values, source, model_version)
-
       StimulusPrediction.transaction do
         current&.update!(current: false)
         target.stimulus_predictions.create!(**values, source:, model_version:, confidence:, current: true)
       end
+      :created
+    end
+
+    # What write would do, without writing: :skipped, :unchanged or :created.
+    def outcome(target, values:, source:, model_version:)
+      return :skipped if values.empty?
+      return :unchanged if same?(target.stimulus_predictions.current.first, values, source, model_version)
+
       :created
     end
 

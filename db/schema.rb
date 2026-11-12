@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_07_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -103,6 +103,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_180000) do
     t.integer "stimulus_sets_max"
     t.integer "stimulus_source"
     t.datetime "updated_at", precision: nil, null: false
+    t.integer "stimulus_rest_max_seconds"
+    t.integer "stimulus_effort"
     t.index ["movement_id"], name: "index_exercises_on_movement_id"
     t.index ["position", "segment_id"], name: "index_exercises_on_position_and_segment_id", unique: true
     t.index ["segment_id"], name: "index_exercises_on_segment_id"
@@ -358,6 +360,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_180000) do
     t.integer "stimulus_sets_max"
     t.datetime "updated_at", null: false
     t.bigint "workout_id"
+    t.integer "stimulus_goal"
+    t.integer "stimulus_round_seconds_low"
+    t.integer "stimulus_round_seconds_high"
+    t.integer "stimulus_percent_1rm_low"
+    t.integer "stimulus_percent_1rm_high"
+    t.integer "stimulus_working_sets_low"
+    t.integer "stimulus_working_sets_high"
+    t.integer "stimulus_rest_seconds_low"
+    t.integer "stimulus_rest_seconds_high"
+    t.integer "stimulus_interval_work_seconds"
+    t.integer "stimulus_interval_rest_seconds_min"
+    t.integer "stimulus_rest_max_seconds"
+    t.integer "stimulus_effort"
     t.index ["exercise_id", "model_version", "created_at"], name: "index_stimulus_predictions_exercise_history"
     t.index ["exercise_id"], name: "index_stimulus_predictions_current_exercise", where: "current"
     t.index ["workout_id", "model_version", "created_at"], name: "index_stimulus_predictions_workout_history"
@@ -436,6 +451,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_07_180000) do
     t.integer "team_size"
     t.integer "time_cap_seconds"
     t.datetime "updated_at", precision: nil, null: false
+    t.integer "stimulus_goal"
+    t.integer "stimulus_round_seconds_low"
+    t.integer "stimulus_round_seconds_high"
+    t.integer "stimulus_percent_1rm_low"
+    t.integer "stimulus_percent_1rm_high"
+    t.integer "stimulus_working_sets_low"
+    t.integer "stimulus_working_sets_high"
+    t.integer "stimulus_rest_seconds_low"
+    t.integer "stimulus_rest_seconds_high"
+    t.integer "stimulus_interval_work_seconds"
+    t.integer "stimulus_interval_rest_seconds_min"
     t.index ["content_key"], name: "index_workouts_on_content_key", unique: true
   end
 

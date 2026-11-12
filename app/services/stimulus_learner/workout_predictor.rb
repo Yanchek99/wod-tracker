@@ -33,13 +33,15 @@ module StimulusLearner
     private
 
     def predict_range(workout, prediction)
-      if workout.score_weight?
-        learn(workout, prediction, @result_range, %w[stimulus_range_low stimulus_range_high])
-      elsif workout.stimulus_range_low.nil? && workout.stimulus_range_high.nil?
-        values = @pace.predict(workout)
-        values = values.except(:stimulus_round_seconds_low, :stimulus_round_seconds_high) unless round_time_open?(workout)
-        prediction.learned(values, StimulusLearner.confidence(@pace_support, Pace::MIN_PACE_EXAMPLES))
-      end
+      return learn(workout, prediction, @result_range, %w[stimulus_range_low stimulus_range_high]) if workout.score_weight?
+
+      predict_paced_range(workout, prediction) if workout.stimulus_range_low.nil? && workout.stimulus_range_high.nil?
+    end
+
+    def predict_paced_range(workout, prediction)
+      values = @pace.predict(workout)
+      values = values.except(:stimulus_round_seconds_low, :stimulus_round_seconds_high) unless round_time_open?(workout)
+      prediction.learned(values, StimulusLearner.confidence(@pace_support, Pace::MIN_PACE_EXAMPLES))
     end
 
     def round_time_open?(workout)

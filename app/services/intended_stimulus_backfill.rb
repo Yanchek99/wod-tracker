@@ -17,14 +17,17 @@ class IntendedStimulusBackfill
     targets = self.targets(force:)
     return Result.new(targeted: targets.count, extracted: 0, failed: 0) if dry_run
 
-    extracted = failed = 0
-    targets.find_each do |workout|
-      WorkoutExtraction::IntendedStimulusParser.call(workout, logger:, force:)
-      extracted += 1
-    rescue WorkoutExtraction::IntendedStimulusParser::ExtractionError, ActiveRecord::RecordInvalid => e
-      failed += 1
-      logger&.warn("[IntendedStimulusBackfill] workout #{workout.id}: #{e.message}")
-    end
-    Result.new(targeted: extracted + failed, extracted:, failed:)
+    outcomes = targets.find_each.map { |workout| extract(workout, force:, logger:) }
+    extracted = outcomes.count(true)
+    Result.new(targeted: outcomes.size, extracted:, failed: outcomes.size - extracted)
+  end
+
+  # true when the workout was extracted, false when it failed (logged, never raised).
+  def self.extract(workout, force:, logger:)
+    WorkoutExtraction::IntendedStimulusParser.call(workout, logger:, force:)
+    true
+  rescue WorkoutExtraction::IntendedStimulusParser::ExtractionError, ActiveRecord::RecordInvalid => e
+    logger&.warn("[IntendedStimulusBackfill] workout #{workout.id}: #{e.message}")
+    false
   end
 end

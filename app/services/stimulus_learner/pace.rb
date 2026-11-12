@@ -18,18 +18,16 @@ module StimulusLearner
     end
 
     def predict(workout)
-      return {} if workout.score_weight? || workout.team? || @paces.empty?
+      return {} unless predictable?(workout)
 
-      if workout.amrap?
-        predict_amrap(workout)
-      elsif workout.score_time?
-        predict_for_time(workout)
-      else
-        {}
-      end
+      workout.amrap? ? predict_amrap(workout) : predict_for_time(workout)
     end
 
     private
+
+    def predictable?(workout)
+      @paces.any? && !workout.score_weight? && !workout.team?
+    end
 
     # [features, target_seconds] for a labeled example, or nil when it can't serve as one.
     def equation(workout)
@@ -115,6 +113,8 @@ module StimulusLearner
     end
 
     def predict_for_time(workout)
+      return {} unless workout.score_time?
+
       total = seconds_for(features(workout))
       return {} unless total
 

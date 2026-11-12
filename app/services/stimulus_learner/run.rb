@@ -28,10 +28,7 @@ module StimulusLearner
     end
 
     def write(target, prediction)
-      args = { values: prediction.values, source: prediction.source, model_version: prediction.model_version }
-      return PredictionWriter.outcome(target, **args) if @dry_run
-
-      PredictionWriter.write(target, **args, confidence: prediction.confidence)
+      @dry_run ? PredictionWriter.outcome(target, prediction) : PredictionWriter.write(target, prediction)
     end
   end
 end

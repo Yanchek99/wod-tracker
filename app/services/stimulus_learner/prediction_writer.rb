@@ -3,36 +3,42 @@ module StimulusLearner
   # Append-only: a change inserts a new row and retires the previous current one in the same
   # transaction; an identical rerun (same values, source and model version) writes nothing.
   # Prediction values never touch the target's own authored/extracted stimulus columns.
+  #
+  # `prediction` is anything with values (stimulus field => value, nils removed), source,
+  # model_version and confidence -- a StimulusLearner::Prediction, or a Row.
   module PredictionWriter
+    Row = Data.define(:values, :source, :model_version, :confidence)
+
     module_function
 
-    # target: a Workout or Exercise. values: stimulus field => value, nils already removed.
-    def write(target, values:, source:, model_version:, confidence:)
-      outcome = outcome(target, values:, source:, model_version:)
+    # target: a Workout or Exercise.
+    def write(target, prediction)
+      outcome = outcome(target, prediction)
       return outcome unless outcome == :created
 
       current = target.stimulus_predictions.current.first
       StimulusPrediction.transaction do
         current&.update!(current: false)
-        target.stimulus_predictions.create!(**values, source:, model_version:, confidence:, current: true)
+        target.stimulus_predictions.create!(**prediction.values, source: prediction.source,
+                                                                 model_version: prediction.model_version,
+                                                                 confidence: prediction.confidence, current: true)
       end
       :created
     end
 
     # What write would do, without writing: :skipped, :unchanged or :created.
-    def outcome(target, values:, source:, model_version:)
-      return :skipped if values.empty?
-      return :unchanged if same?(target.stimulus_predictions.current.first, values, source, model_version)
+    def outcome(target, prediction)
+      return :skipped if prediction.values.empty?
+      return :unchanged if same?(target.stimulus_predictions.current.first, prediction)
 
       :created
     end
 
-    def same?(current, values, source, model_version)
+    def same?(current, prediction)
       return false unless current
-      return false unless current.source == source.to_s && current.model_version == model_version
+      return false unless current.source == prediction.source.to_s && current.model_version == prediction.model_version
 
-      fields = target_fields(current)
-      fields.all? { |field| current[field] == normalized(values[field.to_sym]) }
+      target_fields(current).all? { |field| current[field] == normalized(prediction.values[field.to_sym]) }
     end
 
     def target_fields(prediction)

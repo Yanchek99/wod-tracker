@@ -27,13 +27,14 @@ module StimulusLearner
       [exercise.movement_id, reps_bucket(reps_per_set(exercise))]
     end
 
+    # Checked in order: an EMOM is also timed rounds, so it must win first.
+    SEGMENT_KINDS = { emom: :emom?, amrap: :amrap?, interval: :interval?, rounds: :rounds?, timed_rounds: :timed_rounds? }.freeze
+
     def segment_kind(segment)
       return :none unless segment
-      return :emom if segment.emom?
-      return :amrap if segment.amrap?
-      return :interval if segment.interval?
 
-      segment.rounds? || segment.timed_rounds? ? :rounds : :single
+      kind = SEGMENT_KINDS.find { |_, predicate| segment.public_send(predicate) }&.first
+      kind == :timed_rounds ? :rounds : kind || :single
     end
 
     # Reps in one set: the interval scheme's first step (Fran's 21) or the exercise's own reps.

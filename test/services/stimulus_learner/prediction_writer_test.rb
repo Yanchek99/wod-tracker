@@ -51,8 +51,9 @@ module StimulusLearner
     test 'writes a workout-level row' do
       workout = workouts(:fran)
 
-      PredictionWriter.write(workout, values: { stimulus_goal: 'for_time', stimulus_range_high: 300 },
-                                      source: :predicted, model_version: 'learned-v1', confidence: 0.4)
+      PredictionWriter.write(workout, PredictionWriter::Row.new(values: { stimulus_goal: 'for_time', stimulus_range_high: 300 },
+                                                                source: :predicted, model_version: 'learned-v1',
+                                                                confidence: 0.4))
 
       assert_equal ['for_time', 300], workout.stimulus_predictions.current.first.values_at(:stimulus_goal, :stimulus_range_high)
     end
@@ -60,8 +61,8 @@ module StimulusLearner
     private
 
     def write(values = nil, model_version: 'learned-v1', **fields)
-      PredictionWriter.write(@exercise, values: values || fields, source: :predicted, model_version:,
-                                        confidence: 0.5)
+      row = PredictionWriter::Row.new(values: values || fields, source: :predicted, model_version:, confidence: 0.5)
+      PredictionWriter.write(@exercise, row)
     end
   end
 end

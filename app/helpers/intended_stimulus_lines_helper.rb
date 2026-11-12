@@ -8,6 +8,20 @@ module IntendedStimulusLinesHelper
     'heavy_find_max' => 'Heavy day: find a max', 'skill_practice' => 'Skill practice'
   }.freeze
 
+  # Workout-level low/high lines, in display order. clock: render seconds as MM:SS.
+  STIMULUS_PAIR_LINES = [
+    { label: 'Per round', prefix: :stimulus_round_seconds, clock: true, suffix: '' },
+    { label: 'Load', prefix: :stimulus_percent_1rm, clock: false, suffix: '% of 1RM' },
+    { label: 'Working sets', prefix: :stimulus_working_sets, clock: false, suffix: '' },
+    { label: 'Rest', prefix: :stimulus_rest_seconds, clock: true, suffix: ' between sets' }
+  ].freeze
+
+  # Workout-level single-value interval lines (always seconds).
+  STIMULUS_SINGLE_LINES = [
+    { label: 'Work', field: :stimulus_interval_work_seconds, template: '≤ %s per interval' },
+    { label: 'Rest', field: :stimulus_interval_rest_seconds_min, template: '≥ %s per interval' }
+  ].freeze
+
   # Per-movement fields in display order.
   STIMULUS_MOVEMENT_FIELDS = %w[
     stimulus_loading stimulus_sets_max stimulus_duration_max stimulus_rest_max_seconds stimulus_effort
@@ -27,12 +41,8 @@ module IntendedStimulusLinesHelper
   def stimulus_workout_lines(workout)
     [
       stimulus_range_line(workout),
-      stimulus_pair_line(workout, 'Per round', :stimulus_round_seconds) { |value| clock_duration(value) },
-      stimulus_pair_line(workout, 'Load', :stimulus_percent_1rm, suffix: '% of 1RM'),
-      stimulus_pair_line(workout, 'Working sets', :stimulus_working_sets),
-      stimulus_pair_line(workout, 'Rest', :stimulus_rest_seconds, suffix: ' between sets') { |value| clock_duration(value) },
-      stimulus_single_line(workout, 'Work', :stimulus_interval_work_seconds, '≤ %s per interval'),
-      stimulus_single_line(workout, 'Rest', :stimulus_interval_rest_seconds_min, '≥ %s per interval')
+      *STIMULUS_PAIR_LINES.map { |spec| stimulus_pair_line(workout, spec) },
+      *STIMULUS_SINGLE_LINES.map { |spec| stimulus_single_line(workout, spec) }
     ].compact
   end
 
@@ -41,11 +51,7 @@ module IntendedStimulusLinesHelper
   # extracted loading tags only the effort.
   def stimulus_movement_lines(workout)
     workout.segments.flat_map(&:exercises).filter_map do |exercise|
-      resolved = Exercise::STIMULUS_FIELDS.index_with { |field| exercise.intended_stimulus_for(field) }
-      parts = STIMULUS_MOVEMENT_FIELDS.filter_map do |field|
-        value = resolved[field]
-        [stimulus_movement_text(field, value.value), stimulus_calculated?(value)] if value&.value
-      end
+      parts = stimulus_movement_parts(exercise)
       [exercise.movement.name, parts] if parts.any?
     end
   end
@@ -57,16 +63,27 @@ module IntendedStimulusLinesHelper
     ['Expected', range, stimulus_pair(workout, :stimulus_range_low, :stimulus_range_high).last] if range
   end
 
-  def stimulus_pair_line(workout, label, prefix, suffix: '', &format)
-    low, high, calculated = stimulus_pair(workout, :"#{prefix}_low", :"#{prefix}_high")
-    return if low.blank? && high.blank?
-
-    [label, "#{stimulus_bounds_text(low, high, &format || :to_s.to_proc)}#{suffix}", calculated]
+  # [[text, calculated], ...] for each per-movement field with a value.
+  def stimulus_movement_parts(exercise)
+    STIMULUS_MOVEMENT_FIELDS.filter_map do |field|
+      resolved = exercise.intended_stimulus_for(field)
+      [stimulus_movement_text(field, resolved.value), stimulus_calculated?(resolved)] if resolved&.value
+    end
   end
 
-  def stimulus_single_line(workout, label, field, template)
-    resolved = workout.intended_stimulus_for(field)
-    [label, format(template, clock_duration(resolved.value)), stimulus_calculated?(resolved)] if resolved&.value
+  def stimulus_pair_line(workout, spec)
+    low, high, calculated = stimulus_pair(workout, :"#{spec[:prefix]}_low", :"#{spec[:prefix]}_high")
+    return if low.blank? && high.blank?
+
+    text = stimulus_bounds_text(low, high) { |value| spec[:clock] ? clock_duration(value) : value.to_s }
+    [spec[:label], "#{text}#{spec[:suffix]}", calculated]
+  end
+
+  def stimulus_single_line(workout, spec)
+    resolved = workout.intended_stimulus_for(spec[:field])
+    return unless resolved&.value
+
+    [spec[:label], format(spec[:template], clock_duration(resolved.value)), stimulus_calculated?(resolved)]
   end
 
   def stimulus_movement_text(field, value)

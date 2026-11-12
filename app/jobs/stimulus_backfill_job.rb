@@ -8,12 +8,13 @@ class StimulusBackfillJob < ApplicationJob
   STEPS = %w[run_all scrape extract predict].freeze
   SCRAPE_SETTLE_TIME = 5.minutes
 
-  def perform(step, start_date: nil, end_date: nil, force: false)
+  # options: start_date / end_date (scrape and run_all) and force (re-extract).
+  def perform(step, **options)
     case step
-    when 'scrape' then scrape(start_date, end_date)
-    when 'extract' then ExtractIntendedStimulusJob.perform_later(force:, then_predict: false)
+    when 'scrape' then scrape(options[:start_date], options[:end_date])
+    when 'extract' then ExtractIntendedStimulusJob.perform_later(force: options.fetch(:force, false), then_predict: false)
     when 'predict' then PredictStimulusJob.perform_later
-    when 'run_all' then run_all(start_date, end_date, force)
+    when 'run_all' then run_all(options[:start_date], options[:end_date], options.fetch(:force, false))
     else raise ArgumentError, "unknown stimulus backfill step #{step.inspect}"
     end
   end

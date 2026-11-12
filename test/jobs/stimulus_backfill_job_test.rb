@@ -1,11 +1,13 @@
 require 'test_helper'
 
 class StimulusBackfillJobTest < ActiveJob::TestCase
-  test 'run_all with dates enqueues the scrape and a delayed extract that then predicts' do
+  test 'run_all with dates enqueues a staggered stimulus scrape per day and a delayed extract that then predicts' do
     freeze_time do
       StimulusBackfillJob.perform_now('run_all', start_date: Date.new(2026, 6, 1), end_date: Date.new(2026, 6, 10))
 
-      assert_enqueued_with(job: BackfillCrossfitWodsJob, args: [Date.new(2026, 6, 1), Date.new(2026, 6, 10)])
+      assert_enqueued_jobs 10, only: StimulusScrapeJob
+      assert_enqueued_with(job: StimulusScrapeJob, args: [Date.new(2026, 6, 10)],
+                           at: (9 * BackfillCrossfitWodsJob::DELAY_BETWEEN_REQUESTS).from_now)
       assert_enqueued_with(job: ExtractIntendedStimulusJob, args: [{ force: false, then_predict: true }],
                            at: ((10 * BackfillCrossfitWodsJob::DELAY_BETWEEN_REQUESTS) + 5.minutes).from_now)
     end
@@ -15,7 +17,7 @@ class StimulusBackfillJobTest < ActiveJob::TestCase
     StimulusBackfillJob.perform_now('run_all')
 
     assert_enqueued_with(job: ExtractIntendedStimulusJob, args: [{ force: false, then_predict: true }])
-    assert_no_enqueued_jobs(only: BackfillCrossfitWodsJob)
+    assert_no_enqueued_jobs(only: StimulusScrapeJob)
   end
 
   test 'extract step enqueues extract only, passing force' do
@@ -30,6 +32,12 @@ class StimulusBackfillJobTest < ActiveJob::TestCase
 
     assert_enqueued_with(job: PredictStimulusJob)
     assert_no_enqueued_jobs(only: ExtractIntendedStimulusJob)
+  end
+
+  test 'scrape step rejects a start after the end' do
+    assert_raises(ArgumentError) do
+      StimulusBackfillJob.perform_now('scrape', start_date: Date.new(2026, 6, 10), end_date: Date.new(2026, 6, 1))
+    end
   end
 
   test 'scrape step needs dates' do

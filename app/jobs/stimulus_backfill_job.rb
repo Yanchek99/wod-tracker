@@ -1,5 +1,5 @@
 # Drives the intended-stimulus backfill from the RailsAdmin action (#1992): scrape past
-# CrossFit.com days, extract their Stimulus and Strategy prose, then refit the learner and
+# CrossFit.com days (see StimulusScrapeJob), extract their Stimulus and Strategy prose, then refit the learner and
 # write predictions. `run_all` chains the steps; extraction is scheduled to start after the
 # last staggered scrape has run.
 class StimulusBackfillJob < ApplicationJob
@@ -32,9 +32,14 @@ class StimulusBackfillJob < ApplicationJob
                               .perform_later(force:, then_predict: true)
   end
 
+  # Staggered like BackfillCrossfitWodsJob, but per day through StimulusScrapeJob so days that
+  # already have a schedule only get their prose attached instead of being re-imported.
   def scrape(start_date, end_date)
     raise ArgumentError, 'scrape needs a start_date and end_date' unless start_date && end_date
+    raise ArgumentError, 'start_date must be <= end_date' if start_date > end_date
 
-    BackfillCrossfitWodsJob.perform_later(start_date, end_date)
+    (start_date..end_date).each_with_index do |date, i|
+      StimulusScrapeJob.set(wait: i * BackfillCrossfitWodsJob::DELAY_BETWEEN_REQUESTS).perform_later(date)
+    end
   end
 end

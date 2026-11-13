@@ -1,0 +1,240 @@
+# Reference table for the intended-stimulus calculator (#1992, cf/docs/decisions.md 2026-11-11).
+#
+# The reference athlete is the Rx gym athlete: a strong regular at an affiliate, the athlete
+# CrossFit says Rx is written for (Programming Basics pt 1) -- not a Games athlete.
+#
+# CrossFit publishes only a handful of these numbers. Every value says where it came from:
+# a CrossFit citation, or "drafted -- owner review" (a starting value to be corrected against
+# CrossFit's posted stimulus with `bin/rails stimulus:accuracy`).
+#
+# paces: seconds per unit for the reference athlete moving at intended pace.
+#   unit keys: rep, meter, calorie, second.
+#   A loaded movement's pace depends on its load class: { light:, moderate:, heavy: }.
+# reference_load: the reference athlete's 1-rep max (male, lb). Loading = prescribed load /
+#   reference_load, against the lift class's light boundary and the heavy boundary.
+#   Implements (dumbbell, kettlebell, medicine ball, carries) use a heavy-implement reference
+#   instead of a 1RM.
+
+constants:
+  # Programming Basics pt 1: "about 10-15 seconds" between movements.
+  transition_seconds: 10
+  # Rochet, "Hitting the Stimulus" (crossfit.com): the slower target is about 2x the fastest.
+  slow_factor: 2
+  # L2 guide p36: heavy-day working sets "at or above 80-85 percent" of a 1RM.
+  heavy_boundary: 0.85
+  # CrossFit's paired Rx loads: 65/95, 95/135, 155/225 (about 0.7).
+  female_reference_factor: 0.7
+  # Expected unbroken chunk per load class, for the "N sets or fewer" guide. Drafted -- owner review.
+  chunk_reps:
+    light: 15
+    moderate: 7
+    heavy: 2
+  # One effort's duration cut-offs for effort labels (app's own scale). Drafted -- owner review.
+  effort_seconds:
+    sprint: 60
+    hard: 180
+    threshold: 600
+  # L2 guide (Clean and Jerk 3-3-3-3-3 intended stimulus): 3-5 minutes between heavy sets.
+  heavy_rest_seconds: [180, 300]
+  # L2 guide p36: working sets generally at or above 80-85 percent of 1RM.
+  heavy_working_percent_low: 80
+
+lift_classes:
+  # Light below this share of the reference load. Drafted -- owner review, checked against
+  # CrossFit's labels: Amanda's 135 snatch and Elizabeth's 135 clean are moderate (L2 pp54, 68),
+  # Diane's 225 deadlift is "Medium" (L2 p64).
+  olympic:
+    light_below: 0.45
+  barbell:
+    light_below: 0.50
+  implement:
+    light_below: 0.50
+
+movements:
+  # --- Monostructural ---
+  Run:
+    paces: { meter: 0.225 }
+    source: "Programming Basics pt 1: 400 m run about 1:30"
+  Row:
+    paces: { meter: 0.21, calorie: 3.5 }
+    source: drafted -- owner review
+  Air Bike:
+    paces: { calorie: 3.0 }
+    source: drafted -- owner review
+  Double-under:
+    paces: { rep: 0.5 }
+    source: drafted -- owner review
+  Rest:
+    paces: { second: 1.0 }
+    source: a rest segment takes its own prescribed time
+
+  # --- Gymnastics ---
+  Pull-up:
+    paces: { rep: 1.5 }
+    source: "Rochet, Hitting the Stimulus (crossfit.com): pull-up 1-2 s/rep"
+  Strict Pull-up:
+    paces: { rep: 2.5 }
+    source: drafted -- owner review
+  Chest-to-bar Pull-up:
+    paces: { rep: 2.0 }
+    source: drafted -- owner review
+  Muscle-up:
+    paces: { rep: 5.0 }
+    source: drafted -- owner review
+  Bar Muscle-up:
+    paces: { rep: 4.0 }
+    source: drafted -- owner review
+  Handstand Push-up:
+    paces: { rep: 3.0 }
+    source: drafted -- owner review
+  Push-up:
+    paces: { rep: 1.5 }
+    source: drafted -- owner review
+  Hand-release Push-up:
+    paces: { rep: 2.5 }
+    source: drafted -- owner review
+  Burpee:
+    paces: { rep: 3.5 }
+    source: drafted -- owner review
+  Bar-facing Burpee:
+    paces: { rep: 4.0 }
+    source: drafted -- owner review
+  Burpee Pull-up:
+    paces: { rep: 5.0 }
+    source: drafted -- owner review
+  Burpee Box Jump-over:
+    paces: { rep: 5.0 }
+    source: drafted -- owner review
+  Box Jump:
+    paces: { rep: 2.5 }
+    source: drafted -- owner review
+  Air Squat:
+    paces: { rep: 1.2 }
+    source: drafted -- owner review
+  Sit-up:
+    paces: { rep: 1.5 }
+    source: drafted -- owner review
+  GHD Sit-up:
+    paces: { rep: 2.0 }
+    source: drafted -- owner review
+  Toes to Bar:
+    paces: { rep: 2.0 }
+    source: drafted -- owner review
+  Rope Climb:
+    paces: { rep: 15.0 }
+    source: drafted -- owner review
+  Wall Walk:
+    paces: { rep: 12.0 }
+    source: drafted -- owner review
+  Walking Lunge:
+    paces: { rep: 1.5 }
+    source: drafted -- owner review
+  Single-leg Squat (Pistol):
+    paces: { rep: 2.5 }
+    source: drafted -- owner review
+
+  # --- Barbell (reference_load = Rx athlete 1RM, lb) ---
+  Deadlift:
+    paces: { rep: { light: 1.5, moderate: 2.0, heavy: 5.0 } }
+    reference_load: 425
+    lift_class: barbell
+    source: "Programming Basics pt 1: 21 deadlifts at 2 s/rep (moderate); other values drafted -- owner review"
+  Back Squat:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 6.0 } }
+    reference_load: 345
+    lift_class: barbell
+    source: drafted -- owner review
+  Front Squat:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 6.0 } }
+    reference_load: 295
+    lift_class: barbell
+    source: drafted -- owner review
+  Overhead Squat:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 6.0 } }
+    reference_load: 225
+    lift_class: barbell
+    source: drafted -- owner review
+  Thruster:
+    paces: { rep: { light: 2.0, moderate: 2.5, heavy: 4.0 } }
+    reference_load: 205
+    lift_class: barbell
+    source: "Rochet, Hitting the Stimulus (crossfit.com): thruster 2-3 s/rep; reference load drafted -- owner review"
+  Bench Press:
+    paces: { rep: { light: 2.0, moderate: 2.5, heavy: 5.0 } }
+    reference_load: 265
+    lift_class: barbell
+    source: drafted -- owner review
+  Shoulder Press:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 5.0 } }
+    reference_load: 165
+    lift_class: barbell
+    source: drafted -- owner review
+  Push Press:
+    paces: { rep: { light: 1.5, moderate: 2.5, heavy: 5.0 } }
+    reference_load: 215
+    lift_class: barbell
+    source: drafted -- owner review
+  Sumo Deadlift High Pull:
+    paces: { rep: { light: 1.5, moderate: 2.0, heavy: 3.0 } }
+    reference_load: 225
+    lift_class: barbell
+    source: drafted -- owner review
+
+  # --- Olympic lifts ---
+  Clean:
+    paces: { rep: { light: 2.5, moderate: 3.5, heavy: 8.0 } }
+    reference_load: 265
+    lift_class: olympic
+    source: drafted -- owner review
+  Squat Clean:
+    paces: { rep: { light: 2.5, moderate: 4.0, heavy: 10.0 } }
+    reference_load: 265
+    lift_class: olympic
+    source: drafted -- owner review
+  Power Clean:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 7.0 } }
+    reference_load: 245
+    lift_class: olympic
+    source: drafted -- owner review
+  Hang Power Clean:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 6.0 } }
+    reference_load: 225
+    lift_class: olympic
+    source: drafted -- owner review
+  Clean and Jerk:
+    paces: { rep: { light: 4.0, moderate: 6.0, heavy: 12.0 } }
+    reference_load: 255
+    lift_class: olympic
+    source: drafted -- owner review
+  Snatch:
+    paces: { rep: { light: 3.0, moderate: 4.0, heavy: 10.0 } }
+    reference_load: 205
+    lift_class: olympic
+    source: drafted -- owner review
+  Power Snatch:
+    paces: { rep: { light: 2.5, moderate: 3.5, heavy: 8.0 } }
+    reference_load: 185
+    lift_class: olympic
+    source: drafted -- owner review
+
+  # --- Implements (reference_load = a heavy implement for the reference athlete, lb) ---
+  Wall-ball Shot:
+    paces: { rep: { light: 2.5, moderate: 3.0, heavy: 4.0 } }
+    reference_load: 50
+    lift_class: implement
+    source: drafted -- owner review
+  Kettlebell Swing:
+    paces: { rep: { light: 1.5, moderate: 2.0, heavy: 3.0 } }
+    reference_load: 120
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Power Snatch:
+    paces: { rep: { light: 1.5, moderate: 2.0, heavy: 3.0 } }
+    reference_load: 110
+    lift_class: implement
+    source: drafted -- owner review
+  Farmers Carry:
+    paces: { meter: { light: 0.3, moderate: 0.45, heavy: 0.7 } }
+    reference_load: 140
+    lift_class: implement
+    source: drafted -- owner review

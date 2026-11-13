@@ -62,6 +62,17 @@ class AdminStimulusToolsTest < ActionDispatch::IntegrationTest
     assert_no_enqueued_jobs(only: ScrapeCfWodJob)
   end
 
+  test 'the accuracy step renders the report without queueing anything' do
+    sign_in users(:brooke)
+
+    assert_no_enqueued_jobs do
+      post rails_admin.stimulus_tools_path(model_name: 'workout'), params: { step: 'accuracy' }
+    end
+
+    assert_response :success
+    assert_match(/claimed workout\(s\) matched/, response.body)
+  end
+
   test 'non-admins are denied' do
     users(:brooke).update!(role: :user)
     sign_in users(:brooke)

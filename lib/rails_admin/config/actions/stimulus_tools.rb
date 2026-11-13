@@ -18,7 +18,7 @@ module RailsAdmin
         register_instance_option :controller do
           proc do
             @tools = StimulusToolsForm.new(params)
-            if request.get? || @tools.dry_run?
+            if request.get? || @tools.renders_in_place?
               @summary = @tools.dry_run_summary if request.post?
               render @action.template_name
             else

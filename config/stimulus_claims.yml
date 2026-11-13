@@ -1,0 +1,243 @@
+# CrossFit's posted Stimulus and Strategy claims, used ONLY to check the stimulus calculator
+# (StimulusAccuracy, `bin/rails stimulus:accuracy`). Never an input to the calculation.
+#
+# Keyed by workout name (CF-YYMMDD names match across environments). CrossFit's prose itself is
+# not copied here -- it lives in the workout's intended_stimulus_notes. Drafted with
+# `bin/rails stimulus:propose_claims` and then corrected by reading each text; owner review.
+# Claim kinds: finish_seconds / round_seconds / rounds / percent_1rm ([low, high], null = open),
+# loading / sets_max / duration_max ({ movement name => value }).
+claims:
+- workout: Service Cup Workout 1
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Wall-ball Shot: light
+    duration_max:
+      Wall-ball Shot: 210
+- workout: Service Cup Workout 4
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    duration_max:
+      Double-under: 90
+      Dumbbell Snatch: 120
+- workout: CF-260922
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    finish_seconds:
+    -
+    - 540
+    loading:
+      Thruster: light
+    sets_max:
+      Thruster: 1
+- workout: CF-260926
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Hang Power Snatch: heavy
+      Overhead Squat: heavy
+      Hang Squat Snatch: heavy
+- workout: CF-260928
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    duration_max:
+      Run: 270
+- workout: CF-260929
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Thruster: light
+      Sumo Deadlift High Pull: light
+    sets_max:
+      Thruster: 1
+      Sumo Deadlift High Pull: 1
+      Handstand Push-up: 1
+    duration_max:
+      Handstand Push-up: 60
+- workout: Olympic Total
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Snatch: heavy
+      Clean and Jerk: heavy
+- workout: CF-261002
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Overhead Squat: moderate
+    sets_max:
+      Overhead Squat: 3
+- workout: CF-261003
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    sets_max:
+      Sandbag Carry: 2
+    duration_max:
+      L-sit: 120
+- workout: CF-261006
+  reviewed: claude-draft, checked against the text -- owner review
+  claims: {}
+- workout: CF-261007
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    round_seconds:
+    -
+    - 240
+- workout: CF-261009
+  reviewed: claude-draft, checked against the text -- owner review
+  claims: {}
+- workout: CF-261010
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    percent_1rm:
+    - 70
+    -
+    loading:
+      Back Squat: heavy
+- workout: CF-261012
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    percent_1rm:
+    - 75
+    - 75
+    loading:
+      Push Jerk: heavy
+    duration_max:
+      Run: 25
+- workout: CF-261013
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    round_seconds:
+    -
+    - 60
+    duration_max:
+      Row: 150
+- workout: CF-261014
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Barbell Front-rack Lunge: heavy
+    sets_max:
+      Barbell Front-rack Lunge: 1
+- workout: CF-260925
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    rounds:
+    - 3
+    - 5
+    duration_max:
+      Row: 90
+      Handstand Walk: 90
+      L-sit Muscle-up: 90
+- workout: Open Workout 20.5
+  reviewed: claude-draft, checked against the text -- owner review
+  claims: {}
+- workout: CF-260708
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    finish_seconds:
+    - 600
+    - 900
+    loading:
+      Push Press: heavy
+    sets_max:
+      Push Press: 3
+      Toes to Bar: 4
+- workout: CF-260710
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    sets_max:
+      Deadlift: 1
+- workout: CF-261017
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Deadlift: moderate
+    sets_max:
+      Deadlift: 2
+    duration_max:
+      Deadlift: 90
+      Push-up: 90
+- workout: CF-261019
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    sets_max:
+      Hang Power Clean: 2
+    duration_max:
+      Row: 75
+- workout: CF-261020
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    sets_max:
+      Toes to Bar: 2
+    duration_max:
+      Toes to Bar: 45
+      Burpee to Target: 60
+- workout: Build to a 3-rep-max front squat
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Front Squat: heavy
+- workout: CF-261024
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    finish_seconds:
+    -
+    - 600
+    sets_max:
+      Wall-ball Shot: 2
+    duration_max:
+      Air Bike: 120
+- workout: '260610'
+  reviewed: claude-draft, checked against the text -- owner review
+  claims: {}
+- workout: CF-261028
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    round_seconds:
+    -
+    - 120
+    sets_max:
+      Toes to Bar: 2
+- workout: CF-261030
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Power Snatch: moderate
+      Dumbbell Thruster: light
+    sets_max:
+      Dumbbell Thruster: 1
+- workout: CF-261102
+  reviewed: claude-draft, checked against the text -- owner review
+  claims: {}
+- workout: CF-261103
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    round_seconds:
+    - 120
+    - 180
+    duration_max:
+      Wall Walk: 60
+      Chest-to-wall Handstand Push-up: 60
+      Double-under: 60
+- workout: CF-261104
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Squat Clean: heavy
+    sets_max:
+      Pull-up: 3
+    duration_max:
+      Squat Clean: 60
+- workout: CF-261107
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Overhead Squat: heavy
+- workout: CF-261110
+  reviewed: claude-draft, checked against the text -- owner review
+  claims:
+    loading:
+      Snatch: heavy
+    duration_max:
+      Handstand Walk: 45

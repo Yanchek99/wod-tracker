@@ -31,11 +31,12 @@ module StimulusCalculator
       return {} unless round&.positive? && segment.time_seconds
 
       slow = reference.constant(:slow_factor)
-      expected_result(workout, segment, round, slow).merge(round_seconds(round, slow))
+      expected_result(workout, round, slow).merge(round_seconds(round, slow))
     end
 
     # Rounds for a rounds-scored AMRAP; total reps for a rep-scored one (blank without counted reps).
-    def expected_result(workout, segment, round, slow)
+    def expected_result(workout, round, slow)
+      segment = workout.governing_segment
       bounds = expected_rounds(segment.time_seconds, round, slow)
       if workout.score_rep?
         reps = reps_per_round(segment)

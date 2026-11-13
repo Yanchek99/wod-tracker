@@ -18,6 +18,8 @@ class AdminStimulusToolsTest < ActionDispatch::IntegrationTest
     get rails_admin.stimulus_tools_path(model_name: 'workout')
     assert_response :success
     assert_select 'form[method=post]'
+    # The form renders its result in place, which Turbo drops for a non-redirect form response.
+    assert_select 'form[method=post][data-turbo=false]'
     assert_no_match(/translation missing/i, response.body)
   end
 

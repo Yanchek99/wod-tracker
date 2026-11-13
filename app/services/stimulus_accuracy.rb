@@ -3,33 +3,22 @@
 # per-movement time ceilings, and the workouts it misses worst. Reads only the database, the
 # reference table and the claims file.
 class StimulusAccuracy
-  Report = Data.define(:matched, :unmatched, :time, :loading, :sets, :duration, :worst)
+  Report = Data.define(:matched, :unmatched, :time, :round, :rounds, :percent, :loading, :sets, :duration, :worst)
+
+  # Stated [low, high] windows => the calculated fields they are checked against.
+  WINDOWS = {
+    time: ['finish_seconds', %i[stimulus_range_low stimulus_range_high]],
+    round: ['round_seconds', %i[stimulus_round_seconds_low stimulus_round_seconds_high]],
+    rounds: ['rounds', %i[stimulus_range_low stimulus_range_high]],
+    percent: ['percent_1rm', %i[stimulus_percent_1rm_low stimulus_percent_1rm_high]]
+  }.freeze
 
   def self.call(claims = StimulusClaims.load, reference = StimulusReference.current)
     new(claims, reference).call
   end
 
   # Plain-text lines for the rake task and the RailsAdmin stimulus tools page.
-  def self.summary(report)
-    [
-      "#{report.matched} claimed workout(s) matched, #{report.unmatched} not in this database",
-      time_line(report.time), *loading_lines(report.loading), sets_line(report.sets),
-      "Time ceilings compared: #{report.duration[:compared]} (median gap #{report.duration[:median_gap_seconds] || 0} s)",
-      *report.worst.map { |miss| "Miss: #{miss[:workout]} stated #{miss[:stated].inspect}, calculated #{miss[:calculated].inspect}" }
-    ]
-  end
-
-  def self.time_line(time)
-    "Finish window overlaps CrossFit's: #{time[:overlap]} of #{time[:compared]} (median gap #{time[:median_gap_seconds] || 0} s)"
-  end
-
-  def self.sets_line(sets)
-    "Sets guide: #{sets[:exact]} exact, #{sets[:within_one]} within one, of #{sets[:compared]}"
-  end
-
-  def self.loading_lines(matrix)
-    matrix.map { |stated, row| "Loading stated #{stated}: #{row.map { |calc, n| "calculated #{calc} #{n}" }.join(', ')}" }
-  end
+  def self.summary(report) = Summary.lines(report)
 
   def initialize(claims, reference)
     @claims = claims
@@ -39,7 +28,8 @@ class StimulusAccuracy
   def call
     workouts = claimed_workouts
     @rows = @claims.filter_map { |claim| (workout = workouts[claim.workout_name]) && compare(claim, workout) }
-    Report.new(matched: @rows.size, unmatched: @claims.size - @rows.size, time: time_summary,
+    windows = WINDOWS.transform_values { |claim_key, fields| window_summary(claim_key, fields) }
+    Report.new(matched: @rows.size, unmatched: @claims.size - @rows.size, **windows,
                loading: loading_matrix, sets: sets_summary, duration: duration_summary, worst: worst)
   end
 
@@ -54,22 +44,30 @@ class StimulusAccuracy
     exercises = workout.segments.flat_map(&:exercises).index_by { |exercise| exercise.movement.name }
     {
       workout: workout.name, claims: claim.claims,
-      range: calculated.values_at(:stimulus_range_low, :stimulus_range_high),
+      calculated:, range: calculated.values_at(:stimulus_range_low, :stimulus_range_high),
       movements: exercises.transform_values { |exercise| StimulusCalculator.exercise(exercise, @reference) }
     }
   end
 
-  def time_summary
-    compared = @rows.select { |row| row[:claims]['finish_seconds'] && row[:range].last }
-    gaps = compared.map { |row| gap(row) }
-    { overlap: gaps.count(0), compared: compared.size, median_gap_seconds: median(gaps) }
+  def window_summary(claim_key, fields)
+    compared = @rows.filter_map do |row|
+      stated = row[:claims][claim_key]
+      calculated = row[:calculated].values_at(*fields)
+      [stated, calculated] if stated && calculated.any?
+    end
+    gaps = compared.map { |stated, calculated| window_gap(stated, calculated) }
+    { overlap: gaps.count(0), compared: compared.size, median_gap: median(gaps) }
   end
 
-  # Seconds between the stated and calculated windows; 0 when they overlap.
+  # Distance between the stated and calculated windows (nil bound = open); 0 when they overlap.
+  def window_gap(stated, calculated)
+    stated_low, stated_high = stated
+    calc_low, calc_high = calculated
+    [(stated_low || 0) - (calc_high || calc_low), (calc_low || calc_high) - (stated_high || Float::INFINITY), 0].max.round
+  end
+
   def gap(row)
-    stated_low, stated_high = row[:claims]['finish_seconds']
-    calc_low, calc_high = row[:range]
-    [(stated_low || 0) - calc_high, calc_low - (stated_high || Float::INFINITY), 0].max.round
+    window_gap(row[:claims]['finish_seconds'], row[:range])
   end
 
   def loading_matrix

@@ -19,6 +19,8 @@ module StimulusCalculator
 
   # Per-exercise stimulus values, nils removed.
   def exercise(exercise, reference = StimulusReference.current)
+    return {} if exercise.movement.family_rest?
+
     loading = Loading.call(exercise, reference)
     Effort.call(exercise, loading, reference).merge(stimulus_loading: loading).compact
   end

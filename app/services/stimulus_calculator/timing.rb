@@ -8,7 +8,8 @@ module StimulusCalculator
     module_function
 
     def call(workout, reference)
-      return {} if workout.team?
+      # A team splits the volume; an ascending ladder's reps grow every round.
+      return {} if workout.team? || workout.ascending_ladder?
 
       workout.amrap? ? amrap(workout, reference) : for_time(workout, reference)
     end
@@ -52,11 +53,15 @@ module StimulusCalculator
       return if exercises.empty?
 
       work = exercises.sum do |exercise|
-        loading = Loading.call(exercise, reference)
-        Pace.seconds(exercise, Volume.for(exercise), loading, reference) || (return nil)
+        Pace.seconds(exercise, Volume.for(exercise), Loading.call(exercise, reference), reference) || (return nil)
       end
-      transitions = (exercises.size * rounds_of(segment)) - (segment.amrap? ? 0 : 1)
-      work + ([transitions, 0].max * reference.constant(:transition_seconds))
+      work + (transitions(segment, exercises) * reference.constant(:transition_seconds))
+    end
+
+    # Between consecutive movements (rest rows don't count); an AMRAP round also turns over.
+    def transitions(segment, exercises)
+      movements = exercises.count { |exercise| !exercise.movement.family_rest? }
+      [(movements * rounds_of(segment)) - (segment.amrap? ? 0 : 1), 0].max
     end
 
     def rounds_of(segment)

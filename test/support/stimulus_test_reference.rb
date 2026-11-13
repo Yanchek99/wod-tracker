@@ -21,7 +21,9 @@ module StimulusTestReference
         'Clean and Jerk' => loaded(255, 'olympic', 4.0, 6.0, 12.0),
         'Pull Up' => { 'paces' => { 'rep' => 1.5 }, 'source' => 'test' },
         'Handstand Push-up' => { 'paces' => { 'rep' => 3.0 }, 'source' => 'test' },
-        'Run' => { 'paces' => { 'meter' => 0.25 }, 'source' => 'test' }
+        'Run' => { 'paces' => { 'meter' => 0.25 }, 'source' => 'test' },
+        'Row' => { 'paces' => { 'meter' => 0.2, 'calorie' => 3.0 }, 'source' => 'test' },
+        'Rest' => { 'paces' => { 'second' => 1.0 }, 'source' => 'test' }
       }
     )
   end

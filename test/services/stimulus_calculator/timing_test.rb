@@ -53,6 +53,47 @@ module StimulusCalculator
       assert_nil StimulusCalculator.workout(workout, test_reference)[:stimulus_range_low]
     end
 
+    # The scraper stores reps: 1 on distance lines. 3 x (400 m x 0.25 + 15 light thrusters x 2.0)
+    # = 390 s + 5 transitions = 440 s.
+    test 'a reps: 1 placeholder on a distance line does not blank the time' do
+      workout = build_workout('Scraped Run', rounds: 3,
+                                             movements: [{ movement: movements(:run), reps: 1, distance: 400, distance_unit: :meter },
+                                                         { movement: movements(:thruster), reps: 15, load: 95 }])
+
+      assert_equal [440, 880], StimulusCalculator.workout(workout, test_reference).values_at(:stimulus_range_low,
+                                                                                             :stimulus_range_high)
+    end
+
+    # 21-15-9 calorie row stored as calories: 1 (the scheme supplies the calories): 45 x 3.0 = 135 s
+    # + 45 light thrusters x 2.0 = 90 s + 5 transitions = 275 s.
+    test 'an interval scheme supplies the calories of a calories: 1 placeholder' do
+      workout = build_workout('Cal Row Fran', interval_scheme: '21-15-9',
+                                              movements: [{ movement: movements(:row), calories: 1 },
+                                                          { movement: movements(:thruster), reps: 1, load: 95 }])
+
+      assert_equal 275, StimulusCalculator.workout(workout, test_reference)[:stimulus_range_low]
+    end
+
+    test 'an ascending ladder gets no time or rounds' do
+      workout = build_workout('Ladder', score_type: :rep, time_seconds: 600,
+                                        movements: [{ movement: movements(:thruster), reps: 3, load: 95 }])
+      workout.update!(ladder_step: 3)
+
+      assert_nil StimulusCalculator.workout(workout, test_reference)[:stimulus_range_high]
+    end
+
+    # 2 rounds of 400 m run (100 s) then 60 s rest: 200 + 120 s, plus one transition between the
+    # two runs -- rest rows don't count as movements to transition between.
+    test 'rest adds its time but no transitions or stimulus of its own' do
+      rest = Movement.create!(name: 'Rest', family: :rest)
+      workout = build_workout('Run Rest', rounds: 2,
+                                          movements: [{ movement: movements(:run), distance: 400, distance_unit: :meter },
+                                                      { movement: rest, duration_seconds: 60 }])
+
+      assert_equal 330, StimulusCalculator.workout(workout, test_reference)[:stimulus_range_low]
+      assert_equal({}, StimulusCalculator.exercise(workout.exercises.second, test_reference))
+    end
+
     test 'a workout with no movements gets no range' do
       workout = build_workout('Empty', movements: [])
 

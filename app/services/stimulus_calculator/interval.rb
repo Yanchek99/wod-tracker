@@ -16,6 +16,8 @@ module StimulusCalculator
 
     # The workout's governing segment when it runs on a fixed interval.
     def segment(workout)
+      return if workout.ascending_ladder?
+
       segment = workout.governing_segment
       segment if segment&.timed_rounds? && (segment.time_seconds % segment.rounds).zero?
     end

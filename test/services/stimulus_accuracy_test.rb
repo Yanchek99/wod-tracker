@@ -26,6 +26,18 @@ class StimulusAccuracyTest < ActiveSupport::TestCase
     assert_equal 'Diane Calc', report.worst.first[:workout]
   end
 
+  test 'compares round time, target rounds and working-set percent' do
+    build_workout('Squat Calc', score_type: :weight, rounds: 5,
+                                movements: [{ movement: movements(:back_squat), reps: 5, notes: 'All sets at 75%' }])
+    claims = [claim('Fran Calc', 'round_seconds' => [60, 120]),      # calculated 69..138 -> overlaps
+              claim('Squat Calc', 'percent_1rm' => [70, nil])]       # calculated 75 -> within the stated window
+
+    report = StimulusAccuracy.call(claims, test_reference)
+
+    assert_equal({ overlap: 1, compared: 1 }, report.round.slice(:overlap, :compared))
+    assert_equal({ overlap: 1, compared: 1 }, report.percent.slice(:overlap, :compared))
+  end
+
   test 'summarizes the report in plain lines' do
     report = StimulusAccuracy.call([claim('Fran Calc', 'finish_seconds' => [nil, 300], 'loading' => { 'Thruster' => 'light' })],
                                    test_reference)

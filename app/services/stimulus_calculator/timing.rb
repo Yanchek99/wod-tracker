@@ -15,6 +15,8 @@ module StimulusCalculator
 
     def for_time(workout, reference)
       total = workout.segments.sum { |segment| segment_seconds(segment, reference) || (return {}) }
+      return {} unless total.positive?
+
       slow = reference.constant(:slow_factor)
       result = { stimulus_range_low: total.round, stimulus_range_high: (total * slow).round }
       rounds = rounds_of(workout.governing_segment)
@@ -29,19 +31,26 @@ module StimulusCalculator
 
       slow = reference.constant(:slow_factor)
       low, high = expected_rounds(segment.time_seconds, round, slow)
-      low, high = [low, high].map { |count| count * reps_per_round(segment) } if workout.score_rep?
+      if workout.score_rep?
+        reps = reps_per_round(segment)
+        return round_seconds(round, slow) unless reps.positive?
+
+        low, high = [low, high].map { |count| count * reps }
+      end
       { stimulus_range_low: low, stimulus_range_high: high }.merge(round_seconds(round, slow))
     end
 
-    # Whole rounds between the slow and the fast pace.
+    # Whole rounds between the slow and the fast pace; at least one.
     def expected_rounds(cap, round, slow)
-      [(cap / (round * slow)).floor, (cap / round).ceil]
+      [[(cap / (round * slow)).floor, 1].max, (cap / round).ceil]
     end
 
     # The segment's fast time across its rounds (one round for an AMRAP), with a transition
     # between consecutive movements; nil when any movement has no pace.
     def segment_seconds(segment, reference)
       exercises = segment.exercises.to_a
+      return if exercises.empty?
+
       work = exercises.sum do |exercise|
         loading = Loading.call(exercise, reference)
         Pace.seconds(exercise, Volume.for(exercise), loading, reference) || (return nil)

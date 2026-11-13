@@ -57,6 +57,14 @@ class StimulusPredictionWriterTest < ActiveSupport::TestCase
     assert_equal ['for_time', 300], workout.stimulus_predictions.current.first.values_at(:stimulus_goal, :stimulus_range_high)
   end
 
+  test 'empty values retire an existing current row' do
+    write(stimulus_loading: 'light', model_version: 'learned-v1')
+
+    assert_equal :retired, write({})
+    assert_empty @exercise.stimulus_predictions.current
+    assert_equal 1, @exercise.stimulus_predictions.count
+  end
+
   private
 
   def write(values = nil, model_version: 'learned-v1', **fields)

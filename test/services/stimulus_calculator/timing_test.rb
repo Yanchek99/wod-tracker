@@ -37,6 +37,28 @@ module StimulusCalculator
       assert_equal 'amrap', result[:stimulus_goal]
     end
 
+    # One round: 1000 m x 0.25 = 250 s + 1 transition = 260 s in a 300 s cap: 0.58..1.15 rounds.
+    test 'an AMRAP with long rounds never predicts zero rounds' do
+      workout = build_workout('Long AMRAP', score_type: :round, time_seconds: 300,
+                                            movements: [{ movement: movements(:run), distance: 1000, distance_unit: :meter }])
+
+      assert_equal [1, 2], StimulusCalculator.workout(workout, test_reference).values_at(:stimulus_range_low,
+                                                                                         :stimulus_range_high)
+    end
+
+    test 'a rep-scored AMRAP with no counted reps gets no range' do
+      workout = build_workout('Run AMRAP', score_type: :rep, time_seconds: 720,
+                                           movements: [{ movement: movements(:run), distance: 400, distance_unit: :meter }])
+
+      assert_nil StimulusCalculator.workout(workout, test_reference)[:stimulus_range_low]
+    end
+
+    test 'a workout with no movements gets no range' do
+      workout = build_workout('Empty', movements: [])
+
+      assert_nil StimulusCalculator.workout(workout, test_reference)[:stimulus_range_high]
+    end
+
     test 'a team workout gets no range' do
       workout = fran
       workout.update!(team_size: 2)

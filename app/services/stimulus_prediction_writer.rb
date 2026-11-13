@@ -1,6 +1,7 @@
 # Persists one target's predicted stimulus values as its single `current` prediction row.
 # Append-only: a change inserts a new row and retires the previous current one in the same
-# transaction; an identical rerun (same values, source and model version) writes nothing.
+# transaction; an identical rerun (same values, source and model version) writes nothing; no
+# values at all retire the current row, so a value nothing supports any more stops showing.
 # Prediction values never touch the target's own authored/extracted stimulus columns.
 #
 # `prediction` is anything with values (stimulus field => value, nils removed), source,
@@ -13,9 +14,10 @@ module StimulusPredictionWriter
   # target: a Workout or Exercise.
   def write(target, prediction)
     outcome = outcome(target, prediction)
+    current = target.stimulus_predictions.current.first
+    current.update!(current: false) if outcome == :retired
     return outcome unless outcome == :created
 
-    current = target.stimulus_predictions.current.first
     StimulusPrediction.transaction do
       current&.update!(current: false)
       target.stimulus_predictions.create!(**prediction.values, source: prediction.source,
@@ -25,10 +27,11 @@ module StimulusPredictionWriter
     :created
   end
 
-  # What write would do, without writing: :skipped, :unchanged or :created.
+  # What write would do, without writing: :skipped, :retired, :unchanged or :created.
   def outcome(target, prediction)
-    return :skipped if prediction.values.empty?
-    return :unchanged if same?(target.stimulus_predictions.current.first, prediction)
+    current = target.stimulus_predictions.current.first
+    return current ? :retired : :skipped if prediction.values.empty?
+    return :unchanged if same?(current, prediction)
 
     :created
   end

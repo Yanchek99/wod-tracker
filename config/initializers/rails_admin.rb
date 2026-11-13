@@ -1,5 +1,4 @@
 require Rails.root.join('lib/rails_admin/config/actions/rerun_import')
-require Rails.root.join('lib/rails_admin/config/actions/stimulus_backfill')
 
 RailsAdmin.config do |config|
   config.asset_source = :sprockets
@@ -39,7 +38,6 @@ RailsAdmin.config do |config|
     show_in_app
     rerun_heuristic
     rerun_llm
-    stimulus_backfill
 
     ## With an audit adapter, you can add:
     # history_index

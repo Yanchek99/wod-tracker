@@ -79,7 +79,3 @@ en:
         title: Re-run LLM parser
         menu: Re-run (LLM)
         breadcrumb: Re-run (LLM)
-      stimulus_backfill:
-        title: Stimulus backfill
-        menu: Stimulus backfill
-        breadcrumb: Stimulus backfill

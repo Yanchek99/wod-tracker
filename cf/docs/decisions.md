@@ -49,32 +49,88 @@ range stay separate. The first describes the load across working sets ("all
 sets at least 70%"); the second describes where the scored lift should land.
 On a hold-a-percentage day they often match.
 
-### Learned predictions
+### Calculated predictions
 
-A workout without CrossFit's Stimulus and Strategy text gets predicted values.
-The predictions are learned from CrossFit's own published examples: the
-prescription paired with the extracted (or authored) stimulus. They are not
-learned from athlete logs, because a programmer writes the stimulus before
-anyone has logged the workout. The learner is plain Ruby, with no model
-service and no LLM at prediction time.
+A workout's stimulus is **calculated** from its prescription, the way a programmer
+writes it before anyone has done the workout. CrossFit describes how: estimate each
+movement's time, add them for a round, multiply by the rounds, then add transitions
+and fatigue (Programming Basics pt 1; L1 guide Fran lesson plan p88; L2 guide Mary
+lesson plan p76). CrossFit's posted Stimulus and Strategy text is used only to check
+the calculation, never as an input. Nothing in stimulus derivation or verification
+calls an LLM, and the stimulus admin tools never import workouts.
 
-- Loading is learned per movement from the prescribed loads CrossFit labeled
-  light, moderate, or heavy for that movement. A movement with no prescribed
-  load that is not a load-bearing movement is `unloaded` by definition (rule
-  `rules-v1`, source `derived`).
-- Expected time follows Programming Basics' calculation: sum each movement's
-  time and multiply by rounds. Per-movement paces are fit with non-negative
-  least squares against CrossFit's stated ranges. A workout gets a range only
-  when every movement has a learned pace.
-- The other fields take the majority label (categorical) or the
-  interquartile range (numeric) of matching examples.
-- Learning is per movement only, with no fallback to movement groups. Below a
-  conservative minimum example count the field stays blank, and the panel
-  shows nothing for it.
-- Output is one `current` prediction row per target, holding every predicted
-  field, with `model_version` `learned-v1` and source `predicted`. A row that
-  carries only the unloaded rule is `derived`. Re-running with identical values
-  writes nothing. Confidence is `min(1, n / (2 x threshold))`.
+An earlier version learned stimulus from CrossFit's examples. It needed an LLM to
+read hundreds of texts, used up the Anthropic budget in a PR environment, and still
+produced no expected times: only 58 of 263 extracted texts state a whole-workout
+time, and no movement had more than 6 loading labels.
+
+`StimulusCalculator` reads only the prescription and `config/stimulus_reference.yml`.
+That table is reviewed in PRs, and every value names its source.
+
+- **Reference athlete:** the Rx gym athlete, a strong affiliate regular. Programming
+  Basics says Rx is written for this athlete.
+- **Expected time:**
+  - Fast time is the sum of volume × seconds per unit at the movement's load class,
+    plus 10 s per transition (Programming Basics: about 10-15 s).
+  - The range runs from fast to 2 × fast (Rochet, "Hitting the Stimulus",
+    crossfit.com).
+  - An AMRAP's rounds are its time cap divided by the round time.
+  - A movement with no pace leaves the time blank. A partial sum would understate
+    it.
+- **Loading:**
+  - It is the prescribed load (male side) divided by the movement's reference load
+    (the reference athlete's 1RM, or a heavy implement).
+  - Heavy is at or above 0.85 (L2: heavy-day working sets at or above 80-85% of 1RM).
+  - Light is below 0.45 for Olympic lifts and below 0.50 for other barbell lifts and
+    implements.
+  - The boundaries are checked against CrossFit's labeled anchors: Amanda and
+    Elizabeth "moderate" (L2 pp54, 68), Diane's deadlift "Medium" (L2 p64).
+  - Body weight only is `unloaded`.
+- **Per movement:**
+  - Sets guide: reps per set divided by the load class's unbroken chunk (light 15,
+    moderate 7, heavy 2), rounded up.
+  - Time ceiling: one effort at slow pace.
+  - Effort: from one effort's fast duration. Below 60 s is sprint, below 3 min is
+    hard, below 10 min is threshold, anything longer is steady. These cut-offs are
+    the app's own scale.
+- **Heavy days:**
+  - The goal comes from the prescription. "Build to", "find" or "max" means find a
+    max. A stated % means hold that percentage. Repeated sets scored for load mean
+    add load each set. Otherwise the goal stays blank, because the L2 says the coach
+    must state it.
+  - Rest between sets is 3-5 minutes (L2).
+  - The working-set floor is 80%.
+  - An N-rep max's result range uses the Epley estimate, an app heuristic from
+    strength literature, not a CrossFit source.
+- **Intervals:** work is one interval's fast time. Minimum rest is the interval length
+  minus that work.
+
+`StimulusRecalculation` writes the values as `source: derived`,
+`model_version: calc-v1` prediction rows, and only for fields with no authored or
+extracted value. A rerun with identical values writes nothing. When the calculator has
+nothing for a target, its current row is retired, so values from the earlier learner
+stop showing.
+
+Verification: `config/stimulus_claims.yml` records what CrossFit's posted text claims
+for each workout:
+- finish window, round time, rounds, %
+- per-movement loading, sets guide and time ceiling
+
+Claims are drafted by a regex proposer (`bin/rails stimulus:propose_claims`) and
+checked by a person. `StimulusAccuracy` (`bin/rails stimulus:accuracy`, also a step in
+the admin Stimulus tools) reports:
+- finish-window overlap
+- a stated-versus-calculated loading confusion matrix
+- sets-guide agreement
+- time-ceiling gaps
+- the worst misses
+
+It is a test of the reference table, not training. About 30 claimed workouts give a
+coarse estimate.
+
+The scraper still saves CrossFit's text on new and reposted days, but no longer calls
+the LLM extractor on it (#1884's `IntendedStimulusParser` stays in the codebase,
+unused by the scrape).
 
 The rep-count loading rule proposed in #1992 (light at 20+ prescribed reps,
 moderate at 6-20, heavy at 1-5) is dropped. The Programming Basics lens counts

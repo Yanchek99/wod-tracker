@@ -46,6 +46,16 @@ module StimulusCalculator
                                                                                          :stimulus_range_high)
     end
 
+    # One round: 10 light thrusters x 2.0 s = 20 s + 1 transition = 30 s; 600 s cap -> 10..20 rounds
+    # of 10 reps.
+    test 'a rep-scored AMRAP predicts total reps' do
+      workout = build_workout('Rep AMRAP', score_type: :rep, time_seconds: 600,
+                                           movements: [{ movement: movements(:thruster), reps: 10, load: 95 }])
+
+      assert_equal [100, 200], StimulusCalculator.workout(workout, test_reference).values_at(:stimulus_range_low,
+                                                                                             :stimulus_range_high)
+    end
+
     test 'a rep-scored AMRAP with no counted reps gets no range' do
       workout = build_workout('Run AMRAP', score_type: :rep, time_seconds: 720,
                                            movements: [{ movement: movements(:run), distance: 400, distance_unit: :meter }])

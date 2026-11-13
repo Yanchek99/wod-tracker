@@ -27,9 +27,13 @@ module StimulusCalculator
       measured = measures(exercise)
       return { rep: reps_per_set(exercise) }.select { |_, value| value.positive? } if measured.empty?
 
-      scheme = exercise.segment.interval_scheme
-      first_step = scheme.present? ? scheme.split('-').first.to_i : 1
-      measured.transform_values { |value| value == 1 && scheme.present? ? first_step : value }
+      first_step = first_scheme_step(exercise.segment)
+      measured.transform_values { |value| value == 1 && first_step ? first_step : value }
+    end
+
+    # The first step of an interval scheme (21 for 21-15-9); nil without a scheme.
+    def first_scheme_step(segment)
+      segment.interval_scheme.split('-').first.to_i if segment.interval?
     end
 
     def reps_per_set(exercise)

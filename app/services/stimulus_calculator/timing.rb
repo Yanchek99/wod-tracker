@@ -31,14 +31,19 @@ module StimulusCalculator
       return {} unless round&.positive? && segment.time_seconds
 
       slow = reference.constant(:slow_factor)
-      low, high = expected_rounds(segment.time_seconds, round, slow)
+      expected_result(workout, segment, round, slow).merge(round_seconds(round, slow))
+    end
+
+    # Rounds for a rounds-scored AMRAP; total reps for a rep-scored one (blank without counted reps).
+    def expected_result(workout, segment, round, slow)
+      bounds = expected_rounds(segment.time_seconds, round, slow)
       if workout.score_rep?
         reps = reps_per_round(segment)
-        return round_seconds(round, slow) unless reps.positive?
+        return {} unless reps.positive?
 
-        low, high = [low, high].map { |count| count * reps }
+        bounds = bounds.map { |count| count * reps }
       end
-      { stimulus_range_low: low, stimulus_range_high: high }.merge(round_seconds(round, slow))
+      { stimulus_range_low: bounds.first, stimulus_range_high: bounds.last }
     end
 
     # Whole rounds between the slow and the fast pace; at least one.
@@ -53,7 +58,7 @@ module StimulusCalculator
       return if exercises.empty?
 
       work = exercises.sum do |exercise|
-        Pace.seconds(exercise, Volume.for(exercise), Loading.call(exercise, reference), reference) || (return nil)
+        Pace.seconds(exercise, Volume.for(exercise), reference) || (return nil)
       end
       work + (transitions(segment, exercises) * reference.constant(:transition_seconds))
     end

@@ -8,7 +8,7 @@ module StimulusCalculator
     module_function
 
     def call(exercise, loading, reference)
-      fast = Pace.seconds(exercise, Volume.per_effort(exercise), loading, reference)
+      fast = Pace.seconds(exercise, Volume.per_effort(exercise), reference)
       {
         stimulus_sets_max: sets_max(exercise, loading, reference),
         stimulus_duration_max: fast && (fast * reference.constant(:slow_factor)).round,

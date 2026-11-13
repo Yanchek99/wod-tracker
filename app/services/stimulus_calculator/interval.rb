@@ -8,7 +8,7 @@ module StimulusCalculator
       segment = segment(workout)
       length = segment.time_seconds / segment.rounds
       work = segment.exercises.sum do |exercise|
-        Pace.seconds(exercise, Volume.per_effort(exercise), Loading.call(exercise, reference), reference) || (return {})
+        Pace.seconds(exercise, Volume.per_effort(exercise), reference) || (return {})
       end.round
       rest = length - work
       { stimulus_interval_work_seconds: work, stimulus_interval_rest_seconds_min: (rest if rest.positive?) }

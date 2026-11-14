@@ -74,6 +74,15 @@ module StimulusCalculator
                                                                                              :stimulus_range_high)
     end
 
+    # Wall balls store their target height as a distance: 150 reps, not 10 feet.
+    test 'real reps win over a height stored as distance' do
+      workout = build_workout('Karen-ish', movements: [{ movement: movements(:thruster), reps: 150, load: 95,
+                                                         distance: 10, distance_unit: :foot }])
+
+      assert_equal({ rep: 150 }, StimulusCalculator::Volume.for(workout.exercises.first))
+      assert_equal 300, StimulusCalculator.workout(workout, test_reference)[:stimulus_range_low]
+    end
+
     # 21-15-9 calorie row stored as calories: 1 (the scheme supplies the calories): 45 x 3.0 = 135 s
     # + 45 light thrusters x 2.0 = 90 s + 5 transitions = 275 s.
     test 'an interval scheme supplies the calories of a calories: 1 placeholder' do

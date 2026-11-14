@@ -3,8 +3,9 @@
 #
 # Keyed by workout name. Sources: crossfit_text (a daily workout's posted Stimulus and Strategy --
 # those days aren't seeded, so they match in production only), open_leaderboard (public Open
-# leaderboard, men's Rx 80th-95th percentile; `bin/rails stimulus:open_leaderboard_claims`), guide
-# (L1/L2 training guides, cited) and hero_page (crossfit.com/heroes). Non-crossfit_text claims must
+# leaderboard, men's Rx 80th-95th percentile; `bin/rails stimulus:open_leaderboard_claims`),
+# benchmark_page (crossfit.com/benchmark/<name>, Rx'd line), hero_page and guide (L1/L2 training
+# guides, cited). Non-crossfit_text claims must
 # name a seeded workout. CrossFit's prose itself is not copied here -- it lives in the workout's
 # intended_stimulus_notes. crossfit_text claims were drafted with `bin/rails stimulus:propose_claims`
 # and corrected by reading each text; owner review.
@@ -278,3 +279,467 @@ claims:
       Snatch: heavy
     duration_max:
       Handstand Walk: 45
+- workout: Open 11.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 306
+    - 349
+- workout: Open 11.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 393
+    - 450
+- workout: Open 11.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 50
+    - 62
+- workout: Open 11.4
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 99
+    - 125
+- workout: Open 11.5
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 300
+    - 339
+- workout: Open 11.6
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 105
+    - 123
+- workout: Open 13.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 150
+    - 161
+- workout: Open 13.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 262
+    - 300
+- workout: Open 13.4
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 84
+    - 99
+- workout: Open 13.5
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 75
+    - 125
+- workout: Open 14.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 130
+    - 192
+- workout: Open 14.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 131
+    - 142
+- workout: Open 14.4
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 184
+    - 194
+- workout: Open 14.5
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 733
+    - 885
+- workout: Open 15.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 153
+    - 181
+- workout: Open 15.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 347
+    - 471
+- workout: Open 15.4
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 72
+    - 99
+- workout: Open 15.5
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 466
+    - 572
+- workout: Open 16.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 195
+    - 239
+- workout: Open 16.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 176
+    - 260
+- workout: Open 16.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 88
+    - 103
+- workout: Open 16.4
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 188
+    - 211
+- workout: Open 17.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 877
+    - 1053
+- workout: Open 17.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 119
+    - 154
+- workout: Open 17.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 81
+    - 117
+- workout: Open 17.5
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 597
+    - 790
+- workout: Open 18.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 324
+    - 371
+- workout: Open 18.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 348
+    - 428
+- workout: Open 19.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 285
+    - 319
+- workout: Open 19.4
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 718
+    -
+- workout: Open 19.5
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 885
+    - 1175
+- workout: Open 20.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 773
+    - 899
+- workout: Open 20.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 586
+    - 718
+- workout: Open 20.5
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 930
+    -
+- workout: Open 21.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 754
+    -
+- workout: Open 22.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 242
+    - 282
+- workout: Open 22.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 498
+    - 704
+- workout: Open 23.2A
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 138
+    - 154
+- workout: Open 23.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 157
+    - 213
+- workout: Open 24.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 481
+    - 578
+- workout: Open 24.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 729
+    - 817
+- workout: Open 24.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 891
+    -
+- workout: Open 25.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 225
+    - 259
+- workout: Open 25.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 893
+    - 1074
+- workout: Open 26.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 707
+    -
+- workout: Open 12.1
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 111
+    - 123
+- workout: Open 12.2
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 64
+    - 75
+- workout: Open 12.3
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 306
+    - 368
+- workout: Open 12.4
+  source: open_leaderboard
+  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
+  claims:
+    result:
+    - 247
+    - 257
+- workout: Fran
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/fran (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    -
+    - 300
+    loading:
+      Thruster: light
+- workout: Grace
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/grace (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    - 300
+    - 420
+    loading:
+      Clean and Jerk: moderate
+- workout: Diane
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/diane (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    -
+    - 360
+    loading:
+      Deadlift: moderate
+- workout: Helen
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/helen (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    -
+    - 600
+    sets_max:
+      Kettlebell Swing: 3
+- workout: Cindy
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/cindy (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    - 600
+    -
+    round_seconds:
+    -
+    - 120
+- workout: Annie
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/annie (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    - 420
+    - 480
+- workout: Karen
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/karen (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    - 360
+    - 420
+    loading:
+      Wall-ball Shot: light
+- workout: Jackie
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/jackie (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    -
+    - 540
+    loading:
+      Thruster: light
+- workout: Linda
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/linda (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    - 780
+    - 1020
+- workout: Nancy
+  source: benchmark_page
+  reviewed: crossfit.com/benchmark/nancy (Rx'd line), read 2026-11-14 -- owner review
+  claims:
+    result:
+    -
+    - 900
+    loading:
+      Overhead Squat: light
+    duration_max:
+      Run: 180
+- workout: Murph
+  source: hero_page
+  reviewed: crossfit.com/benchmark/murph (Rx'd 36-46 minutes), read 2026-11-14 -- owner review
+  claims:
+    result:
+    - 2160
+    - 2760
+- workout: Amanda
+  source: guide
+  reviewed: 'L2 Training Guide p54: intended time short (approximately 5 minutes), loading moderate -- owner review'
+  claims:
+    result:
+    - 240
+    - 360
+    loading:
+      Snatch: moderate
+- workout: Elizabeth
+  source: guide
+  reviewed: 'L2 Training Guide p68: relatively short (about 5 min.), moderate loading -- owner review'
+  claims:
+    result:
+    - 240
+    - 360
+    loading:
+      Clean: moderate
+- workout: Mary
+  source: guide
+  reviewed: 'L2 Training Guide p76: elite athletes can achieve more than 15 rounds -- owner review'
+  claims:
+    result:
+    -
+    - 450

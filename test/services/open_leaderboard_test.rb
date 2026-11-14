@@ -7,8 +7,8 @@ class OpenLeaderboardTest < ActiveSupport::TestCase
 
     attr_reader :requests
 
-    def initialize(rx_scores:, scaled: 30, blank: 20)
-      @rows = Array.new(rx_scores) { |index| row(yield(index), '0', '1') } +
+    def initialize(rx_scores:, scaled: 30, blank: 20, valid: '1')
+      @rows = Array.new(rx_scores) { |index| row(yield(index), '0', valid) } +
               Array.new(scaled) { row('100 reps - s', '1', '1') } + Array.new(blank) { row('', '0', '') }
       @requests = 0
     end
@@ -70,6 +70,13 @@ class OpenLeaderboardTest < ActiveSupport::TestCase
   test 'knows each seeded Open workout score type' do
     assert_equal 'rep', OpenLeaderboard.seeded_score_types['Open 18.1']
     assert_equal 'weight', OpenLeaderboard.seeded_score_types['Open 18.2a']
+  end
+
+  # The 2012 leaderboard leaves `valid` blank on every score.
+  test 'scores with a blank valid flag still count as Rx' do
+    client = FakeClient.new(rx_scores: 230, valid: '') { |i| (600 - i).to_s }
+
+    assert_equal({ 'result' => [555, 589] }, OpenLeaderboard.claim(2012, 1, client:, score_type: 'rep'))
   end
 
   test 'a load-scored workout gives no claim' do

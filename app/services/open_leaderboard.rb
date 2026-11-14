@@ -121,7 +121,7 @@ module OpenLeaderboard
 
   def rx_row?(row, ordinal)
     score = row && row['scores'].find { |s| s['ordinal'].to_i == ordinal }
-    score.present? && score['scaled'] == '0' && score['valid'] == '1' && score['scoreDisplay'].present?
+    score.present? && score['scaled'] == '0' && score['valid'] != '0' && score['scoreDisplay'].present?
   end
 
   def score_at(year, ordinal, rank, client)

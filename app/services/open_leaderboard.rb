@@ -26,20 +26,22 @@ module OpenLeaderboard
   end
 
   # Claims-file entries for every seeded Open workout in `years`; yields each name and claim.
-  def claim_entries(years, client:)
+  def claim_entries(years, client:, &report)
     years.flat_map do |year|
-      COLUMNS.fetch(year).each_index.filter_map do |index|
-        name = workout_name(year, index + 1)
-        score_type = seeded_score_types[name]
-        next unless score_type
-
-        claim = claim(year, index + 1, client:, score_type:)
-        yield name, claim if block_given?
-        claim && { 'workout' => name, 'source' => 'open_leaderboard',
-                   'reviewed' => "games.crossfit.com men's Rx 80th-95th percentile, fetched #{Date.current}",
-                   'claims' => claim }
-      end
+      COLUMNS.fetch(year).each_index.filter_map { |index| entry(Column.new(year, index + 1, client), &report) }
     end
+  end
+
+  def entry(column)
+    name = workout_name(column.year, column.ordinal)
+    score_type = seeded_score_types[name]
+    return unless score_type
+
+    claim = column.claim(score_type)
+    yield name, claim if block_given?
+    claim && { 'workout' => name, 'source' => 'open_leaderboard',
+               'reviewed' => "games.crossfit.com men's Rx 80th-95th percentile, fetched #{Date.current}",
+               'claims' => claim }
   end
 
   # { seeded Open workout name => its score type }, read from the seeds file so no database is needed.
@@ -51,35 +53,19 @@ module OpenLeaderboard
     end.to_h
   end
 
-  # { 'result' => [low, high] } in the workout's score unit (score_type: the seeded workout's), or nil
-  # when it is load-scored, nobody posted an Rx score, or both percentiles fell outside the unit
-  # (e.g. capped reps on a For Time workout).
-  def claim(year, ordinal, client:, score_type:)
-    return if score_type == 'weight'
-
-    rx_count = rx_count(year, ordinal, client)
-    return if rx_count.zero?
-
-    p80, p95 = PERCENTILES.values.map do |percentile|
-      parse(score_at(year, ordinal, rank(rx_count, percentile), client), score_type)
-    end
-    window(p80, p95, score_type)
-  end
-
-  # 80th percentile = better than 80% of Rx scores: rank ceil(n x 0.20) from the top.
-  def rank(count, percentile)
-    (count * (1 - percentile)).ceil.clamp(1, count)
-  end
-
   # Only scores in the workout's own unit count: a time window reads fastest-first, and a
   # percentile that capped (reps on a For Time workout) leaves its end open; a reps window reads
   # best-first.
   def window(p80, p95, score_type)
     unit = score_type == 'time' ? :seconds : :reps
-    ends = [p80, p95].map { |score| score&.first == unit ? score.last : nil }
+    ends = [p80, p95].map { |score| value_in(score, unit) }
     return if ends.none?
 
     { 'result' => unit == :seconds ? ends.reverse : ends }
+  end
+
+  def value_in(score, unit)
+    score.last if score&.first == unit
   end
 
   # [kind, value]; a bare number (the early Opens) is pounds on a load-scored workout, else reps.
@@ -101,31 +87,5 @@ module OpenLeaderboard
     elsif (load = text.match(/\A(\d+) (?:lb|kg)\z/))
       [:load, load[1].to_i]
     end
-  end
-
-  # How many athletes posted an Rx score on this workout: Rx scores sort first, then scaled
-  # ("- s"), then blanks, so a binary search over pages finds the boundary.
-  def rx_count(year, ordinal, client)
-    last_page = client.page(year, ordinal, 1).dig('pagination', 'totalPages').to_i
-    page = (1..last_page).bsearch { |number| !rx_row?(first_row(year, ordinal, number, client), ordinal) }
-    page = page ? page - 1 : last_page
-    return 0 if page.zero?
-
-    rows = client.page(year, ordinal, page)['leaderboardRows']
-    ((page - 1) * PAGE_SIZE) + rows.count { |row| rx_row?(row, ordinal) }
-  end
-
-  def first_row(year, ordinal, number, client)
-    client.page(year, ordinal, number)['leaderboardRows'].first
-  end
-
-  def rx_row?(row, ordinal)
-    score = row && row['scores'].find { |s| s['ordinal'].to_i == ordinal }
-    score.present? && score['scaled'] == '0' && score['valid'] != '0' && score['scoreDisplay'].present?
-  end
-
-  def score_at(year, ordinal, rank, client)
-    rows = client.page(year, ordinal, ((rank - 1) / PAGE_SIZE) + 1)['leaderboardRows']
-    rows[(rank - 1) % PAGE_SIZE]['scores'].find { |s| s['ordinal'].to_i == ordinal }['scoreDisplay']
   end
 end

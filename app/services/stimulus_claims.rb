@@ -6,7 +6,7 @@ module StimulusClaims
   PATH = Rails.root.join('config/stimulus_claims.yml')
 
   # source: open_leaderboard, benchmark_page, hero_page, guide (L1/L2 training guides), class_plan
-  # (hand-entered numbers from a CAP class plan), or crossfit_text (CrossFit's posted text on a
+  # (numbers from CAP class plans, never fetched by the app), or crossfit_text (CrossFit's posted text on a
   # seeded workout, e.g. a reposted benchmark). Every
   # claim names a seeded workout, so the check runs in any seeded environment.
   Claim = Data.define(:workout_name, :claims, :source, :reviewed)

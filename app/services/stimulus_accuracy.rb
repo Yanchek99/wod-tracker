@@ -96,13 +96,14 @@ class StimulusAccuracy
   # the prescription already states (Programming Basics).
   def movement_pairs(claim_key, field, loaded_only: false)
     @rows.flat_map do |row|
-      row[:claims].fetch(claim_key, {}).filter_map do |name, stated|
-        calculated = row[:movements][name] || {}
-        next if loaded_only && StimulusCalculator::Effort::LOADED.exclude?(calculated[:stimulus_loading])
-
-        [stated, calculated[field]]
-      end
+      claims = row[:claims].fetch(claim_key, {})
+      claims = claims.select { |name, _| loaded?(row, name) } if loaded_only
+      claims.map { |name, stated| [stated, row[:movements][name]&.dig(field)] }
     end
+  end
+
+  def loaded?(row, name)
+    StimulusCalculator::Effort::LOADED.include?(row[:movements][name]&.dig(:stimulus_loading))
   end
 
   def worst

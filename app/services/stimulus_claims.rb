@@ -14,14 +14,27 @@ module StimulusClaims
   ROUND_RANGE = /(#{NUMBER})-?\s*to\s*(#{NUMBER})-minute rounds/i
   SETS_GUIDE = /in (#{NUMBER}) sets or (?:less|fewer)/i
 
-  Claim = Data.define(:workout_name, :claims, :reviewed)
+  # source: crossfit_text (a daily workout's posted text -- matches in production only),
+  # open_leaderboard, guide (L1/L2 training guides) or hero_page.
+  Claim = Data.define(:workout_name, :claims, :source, :reviewed)
 
   module_function
 
   def load(path = PATH)
-    YAML.safe_load_file(path).fetch('claims', []).map do |entry|
-      Claim.new(workout_name: entry.fetch('workout'), claims: entry.fetch('claims', {}), reviewed: entry['reviewed'])
+    entries(path).map do |entry|
+      Claim.new(workout_name: entry.fetch('workout'), claims: entry.fetch('claims', {}), source: entry['source'],
+                reviewed: entry['reviewed'])
     end
+  end
+
+  def entries(path = PATH)
+    YAML.safe_load_file(path).fetch('claims', [])
+  end
+
+  # Rewrites the claims file, keeping its header comment.
+  def write(entries, path = PATH)
+    header = File.read(path)[/\A(?:#.*\n)*/]
+    File.write(path, header + { 'claims' => entries }.to_yaml(line_width: 110).delete_prefix("---\n"))
   end
 
   # Claims a text makes, keyed by claim name; movement_names are the workout's movements.

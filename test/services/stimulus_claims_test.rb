@@ -52,4 +52,15 @@ class StimulusClaimsTest < ActiveSupport::TestCase
     assert_operator claims.size, :>=, 20
     assert(claims.all? { |claim| claim.workout_name.present? && claim.claims.is_a?(Hash) })
   end
+
+  test 'every claim has a source' do
+    assert(StimulusClaims.load.all? { |claim| claim.source.present? })
+  end
+
+  test 'claims from guides, Hero pages and the Open leaderboard name seeded workouts' do
+    seeded = Rails.root.glob('db/seeds/*.rb').flat_map { |path| path.read.scan(/find_or_create_by\(name: '([^']+)'\)/) }.flatten
+    unmatched = StimulusClaims.load.reject { |claim| claim.source == 'crossfit_text' }.map(&:workout_name) - seeded
+
+    assert_empty unmatched
+  end
 end

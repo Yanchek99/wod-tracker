@@ -3,11 +3,14 @@
 # per-movement time ceilings, and the workouts it misses worst. Reads only the database, the
 # reference table and the claims file.
 class StimulusAccuracy
-  Report = Data.define(:matched, :unmatched, :time, :round, :rounds, :percent, :loading, :sets, :duration, :worst)
+  Report = Data.define(:matched, :unmatched, :time, :result, :round, :rounds, :percent, :loading, :sets, :duration, :worst)
 
   # Stated [low, high] windows => the calculated fields they are checked against.
   WINDOWS = {
     time: ['finish_seconds', %i[stimulus_range_low stimulus_range_high]],
+    # An expected result in the workout's own score unit (seconds, reps, rounds), e.g. a public
+    # Open leaderboard's percentile band.
+    result: ['result', %i[stimulus_range_low stimulus_range_high]],
     round: ['round_seconds', %i[stimulus_round_seconds_low stimulus_round_seconds_high]],
     rounds: ['rounds', %i[stimulus_range_low stimulus_range_high]],
     percent: ['percent_1rm', %i[stimulus_percent_1rm_low stimulus_percent_1rm_high]]

@@ -38,6 +38,14 @@ class StimulusAccuracyTest < ActiveSupport::TestCase
     assert_equal({ overlap: 1, compared: 1 }, report.percent.slice(:overlap, :compared))
   end
 
+  test 'compares a result window in the workout score unit' do
+    claims = [claim('Fran Calc', 'result' => [200, 300])] # calculated 208..415 s -> overlaps
+
+    report = StimulusAccuracy.call(claims, test_reference)
+
+    assert_equal({ overlap: 1, compared: 1 }, report.result.slice(:overlap, :compared))
+  end
+
   test 'summarizes the report in plain lines' do
     report = StimulusAccuracy.call([claim('Fran Calc', 'finish_seconds' => [nil, 300], 'loading' => { 'Thruster' => 'light' })],
                                    test_reference)
@@ -58,6 +66,6 @@ class StimulusAccuracyTest < ActiveSupport::TestCase
   private
 
   def claim(name, claims)
-    StimulusClaims::Claim.new(workout_name: name, claims:, reviewed: 'test')
+    StimulusClaims::Claim.new(workout_name: name, claims:, source: 'test', reviewed: 'test')
   end
 end

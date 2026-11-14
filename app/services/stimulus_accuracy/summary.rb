@@ -16,7 +16,7 @@ class StimulusAccuracy
     end
 
     def window_lines(report)
-      { 'Round time' => report.round, 'Target rounds' => report.rounds, 'Working-set %' => report.percent }
+      { 'Result' => report.result, 'Round time' => report.round, 'Target rounds' => report.rounds, 'Working-set %' => report.percent }
         .map { |label, window| "#{label} overlaps CrossFit's: #{window[:overlap]} of #{window[:compared]}" }
     end
 

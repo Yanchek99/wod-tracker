@@ -69,6 +69,21 @@ That table is reviewed in PRs, and every value names its source.
 
 - **Reference athlete:** the Rx gym athlete, a strong affiliate regular. Programming
   Basics says Rx is written for this athlete.
+- **Buckets, not per-movement rows:** Programming Basics reads a workout through
+  loading, movement and volume, so the table has no row per movement. Each movement
+  falls into a bucket from its own `family`, `equipment`, `skill_level`, primary
+  function and name:
+  - Barbell lift family (squat, hinge, press, jerk, clean, snatch), with a reference
+    1RM per family.
+  - Implement (kettlebell, dumbbell, medicine ball, ...), with its typical Rx load
+    and, for a wall-ball, typical target height.
+  - Gymnastics skill level (basic, intermediate, advanced). A box or rope movement
+    also has a typical height; a higher prescription slows each rep, a lower one
+    speeds it up.
+  - Monostructural movement (Run, Row, ...), else a pace by equipment.
+  A short override list covers single reps far longer than their tier (rope climb,
+  wall walk) and loaded movements recorded without equipment; a component adds
+  seconds for a burpee or a jerk inside a compound movement.
 - **Expected time:**
   - Fast time is the sum of volume × seconds per unit at the movement's load class,
     plus 10 s per transition (Programming Basics: about 10-15 s).
@@ -78,11 +93,13 @@ That table is reviewed in PRs, and every value names its source.
   - A movement with no pace leaves the time blank. A partial sum would understate
     it.
 - **Loading:**
-  - It is the prescribed load (male side) divided by the movement's reference load
-    (the reference athlete's 1RM, or a heavy implement).
-  - Heavy is at or above 0.85 (L2: heavy-day working sets at or above 80-85% of 1RM).
-  - Light is below 0.45 for Olympic lifts and below 0.50 for other barbell lifts and
-    implements.
+  - A barbell lift: the prescribed load (male side) divided by its lift family's
+    reference 1RM. Heavy is at or above 0.85 (L2: heavy-day working sets at or above
+    80-85% of 1RM). Light is below 0.45 for clean, jerk and snatch and below 0.50 for
+    the other families.
+  - An implement: the prescribed load divided by its typical Rx load. Light up to
+    1.1x, heavy from 1.6x, moderate between: the usual 35/53-lb kettlebell is light,
+    and a 20/30-lb wall-ball is a different stimulus from 14/20.
   - The boundaries are checked against CrossFit's labeled anchors: Amanda and
     Elizabeth "moderate" (L2 pp54, 68), Diane's deadlift "Medium" (L2 p64).
   - Body weight only is `unloaded`.
@@ -114,7 +131,8 @@ stop showing.
 Verification: `config/stimulus_claims.yml` records what CrossFit's posted text claims
 for each workout:
 - finish window, round time, rounds, %
-- per-movement loading, sets guide and time ceiling
+- per-movement loading, sets guide and time ceiling, for weighted movements only (an
+  unweighted movement's intensity is its volume, which the prescription states)
 
 Claims are drafted by a regex proposer (`bin/rails stimulus:propose_claims`) and
 checked by a person. `StimulusAccuracy` (`bin/rails stimulus:accuracy`, also a step in

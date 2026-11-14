@@ -7,14 +7,14 @@ class StimulusAccuracyTest < ActiveSupport::TestCase
   setup do
     fran # Fran Calc: calculated 208..415 s, thrusters light
     build_workout('Diane Calc', interval_scheme: '21-15-9',
-                                movements: [{ movement: movements(:deadlift), reps: 1, load: 225 }])
+                                movements: [{ movement: barbell_deadlift, reps: 1, load: 225 }])
   end
 
   test 'compares stated against calculated time, loading and sets' do
     claims = [claim('Fran Calc', 'finish_seconds' => [nil, 300], 'loading' => { 'Thruster' => 'light' },
                                  'sets_max' => { 'Thruster' => 2 }),
-              claim('Diane Calc', 'finish_seconds' => [600, 900], 'loading' => { 'Deadlift' => 'heavy' },
-                                  'sets_max' => { 'Deadlift' => 4 })]
+              claim('Diane Calc', 'finish_seconds' => [600, 900], 'loading' => { 'Barbell Deadlift' => 'heavy' },
+                                  'sets_max' => { 'Barbell Deadlift' => 4 })]
 
     report = StimulusAccuracy.call(claims, test_reference)
 
@@ -36,6 +36,14 @@ class StimulusAccuracyTest < ActiveSupport::TestCase
 
     assert_equal({ overlap: 1, compared: 1 }, report.round.slice(:overlap, :compared))
     assert_equal({ overlap: 1, compared: 1 }, report.percent.slice(:overlap, :compared))
+  end
+
+  test 'checks time ceilings for loaded movements only' do
+    claims = [claim('Fran Calc', 'duration_max' => { 'Thruster' => 90, 'Pull Up' => 60 })]
+
+    report = StimulusAccuracy.call(claims, test_reference)
+
+    assert_equal 1, report.duration[:compared]
   end
 
   test 'compares a result window in the workout score unit' do

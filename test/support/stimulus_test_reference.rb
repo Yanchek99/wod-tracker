@@ -5,7 +5,7 @@ module StimulusTestReference
     'transition_seconds' => 10, 'slow_factor' => 2, 'heavy_boundary' => 0.85, 'female_reference_factor' => 0.7,
     'chunk_reps' => { 'light' => 15, 'moderate' => 7, 'heavy' => 2 },
     'effort_seconds' => { 'sprint' => 60, 'hard' => 180, 'threshold' => 600 },
-    'heavy_rest_seconds' => [180, 300], 'heavy_working_percent_low' => 80
+    'heavy_rest_seconds' => [180, 300], 'heavy_working_percent_low' => 80, 'height_factor_range' => [0.5, 1.5]
   }.freeze
 
   private
@@ -13,24 +13,26 @@ module StimulusTestReference
   def test_reference
     StimulusReference.new(
       'constants' => CONSTANTS,
-      'lift_classes' => { 'olympic' => { 'light_below' => 0.45 }, 'barbell' => { 'light_below' => 0.50 } },
-      'movements' => {
-        'Thruster' => loaded(205, 'barbell', 2.0, 2.5, 4.0),
-        'Deadlift' => loaded(425, 'barbell', 1.5, 2.0, 5.0),
-        'Back Squat' => loaded(345, 'barbell', 2.0, 3.0, 6.0),
-        'Clean and Jerk' => loaded(255, 'olympic', 4.0, 6.0, 12.0),
-        'Pull Up' => { 'paces' => { 'rep' => 1.5 }, 'source' => 'test' },
-        'Handstand Push-up' => { 'paces' => { 'rep' => 3.0 }, 'source' => 'test' },
-        'Run' => { 'paces' => { 'meter' => 0.25 }, 'source' => 'test' },
-        'Row' => { 'paces' => { 'meter' => 0.2, 'calorie' => 3.0 }, 'source' => 'test' },
-        'Rest' => { 'paces' => { 'second' => 1.0 }, 'source' => 'test' }
-      }
+      'lift_families' => {
+        'squat' => lift(205, 0.50, 2.0, 2.5, 4.0), 'hinge' => lift(425, 0.50, 1.5, 2.0, 5.0),
+        'clean' => lift(255, 0.45, 4.0, 6.0, 12.0)
+      },
+      'implements' => { 'kettlebell' => { 'typical_load' => 53 },
+                        'medicine_ball' => { 'typical_load' => 20, 'typical_height' => { 'value' => 10, 'unit' => 'foot' } } },
+      'implement_loading' => { 'light_up_to' => 1.1, 'heavy_from' => 1.6 },
+      'implement_paces' => { 'rep' => { 'light' => 2.0, 'moderate' => 2.5, 'heavy' => 3.5 } },
+      'skill_levels' => { 'basic' => { 'paces' => { 'rep' => 1.2 } }, 'intermediate' => { 'paces' => { 'rep' => 1.5 } },
+                          'advanced' => { 'paces' => { 'rep' => 3.0 } } },
+      'typical_heights' => { 'box' => { 'value' => 24, 'unit' => 'inch' } },
+      'monostructural' => { 'Run' => { 'paces' => { 'meter' => 0.25 } },
+                            'Row' => { 'paces' => { 'meter' => 0.2, 'calorie' => 3.0 } } },
+      'overrides' => { 'Rest' => { 'paces' => { 'second' => 1.0 } } }
     )
   end
 
-  def loaded(reference_load, lift_class, light, moderate, heavy)
-    { 'paces' => { 'rep' => { 'light' => light, 'moderate' => moderate, 'heavy' => heavy } },
-      'reference_load' => reference_load, 'lift_class' => lift_class, 'source' => 'test' }
+  def lift(reference_load, light_below, light, moderate, heavy)
+    { 'reference_load' => reference_load, 'light_below' => light_below,
+      'paces' => { 'rep' => { 'light' => light, 'moderate' => moderate, 'heavy' => heavy } } }
   end
 
   # A persisted workout with one segment. movements: exercise attribute hashes.
@@ -39,6 +41,12 @@ module StimulusTestReference
     seg = workout.segments.create!(position: 1, **segment)
     movements.each.with_index(1) { |attrs, position| seg.exercises.create!(position:, **attrs) }
     workout.reload
+  end
+
+  # A barbell deadlift with its taxonomy (the deadlift fixture has none, on purpose).
+  def barbell_deadlift
+    @barbell_deadlift ||= Movement.create!(name: 'Barbell Deadlift', family: :weightlifting, equipment: :barbell,
+                                           function_roles: { primary: :hinge })
   end
 
   def fran

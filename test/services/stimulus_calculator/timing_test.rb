@@ -14,7 +14,7 @@ module StimulusCalculator
       assert_equal 'for_time', result[:stimulus_goal]
     end
 
-    test 'a movement missing from the table blanks the time but keeps covered loading' do
+    test 'a movement with no bucket blanks the time but keeps covered loading' do
       workout = build_workout('Partial', rounds: 3, movements: [{ movement: movements(:thruster), reps: 15, load: 95 },
                                                                 { movement: movements(:burpee), reps: 15 }])
 

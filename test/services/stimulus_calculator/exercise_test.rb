@@ -7,7 +7,7 @@ module StimulusCalculator
 
     test 'sets guide from the load class chunk: 21 moderate reps -> 3 sets' do
       workout = build_workout('Diane-ish', interval_scheme: '21-15-9',
-                                           movements: [{ movement: movements(:deadlift), reps: 1, load: 225 }])
+                                           movements: [{ movement: barbell_deadlift, reps: 1, load: 225 }])
 
       assert_equal 3, StimulusCalculator.exercise(workout.exercises.first, test_reference)[:stimulus_sets_max]
     end

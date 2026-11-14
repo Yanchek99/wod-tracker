@@ -1,43 +1,62 @@
 # The reference table the intended-stimulus calculator reads (config/stimulus_reference.yml):
-# per-movement paces and reference loads for the Rx gym athlete, lift-class light boundaries,
-# and the calculation constants. Plain data, reviewed in PRs -- see the YAML header for sources.
+# paces and reference loads by bucket -- barbell lift family, implement, gymnastics skill level,
+# monostructural movement -- for the Rx gym athlete, plus the calculation constants. Plain data,
+# reviewed in PRs -- see the YAML header for sources.
 class StimulusReference
   PATH = Rails.root.join('config/stimulus_reference.yml')
+  INCHES = { 'inch' => 1.0, 'foot' => 12.0, 'meter' => 39.37 }.freeze
 
-  # paces: { unit => seconds } or { unit => { load class => seconds } }.
-  Entry = Data.define(:name, :paces, :reference_load, :lift_class, :source) do
-    # Seconds per unit (rep, meter, calorie, second). A load-dependent pace needs a load class;
-    # nil when the entry has no pace for that unit or class.
+  # What the calculator needs for one movement. paces: { unit => seconds } or
+  # { unit => { load class => seconds } }. basis: 'barbell' (loading against reference_load, a
+  # 1RM), 'implement' (against reference_load, the typical load) or nil (no loading).
+  # typical_height: inches, or nil. extra_seconds: added to each rep (components).
+  Profile = Data.define(:bucket, :paces, :basis, :reference_load, :light_below, :typical_height,
+                        :extra_seconds, :source) do
+    # Seconds per unit (rep, meter, calorie, second; a foot is read as a meter). A
+    # load-dependent pace needs a load class; nil when the profile has no pace for it.
     def seconds_per(unit, loading)
-      pace = paces[unit.to_s]
+      unit = unit.to_s
+      return seconds_per('meter', loading)&.*(0.3048) if unit == 'foot'
+
+      seconds = pace_for(paces[unit], loading)
+      seconds && unit == 'rep' ? seconds + extra_seconds : seconds
+    end
+
+    def pace_for(pace, loading)
       pace.is_a?(Hash) ? pace[loading.to_s]&.to_f : pace&.to_f
     end
   end
 
-  attr_reader :movements
+  attr_reader :data
 
   def self.current
     @current ||= new(YAML.safe_load_file(PATH))
   end
 
-  def initialize(data)
-    @constants = data.fetch('constants', {})
-    @lift_classes = data.fetch('lift_classes', {})
-    @movements = data.fetch('movements', {}).to_h do |name, attrs|
-      [name, Entry.new(name:, paces: attrs.fetch('paces', {}), reference_load: attrs['reference_load'],
-                       lift_class: attrs['lift_class'], source: attrs['source'])]
-    end
+  def self.inches(value, unit)
+    value.to_f * INCHES.fetch(unit.to_s) if value && INCHES.key?(unit.to_s)
   end
 
-  def movement(name)
-    movements[name]
+  # A { 'value', 'unit' } height from the table, in inches; nil without one.
+  def self.height_inches(height)
+    inches(height['value'], height['unit']) if height
+  end
+
+  def initialize(data)
+    @data = data
+    @constants = data.fetch('constants', {})
+  end
+
+  # The movement's profile, or nil when no bucket fits it (the calculator then leaves it blank).
+  def profile(movement)
+    Bucket.new(self, movement).profile
   end
 
   def constant(key)
     @constants.fetch(key.to_s)
   end
 
-  def light_boundary(lift_class)
-    @lift_classes.dig(lift_class.to_s, 'light_below')&.to_f
+  def section(key)
+    data.fetch(key.to_s, {})
   end
 end

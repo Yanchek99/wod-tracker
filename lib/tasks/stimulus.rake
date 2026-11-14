@@ -5,7 +5,11 @@ namespace :stimulus do
     drafts = Workout.where(name: StimulusClaims.seeded_workout_names - claimed)
                     .where.not(intended_stimulus_notes: [nil, ''])
                     .includes(segments: { exercises: :movement }).order(:id).map do |workout|
-      movements = workout.segments.flat_map(&:exercises).map { |exercise| exercise.movement.name }
+      # Movement claims (loading, sets, time ceiling) only for weighted movements: an unweighted
+      # movement's intensity is its volume, which the prescription states.
+      movements = workout.segments.flat_map(&:exercises)
+                         .reject { |exercise| StimulusCalculator::Loading.unloaded?(exercise) }
+                         .map { |exercise| exercise.movement.name }
       { 'workout' => workout.name, 'source' => 'crossfit_text', 'reviewed' => 'draft -- check against the text',
         'claims' => StimulusClaims.propose(workout.intended_stimulus_notes, movements) }
     end

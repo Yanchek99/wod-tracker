@@ -15,7 +15,8 @@
 #   crossfit_text    -- CrossFit's posted Stimulus and Strategy on a seeded workout (e.g. a reposted
 #                       benchmark), drafted with `bin/rails stimulus:propose_claims` and checked by hand
 # Claim kinds: result / finish_seconds / round_seconds / rounds / percent_1rm ([low, high] in the
-# workout's score unit, null = open), loading / sets_max / duration_max ({ movement name => value }).
+# workout's score unit, null = open), loading / sets_max / duration_max ({ movement name => value },
+# weighted movements only -- an unweighted movement's intensity is its volume, already prescribed).
 claims:
 - workout: Open 11.1
   source: open_leaderboard
@@ -447,8 +448,6 @@ claims:
     - 900
     loading:
       Overhead Squat: light
-    duration_max:
-      Run: 180
 - workout: Murph
   source: hero_page
   reviewed: crossfit.com/benchmark/murph (Rx'd 36-46 minutes), read 2026-11-14 -- owner review
@@ -491,9 +490,6 @@ claims:
     - 900
     sets_max:
       Kettlebell Swing: 1
-      Pull-up: 3
-    duration_max:
-      Run: 120
 - workout: Amanda
   source: class_plan
   reviewed: CAP class plan 2024-02-07 (Amanda), read 2026-11-14 -- owner review
@@ -508,11 +504,6 @@ claims:
     result:
     - 840
     - 1200
-    duration_max:
-      Pull-up: 360
-      Push-up: 360
-      Sit-up: 240
-      Air Squat: 240
 - workout: Annie
   source: class_plan
   reviewed: CAP class plan 2026-03-17 (Annie), read 2026-11-14 -- owner review
@@ -527,9 +518,6 @@ claims:
     round_seconds:
     - 180
     - 240
-    sets_max:
-      Pull-up: 2
-      Push-up: 4
 - workout: Cindy
   source: class_plan
   reviewed: CAP class plan 2026-05-09 (Cindy), read 2026-11-14 -- owner review
@@ -556,11 +544,8 @@ claims:
     round_seconds:
     -
     - 480
-    duration_max:
-      Run: 300
     sets_max:
       Kettlebell Swing: 4
-      Pull-up: 5
 - workout: Grace
   source: class_plan
   reviewed: CAP class plan 2026-01-13 (Grace), read 2026-11-14 -- owner review
@@ -585,7 +570,6 @@ claims:
     - 480
     - 840
     duration_max:
-      Row: 300
       Thruster: 180
 - workout: Karen
   source: class_plan
@@ -604,8 +588,6 @@ claims:
     round_seconds:
     -
     - 360
-    duration_max:
-      Run: 135
 - workout: Linda
   source: class_plan
   reviewed: CAP class plan 2026-10-27 (Linda), read 2026-11-14 -- owner review
@@ -632,9 +614,6 @@ claims:
     result:
     - 240
     - 300
-    sets_max:
-      Handstand Push-up: 1
-      Pull-up: 3
 - workout: Nancy
   source: class_plan
   reviewed: CAP class plan 2026-10-16 (Nancy), read 2026-11-14 -- owner review
@@ -653,10 +632,7 @@ claims:
     - 780
     loading:
       Hang Power Clean: moderate
-    duration_max:
-      Air Squat: 120
     sets_max:
-      Muscle-up: 3
       Hang Power Clean: 2
 - workout: Nicole
   source: class_plan
@@ -665,8 +641,6 @@ claims:
     result:
     - 6
     - 7
-    duration_max:
-      Run: 150
 - workout: Abbate
   source: class_plan
   reviewed: CAP class plan 2024-12-01 (Abbate), read 2026-11-14 -- owner review
@@ -699,7 +673,6 @@ claims:
     sets_max:
       Back Squat: 3
     duration_max:
-      Rope Climb: 150
       Back Squat: 150
 - workout: Daniel
   source: class_plan
@@ -710,8 +683,6 @@ claims:
     - 1200
     sets_max:
       Thruster: 3
-    duration_max:
-      Pull-up: 180
 - workout: Del
   source: class_plan
   reviewed: CAP class plan 2022-05-23 (Del), read 2026-11-14 -- owner review
@@ -754,7 +725,6 @@ claims:
     sets_max:
       Push Press: 1
       Kettlebell Swing: 1
-      Box Jump: 1
 - workout: Jennifer
   source: class_plan
   reviewed: CAP class plan 2026-07-01 (Jennifer), read 2026-11-14 -- owner review
@@ -762,8 +732,6 @@ claims:
     result:
     - 315
     - 675
-    duration_max:
-      Box Jump: 90
 - workout: Jerry
   source: class_plan
   reviewed: CAP class plan 2023-08-16 (Jerry), read 2026-11-14 -- owner review
@@ -771,9 +739,6 @@ claims:
     result:
     - 1260
     - 1680
-    duration_max:
-      Row: 600
-      Run: 540
 - workout: JT
   source: class_plan
   reviewed: CAP class plan 2026-07-02 (JT), read 2026-11-14 -- owner review
@@ -788,8 +753,6 @@ claims:
     result:
     - 900
     - 1500
-    duration_max:
-      Row: 135
 - workout: Loredo
   source: class_plan
   reviewed: CAP class plan 2024-09-02 (Loredo), read 2026-11-14 -- owner review
@@ -807,8 +770,6 @@ claims:
     result:
     - 1500
     - 2100
-    duration_max:
-      Run: 150
     sets_max:
       Deadlift: 3
       Overhead Squat: 3
@@ -818,8 +779,6 @@ claims:
   claims:
     sets_max:
       Back Squat: 2
-    duration_max:
-      Run: 135
 - workout: Michael
   source: class_plan
   reviewed: CAP class plan 2026-06-30 (Michael), read 2026-11-14 -- owner review
@@ -827,10 +786,6 @@ claims:
     result:
     - 1440
     - 1800
-    duration_max:
-      Run: 330
-      Back Extensions: 135
-      Sit-up: 135
 - workout: Morrison
   source: class_plan
   reviewed: CAP class plan 2024-07-04 (Morrison), read 2026-11-14 -- owner review
@@ -845,8 +800,6 @@ claims:
     result:
     - 1800
     - 2700
-    duration_max:
-      Run: 600
 - workout: Nate
   source: class_plan
   reviewed: CAP class plan 2024-11-18 (Nate), read 2026-11-14 -- owner review
@@ -870,7 +823,6 @@ claims:
       Back Squat: 1
     duration_max:
       Back Squat: 60
-      Row: 270
 - workout: Omar
   source: class_plan
   reviewed: CAP class plan 2026-06-29 (Omar), read 2026-11-14 -- owner review
@@ -908,8 +860,6 @@ claims:
     - 90
     sets_max:
       Deadlift: 2
-    duration_max:
-      Run: 40
 - workout: The Seven
   source: class_plan
   reviewed: CAP class plan 2023-03-17 (The Seven), read 2026-11-14 -- owner review
@@ -928,9 +878,7 @@ claims:
     - 168
     - 280
     duration_max:
-      Row: 120
       Thruster: 60
-      Ring Muscle-up: 45
 - workout: Open 11.3
   source: class_plan
   reviewed: CAP class plan 2026-02-11 (Open 11.3), read 2026-11-14 -- owner review
@@ -965,11 +913,8 @@ claims:
     result:
     - 216
     - 360
-    duration_max:
-      Box Jump: 60
     sets_max:
       Push Press: 2
-      Toes to Bar: 3
 - workout: Open 13.2
   source: class_plan
   reviewed: CAP class plan 2025-01-07 (Open 13.2), read 2026-11-14 -- owner review
@@ -983,7 +928,6 @@ claims:
     sets_max:
       Shoulder to Overhead: 1
       Deadlift: 1
-      Box Jump: 2
 - workout: Open 14.4
   source: class_plan
   reviewed: CAP class plan 2025-12-23 (Open 14.4), read 2026-11-14 -- owner review
@@ -1023,8 +967,6 @@ claims:
     - 1200
     sets_max:
       Thruster: 2
-    duration_max:
-      Double-under: 40
 - workout: Open 18.1
   source: class_plan
   reviewed: CAP class plan 2026-02-18 (Open 18.1), read 2026-11-14 -- owner review
@@ -1048,9 +990,6 @@ claims:
     - 680
     sets_max:
       Dumbbell Thruster: 1
-    duration_max:
-      Toes to Bar: 30
-      Double-under: 45
 - workout: Open 22.1
   source: class_plan
   reviewed: CAP class plan 2024-11-22 (Open 22.1), read 2026-11-14 -- owner review
@@ -1059,9 +998,7 @@ claims:
     - 150
     -
     duration_max:
-      Wall Walk: 60
       Dumbbell Power Snatch: 60
-      Box Jump-over: 60
 - workout: Open 22.2
   source: class_plan
   reviewed: CAP class plan 2022-03-04 (Open 22.2), read 2026-11-14 -- owner review
@@ -1082,13 +1019,6 @@ claims:
     result:
     - 420
     - 900
-- workout: Open 24.2
-  source: class_plan
-  reviewed: CAP class plan 2024-03-08 (Open 24.2), read 2026-11-14 -- owner review
-  claims:
-    duration_max:
-      Row: 120
-      Double-under: 60
 - workout: Open 24.3
   source: class_plan
   reviewed: CAP class plan 2024-03-15 (Open 24.3), read 2026-11-14 -- owner review
@@ -1096,12 +1026,3 @@ claims:
     result:
     - 420
     - 900
-    sets_max:
-      Chest-to-bar Pull-up: 3
-      Bar Muscle-up: 3
-- workout: Open 25.3
-  source: class_plan
-  reviewed: CAP class plan 2025-03-14 (Open 25.3), read 2026-11-14 -- owner review
-  claims:
-    duration_max:
-      Wall Walk: 120

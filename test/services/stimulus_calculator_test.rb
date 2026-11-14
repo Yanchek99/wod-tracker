@@ -28,7 +28,7 @@ class StimulusCalculatorTest < ActiveSupport::TestCase
 
   test 'Diane deadlifts are moderate' do
     workout = build_workout('Diane Real', interval_scheme: '21-15-9',
-                                          movements: [{ movement: movements(:deadlift), reps: 1, male_load: 225,
+                                          movements: [{ movement: barbell_deadlift, reps: 1, male_load: 225,
                                                         female_load: 155, load_unit: :lb },
                                                       { movement: movements(:handstand_push_up), reps: 1 }])
 
@@ -40,8 +40,12 @@ class StimulusCalculatorTest < ActiveSupport::TestCase
   # 32 score reps a round. CrossFit's posted text: 2018 average about 9 rounds (~288 reps), top
   # scores 487 (men) / 452 (women).
   test 'Open 18.1 gets an expected total-reps range in line with CrossFit' do
-    toes_to_bar = Movement.find_or_create_by!(name: 'Toes to Bar') { |movement| movement.family = :gymnastics }
-    dumbbell = Movement.find_or_create_by!(name: 'Dumbbell Hang Clean and Jerk') { |movement| movement.family = :weightlifting }
+    toes_to_bar = Movement.find_or_create_by!(name: 'Toes to Bar') do |movement|
+      movement.assign_attributes(family: :gymnastics, skill_level: :intermediate)
+    end
+    dumbbell = Movement.find_or_create_by!(name: 'Dumbbell Hang Clean and Jerk') do |movement|
+      movement.assign_attributes(family: :weightlifting, equipment: :dumbbell)
+    end
     workout = build_workout('Open 18.1 Real', score_type: :rep, time_seconds: 1200,
                                               movements: [{ movement: toes_to_bar, reps: 8 },
                                                           { movement: dumbbell, reps: 10, male_load: 50, female_load: 35,

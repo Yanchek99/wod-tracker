@@ -81,20 +81,27 @@ class StimulusAccuracy
   end
 
   def sets_summary
-    pairs = movement_pairs('sets_max', :stimulus_sets_max).select(&:last)
+    pairs = movement_pairs('sets_max', :stimulus_sets_max, loaded_only: true).select(&:last)
     { exact: pairs.count { |stated, calc| stated == calc },
       within_one: pairs.count { |stated, calc| (stated - calc).abs <= 1 }, compared: pairs.size }
   end
 
   def duration_summary
-    pairs = movement_pairs('duration_max', :stimulus_duration_max).select(&:last)
+    pairs = movement_pairs('duration_max', :stimulus_duration_max, loaded_only: true).select(&:last)
     { compared: pairs.size, median_gap_seconds: median(pairs.map { |stated, calc| (stated - calc).abs }) }
   end
 
-  # [stated, calculated] for every movement claim of this kind.
-  def movement_pairs(claim_key, field)
+  # [stated, calculated] for every movement claim of this kind. Sets and time ceilings are
+  # checked for loaded movements only: an unweighted movement's intensity is its volume, which
+  # the prescription already states (Programming Basics).
+  def movement_pairs(claim_key, field, loaded_only: false)
     @rows.flat_map do |row|
-      row[:claims].fetch(claim_key, {}).map { |name, stated| [stated, row[:movements][name]&.dig(field)] }
+      row[:claims].fetch(claim_key, {}).filter_map do |name, stated|
+        calculated = row[:movements][name] || {}
+        next if loaded_only && StimulusCalculator::Effort::LOADED.exclude?(calculated[:stimulus_loading])
+
+        [stated, calculated[field]]
+      end
     end
   end
 

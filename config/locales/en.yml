@@ -79,3 +79,7 @@ en:
         title: Re-run LLM parser
         menu: Re-run (LLM)
         breadcrumb: Re-run (LLM)
+      stimulus_tools:
+        title: Stimulus tools
+        menu: Stimulus tools
+        breadcrumb: Stimulus tools

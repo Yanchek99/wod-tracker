@@ -114,11 +114,10 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     assert_includes WorkoutImport.find_by!(workout_date: Date.new(2026, 6, 20)).error_message, 'unrecognized exercise line'
   end
 
-  test 'keeps the scraped Stimulus and Strategy prose and structures it into the stimulus fields' do
+  test 'keeps the scraped Stimulus and Strategy prose without calling the stimulus extractor' do
     stub_cf_wod_redirect('2025/06/18', '250618')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
       .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
-    stub_stimulus_extraction(range_low: 300, range_high: 480, movements: [])
 
     stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
@@ -127,15 +126,14 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     workout = Workout.find_by!(name: 'CF-250618')
     assert_includes workout.intended_stimulus_notes, 'four sprint-style efforts'
     assert_not_includes workout.intended_stimulus_notes, 'Stimulus and Strategy'
-    assert_equal [300, 480, 'extracted'],
-                 workout.values_at(:stimulus_range_low, :stimulus_range_high, :stimulus_source)
+    assert_nil workout.stimulus_source
+    assert_not_requested :post, 'https://api.anthropic.com/v1/messages'
   end
 
   test 'strips the source page\'s "Stimulus and Strategy" section label from the stored prose' do
     stub_cf_wod_redirect('2025/06/18', '250618')
     stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
       .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
-    stub_stimulus_extraction(range_low: nil, range_high: nil, movements: [])
 
     stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
       perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
@@ -143,23 +141,6 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
 
     notes = Workout.find_by!(name: 'CF-250618').intended_stimulus_notes
     assert_match(/\AToday.s workout is four sprint-style efforts/, notes)
-  end
-
-  test 'a failed structured-stimulus extraction does not fail the import' do
-    stub_cf_wod_redirect('2025/06/18', '250618')
-    stub_request(:get, %r{\Ahttps://www\.crossfit\.com/250618})
-      .to_return(status: 200, body: cf_wod_fixture('modern_normal.html'))
-    stub_request(:post, 'https://api.anthropic.com/v1/messages').to_return(status: 500)
-
-    stub_llm_parser(->(*, **) { Workout.new(name: 'CF-250618', score_type: :time) }) do
-      perform_enqueued_jobs { ScrapeCfWodJob.perform_later(Date.new(2025, 6, 18)) }
-    end
-
-    workout = Workout.find_by!(name: 'CF-250618')
-    assert_includes workout.intended_stimulus_notes, 'four sprint-style efforts'
-    assert_not_includes workout.intended_stimulus_notes, 'Stimulus and Strategy'
-    assert_nil workout.stimulus_range_high
-    assert_equal 0, WorkoutImport.count
   end
 
   test 'does not overwrite an existing catalog workout stimulus notes on scrape' do
@@ -322,16 +303,5 @@ class ScrapeCfWodJobTest < ActiveJob::TestCase
     end
 
     assert_equal workouts(:fran), @program.schedules.find_by!(posted_at: posted_at_range_for(Date.new(2026, 1, 16))).workout
-  end
-
-  private
-
-  def stub_stimulus_extraction(payload)
-    stub_request(:post, 'https://api.anthropic.com/v1/messages')
-      .to_return(status: 200, headers: { 'Content-Type' => 'application/json' }, body: {
-        id: 'msg_x', type: 'message', role: 'assistant', model: 'claude-haiku-4-5',
-        content: [{ type: 'text', text: payload.to_json }], stop_reason: 'end_turn',
-        usage: { input_tokens: 100, output_tokens: 50 }
-      }.to_json)
   end
 end

@@ -81,9 +81,23 @@ only the high bound; a point estimate sets both bounds equal. It is distinct fro
 `time_cap_seconds`, which is a hard boundary rather than an expected target and
 normally sits outside the expected range.
 
-Per movement, the stimulus may also record an intended break structure (a maximum
-number of unbroken sets, where one means unbroken) and a ceiling for a single
-effort (for example a 400-meter run in two minutes or less).
+Per movement, the stimulus may also record:
+
+- an intended break structure (a maximum number of unbroken sets, where one
+  means unbroken)
+- a ceiling for a single effort (for example a 400-meter run in two minutes or
+  less)
+- a ceiling on rest between sets (for example no more than a 30-second break)
+- an effort level: `sprint`, `hard`, `threshold`, or `steady`
+
+Every workout has an intended stimulus, heavy days and intervals included. Each
+workout carries a goal: for time, AMRAP, intervals, skill practice, or one of
+the L2 guide's three heavy-day approaches (add load each set, hold a
+percentage, or find a new max). A heavy day's stimulus is its working-set
+percent of 1RM, its number of working sets, and its rest between sets. An
+interval workout's stimulus is its target work time and minimum rest per
+interval. A weight-scored workout's expected-result range is a percent of 1RM,
+not a load. See `decisions.md` (2026-11-11).
 
 CrossFit publishes the intended stimulus as a "Stimulus and Strategy" paragraph
 separate from the workout description. The app keeps that prose as the source of

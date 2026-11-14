@@ -1,10 +1,35 @@
-- range = intended_stimulus_range(workout)
-- if range || workout.intended_stimulus_notes.present?
-  - preview = [("Expected #{range}" if range), workout.intended_stimulus_notes.to_s.squish].compact_blank.join('. ')
+- goal = stimulus_goal(workout)
+- lines = stimulus_workout_lines(workout)
+- movement_lines = stimulus_movement_lines(workout)
+- notes = workout.intended_stimulus_notes.presence
+- if goal || lines.any? || movement_lines.any? || notes
+  - range = intended_stimulus_range(workout)
+  - preview = [("Expected #{range}" if range), notes.to_s.squish].compact_blank.join('. ').presence || goal&.first
   = render layout: 'workouts/collapsible_panel', locals: { title: 'Intended stimulus', preview: preview, css_class: 'workout-stimulus', locked: true } do
-    - if range
+    - if goal
       p.mb-1
-        | Expected&nbsp;
-        b = range
-    - if workout.intended_stimulus_notes.present?
-      .notes = simple_format(workout.intended_stimulus_notes)
+        | Goal&nbsp;
+        b = goal.first
+        - if goal.last
+          =< render 'workouts/stimulus_calculated_tag'
+    - lines.each do |label, text, calculated|
+      p.mb-1
+        = label
+        | &nbsp;
+        b = text
+        - if calculated
+          =< render 'workouts/stimulus_calculated_tag'
+    - if movement_lines.any?
+      ul.stimulus-movements.list-unstyled.mb-1
+        - movement_lines.each do |name, parts|
+          li
+            = name
+            | :&nbsp;
+            - parts.each_with_index do |(text, calculated), index|
+              - if index.positive?
+                |  ·&nbsp;
+              = text
+              - if calculated
+                =< render 'workouts/stimulus_calculated_tag'
+    - if notes
+      .notes = simple_format(notes)

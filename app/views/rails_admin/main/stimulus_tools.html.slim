@@ -1,0 +1,18 @@
+h4 Intended stimulus tools
+p
+  | Everything here works on workouts already in the app. Nothing imports workouts or calls an AI model.
+- if @summary
+  .alert.alert-info
+    strong = @tools.step == 'accuracy' ? 'Accuracy against CrossFit:' : 'Dry run:'
+    = simple_format(@summary)
+= form_tag url_for(action: @action.action_name, model_name: @abstract_model.to_param), method: :post, data: { turbo: false } do
+  .mb-3
+    = label_tag :step, 'Step', class: 'form-label'
+    = select_tag :step, options_for_select([['Recalculate stimulus', 'recalculate'], ["Fetch CrossFit's text for existing workouts", 'fetch_text'], ['Accuracy report', 'accuracy']], @tools.step), class: 'form-select'
+  .form-check.mb-3
+    = check_box_tag :dry_run, '1', @tools.dry_run?, class: 'form-check-input'
+    = label_tag :dry_run, 'Dry run (show what would happen, change nothing)', class: 'form-check-label'
+  .form-actions
+    button.btn.btn-primary type="submit" data-disable-with="Working…"
+      i.fas.fa-check
+      |  Run

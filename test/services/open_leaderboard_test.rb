@@ -27,38 +27,55 @@ class OpenLeaderboardTest < ActiveSupport::TestCase
   end
 
   test 'parses score displays' do
-    assert_equal [:seconds, 224], OpenLeaderboard.parse('3:44')
-    assert_equal [:seconds, 3723], OpenLeaderboard.parse('1:02:03')
-    assert_equal [:reps, 487], OpenLeaderboard.parse('487 reps')
-    assert_equal [:load, 292], OpenLeaderboard.parse('292 lb')
-    assert_nil OpenLeaderboard.parse('')
-    assert_nil OpenLeaderboard.parse('CAP+ 12')
+    assert_equal [:seconds, 224], OpenLeaderboard.parse('3:44', 'time')
+    assert_equal [:seconds, 3723], OpenLeaderboard.parse('1:02:03', 'time')
+    assert_equal [:reps, 487], OpenLeaderboard.parse('487 reps', 'rep')
+    assert_equal [:load, 292], OpenLeaderboard.parse('292 lb', 'weight')
+    assert_nil OpenLeaderboard.parse('', 'rep')
+    assert_nil OpenLeaderboard.parse('CAP+ 12', 'time')
+  end
+
+  # The early Opens show a bare number: reps on a rep-scored workout, pounds on a load-scored one.
+  test 'reads a bare number by the workout score type' do
+    assert_equal [:reps, 396], OpenLeaderboard.parse('396', 'rep')
+    assert_equal [:load, 225], OpenLeaderboard.parse('225', 'weight')
   end
 
   # 230 Rx scores of 600 - i reps: the 95th percentile is rank 12 (589 reps), the 80th rank 46 (555).
   test 'picks the 80th and 95th percentile of Rx scores as a reps window' do
     client = FakeClient.new(rx_scores: 230) { |i| "#{600 - i} reps" }
 
-    assert_equal({ 'result' => [555, 589] }, OpenLeaderboard.claim(2018, 1, client:))
+    assert_equal({ 'result' => [555, 589] }, OpenLeaderboard.claim(2018, 1, client:, score_type: 'rep'))
   end
 
   # Faster is better for a time: the 95th percentile is the low end.
   test 'a time-scored workout gives a seconds window' do
     client = FakeClient.new(rx_scores: 230) { |i| format('%<m>d:%<s>02d', m: (300 + i) / 60, s: (300 + i) % 60) }
 
-    assert_equal({ 'result' => [311, 345] }, OpenLeaderboard.claim(2018, 1, client:))
+    assert_equal({ 'result' => [311, 345] }, OpenLeaderboard.claim(2018, 1, client:, score_type: 'time'))
   end
 
   test 'a capped athlete at a percentile leaves that end open' do
     client = FakeClient.new(rx_scores: 230) { |i| i < 30 ? format('%<m>d:%<s>02d', m: 9, s: i) : "#{200 - i} reps" }
 
-    assert_equal({ 'result' => [551, nil] }, OpenLeaderboard.claim(2018, 1, client:))
+    assert_equal({ 'result' => [551, nil] }, OpenLeaderboard.claim(2018, 1, client:, score_type: 'time'))
+  end
+
+  test 'a time-scored workout where both percentiles capped gives no claim' do
+    client = FakeClient.new(rx_scores: 230) { |i| "#{200 - i} reps" }
+
+    assert_nil OpenLeaderboard.claim(2018, 1, client:, score_type: 'time')
+  end
+
+  test 'knows each seeded Open workout score type' do
+    assert_equal 'rep', OpenLeaderboard.seeded_score_types['Open 18.1']
+    assert_equal 'weight', OpenLeaderboard.seeded_score_types['Open 18.2a']
   end
 
   test 'a load-scored workout gives no claim' do
     client = FakeClient.new(rx_scores: 230) { |i| "#{300 - i} lb" }
 
-    assert_nil OpenLeaderboard.claim(2018, 1, client:)
+    assert_nil OpenLeaderboard.claim(2018, 1, client:, score_type: 'weight')
   end
 
   test 'maps each leaderboard column to the seeded workout name' do

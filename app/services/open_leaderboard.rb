@@ -30,9 +30,10 @@ module OpenLeaderboard
     years.flat_map do |year|
       COLUMNS.fetch(year).each_index.filter_map do |index|
         name = workout_name(year, index + 1)
-        next unless seeded_names.include?(name)
+        score_type = seeded_score_types[name]
+        next unless score_type
 
-        claim = claim(year, index + 1, client:)
+        claim = claim(year, index + 1, client:, score_type:)
         yield name, claim if block_given?
         claim && { 'workout' => name, 'source' => 'open_leaderboard',
                    'reviewed' => "games.crossfit.com men's Rx 80th-95th percentile, fetched #{Date.current}",
@@ -41,17 +42,28 @@ module OpenLeaderboard
     end
   end
 
-  def seeded_names
-    @seeded_names ||= Rails.root.join('db/seeds/open_workouts.rb').read.scan(/find_or_create_by\(name: '([^']+)'\)/).flatten
+  # { seeded Open workout name => its score type }, read from the seeds file so no database is needed.
+  def seeded_score_types
+    @seeded_score_types ||= Rails.root.join('db/seeds/open_workouts.rb').read
+                                 .split(/(?=Workout\.find_or_create_by\(name: ')/).filter_map do |block|
+      name = block[/\AWorkout\.find_or_create_by\(name: '([^']+)'\)/, 1]
+      [name, block[/score_type = :(\w+)/, 1]] if name
+    end.to_h
   end
 
-  # { 'result' => [low, high] } in the workout's score unit, or nil (load-scored, no Rx scores).
-  def claim(year, ordinal, client:)
+  # { 'result' => [low, high] } in the workout's score unit (score_type: the seeded workout's), or nil
+  # when it is load-scored, nobody posted an Rx score, or both percentiles fell outside the unit
+  # (e.g. capped reps on a For Time workout).
+  def claim(year, ordinal, client:, score_type:)
+    return if score_type == 'weight'
+
     rx_count = rx_count(year, ordinal, client)
     return if rx_count.zero?
 
-    low, high = PERCENTILES.values.map { |percentile| parse(score_at(year, ordinal, rank(rx_count, percentile), client)) }
-    window(low, high)
+    p80, p95 = PERCENTILES.values.map do |percentile|
+      parse(score_at(year, ordinal, rank(rx_count, percentile), client), score_type)
+    end
+    window(p80, p95, score_type)
   end
 
   # 80th percentile = better than 80% of Rx scores: rank ceil(n x 0.20) from the top.
@@ -59,25 +71,32 @@ module OpenLeaderboard
     (count * (1 - percentile)).ceil.clamp(1, count)
   end
 
-  # Times read fastest-first and reps best-first; a percentile that capped (reps on a timed
-  # workout) leaves its end of a time window open.
-  def window(p80, p95)
-    kinds = [p80, p95].compact.map(&:first).uniq
-    return if kinds.empty? || kinds.include?(:load)
-    return { 'result' => [p80&.last, p95&.last] } unless kinds.include?(:seconds)
+  # Only scores in the workout's own unit count: a time window reads fastest-first, and a
+  # percentile that capped (reps on a For Time workout) leaves its end open; a reps window reads
+  # best-first.
+  def window(p80, p95, score_type)
+    unit = score_type == 'time' ? :seconds : :reps
+    ends = [p80, p95].map { |score| score&.first == unit ? score.last : nil }
+    return if ends.none?
 
-    { 'result' => [seconds_of(p95), seconds_of(p80)] }
+    { 'result' => unit == :seconds ? ends.reverse : ends }
   end
 
-  def seconds_of(score)
-    score.last if score&.first == :seconds
-  end
-
-  def parse(display)
+  # [kind, value]; a bare number (the early Opens) is pounds on a load-scored workout, else reps.
+  def parse(display, score_type)
     text = display.to_s.strip
-    if (time = text.match(/\A(?:(\d+):)?(\d+):(\d{2})\z/))
-      [:seconds, (time[1].to_i * 3600) + (time[2].to_i * 60) + time[3].to_i]
-    elsif (reps = text.match(/\A(\d+) reps\z/))
+    return [score_type == 'weight' ? :load : :reps, text.to_i] if text.match?(/\A\d+\z/)
+
+    clock_seconds(text) || unit_value(text)
+  end
+
+  def clock_seconds(text)
+    time = text.match(/\A(?:(\d+):)?(\d+):(\d{2})\z/)
+    [:seconds, (time[1].to_i * 3600) + (time[2].to_i * 60) + time[3].to_i] if time
+  end
+
+  def unit_value(text)
+    if (reps = text.match(/\A(\d+) reps\z/))
       [:reps, reps[1].to_i]
     elsif (load = text.match(/\A(\d+) (?:lb|kg)\z/))
       [:load, load[1].to_i]

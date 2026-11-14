@@ -35,4 +35,24 @@ class StimulusCalculatorTest < ActiveSupport::TestCase
     assert_equal 'moderate', StimulusCalculator.exercise(workout.exercises.first)[:stimulus_loading]
     assert_operator StimulusCalculator.workout(workout)[:stimulus_range_high], :<=, 600
   end
+
+  # 20-minute AMRAP: 8 toes-to-bars, 10 dumbbell hang clean and jerks (50/35), 14/12-calorie row --
+  # 32 score reps a round. CrossFit's posted text: 2018 average about 9 rounds (~288 reps), top
+  # scores 487 (men) / 452 (women).
+  test 'Open 18.1 gets an expected total-reps range in line with CrossFit' do
+    toes_to_bar = Movement.find_or_create_by!(name: 'Toes to Bar') { |movement| movement.family = :gymnastics }
+    dumbbell = Movement.find_or_create_by!(name: 'Dumbbell Hang Clean and Jerk') { |movement| movement.family = :weightlifting }
+    workout = build_workout('Open 18.1 Real', score_type: :rep, time_seconds: 1200,
+                                              movements: [{ movement: toes_to_bar, reps: 8 },
+                                                          { movement: dumbbell, reps: 10, male_load: 50, female_load: 35,
+                                                            load_unit: :lb },
+                                                          { movement: movements(:row), reps: 1, male_calories: 14,
+                                                            female_calories: 12 }])
+
+    low, high = StimulusCalculator.workout(workout).values_at(:stimulus_range_low, :stimulus_range_high)
+
+    assert_operator low, :positive?
+    assert_operator high, :>=, 250
+    assert_operator high, :<=, 500
+  end
 end

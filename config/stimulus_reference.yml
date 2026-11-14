@@ -238,3 +238,134 @@ movements:
     reference_load: 140
     lift_class: implement
     source: drafted -- owner review
+
+  # --- Added after testing on the PR environment: seeded movements used in Open, benchmark and
+  # Hero workouts. All drafted -- owner review.
+  Ring Dip:
+    paces: { rep: 2.0 }
+    source: drafted -- owner review
+  Knees-to-elbows:
+    paces: { rep: 2.0 }
+    source: drafted -- owner review
+  Strict Handstand Push-up:
+    paces: { rep: 4.0 }
+    source: drafted -- owner review
+  Burpee Bar Muscle-up:
+    paces: { rep: 7.0 }
+    source: drafted -- owner review
+  Ring Push-up:
+    paces: { rep: 2.0 }
+    source: drafted -- owner review
+  Back Extensions:
+    paces: { rep: 2.0 }
+    source: drafted -- owner review
+  Burpee to Target:
+    paces: { rep: 3.5 }
+    source: drafted -- owner review
+  Handstand Walk:
+    paces: { meter: 2.0, foot: 0.6 }
+    source: drafted -- owner review
+  Bear Crawl:
+    paces: { meter: 1.0, foot: 0.3 }
+    source: drafted -- owner review
+  Shuttle Run:
+    paces: { meter: 0.3 }
+    source: drafted -- owner review
+  Swim:
+    paces: { meter: 1.0 }
+    source: drafted -- owner review
+  Jerk:
+    paces: { rep: { light: 3.0, moderate: 4.0, heavy: 8.0 } }
+    reference_load: 275
+    lift_class: olympic
+    source: drafted -- owner review
+  Push Jerk:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 6.0 } }
+    reference_load: 255
+    lift_class: barbell
+    source: drafted -- owner review
+  Squat Snatch:
+    paces: { rep: { light: 3.0, moderate: 4.0, heavy: 10.0 } }
+    reference_load: 205
+    lift_class: olympic
+    source: drafted -- owner review
+  Squat Clean Thruster:
+    paces: { rep: { light: 3.0, moderate: 4.0, heavy: 8.0 } }
+    reference_load: 225
+    lift_class: barbell
+    source: drafted -- owner review
+  Barbell Step-up:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 5.0 } }
+    reference_load: 225
+    lift_class: barbell
+    source: drafted -- owner review
+  Overhead Walking Lunge:
+    paces: { rep: { light: 1.5, moderate: 2.0, heavy: 3.0 }, meter: { light: 0.8, moderate: 1.0, heavy: 1.5 } }
+    reference_load: 185
+    lift_class: barbell
+    source: drafted -- owner review
+  Weighted Pull-up:
+    paces: { rep: { light: 2.0, moderate: 3.0, heavy: 5.0 } }
+    reference_load: 90
+    lift_class: implement
+    source: "drafted -- owner review (reference is the added load)"
+  Dumbbell Thruster:
+    paces: { rep: { light: 2.0, moderate: 2.5, heavy: 4.0 } }
+    reference_load: 100
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Hang Clean and Jerk:
+    paces: { rep: { light: 2.5, moderate: 3.0, heavy: 4.5 } }
+    reference_load: 100
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Squat Clean:
+    paces: { rep: { light: 2.0, moderate: 2.5, heavy: 4.0 } }
+    reference_load: 110
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Hang Squat Clean:
+    paces: { rep: { light: 2.0, moderate: 2.5, heavy: 4.0 } }
+    reference_load: 110
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Front Squat:
+    paces: { rep: { light: 1.5, moderate: 2.0, heavy: 3.5 } }
+    reference_load: 120
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Deadlift:
+    paces: { rep: { light: 1.2, moderate: 1.5, heavy: 3.0 } }
+    reference_load: 150
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Box Step-up:
+    paces: { rep: { light: 1.5, moderate: 2.0, heavy: 3.0 } }
+    reference_load: 110
+    lift_class: implement
+    source: drafted -- owner review
+  Medicine-ball Box Step-over:
+    paces: { rep: { light: 2.5, moderate: 3.0, heavy: 4.0 } }
+    reference_load: 60
+    lift_class: implement
+    source: drafted -- owner review
+  Turkish Get-up:
+    paces: { rep: { light: 10.0, moderate: 12.0, heavy: 18.0 } }
+    reference_load: 100
+    lift_class: implement
+    source: drafted -- owner review
+  Dumbbell Waiters Walk:
+    paces: { meter: { light: 0.4, moderate: 0.5, heavy: 0.7 } }
+    reference_load: 100
+    lift_class: implement
+    source: drafted -- owner review
+  Plate Carry:
+    paces: { meter: { light: 0.35, moderate: 0.45, heavy: 0.7 } }
+    reference_load: 90
+    lift_class: implement
+    source: drafted -- owner review
+  Sandbag Carry:
+    paces: { meter: { light: 0.4, moderate: 0.55, heavy: 0.9 } }
+    reference_load: 200
+    lift_class: implement
+    source: drafted -- owner review

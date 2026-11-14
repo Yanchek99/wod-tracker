@@ -77,8 +77,13 @@ module StimulusCalculator
       segment.rounds || 1
     end
 
+    # Score reps in one round: reps, and calories (CrossFit counts each calorie as a rep); a
+    # reps: 1 placeholder on a calorie line doesn't count (Volume ignores it).
     def reps_per_round(segment)
-      segment.exercises.sum { |exercise| exercise.reps.to_i }
+      segment.exercises.sum do |exercise|
+        effort = Volume.per_effort(exercise)
+        effort.fetch(:rep, 0) + effort.fetch(:calorie, 0)
+      end
     end
 
     def round_seconds(seconds, slow)

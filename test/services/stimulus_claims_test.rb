@@ -57,10 +57,7 @@ class StimulusClaimsTest < ActiveSupport::TestCase
     assert(StimulusClaims.load.all? { |claim| claim.source.present? })
   end
 
-  test 'claims from guides, Hero pages and the Open leaderboard name seeded workouts' do
-    seeded = Rails.root.glob('db/seeds/*.rb').flat_map { |path| path.read.scan(/find_or_create_by\(name: '([^']+)'\)/) }.flatten
-    unmatched = StimulusClaims.load.reject { |claim| claim.source == 'crossfit_text' }.map(&:workout_name) - seeded
-
-    assert_empty unmatched
+  test 'every claim names a seeded workout' do
+    assert_empty StimulusClaims.load.map(&:workout_name) - StimulusClaims.seeded_workout_names
   end
 end

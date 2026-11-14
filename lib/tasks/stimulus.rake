@@ -1,8 +1,9 @@
 namespace :stimulus do
-  desc 'Print draft claims (YAML) for workouts with CrossFit stimulus text that config/stimulus_claims.yml lacks'
+  desc 'Print draft claims (YAML) for seeded workouts with CrossFit stimulus text that config/stimulus_claims.yml lacks'
   task propose_claims: :environment do
     claimed = StimulusClaims.load.map(&:workout_name)
-    drafts = Workout.where.not(intended_stimulus_notes: [nil, '']).where.not(name: claimed)
+    drafts = Workout.where(name: StimulusClaims.seeded_workout_names - claimed)
+                    .where.not(intended_stimulus_notes: [nil, ''])
                     .includes(segments: { exercises: :movement }).order(:id).map do |workout|
       movements = workout.segments.flat_map(&:exercises).map { |exercise| exercise.movement.name }
       { 'workout' => workout.name, 'source' => 'crossfit_text', 'reviewed' => 'draft -- check against the text',

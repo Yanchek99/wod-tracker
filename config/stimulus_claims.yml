@@ -8,6 +8,8 @@
 #   benchmark_page   -- crossfit.com/benchmark/<name>, the Rx'd line
 #   hero_page        -- crossfit.com Hero pages (only Murph states a target)
 #   guide            -- CrossFit L1/L2 Training Guides, page cited
+#   class_plan       -- numbers from a CrossFit Affiliate Programming (CAP) class plan, hand-entered
+#                       by the owner as an affiliate; never fetched or parsed automatically (paid content)
 #   crossfit_text    -- CrossFit's posted Stimulus and Strategy on a seeded workout (e.g. a reposted
 #                       benchmark), drafted with `bin/rails stimulus:propose_claims` and checked by hand
 # Claim kinds: result / finish_seconds / round_seconds / rounds / percent_1rm ([low, high] in the
@@ -477,3 +479,16 @@ claims:
     result:
     -
     - 450
+- workout: Helen
+  source: class_plan
+  reviewed: CrossFit Affiliate Programming class plan 2026-11-09 (Helen), numbers hand-entered by the owner -- not
+    fetched
+  claims:
+    result:
+    - 480
+    - 900
+    sets_max:
+      Kettlebell Swing: 1
+      Pull-up: 3
+    duration_max:
+      Run: 120

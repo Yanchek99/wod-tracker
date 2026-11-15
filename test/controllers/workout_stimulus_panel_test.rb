@@ -15,8 +15,20 @@ class WorkoutStimulusPanelTest < ActionDispatch::IntegrationTest
 
     get workout_path(@workout)
 
-    assert_select '.workout-stimulus', text: /For time/
-    assert_select '.workout-stimulus .stimulus-calculated', minimum: 2
+    assert_select '.workout-stimulus', text: /For time · ≤ 5:00/
+    assert_select '.workout-stimulus .workout-collapsible-header .stimulus-calculated', count: 1
+    assert_select '.workout-stimulus .workout-collapsible-body .stimulus-calculated', count: 0
+  end
+
+  test 'calculated values beside prose notes keep their own tags' do
+    @workout.update!(intended_stimulus_notes: 'Fast and unbroken.')
+    @workout.stimulus_predictions.create!(source: :predicted, model_version: 'learned-v1',
+                                          stimulus_goal: :for_time, stimulus_range_high: 300, current: true)
+
+    get workout_path(@workout)
+
+    assert_select '.workout-stimulus .workout-collapsible-header .stimulus-calculated', count: 0
+    assert_select '.workout-stimulus .workout-collapsible-body .stimulus-calculated', count: 1
   end
 
   test 'extracted stimulus values render untagged' do

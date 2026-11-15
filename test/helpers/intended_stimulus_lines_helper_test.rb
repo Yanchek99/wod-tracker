@@ -18,7 +18,14 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
                                          stimulus_range_low: 180, stimulus_range_high: 300, current: true)
 
     assert_equal '3:00–5:00', intended_stimulus_range(workout)
-    assert_includes stimulus_workout_lines(workout), ['Expected', '3:00–5:00', true]
+    assert_equal ['Expected 3:00–5:00', true], stimulus_headline(workout)
+  end
+
+  test 'the headline puts the goal and the expected result on one line' do
+    workout = Workout.new(score_type: :time, stimulus_goal: :for_time, stimulus_range_low: 690,
+                          stimulus_range_high: 1380, stimulus_source: :extracted)
+
+    assert_equal ['For time · 11:30–23:00', false], stimulus_headline(workout)
   end
 
   test 'calculated? is true for a prediction and false for an extracted value' do
@@ -52,30 +59,36 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
                   ['Rest', '≥ 1:30 per interval', false]], stimulus_workout_lines(workout)
   end
 
-  test 'a movement line joins loading, sets, time limit, rest and effort' do
+  test 'a movement line joins loading, sets, time limit and rest, without the effort label' do
     exercise = exercises(:fran_thruster)
     exercise.update!(stimulus_loading: :moderate, stimulus_sets_max: 3, stimulus_duration_max: 120,
                      stimulus_rest_max_seconds: 30, stimulus_effort: :sprint, stimulus_source: :extracted)
 
     assert_includes stimulus_movement_lines(workouts(:fran)),
-                    ['Thruster', [['Moderate', false], ['3 sets or fewer', false], ['≤ 2:00', false],
-                                  ['rest ≤ 0:30', false], ['Sprint', false]]]
+                    ['Thruster', [['moderate', false], ['3 sets or fewer', false], ['under 2:00 per set', false],
+                                  ['rest under 0:30', false]]]
   end
 
   test 'an extracted value next to a predicted one tags only the predicted value' do
     exercise = exercises(:fran_thruster)
     exercise.update!(stimulus_loading: :light, stimulus_source: :extracted)
-    exercise.stimulus_predictions.create!(source: :predicted, model_version: 'learned-v1', stimulus_effort: :hard,
+    exercise.stimulus_predictions.create!(source: :predicted, model_version: 'learned-v1', stimulus_sets_max: 1,
                                           current: true)
 
-    assert_includes stimulus_movement_lines(workouts(:fran)), ['Thruster', [['Light', false], ['Hard', true]]]
+    assert_includes stimulus_movement_lines(workouts(:fran)), ['Thruster', [['light', false], ['unbroken', true]]]
   end
 
-  test 'a movement line from a prediction is calculated and unbroken reads as unbroken' do
+  test 'an unweighted movement has no movement line' do
     exercises(:fran_pullup).stimulus_predictions.create!(source: :predicted, model_version: 'learned-v1',
                                                          stimulus_loading: :unloaded, stimulus_sets_max: 1,
                                                          current: true)
 
-    assert_includes stimulus_movement_lines(workouts(:fran)), ['Pull Up', [['Unloaded', true], ['unbroken', true]]]
+    assert_not_includes stimulus_movement_lines(workouts(:fran)).map(&:first), 'Pull Up'
+  end
+
+  test 'all calculated only when every shown value is' do
+    assert stimulus_all_calculated?(['For time', true], [], [['Thruster', [['light', true]]]])
+    assert_not stimulus_all_calculated?(['For time', true], [], [['Thruster', [['light', false]]]])
+    assert_not stimulus_all_calculated?(nil, [], [])
   end
 end

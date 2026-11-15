@@ -1,6 +1,7 @@
-# The Intended stimulus panel's lines beyond the prose: the workout goal, workout-level
-# targets, and one line per movement. Each line carries whether it is calculated (derived or
-# predicted) so the panel can tag it; CrossFit's and coaches' own values render untagged.
+# The Intended stimulus panel's lines beyond the prose: a headline (goal and expected result),
+# workout-level targets, and one line per weighted movement. Each value carries whether it is
+# calculated (derived or predicted) so the panel can tag it; CrossFit's and coaches' own values
+# render untagged.
 module IntendedStimulusLinesHelper
   STIMULUS_GOAL_LABELS = {
     'for_time' => 'For time', 'amrap' => 'AMRAP', 'intervals' => 'Intervals',
@@ -23,9 +24,7 @@ module IntendedStimulusLinesHelper
   ].freeze
 
   # Per-movement fields in display order.
-  STIMULUS_MOVEMENT_FIELDS = %w[
-    stimulus_loading stimulus_sets_max stimulus_duration_max stimulus_rest_max_seconds stimulus_effort
-  ].freeze
+  STIMULUS_MOVEMENT_FIELDS = %w[stimulus_loading stimulus_sets_max stimulus_duration_max stimulus_rest_max_seconds].freeze
 
   # [label, calculated] or nil.
   def stimulus_goal(workout)
@@ -37,37 +36,51 @@ module IntendedStimulusLinesHelper
     stimulus_goal(workout)&.first
   end
 
+  # [text, calculated]: the goal and the expected result on one line ("For time · 11:30–23:00").
+  def stimulus_headline(workout)
+    goal = stimulus_goal(workout)
+    range = intended_stimulus_range(workout)
+    return unless goal || range
+
+    text = goal ? [goal.first, range].compact.join(' · ') : "Expected #{range}"
+    [text, goal&.last || stimulus_range_calculated?(workout)]
+  end
+
+  def stimulus_range_calculated?(workout)
+    stimulus_pair(workout, :stimulus_range_low, :stimulus_range_high).last
+  end
+
   # [[label, text, calculated], ...] for each workout-level target that has a value.
   def stimulus_workout_lines(workout)
     [
-      stimulus_range_line(workout),
       *STIMULUS_PAIR_LINES.map { |spec| stimulus_pair_line(workout, spec) },
       *STIMULUS_SINGLE_LINES.map { |spec| stimulus_single_line(workout, spec) }
     ].compact
   end
 
-  # [[movement name, [[text, calculated], ...]], ...] for each exercise with any stimulus
-  # value. Each value carries its own calculated flag, so a predicted effort beside CrossFit's
-  # extracted loading tags only the effort.
+  # [[movement name, [[text, calculated], ...]], ...] for each weighted movement. An unweighted
+  # movement's intensity is its volume, which the workout already states. Each value carries
+  # its own calculated flag, so a predicted sets guide beside CrossFit's loading tags only the sets.
   def stimulus_movement_lines(workout)
     workout.segments.flat_map(&:exercises).filter_map do |exercise|
-      parts = stimulus_movement_parts(exercise)
-      [exercise.movement.name, parts] if parts.any?
+      loading = exercise.intended_stimulus_for(:stimulus_loading)&.value
+      [exercise.movement.name, stimulus_movement_parts(exercise)] if StimulusCalculator::Effort::LOADED.include?(loading)
     end
   end
 
-  private
-
-  def stimulus_range_line(workout)
-    range = intended_stimulus_range(workout)
-    ['Expected', range, stimulus_pair(workout, :stimulus_range_low, :stimulus_range_high).last] if range
+  # Whether every value shown is calculated, so the panel tags it once instead of per value.
+  def stimulus_all_calculated?(headline, lines, movement_lines)
+    flags = [headline&.last, *lines.map(&:last), *movement_lines.flat_map { |_, parts| parts.map(&:last) }].compact
+    flags.any? && flags.all?
   end
+
+  private
 
   # [[text, calculated], ...] for each per-movement field with a value.
   def stimulus_movement_parts(exercise)
     STIMULUS_MOVEMENT_FIELDS.filter_map do |field|
       resolved = exercise.intended_stimulus_for(field)
-      [stimulus_movement_text(field, resolved.value), stimulus_calculated?(resolved)] if resolved&.value
+      [stimulus_movement_text(field, resolved.value, exercise.segment), stimulus_calculated?(resolved)] if resolved&.value
     end
   end
 
@@ -86,12 +99,19 @@ module IntendedStimulusLinesHelper
     [spec[:label], format(spec[:template], clock_duration(resolved.value)), stimulus_calculated?(resolved)]
   end
 
-  def stimulus_movement_text(field, value)
+  def stimulus_movement_text(field, value, segment)
     case field
     when 'stimulus_sets_max' then value == 1 ? 'unbroken' : "#{value} sets or fewer"
-    when 'stimulus_duration_max' then "≤ #{clock_duration(value)}"
-    when 'stimulus_rest_max_seconds' then "rest ≤ #{clock_duration(value)}"
-    else value.humanize
+    when 'stimulus_duration_max' then ["under #{clock_duration(value)}", stimulus_effort_unit(segment)].compact.join(' ')
+    when 'stimulus_rest_max_seconds' then "rest under #{clock_duration(value)}"
+    else value
     end
+  end
+
+  # What one timed effort is: the first set of a scheme, or one of several rounds.
+  def stimulus_effort_unit(segment)
+    return 'per set' if segment.interval?
+
+    'per round' if segment.rounds.to_i > 1
   end
 end

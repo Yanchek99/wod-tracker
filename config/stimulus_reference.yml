@@ -26,6 +26,9 @@ constants:
   # 2x; CAP class-plan windows run narrower, and 1.6 matches their width (median 0.97x across the
   # two-sided class-plan claims, all still overlapping).
   slow_factor: 1.6
+  # The same for one monostructural effort, which CrossFit wants held at a steady pace: CAP's
+  # Nancy class plan (2026-10-16) caps each 400-m run at 2:00 against a 1:30 reference run.
+  monostructural_slow_factor: 1.33
   # L2 guide p36: heavy-day working sets "at or above 80-85 percent" of a 1RM.
   heavy_boundary: 0.85
   # CrossFit's paired Rx loads: 65/95, 95/135, 155/225 (about 0.7).

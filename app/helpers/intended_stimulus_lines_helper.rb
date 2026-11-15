@@ -10,9 +10,9 @@ module IntendedStimulusLinesHelper
     'heavy_find_max' => 'Heavy day: find a max', 'skill_practice' => 'Skill practice'
   }.freeze
 
-  # Workout-level low/high lines, in display order. clock: render seconds as MM:SS.
+  # Workout-level low/high lines, in display order. clock: render seconds as MM:SS. Round time
+  # is left out: the expected finish already says it.
   STIMULUS_PAIR_LINES = [
-    { label: 'Per round', prefix: :stimulus_round_seconds, clock: true, suffix: '' },
     { label: 'Load', prefix: :stimulus_percent_1rm, clock: false, suffix: '% of 1RM' },
     { label: 'Working sets', prefix: :stimulus_working_sets, clock: false, suffix: '' },
     { label: 'Rest', prefix: :stimulus_rest_seconds, clock: true, suffix: ' between sets' }
@@ -61,13 +61,16 @@ module IntendedStimulusLinesHelper
     ].compact
   end
 
-  # [[movement name, [[text, calculated], ...]], ...] for each weighted movement. An unweighted
-  # movement's intensity is its volume, which the workout already states. Each value carries
-  # its own calculated flag, so a predicted sets guide beside CrossFit's loading tags only the sets.
+  # [[movement name, [[text, calculated], ...]], ...] for each weighted or monostructural
+  # movement (a run's time target). Other unweighted movements' intensity is their volume,
+  # which the workout already states. Each value carries its own calculated flag, so a
+  # predicted time beside CrossFit's sets guide tags only the time.
   def stimulus_movement_lines(workout)
     workout.segments.flat_map(&:exercises).filter_map do |exercise|
-      loading = exercise.intended_stimulus_for(:stimulus_loading)&.value
-      [exercise.movement.name, stimulus_movement_parts(exercise)] if StimulusCalculator::Effort::LOADED.include?(loading)
+      next unless stimulus_movement_line?(exercise)
+
+      parts = stimulus_movement_parts(exercise)
+      [exercise.movement.name, parts] if parts.any?
     end
   end
 
@@ -78,6 +81,11 @@ module IntendedStimulusLinesHelper
   end
 
   private
+
+  def stimulus_movement_line?(exercise)
+    exercise.movement.family_monostructural? ||
+      StimulusCalculator::Effort::LOADED.include?(exercise.intended_stimulus_for(:stimulus_loading)&.value)
+  end
 
   # [[text, calculated], ...] for each per-movement field with a value.
   def stimulus_movement_parts(exercise)

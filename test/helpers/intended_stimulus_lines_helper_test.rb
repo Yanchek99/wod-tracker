@@ -58,11 +58,11 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
                   ['Rest', '2:00–3:00 between sets', false]], stimulus_workout_lines(workout)
   end
 
-  test 'interval and round-time workout lines' do
+  test 'interval workout lines, without round time' do
     workout = Workout.new(score_type: :time, stimulus_round_seconds_high: 60, stimulus_interval_work_seconds: 270,
                           stimulus_interval_rest_seconds_min: 90, stimulus_source: :extracted)
 
-    assert_equal [['Per round', '≤ 1:00', false], ['Work', '≤ 4:30 per interval', false],
+    assert_equal [['Work', '≤ 4:30 per interval', false],
                   ['Rest', '≥ 1:30 per interval', false]], stimulus_workout_lines(workout)
   end
 
@@ -91,6 +91,16 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
                                                          current: true)
 
     assert_not_includes stimulus_movement_lines(workouts(:fran)).map(&:first), 'Pull Up'
+  end
+
+  test 'a run gets a time line, though it is unweighted' do
+    workout = Workout.create!(name: 'Run Line', score_type: :time)
+    run = workout.segments.create!(position: 1, rounds: 5)
+                 .exercises.create!(position: 1, movement: movements(:run), distance: 400, distance_unit: :meter)
+    run.stimulus_predictions.create!(source: :derived, model_version: 'calc-v1', stimulus_loading: :unloaded,
+                                     stimulus_duration_max: 120, current: true)
+
+    assert_equal [['Run', [['under 2:00 per round', true]]]], stimulus_movement_lines(workout.reload)
   end
 
   test 'all calculated only when every shown value is' do

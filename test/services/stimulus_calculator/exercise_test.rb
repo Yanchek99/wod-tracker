@@ -34,6 +34,13 @@ module StimulusCalculator
       assert_equal 'threshold', StimulusCalculator.exercise(threshold.exercises.first, test_reference)[:stimulus_effort]
     end
 
+    # 400 m x 0.25 s = 100 s fast; a monostructural ceiling uses its own factor (1.5 here), not 2.
+    test 'a run keeps a steadier pace: its ceiling uses the monostructural slow factor' do
+      run = build_workout('Run Ceiling', movements: [{ movement: movements(:run), distance: 400, distance_unit: :meter }])
+
+      assert_equal 150, StimulusCalculator.exercise(run.exercises.first, test_reference)[:stimulus_duration_max]
+    end
+
     test 'an unloaded movement gets no sets guide' do
       assert_nil StimulusCalculator.exercise(fran.exercises.second, test_reference)[:stimulus_sets_max]
     end

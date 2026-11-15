@@ -1,7 +1,8 @@
 module StimulusCalculator
   # Per-movement guidance from one effort of that movement (one set or round): a sets guide
   # (reps per set over the load class's expected unbroken chunk), a time ceiling (the effort at
-  # slow pace), and an effort label from the effort's fast duration.
+  # slow pace; a monostructural effort keeps a steadier pace), and an effort label from the
+  # effort's fast duration.
   module Effort
     LOADED = %w[light moderate heavy].freeze
 
@@ -11,7 +12,7 @@ module StimulusCalculator
       fast = Pace.seconds(exercise, Volume.per_effort(exercise), reference)
       {
         stimulus_sets_max: sets_max(exercise, loading, reference),
-        stimulus_duration_max: fast && (fast * reference.constant(:slow_factor)).round,
+        stimulus_duration_max: fast && (fast * slow_factor(exercise, reference)).round,
         stimulus_effort: fast && !weight_scored?(exercise) ? label(fast, reference) : nil
       }
     end
@@ -21,6 +22,10 @@ module StimulusCalculator
       return unless LOADED.include?(loading) && reps.positive?
 
       (reps.to_f / reference.constant(:chunk_reps).fetch(loading)).ceil
+    end
+
+    def slow_factor(exercise, reference)
+      reference.constant(exercise.movement.family_monostructural? ? :monostructural_slow_factor : :slow_factor)
     end
 
     def label(seconds, reference)

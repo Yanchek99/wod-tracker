@@ -2,7 +2,7 @@
 # (config/stimulus_reference.yml) can change without breaking exact-number tests.
 module StimulusTestReference
   CONSTANTS = {
-    'transition_seconds' => 10, 'slow_factor' => 2, 'heavy_boundary' => 0.85, 'female_reference_factor' => 0.7,
+    'transition_seconds' => 10, 'slow_factor' => 2, 'monostructural_slow_factor' => 1.5, 'heavy_boundary' => 0.85, 'female_reference_factor' => 0.7,
     'chunk_reps' => { 'light' => 15, 'moderate' => 7, 'heavy' => 2 },
     'effort_seconds' => { 'sprint' => 60, 'hard' => 180, 'threshold' => 600 },
     'heavy_rest_seconds' => [180, 300], 'heavy_working_percent_low' => 80, 'height_factor_range' => [0.5, 1.5]

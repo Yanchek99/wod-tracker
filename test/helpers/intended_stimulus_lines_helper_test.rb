@@ -22,10 +22,17 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
   end
 
   test 'the headline puts the goal and the expected result on one line' do
+    workout = Workout.new(score_type: :round, stimulus_goal: :amrap, stimulus_range_low: 12,
+                          stimulus_range_high: 15, stimulus_source: :extracted)
+
+    assert_match(/\AAMRAP · 12–15/, stimulus_headline(workout).first)
+  end
+
+  test 'a for-time goal is left out, since the workout already says it' do
     workout = Workout.new(score_type: :time, stimulus_goal: :for_time, stimulus_range_low: 690,
                           stimulus_range_high: 1380, stimulus_source: :extracted)
 
-    assert_equal ['For time · 11:30–23:00', false], stimulus_headline(workout)
+    assert_equal ['Expected 11:30–23:00', false], stimulus_headline(workout)
   end
 
   test 'calculated? is true for a prediction and false for an extracted value' do

@@ -15,7 +15,7 @@ class WorkoutStimulusPanelTest < ActionDispatch::IntegrationTest
 
     get workout_path(@workout)
 
-    assert_select '.workout-stimulus', text: /For time · ≤ 5:00/
+    assert_select '.workout-stimulus', text: /Expected ≤ 5:00/
     assert_select '.workout-stimulus .workout-collapsible-header .stimulus-calculated', count: 1
     assert_select '.workout-stimulus .workout-collapsible-body .stimulus-calculated', count: 0
   end

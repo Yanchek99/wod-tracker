@@ -3,8 +3,9 @@
 # calculated (derived or predicted) so the panel can tag it; CrossFit's and coaches' own values
 # render untagged.
 module IntendedStimulusLinesHelper
+  # For time is left out: the workout's own score line already says it.
   STIMULUS_GOAL_LABELS = {
-    'for_time' => 'For time', 'amrap' => 'AMRAP', 'intervals' => 'Intervals',
+    'amrap' => 'AMRAP', 'intervals' => 'Intervals',
     'heavy_ascending' => 'Heavy day: build each set', 'heavy_hold_percent' => 'Heavy day: hold a percentage',
     'heavy_find_max' => 'Heavy day: find a max', 'skill_practice' => 'Skill practice'
   }.freeze
@@ -29,14 +30,15 @@ module IntendedStimulusLinesHelper
   # [label, calculated] or nil.
   def stimulus_goal(workout)
     goal = workout.intended_stimulus_for(:stimulus_goal)
-    [STIMULUS_GOAL_LABELS[goal.value], stimulus_calculated?(goal)] if goal&.value
+    label = STIMULUS_GOAL_LABELS[goal&.value]
+    [label, stimulus_calculated?(goal)] if label
   end
 
   def stimulus_goal_label(workout)
     stimulus_goal(workout)&.first
   end
 
-  # [text, calculated]: the goal and the expected result on one line ("For time · 11:30–23:00").
+  # [text, calculated]: the goal and the expected result on one line ("AMRAP · 12–15 rounds").
   def stimulus_headline(workout)
     goal = stimulus_goal(workout)
     range = intended_stimulus_range(workout)

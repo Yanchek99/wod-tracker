@@ -24,8 +24,9 @@ module IntendedStimulusLinesHelper
     { label: 'Rest', field: :stimulus_interval_rest_seconds_min, template: '≥ %s per interval' }
   ].freeze
 
-  # Per-movement fields in display order.
-  STIMULUS_MOVEMENT_FIELDS = %w[stimulus_loading stimulus_sets_max stimulus_duration_max stimulus_rest_max_seconds].freeze
+  # Per-movement fields in display order. Loading only picks which movements get a line: the
+  # prescribed load already says it.
+  STIMULUS_MOVEMENT_FIELDS = %w[stimulus_sets_max stimulus_duration_max stimulus_rest_max_seconds].freeze
 
   # [label, calculated] or nil.
   def stimulus_goal(workout)
@@ -103,10 +104,9 @@ module IntendedStimulusLinesHelper
 
   def stimulus_movement_text(field, value, segment)
     case field
-    when 'stimulus_sets_max' then value == 1 ? 'unbroken' : "#{value} sets or fewer"
+    when 'stimulus_sets_max' then value == 1 ? 'unbroken' : "1–#{value} sets"
     when 'stimulus_duration_max' then ["under #{clock_duration(value)}", stimulus_effort_unit(segment)].compact.join(' ')
     when 'stimulus_rest_max_seconds' then "rest under #{clock_duration(value)}"
-    else value
     end
   end
 

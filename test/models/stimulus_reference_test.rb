@@ -7,7 +7,7 @@ class StimulusReferenceTest < ActiveSupport::TestCase
 
   test 'loads the calculation constants' do
     assert_equal 10, @reference.constant(:transition_seconds)
-    assert_equal 2, @reference.constant(:slow_factor)
+    assert_in_delta 1.6, @reference.constant(:slow_factor)
     assert_in_delta 0.85, @reference.constant(:heavy_boundary)
   end
 

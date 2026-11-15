@@ -1,7 +1,7 @@
 module StimulusCalculator
   # Programming Basics pt 1: each movement's time, summed for a round, times the rounds, plus
-  # transitions. The fast time is that sum; the range runs to slow_factor x fast (Rochet,
-  # "Hitting the Stimulus"). An AMRAP's expected rounds are its time cap over the round time.
+  # transitions. The fast time is that sum; the range runs to slow_factor x fast (the
+  # reference table says where that factor comes from). An AMRAP's expected rounds are its time cap over the round time.
   # Every movement must have a pace -- a partial sum would understate the time -- and team
   # workouts get no range (their volume is shared).
   module Timing

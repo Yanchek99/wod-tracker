@@ -22,15 +22,17 @@
 constants:
   # Programming Basics pt 1: "about 10-15 seconds" between movements.
   transition_seconds: 10
-  # Rochet, "Hitting the Stimulus" (crossfit.com): the slower target is about 2x the fastest.
-  slow_factor: 2
+  # The slower target over the fastest. Rochet, "Hitting the Stimulus" (crossfit.com), says about
+  # 2x; CAP class-plan windows run narrower, and 1.6 matches their width (median 0.97x across the
+  # two-sided class-plan claims, all still overlapping).
+  slow_factor: 1.6
   # L2 guide p36: heavy-day working sets "at or above 80-85 percent" of a 1RM.
   heavy_boundary: 0.85
   # CrossFit's paired Rx loads: 65/95, 95/135, 155/225 (about 0.7).
   female_reference_factor: 0.7
   # Expected unbroken chunk per load class, for the "N sets or fewer" guide. Drafted -- owner review.
   chunk_reps:
-    light: 15
+    light: 10
     moderate: 7
     heavy: 2
   # One effort's duration cut-offs for effort labels (app's own scale). Drafted -- owner review.

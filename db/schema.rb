@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_185926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -221,6 +221,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_120000) do
     t.integer "time_seconds"
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workout_id"
+    t.boolean "partitioned", default: false, null: false
     t.index ["position", "workout_id"], name: "index_segments_on_position_and_workout_id", unique: true
     t.index ["workout_id"], name: "index_segments_on_workout_id"
   end

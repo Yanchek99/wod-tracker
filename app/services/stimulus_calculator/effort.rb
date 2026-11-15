@@ -8,7 +8,11 @@ module StimulusCalculator
 
     module_function
 
+    # A partitioned segment (reps split and ordered however the athlete likes) has no fixed
+    # effort, so its movements get no per-effort values.
     def call(exercise, loading, reference)
+      return {} if exercise.segment.partitioned?
+
       fast = Pace.seconds(exercise, Volume.per_effort(exercise), reference)
       {
         stimulus_sets_max: sets_max(exercise, loading, reference),

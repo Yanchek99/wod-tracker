@@ -41,6 +41,14 @@ module StimulusCalculator
       assert_equal 150, StimulusCalculator.exercise(run.exercises.first, test_reference)[:stimulus_duration_max]
     end
 
+    test 'a partitioned segment gets no per-effort values, only its loading' do
+      workout = build_workout('Partitioned', partitioned: true,
+                                             movements: [{ movement: movements(:thruster), reps: 100, male_load: 95,
+                                                           female_load: 65, load_unit: :lb }])
+
+      assert_equal({ stimulus_loading: 'light' }, StimulusCalculator.exercise(workout.exercises.first, test_reference))
+    end
+
     test 'an unloaded movement gets no sets guide' do
       assert_nil StimulusCalculator.exercise(fran.exercises.second, test_reference)[:stimulus_sets_max]
     end

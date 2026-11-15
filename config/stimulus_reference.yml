@@ -141,6 +141,12 @@ skill_levels:
   advanced:
     paces: { rep: 3.5, meter: 2.0 }
 skill_levels_source: drafted -- owner review
+# Volume: bodyweight gymnastics slows once one movement's total reps reach large volume (Murph's
+# 100/200/300). Fit to the two-sided CAP class-plan ranges: 1.2x from 75 reps was the best of the
+# tiers tried (thresholds 50-200, factors 1.1-1.7); a second, larger tier did not help.
+skill_volume:
+  large_from: 75
+  factor: 1.2
 # The usual Rx height for gymnastics equipment (male side). Box 20/24 in, rope 15 ft.
 typical_heights:
   box: { value: 24, unit: inch }

@@ -26,12 +26,20 @@ module StimulusCalculator
       assert_in_delta 24, seconds(reps: 20)
     end
 
+    # 100 basic reps x 1.2 s = 120 s; at large volume (75+ reps) x 1.2 = 144 s.
+    test 'bodyweight gymnastics slows at large volume' do
+      reference = StimulusReference.new(test_reference.data.merge('skill_volume' => { 'large_from' => 75, 'factor' => 1.2 }))
+
+      assert_in_delta 144, seconds(reference, reps: 100)
+      assert_in_delta 24, seconds(reference, reps: 20)
+    end
+
     private
 
-    def seconds(**attrs)
+    def seconds(reference = test_reference, **attrs)
       workout = build_workout('Box', movements: [{ movement: @box_jump, **attrs }])
       exercise = workout.exercises.first
-      StimulusCalculator::Pace.seconds(exercise, StimulusCalculator::Volume.for(exercise), test_reference)
+      StimulusCalculator::Pace.seconds(exercise, StimulusCalculator::Volume.for(exercise), reference)
     end
   end
 end

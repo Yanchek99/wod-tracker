@@ -2,7 +2,8 @@ module StimulusCalculator
   # Seconds for a volume of one movement at its load class (Loading), from the movement's bucket
   # in the reference table; nil when no bucket fits or a needed pace is missing (callers then
   # leave the value blank). A box, rope or wall-ball target above its typical height makes each
-  # rep slower, and a lower one faster.
+  # rep slower, and a lower one faster. Bodyweight gymnastics slows with the movement's total
+  # volume in the workout (skill x volume).
   module Pace
     module_function
 
@@ -12,7 +13,18 @@ module StimulusCalculator
 
       loading = Loading.call(exercise, reference)
       parts = volume.map { |unit, amount| profile.seconds_per(unit, loading)&.*(amount) }
-      parts.sum * height_factor(exercise, profile, reference) if parts.none?(&:nil?)
+      return unless parts.none?(&:nil?)
+
+      parts.sum * height_factor(exercise, profile, reference) * volume_factor(exercise, profile, reference)
+    end
+
+    # skill_volume's factor when the movement's total reps in the workout reach its large
+    # volume; 1 below that and outside the gymnastics skill buckets.
+    def volume_factor(exercise, profile, reference)
+      tier = reference.section(:skill_volume)
+      return 1 unless profile.bucket.start_with?('skill:') && tier.any?
+
+      Volume.for(exercise)[:rep].to_i >= tier.fetch('large_from') ? tier.fetch('factor').to_f : 1
     end
 
     # Prescribed height / typical height, within the table's bounds; 1 without both. A height

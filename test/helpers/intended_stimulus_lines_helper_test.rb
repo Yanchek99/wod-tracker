@@ -66,23 +66,23 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
                   ['Rest', '≥ 1:30 per interval', false]], stimulus_workout_lines(workout)
   end
 
-  test 'a movement line joins sets, time limit and rest, without the loading or effort label' do
+  test 'a weighted movement line joins sets and rest, without loading, time cap or effort' do
     exercise = exercises(:fran_thruster)
     exercise.update!(stimulus_loading: :moderate, stimulus_sets_max: 3, stimulus_duration_max: 120,
                      stimulus_rest_max_seconds: 30, stimulus_effort: :sprint, stimulus_source: :extracted)
 
     assert_includes stimulus_movement_lines(workouts(:fran)),
-                    ['Thruster', [['1–3 sets', false], ['under 2:00 per set', false], ['rest under 0:30', false]]]
+                    ['Thruster', [['1–3 sets', false], ['rest under 0:30', false]]]
   end
 
   test 'an extracted value next to a predicted one tags only the predicted value' do
     exercise = exercises(:fran_thruster)
     exercise.update!(stimulus_loading: :light, stimulus_sets_max: 1, stimulus_source: :extracted)
     exercise.stimulus_predictions.create!(source: :predicted, model_version: 'learned-v1',
-                                          stimulus_duration_max: 90, current: true)
+                                          stimulus_rest_max_seconds: 30, current: true)
 
     assert_includes stimulus_movement_lines(workouts(:fran)),
-                    ['Thruster', [['unbroken', false], ['under 1:30 per set', true]]]
+                    ['Thruster', [['unbroken', false], ['rest under 0:30', true]]]
   end
 
   test 'an unweighted movement has no movement line' do

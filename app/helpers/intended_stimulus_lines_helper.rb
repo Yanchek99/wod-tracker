@@ -26,7 +26,9 @@ module IntendedStimulusLinesHelper
 
   # Per-movement fields in display order. Loading only picks which movements get a line: the
   # prescribed load already says it.
-  STIMULUS_MOVEMENT_FIELDS = %w[stimulus_sets_max stimulus_duration_max stimulus_rest_max_seconds].freeze
+  # A weighted movement shows its sets guide and rest; a monostructural one its time cap.
+  STIMULUS_MOVEMENT_FIELDS = %w[stimulus_sets_max stimulus_rest_max_seconds].freeze
+  STIMULUS_MONOSTRUCTURAL_FIELDS = %w[stimulus_duration_max].freeze
 
   # [label, calculated] or nil.
   def stimulus_goal(workout)
@@ -89,7 +91,8 @@ module IntendedStimulusLinesHelper
 
   # [[text, calculated], ...] for each per-movement field with a value.
   def stimulus_movement_parts(exercise)
-    STIMULUS_MOVEMENT_FIELDS.filter_map do |field|
+    fields = exercise.movement.family_monostructural? ? STIMULUS_MONOSTRUCTURAL_FIELDS : STIMULUS_MOVEMENT_FIELDS
+    fields.filter_map do |field|
       resolved = exercise.intended_stimulus_for(field)
       [stimulus_movement_text(field, resolved.value, exercise.segment), stimulus_calculated?(resolved)] if resolved&.value
     end

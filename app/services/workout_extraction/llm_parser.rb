@@ -31,7 +31,7 @@ module WorkoutExtraction
     def self.segment_schema
       @segment_schema ||= {
         type: 'object',
-        properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position])
+        properties: ModelSchema.properties_for(Segment, except: %w[id workout_id created_at updated_at position partitioned])
                                .merge(exercises: { type: 'array', items: exercise_schema }),
         required: [],
         additionalProperties: false

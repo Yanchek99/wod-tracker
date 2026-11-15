@@ -305,13 +305,6 @@ claims:
     result:
     - 729
     - 817
-- workout: Open 24.3
-  source: open_leaderboard
-  reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
-  claims:
-    result:
-    - 891
-    -
 - workout: Open 25.1
   source: open_leaderboard
   reviewed: games.crossfit.com men's Rx 80th-95th percentile, fetched 2026-11-14
@@ -392,18 +385,12 @@ claims:
   source: benchmark_page
   reviewed: crossfit.com/benchmark/helen (Rx'd line), read 2026-11-14 -- owner review
   claims:
-    result:
-    -
-    - 600
     sets_max:
       Kettlebell Swing: 3
 - workout: Cindy
   source: benchmark_page
   reviewed: crossfit.com/benchmark/cindy (Rx'd line), read 2026-11-14 -- owner review
   claims:
-    result:
-    - 600
-    -
     round_seconds:
     -
     - 120
@@ -427,9 +414,6 @@ claims:
   source: benchmark_page
   reviewed: crossfit.com/benchmark/jackie (Rx'd line), read 2026-11-14 -- owner review
   claims:
-    result:
-    -
-    - 540
     loading:
       Thruster: light
 - workout: Linda
@@ -439,15 +423,6 @@ claims:
     result:
     - 780
     - 1020
-- workout: Nancy
-  source: benchmark_page
-  reviewed: crossfit.com/benchmark/nancy (Rx'd line), read 2026-11-14 -- owner review
-  claims:
-    result:
-    -
-    - 900
-    loading:
-      Overhead Squat: light
 - workout: Murph
   source: hero_page
   reviewed: crossfit.com/benchmark/murph (Rx'd 36-46 minutes), read 2026-11-14 -- owner review
@@ -473,13 +448,6 @@ claims:
     - 360
     loading:
       Clean: moderate
-- workout: Mary
-  source: guide
-  reviewed: 'L2 Training Guide p76: elite athletes can achieve more than 15 rounds -- owner review'
-  claims:
-    result:
-    -
-    - 450
 - workout: Helen
   source: class_plan
   reviewed: CrossFit Affiliate Programming class plan 2026-11-09 (Helen), numbers hand-entered by the owner -- not

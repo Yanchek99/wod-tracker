@@ -103,6 +103,15 @@ class IntendedStimulusLinesHelperTest < ActionView::TestCase
     assert_equal [['Run', [['under 2:00 per round', true]]]], stimulus_movement_lines(workout.reload)
   end
 
+  test 'a calculated run cap reads in round numbers' do
+    workout = Workout.create!(name: 'Murph Run', score_type: :time)
+    run = workout.segments.create!(position: 1)
+                 .exercises.create!(position: 1, movement: movements(:run), distance: 1600, distance_unit: :meter)
+    run.stimulus_predictions.create!(source: :derived, model_version: 'calc-v1', stimulus_duration_max: 479, current: true)
+
+    assert_equal [['Run', [['under 8:00', true]]]], stimulus_movement_lines(workout.reload)
+  end
+
   test 'all calculated only when every shown value is' do
     assert stimulus_all_calculated?(['Expected 5:00', true], [], [['Thruster', [['unbroken', true]]]])
     assert_not stimulus_all_calculated?(['Expected 5:00', true], [], [['Thruster', [['unbroken', false]]]])

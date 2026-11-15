@@ -94,8 +94,19 @@ module IntendedStimulusLinesHelper
     fields = exercise.movement.family_monostructural? ? STIMULUS_MONOSTRUCTURAL_FIELDS : STIMULUS_MOVEMENT_FIELDS
     fields.filter_map do |field|
       resolved = exercise.intended_stimulus_for(field)
-      [stimulus_movement_text(field, resolved.value, exercise.segment), stimulus_calculated?(resolved)] if resolved&.value
+      next unless resolved&.value
+
+      calculated = stimulus_calculated?(resolved)
+      [stimulus_movement_text(field, stimulus_display_value(field, resolved.value, calculated), exercise.segment), calculated]
     end
+  end
+
+  # A calculated time cap reads in round numbers, like the finish window (7:59 reads 8:00).
+  def stimulus_display_value(field, value, calculated)
+    return value unless calculated && field == 'stimulus_duration_max'
+
+    rounded = stimulus_rounded_window(nil, value).last
+    rounded.positive? ? rounded : value
   end
 
   def stimulus_pair_line(workout, spec)

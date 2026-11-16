@@ -78,6 +78,6 @@ https://affiliate.crossfit.com/tools/programming-resources/benchmarks (affiliate
 CAP class plans for the benchmark, Hero, and Open workouts linked from this page
 give each workout's Rx, Intermediate, and Beginner versions, its Intended
 Stimulus, and a Scaling section (overview plus a movement-substitution table).
-A local, gitignored copy lives in `cf/docs/cap/` (see its `README.md`) when it
+A local, gitignored copy lives in `cf/docs/workout-plans/` (see its `README.md`) when it
 has been scraped on this machine. It is licensed affiliate content: reference
 it, but never commit it or copy it verbatim into tracked files.

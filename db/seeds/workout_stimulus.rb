@@ -359,7 +359,7 @@
     }
   },
   'Open 11.4' => {
-    range: [nil, nil],
+    range: [100, nil],
     exercises: {
       '1.2' => { sets_max: 4 }
     }
@@ -381,7 +381,7 @@
     }
   },
   'Open 13.2' => {
-    range: [nil, nil],
+    range: [210, nil],
     exercises: {
       '1.1' => { sets_max: 1, loading: :light },
       '1.2' => { sets_max: 1, loading: :light },
@@ -432,7 +432,7 @@
     }
   },
   'Open 22.1' => {
-    range: [nil, nil],
+    range: [150, nil],
     exercises: {
       '1.1' => { duration_max: 60 },
       '1.2' => { duration_max: 60 },
@@ -462,7 +462,11 @@
       '3.2' => { sets_max: 3 }
     }
   },
-  'Open 24.1' => { range: [420, 900], exercises: {} }
+  'Open 24.1' => { range: [420, 900], exercises: {} },
+  'Lynne' => { range: [100, nil], exercises: {} },
+  'The Ghost' => { range: [440, nil], exercises: {} },
+  'Open 15.4' => { range: [45, nil], exercises: {} },
+  'Open 14.4' => { range: [150, nil], exercises: {} }
 }.each do |name, stimulus|
   workout = Workout.find_by!(name:)
   next if workout.stimulus_source_authored?

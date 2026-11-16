@@ -15,6 +15,12 @@ class IntendedStimulusHelperTest < ActionView::TestCase
     assert_equal '≤ 250 reps', intended_stimulus_range(workout)
   end
 
+  test 'formats a lone floor as a minimum' do
+    workout = Workout.new(score_type: :round, stimulus_range_low: 7)
+
+    assert_equal '≥ 7 rounds', intended_stimulus_range(workout)
+  end
+
   test 'collapses an equal low and high to one value' do
     workout = Workout.new(score_type: :round, stimulus_range_low: 12, stimulus_range_high: 12)
 

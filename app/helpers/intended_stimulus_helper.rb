@@ -13,7 +13,8 @@ module IntendedStimulusHelper
 
   def stimulus_bounds_text(workout, low, high)
     return "≤ #{stimulus_value_text(workout, high)}" if low.blank?
-    return stimulus_value_text(workout, low) if high.blank? || high == low
+    return "≥ #{stimulus_value_text(workout, low)}" if high.blank?
+    return stimulus_value_text(workout, low) if high == low
 
     "#{stimulus_value_text(workout, low)}–#{stimulus_value_text(workout, high)}"
   end

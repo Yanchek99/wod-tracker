@@ -68,3 +68,6 @@ yarn-debug.log*
 /.claude
 /.worktrees/
 /.superpowers/
+
+# Licensed CAP affiliate content scraped for local reference only
+/cf/docs/cap/

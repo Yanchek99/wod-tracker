@@ -1293,6 +1293,8 @@ end
   hero_workouts
   open_workouts
   cf_workouts
+  movement_substitutions
+  workout_stimulus
 ].each do |seed_file|
   seed_path = Rails.root.join('db/seeds', "#{seed_file}.rb")
   # Evaluate local seed files in this binding so movement locals are shared.

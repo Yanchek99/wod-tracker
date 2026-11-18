@@ -22,7 +22,7 @@ gem 'anthropic'
 gem 'nokogiri'
 
 # Use Puma as the app server
-gem 'puma', '~> 8.0'
+gem 'puma', '~> 8.1'
 
 # Bundle and transpile JavaScript [https://github.com/rails/jsbundling-rails]
 gem 'jsbundling-rails'

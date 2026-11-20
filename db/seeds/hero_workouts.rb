@@ -415,7 +415,7 @@ end
 # Clovis
 # For time: run 10 miles, 150 burpee pull-ups. Partition as needed.
 Workout.find_or_create_by(name: 'Clovis') do |workout|
-  segment = workout.segments.build(position: 1)
+  segment = workout.segments.build(position: 1, partitioned: true)
   workout.score_type = :time
   workout.notes = 'Partition the run and burpee pull-ups as needed.'
   # rubocop:disable Style/NumericLiterals -- Preserve the original seed literal.
@@ -1709,7 +1709,7 @@ end
 # Liam
 # For time: run 800m w/ plate, 100 toes-to-bars, 50 front squats, 10 rope climbs to 15 feet, run 800m w/ plate. Partition.
 Workout.find_or_create_by(name: 'Liam') do |workout|
-  segment = workout.segments.build(position: 1)
+  segment = workout.segments.build(position: 1, partitioned: true)
   workout.score_type = :time
   workout.notes = 'Partition the toes-to-bars, front squats, and rope climbs as needed.'
   segment.exercises.build(movement: run, position: 1, reps: 1, distance: 800, distance_unit: :meter, notes: 'Carry a plate.', female_load: 25, male_load: 45,
@@ -2121,7 +2121,7 @@ end
 # Murph
 # For time: 1-mile run, 100 pull-ups, 200 push-ups, 300 squats, 1-mile run. Partition as needed.
 Workout.find_or_create_by(name: 'Murph') do |workout|
-  segment = workout.segments.build(position: 1)
+  segment = workout.segments.build(position: 1, partitioned: true)
   workout.score_type = :time
   workout.notes = 'Partition the pull-ups, push-ups, and squats as needed.'
   segment.exercises.build(movement: run, position: 1, reps: 1, distance: 1600, distance_unit: :meter)
@@ -2814,7 +2814,7 @@ end
 # Spehar
 # For time: 100 thrusters, 100 chest-to-bar pull-ups, run 6 miles. Partition as needed.
 Workout.find_or_create_by(name: 'Spehar') do |workout|
-  segment = workout.segments.build(position: 1)
+  segment = workout.segments.build(position: 1, partitioned: true)
   workout.score_type = :time
   workout.notes = 'Partition the thrusters, pull-ups, and run as needed.'
   segment.exercises.build(movement: thruster, position: 1, reps: 100, female_load: 95, male_load: 135, load_unit: :lb)

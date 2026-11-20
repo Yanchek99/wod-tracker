@@ -1,10 +1,36 @@
-- range = intended_stimulus_range(workout)
-- if range || workout.intended_stimulus_notes.present?
-  - preview = [("Expected #{range}" if range), workout.intended_stimulus_notes.to_s.squish].compact_blank.join('. ')
-  = render layout: 'workouts/collapsible_panel', locals: { title: 'Intended stimulus', preview: preview, css_class: 'workout-stimulus', locked: true } do
-    - if range
+- headline = stimulus_headline(workout)
+- lines = stimulus_workout_lines(workout)
+- movement_lines = stimulus_movement_lines(workout)
+- notes = workout.intended_stimulus_notes.presence
+- if headline || lines.any? || movement_lines.any? || notes
+  - range = intended_stimulus_range(workout)
+  - preview = [("Expected #{range}" if range), notes.to_s.squish].compact_blank.join('. ').presence || stimulus_goal_label(workout)
+  / Prose notes are never calculated, so with notes each calculated value keeps its own tag.
+  - tag_once = notes.nil? && stimulus_all_calculated?(headline, lines, movement_lines)
+  = render layout: 'workouts/collapsible_panel', locals: { title: 'Intended stimulus', preview: preview, css_class: 'workout-stimulus', locked: true, title_tag: ('workouts/stimulus_calculated_tag' if tag_once) } do
+    - if headline
       p.mb-1
-        | Expected&nbsp;
-        b = range
-    - if workout.intended_stimulus_notes.present?
-      .notes = simple_format(workout.intended_stimulus_notes)
+        b = headline.first
+        - if headline.last && !tag_once
+          =< render 'workouts/stimulus_calculated_tag'
+    - lines.each do |label, text, calculated|
+      p.mb-1
+        = label
+        | &nbsp;
+        b = text
+        - if calculated && !tag_once
+          =< render 'workouts/stimulus_calculated_tag'
+    - if movement_lines.any?
+      ul.stimulus-movements.list-unstyled.mb-1
+        - movement_lines.each do |name, parts|
+          li
+            = name
+            | :&nbsp;
+            - parts.each_with_index do |(text, calculated), index|
+              - if index.positive?
+                | ,&nbsp;
+              = text
+              - if calculated && !tag_once
+                =< render 'workouts/stimulus_calculated_tag'
+    - if notes
+      .notes = simple_format(notes)

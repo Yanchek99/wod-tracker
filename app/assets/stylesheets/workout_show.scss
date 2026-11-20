@@ -16,6 +16,17 @@
 .workout-card { order: 1; }
 .workout-notes { order: 2; }
 .workout-stimulus { order: 3; }
+
+// A derived or predicted stimulus value: same list as CrossFit's own values, with a quiet tag.
+.stimulus-calculated {
+  padding: .1rem .4rem;
+  border: 1px dashed $border-hairline;
+  color: $text-muted-ui;
+  background: transparent;
+  font-size: .7rem;
+  font-weight: 500;
+  vertical-align: middle;
+}
 .workout-log-button { order: 4; }
 .workout-results,
 .workout-history { order: 5; }

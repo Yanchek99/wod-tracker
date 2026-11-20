@@ -807,7 +807,7 @@ Workout.find_or_create_by(name: 'Open 20.5') do |workout|
   workout.score_type = :time
   workout.time_cap_seconds = 1200
   workout.notes = 'For time, 20-minute cap. The reps may be partitioned and performed in any order. Post total time.'
-  segment = workout.segments.build(position: 1)
+  segment = workout.segments.build(position: 1, partitioned: true)
   segment.exercises.build(movement: ring_muscle_up, position: 1, reps: 40)
   segment.exercises.build(movement: row, position: 2, reps: 1, calories: 80)
   segment.exercises.build(movement: wall_ball_shot, position: 3, reps: 120,

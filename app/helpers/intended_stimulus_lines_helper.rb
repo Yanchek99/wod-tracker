@@ -1,0 +1,141 @@
+# The Intended stimulus panel's lines beyond the prose: a headline (goal and expected result),
+# workout-level targets, and one line per weighted movement. Each value carries whether it is
+# calculated (derived or predicted) so the panel can tag it; CrossFit's and coaches' own values
+# render untagged.
+module IntendedStimulusLinesHelper
+  # For time is left out: the workout's own score line already says it.
+  STIMULUS_GOAL_LABELS = {
+    'amrap' => 'AMRAP', 'intervals' => 'Intervals',
+    'heavy_ascending' => 'Heavy day: build each set', 'heavy_hold_percent' => 'Heavy day: hold a percentage',
+    'heavy_find_max' => 'Heavy day: find a max', 'skill_practice' => 'Skill practice'
+  }.freeze
+
+  # Workout-level low/high lines, in display order. clock: render seconds as MM:SS. Round time
+  # is left out: the expected finish already says it.
+  STIMULUS_PAIR_LINES = [
+    { label: 'Load', prefix: :stimulus_percent_1rm, clock: false, suffix: '% of 1RM' },
+    { label: 'Working sets', prefix: :stimulus_working_sets, clock: false, suffix: '' },
+    { label: 'Rest', prefix: :stimulus_rest_seconds, clock: true, suffix: ' between sets' }
+  ].freeze
+
+  # Workout-level single-value interval lines (always seconds).
+  STIMULUS_SINGLE_LINES = [
+    { label: 'Work', field: :stimulus_interval_work_seconds, template: '≤ %s per interval' },
+    { label: 'Rest', field: :stimulus_interval_rest_seconds_min, template: '≥ %s per interval' }
+  ].freeze
+
+  # Per-movement fields in display order. Loading only picks which movements get a line: the
+  # prescribed load already says it.
+  # A weighted movement shows its sets guide and rest; a monostructural one its time cap.
+  STIMULUS_MOVEMENT_FIELDS = %w[stimulus_sets_max stimulus_rest_max_seconds].freeze
+  STIMULUS_MONOSTRUCTURAL_FIELDS = %w[stimulus_duration_max].freeze
+
+  # [label, calculated] or nil.
+  def stimulus_goal(workout)
+    goal = workout.intended_stimulus_for(:stimulus_goal)
+    label = STIMULUS_GOAL_LABELS[goal&.value]
+    [label, stimulus_calculated?(goal)] if label
+  end
+
+  def stimulus_goal_label(workout)
+    stimulus_goal(workout)&.first
+  end
+
+  # [text, calculated]: the goal and the expected result on one line ("AMRAP · 12–15 rounds").
+  def stimulus_headline(workout)
+    goal = stimulus_goal(workout)
+    range = intended_stimulus_range(workout)
+    return unless goal || range
+
+    text = goal ? [goal.first, range].compact.join(' · ') : "Expected #{range}"
+    [text, goal&.last || stimulus_range_calculated?(workout)]
+  end
+
+  def stimulus_range_calculated?(workout)
+    stimulus_pair(workout, :stimulus_range_low, :stimulus_range_high).last
+  end
+
+  # [[label, text, calculated], ...] for each workout-level target that has a value.
+  def stimulus_workout_lines(workout)
+    [
+      *STIMULUS_PAIR_LINES.map { |spec| stimulus_pair_line(workout, spec) },
+      *STIMULUS_SINGLE_LINES.map { |spec| stimulus_single_line(workout, spec) }
+    ].compact
+  end
+
+  # [[movement name, [[text, calculated], ...]], ...] for each weighted or monostructural
+  # movement (a run's time target). Other unweighted movements' intensity is their volume,
+  # which the workout already states. Each value carries its own calculated flag, so a
+  # predicted time beside CrossFit's sets guide tags only the time.
+  def stimulus_movement_lines(workout)
+    workout.segments.flat_map(&:exercises).filter_map do |exercise|
+      next unless stimulus_movement_line?(exercise)
+
+      parts = stimulus_movement_parts(exercise)
+      [exercise.movement.name, parts] if parts.any?
+    end
+  end
+
+  # Whether every value shown is calculated, so the panel tags it once instead of per value.
+  def stimulus_all_calculated?(headline, lines, movement_lines)
+    flags = [headline&.last, *lines.map(&:last), *movement_lines.flat_map { |_, parts| parts.map(&:last) }].compact
+    flags.any? && flags.all?
+  end
+
+  private
+
+  def stimulus_movement_line?(exercise)
+    exercise.movement.family_monostructural? ||
+      StimulusCalculator::Effort::LOADED.include?(exercise.intended_stimulus_for(:stimulus_loading)&.value)
+  end
+
+  # [[text, calculated], ...] for each per-movement field with a value.
+  def stimulus_movement_parts(exercise)
+    fields = exercise.movement.family_monostructural? ? STIMULUS_MONOSTRUCTURAL_FIELDS : STIMULUS_MOVEMENT_FIELDS
+    fields.filter_map do |field|
+      resolved = exercise.intended_stimulus_for(field)
+      next unless resolved&.value
+
+      calculated = stimulus_calculated?(resolved)
+      [stimulus_movement_text(field, stimulus_display_value(field, resolved.value, calculated), exercise.segment), calculated]
+    end
+  end
+
+  # A calculated time cap reads in round numbers, like the finish window (7:59 reads 8:00).
+  def stimulus_display_value(field, value, calculated)
+    return value unless calculated && field == 'stimulus_duration_max'
+
+    rounded = stimulus_rounded_window(nil, value).last
+    rounded.positive? ? rounded : value
+  end
+
+  def stimulus_pair_line(workout, spec)
+    low, high, calculated = stimulus_pair(workout, :"#{spec[:prefix]}_low", :"#{spec[:prefix]}_high")
+    return if low.blank? && high.blank?
+
+    text = stimulus_bounds_text(low, high) { |value| spec[:clock] ? clock_duration(value) : value.to_s }
+    [spec[:label], "#{text}#{spec[:suffix]}", calculated]
+  end
+
+  def stimulus_single_line(workout, spec)
+    resolved = workout.intended_stimulus_for(spec[:field])
+    return unless resolved&.value
+
+    [spec[:label], format(spec[:template], clock_duration(resolved.value)), stimulus_calculated?(resolved)]
+  end
+
+  def stimulus_movement_text(field, value, segment)
+    case field
+    when 'stimulus_sets_max' then value == 1 ? 'unbroken' : "1–#{value} sets"
+    when 'stimulus_duration_max' then ["under #{clock_duration(value)}", stimulus_effort_unit(segment)].compact.join(' ')
+    when 'stimulus_rest_max_seconds' then "rest under #{clock_duration(value)}"
+    end
+  end
+
+  # What one timed effort is: the first set of a scheme, or one of several rounds.
+  def stimulus_effort_unit(segment)
+    return 'per set' if segment.interval?
+
+    'per round' if segment.rounds.to_i > 1
+  end
+end

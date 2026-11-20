@@ -69,3 +69,8 @@ https://www.crossfit.com/crossfit-movements
 Use this page as the source for the base seeded movement names. Seed names are
 normalized for app display by removing leading `The`, preserving CrossFit
 hyphenation, and deduplicating case variants.
+
+## Local Workout Plans
+
+`cf/docs/workout-plans/` is a local, gitignored reference folder (see its
+`README.md`). Never commit it or copy it verbatim into tracked files.

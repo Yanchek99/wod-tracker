@@ -29,6 +29,13 @@ class SeedDataTest < ActiveSupport::TestCase
     end
   end
 
+  test 'every workout stimulus exercise is keyed by a seeded movement' do
+    movements = seed_source('workout_stimulus').scan(/^      '((?:[^'\\]|\\.)+)' => [{\[]/).flatten
+
+    assert_not_empty movements
+    assert_empty movements.map { |name| name.delete('\\') }.uniq - seeded_movement_names
+  end
+
   private
 
   def seed_source(name)

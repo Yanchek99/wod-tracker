@@ -20,8 +20,9 @@ recoverable get explicit storage:
 - Time frame, per workout: `workouts.stimulus_range_low` and
   `workouts.stimulus_range_high`, integers read in the workout's own `score_type`
   unit — seconds for a For Time workout, total reps for a fixed-rep AMRAP, rounds
-  for a rounds-scored AMRAP. A bare ceiling sets only the high bound; a point
-  estimate sets both equal.
+  for a rounds-scored AMRAP. A bare ceiling sets only the high bound, a bare
+  floor ("7+ rounds") sets only the low bound, and a point estimate sets both
+  equal.
 
 Per movement, two more optional columns capture the rest of the published
 per-movement guidance: `exercises.stimulus_sets_max` (an intended maximum number

@@ -457,7 +457,12 @@
     exercises = workout.exercises.joins(:movement).where(movements: { name: movement_name })
                        .order('segments.position', :position).to_a
     values = Array.new(exercises.size, values) if values.is_a?(Hash)
-    raise "#{name}: #{movement_name} has #{exercises.size} occurrences, #{values.size} values" if exercises.empty? || values.size != exercises.size
+    if exercises.empty? || values.size != exercises.size
+      # An existing workout can drift from its seed definition (edited or re-resolved movements);
+      # skip it rather than abort the whole seed run, which blocks deploys.
+      warn "Skipping #{name}: #{movement_name} stimulus (#{exercises.size} occurrences, #{values.size} values)"
+      next
+    end
 
     exercises.zip(values).each do |exercise, value|
       next if value.nil? || exercise.stimulus_source_authored?

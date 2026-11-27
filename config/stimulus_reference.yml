@@ -1,0 +1,223 @@
+# Reference table for the intended-stimulus calculator (#1992, cf/docs/decisions.md 2026-11-11).
+#
+# The reference athlete is the Rx gym athlete: a strong regular at an affiliate, the athlete
+# CrossFit says Rx is written for (Programming Basics pt 1) -- not a Games athlete.
+#
+# Movements are not listed one by one. Programming Basics reads a workout through loading,
+# movement and volume (cf/docs/programming.md), so each movement falls into a bucket taken from
+# its own family, equipment, skill level, primary function and name:
+#   weightlifting + barbell   -> a lift family (snatch / clean by name, jerk by name, else the
+#                                primary function: squat, hinge, push = press)
+#   weightlifting + implement -> the implement (kettlebell, dumbbell, medicine ball, ...) and its
+#                                typical Rx load; loading = prescribed load / typical
+#   gymnastics                -> its skill level; a box or rope movement also has a typical height
+#   monostructural            -> its own pace (Run, Row, ...), else one by equipment
+# Volume is the prescribed count itself. A bucket gives seconds per unit (rep, meter, calorie,
+# second; a foot is read as a meter).
+#
+# CrossFit publishes only a handful of these numbers. Every value says where it came from:
+# a CrossFit citation, or "drafted -- owner review" (a starting value to be corrected against
+# CrossFit's posted stimulus with `bin/rails stimulus:accuracy`).
+
+constants:
+  # Programming Basics pt 1: "about 10-15 seconds" between movements.
+  transition_seconds: 10
+  # The slower target over the fastest. Rochet, "Hitting the Stimulus" (crossfit.com), says about
+  # 2x; CAP class-plan windows run narrower, and 1.6 matches their width (median 0.97x across the
+  # two-sided class-plan claims, all still overlapping).
+  slow_factor: 1.6
+  # The same for one monostructural effort, which CrossFit wants held at a steady pace: CAP's
+  # Nancy class plan (2026-10-16) caps each 400-m run at 2:00 against a 1:30 reference run.
+  monostructural_slow_factor: 1.33
+  # L2 guide p36: heavy-day working sets "at or above 80-85 percent" of a 1RM.
+  heavy_boundary: 0.85
+  # CrossFit's paired Rx loads: 65/95, 95/135, 155/225 (about 0.7).
+  female_reference_factor: 0.7
+  # Expected unbroken chunk per load class, for the "N sets or fewer" guide. Drafted -- owner review.
+  chunk_reps:
+    light: 10
+    moderate: 7
+    heavy: 2
+  # One effort's duration cut-offs for effort labels (app's own scale). Drafted -- owner review.
+  effort_seconds:
+    sprint: 60
+    hard: 180
+    threshold: 600
+  # L2 guide (Clean and Jerk 3-3-3-3-3 intended stimulus): 3-5 minutes between heavy sets.
+  heavy_rest_seconds: [180, 300]
+  # L2 guide p36: working sets generally at or above 80-85 percent of 1RM.
+  heavy_working_percent_low: 80
+  # A prescribed height against the typical one scales a rep's time, within these bounds.
+  # Drafted -- owner review.
+  height_factor_range: [0.5, 1.5]
+
+# Barbell lifts. reference_load: the reference athlete's 1-rep max for the family (male, lb).
+# Loading = prescribed load / reference_load: heavy at or above heavy_boundary, light below
+# light_below, moderate between. light_below checked against CrossFit's labels: Amanda's 135
+# snatch and Elizabeth's 135 clean are moderate (L2 pp54, 68), Diane's 225 deadlift is "Medium"
+# (L2 p64).
+lift_families:
+  squat:
+    reference_load: 345
+    light_below: 0.50
+    paces:
+      rep: { light: 2.0, moderate: 3.0, heavy: 6.0 }
+      meter: { light: 0.8, moderate: 1.0, heavy: 1.5 }
+    source: "Rochet, Hitting the Stimulus (crossfit.com): thruster 2-3 s/rep; other values drafted -- owner review"
+  hinge:
+    reference_load: 425
+    light_below: 0.50
+    paces:
+      rep: { light: 1.5, moderate: 2.0, heavy: 5.0 }
+    source: "Programming Basics pt 1: 21 deadlifts at 2 s/rep (moderate); other values drafted -- owner review"
+  press:
+    reference_load: 215
+    light_below: 0.50
+    paces:
+      rep: { light: 2.0, moderate: 2.5, heavy: 5.0 }
+    source: drafted -- owner review
+  jerk:
+    reference_load: 265
+    light_below: 0.45
+    paces:
+      rep: { light: 2.5, moderate: 3.5, heavy: 7.0 }
+    source: drafted -- owner review
+  clean:
+    reference_load: 265
+    light_below: 0.45
+    paces:
+      rep: { light: 2.5, moderate: 3.5, heavy: 8.0 }
+    source: drafted -- owner review
+  snatch:
+    reference_load: 205
+    light_below: 0.45
+    paces:
+      rep: { light: 3.0, moderate: 4.0, heavy: 10.0 }
+    source: drafted -- owner review
+
+# Implements, by the movement's equipment. typical_load: the load CrossFit usually prescribes
+# (male, lb) -- the implement's normal feel. A heavier implement changes the stimulus (20/30-lb
+# wall-balls are a different workout from 14/20). typical_height: the usual target.
+implements:
+  kettlebell:
+    typical_load: 53
+    source: "CrossFit's usual Rx kettlebell, 35/53 lb (Helen, Jackie's Kelly, Jennifer)"
+  dumbbell:
+    typical_load: 50
+    source: "CrossFit's usual Rx dumbbell, 35/50 lb (Open 18.1, 20.2, 24.1)"
+  medicine_ball:
+    typical_load: 20
+    typical_height: { value: 10, unit: foot }
+    source: "CrossFit's usual Rx wall-ball, 14/20 lb to 9/10 ft (Karen, Kelly)"
+  sandbag:
+    typical_load: 100
+    source: drafted -- owner review
+  plate:
+    typical_load: 45
+    source: drafted -- owner review
+  sled:
+    typical_load: 90
+    source: drafted -- owner review
+  vest:
+    typical_load: 20
+    source: "CrossFit's usual weight vest, 14/20 lb (Murph)"
+# Loading = prescribed load / typical: light up to light_up_to, heavy from heavy_from, moderate
+# between. Drafted -- owner review (Nate's 70-lb kettlebell, "relatively heavy", is 1.3).
+implement_loading:
+  light_up_to: 1.1
+  heavy_from: 1.6
+implement_paces:
+  rep: { light: 2.0, moderate: 2.5, heavy: 3.5 }
+  meter: { light: 0.4, moderate: 0.55, heavy: 0.8 }
+implement_paces_source: drafted -- owner review
+
+# Unloaded gymnastics, by skill level. Drafted -- owner review; pull-up 1-2 s/rep (Rochet,
+# Hitting the Stimulus) sets the intermediate pace.
+skill_levels:
+  basic:
+    paces: { rep: 1.5, meter: 1.0 }
+  intermediate:
+    paces: { rep: 2.0, meter: 1.5 }
+  advanced:
+    paces: { rep: 3.5, meter: 2.0 }
+skill_levels_source: drafted -- owner review
+# Volume: bodyweight gymnastics slows once one movement's total reps reach large volume (Murph's
+# 100/200/300). Fit to the two-sided CAP class-plan ranges: 1.2x from 75 reps was the best of the
+# tiers tried (thresholds 50-200, factors 1.1-1.7); a second, larger tier did not help.
+skill_volume:
+  large_from: 75
+  factor: 1.2
+# The usual Rx height for gymnastics equipment (male side). Box 20/24 in, rope 15 ft.
+typical_heights:
+  box: { value: 24, unit: inch }
+  rope: { value: 15, unit: foot }
+
+# Monostructural, by name; a name not listed uses its equipment's pace.
+monostructural:
+  Run:
+    paces: { meter: 0.225 }
+    source: "Programming Basics pt 1: 400 m run about 1:30"
+  Row:
+    paces: { meter: 0.21, calorie: 3.5 }
+    source: drafted -- owner review
+  Air Bike:
+    paces: { calorie: 3.0 }
+    source: drafted -- owner review
+  Swim:
+    paces: { meter: 1.0 }
+    source: drafted -- owner review
+  Shuttle Run:
+    paces: { meter: 0.3 }
+    source: drafted -- owner review
+  Double-under:
+    paces: { rep: 0.5 }
+    source: drafted -- owner review
+  Triple-under:
+    paces: { rep: 1.0 }
+    source: drafted -- owner review
+  Jumping Jack:
+    paces: { rep: 0.7 }
+    source: drafted -- owner review
+monostructural_by_equipment:
+  machine: { calorie: 3.5, meter: 0.21 }
+  jump_rope: { rep: 0.5 }
+  none: { meter: 0.25 }
+
+# Seconds added to every rep of a movement whose name contains the key: the burpee inside a
+# burpee pull-up, the jerk inside a clean and jerk. Drafted -- owner review.
+components:
+  Burpee: 2.0
+  and Jerk: 1.5
+
+# The few movements a bucket cannot describe: single reps far longer than their skill level
+# (a rope climb is one rep), and loaded movements recorded without equipment.
+overrides:
+  Rest:
+    paces: { second: 1.0 }
+    source: a rest segment takes its own prescribed time
+  Rope Climb:
+    paces: { rep: 15.0 }
+    source: drafted -- owner review
+  L-sit Rope Climb:
+    paces: { rep: 20.0 }
+    source: drafted -- owner review
+  Wall Walk:
+    paces: { rep: 12.0 }
+    source: drafted -- owner review
+  Turkish Get-up:
+    implement: kettlebell
+    paces:
+      rep: { light: 10.0, moderate: 12.0, heavy: 18.0 }
+    source: drafted -- owner review
+  Weighted Pull-up:
+    implement: vest
+    source: "the added load is a vest or dumbbell, 14/20 lb (Del)"
+  Farmers Carry:
+    implement: dumbbell
+    source: drafted -- owner review
+  Lunge with plate overhead:
+    implement: plate
+    source: drafted -- owner review
+  Overhead Walking Lunge:
+    lift_family: squat
+    source: drafted -- owner review
